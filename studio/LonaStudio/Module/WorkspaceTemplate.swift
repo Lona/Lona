@@ -139,7 +139,7 @@ enum WorkspaceTemplate {
                 VirtualFile(name: "lona.json") {
                     CSData.Object([:])
                 },
-                VirtualFile(name: "Colors.logic", contents: {
+                VirtualFile(name: "Colors.tokens", contents: {
                     let program = LGCSyntaxNode.topLevelDeclarations(
                         .init(
                             id: UUID(),
@@ -169,7 +169,7 @@ enum WorkspaceTemplate {
                     )
                     return try! LogicDocument.encode(program)
                 }),
-                VirtualFile(name: "Shadows.logic", contents: {
+                VirtualFile(name: "Shadows.tokens", contents: {
                     let program = LGCSyntaxNode.topLevelDeclarations(
                         .init(
                             id: UUID(),
@@ -191,7 +191,7 @@ enum WorkspaceTemplate {
                     )
                     return try! LogicDocument.encode(program)
                 }),
-                VirtualFile(name: "TextStyles.logic", contents: {
+                VirtualFile(name: "TextStyles.tokens", contents: {
                     let program = LGCSyntaxNode.topLevelDeclarations(
                         .init(
                             id: UUID(),

@@ -161,7 +161,7 @@ public class LogicModule {
 
     // MARK: Private Static
 
-    private static let logicRE = try! NSRegularExpression(pattern: #"\.logic$"#)
+    private static let logicRE = try! NSRegularExpression(pattern: #"\.(logic|tokens)$"#)
 
     private static let preludeProgram = LGCProgram(
         id: UUID(),

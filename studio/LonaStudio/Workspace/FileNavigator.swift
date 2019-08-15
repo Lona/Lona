@@ -177,12 +177,12 @@ class FileNavigator: NSBox {
             }))
 
 
-            menu.addItem(NSMenuItem(title: "New Logic File", onClick: { [unowned self] in
+            menu.addItem(NSMenuItem(title: "New Tokens File", onClick: { [unowned self] in
                 guard let newFileName = self.promptForName(
-                    messageText: "Enter a new logic file name",
+                    messageText: "Enter a new tokens file name",
                     placeholderText: "File name") else { return }
 
-                _ = self.performCreateLogicFile?(makePath(filename: newFileName, withExtension: "logic"))
+                _ = self.performCreateLogicFile?(makePath(filename: newFileName, withExtension: "tokens"))
             }))
 
             menu.addItem(NSMenuItem(title: "New Folder", onClick: { [unowned self] in
@@ -335,7 +335,7 @@ class FileNavigator: NSBox {
                 else { return defaultImage(for: path) }
             image.size = NSSize(width: size.width, height: (image.size.height / image.size.width) * size.height)
             return image
-        } else if url.pathExtension == "logic" {
+        } else if url.pathExtension == "logic" || url.pathExtension == "tokens" {
             return LogicViewController.thumbnail(for: url, within: size, style: .bordered)
         } else {
             return defaultImage(for: path)
@@ -345,7 +345,7 @@ class FileNavigator: NSBox {
     private func displayNameForFile(atPath path: String) -> String {
         let url = URL(fileURLWithPath: path)
         switch url.pathExtension {
-        case "component", "logic":
+        case "component", "logic", "tokens":
             return url.deletingPathExtension().lastPathComponent
         default:
             return url.lastPathComponent
@@ -368,7 +368,7 @@ class FileNavigator: NSBox {
             iconView = LonaFileIcon()
         } else if path.hasSuffix("colors.json") {
             iconView = ColorsFileIcon()
-        } else if path.hasSuffix(".component") || path.hasSuffix(".logic") {
+        } else if path.hasSuffix(".component") || path.hasSuffix(".logic") || path.hasSuffix(".tokens") {
             let imageView = NSImageView(image: imageForFile(atPath: path, size: thumbnailSize) )
             imageView.imageScaling = .scaleProportionallyUpOrDown
             iconView = imageView

@@ -61,6 +61,7 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>tokens</string>
 				<string>logic</string>
 			</array>
 			<key>CFBundleTypeName</key>

@@ -51,7 +51,7 @@ class DirectoryDocument: NSDocument {
         try files.enumerated().forEach {offset, url in
             if url.pathExtension == "component" {
                 componentNames.append(url.deletingPathExtension().lastPathComponent)
-            } else if url.pathExtension == "logic" {
+            } else if url.pathExtension == "logic" || url.pathExtension == "tokens" {
                 logicFileNames.append(url.path)
             } else if url.lastPathComponent == "README.md" {
                 readme = try String(contentsOf: url)
