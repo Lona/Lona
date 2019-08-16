@@ -15,6 +15,13 @@
       "name" : "Title Black"
     },
     {
+      "color" : "black",
+      "fontSize" : 24,
+      "fontWeight" : "600",
+      "id" : "subtitle",
+      "name" : "Subtitle"
+    },
+    {
       "color" : "#828282",
       "fontSize" : 20,
       "id" : "versionInfo",

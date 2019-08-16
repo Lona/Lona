@@ -108,13 +108,28 @@
         {
           "assignee" : [
             "layers",
+            "Container",
+            "borderColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "systemSelection",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
             "Description",
             "textStyle"
           ],
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : "small",
+              "data" : "regular",
               "type" : "TextStyle"
             }
           },
@@ -166,21 +181,12 @@
   "root" : {
     "children" : [
       {
-        "id" : "Title",
-        "params" : {
-          "font" : "labelTitle",
-          "marginBottom" : 8,
-          "text" : "Tokens list"
-        },
-        "type" : "Lona:Text"
-      },
-      {
         "children" : [
           {
             "id" : "Image",
             "params" : {
-              "height" : 75,
-              "width" : 70
+              "alignSelf" : "stretch",
+              "flex" : 1
             },
             "type" : "Lona:Image"
           }
@@ -193,15 +199,23 @@
           "borderColor" : "grey200",
           "borderRadius" : 8,
           "borderWidth" : 1,
-          "paddingBottom" : 18,
-          "paddingTop" : 18
+          "height" : 120
         },
         "type" : "Lona:View"
       },
       {
+        "id" : "Title",
+        "params" : {
+          "font" : "large",
+          "marginTop" : 16,
+          "text" : "Tokens list"
+        },
+        "type" : "Lona:Text"
+      },
+      {
         "id" : "Description",
         "params" : {
-          "font" : "smallMuted",
+          "font" : "regularMuted",
           "marginTop" : 8,
           "text" : "Flat lists of tokens (colors, text styles, etc). Great for simple design systems."
         },
@@ -211,11 +225,12 @@
     "id" : "Container",
     "params" : {
       "borderRadius" : 8,
-      "paddingBottom" : 8,
-      "paddingLeft" : 8,
-      "paddingRight" : 8,
-      "paddingTop" : 8,
-      "width" : 220
+      "borderWidth" : 2,
+      "paddingBottom" : 12,
+      "paddingLeft" : 12,
+      "paddingRight" : 12,
+      "paddingTop" : 12,
+      "width" : 230
     },
     "type" : "Lona:View"
   }

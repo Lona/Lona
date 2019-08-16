@@ -4,7 +4,7 @@
       "height" : 1,
       "heightMode" : "At Least",
       "name" : "",
-      "width" : 600
+      "width" : 924
     }
   ],
   "examples" : [
@@ -95,15 +95,15 @@
   "root" : {
     "children" : [
       {
-        "id" : "Text",
+        "id" : "Title",
         "params" : {
           "alignSelf" : "stretch",
-          "font" : "large",
-          "marginBottom" : 18,
-          "marginLeft" : 24,
-          "marginRight" : 24,
-          "marginTop" : 18,
-          "text" : "Choose a workspace template"
+          "font" : "subtitle",
+          "marginBottom" : 24,
+          "marginLeft" : 40,
+          "marginRight" : 40,
+          "marginTop" : 58,
+          "text" : "Choose a template"
         },
         "type" : "Lona:Text"
       },
@@ -119,40 +119,155 @@
       {
         "children" : [
           {
-            "id" : "TokensListTemplate",
+            "children" : [
+              {
+                "id" : "TemplateListTitle",
+                "params" : {
+                  "font" : "sectionTitle",
+                  "marginBottom" : 20,
+                  "marginLeft" : 12,
+                  "marginTop" : 12,
+                  "text" : "TEMPLATES"
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "children" : [
+                  {
+                    "id" : "TokensListTemplate",
+                    "params" : {
+                      "descriptionText" : "Simple lists of tokens (colors, text styles, etc). Great for new design systems.",
+                      "image" : "file:\/\/.\/assets\/tokens-list@2x.png",
+                      "isSelected" : true,
+                      "titleText" : "Design Tokens"
+                    },
+                    "type" : "WorkspaceTemplateCard"
+                  },
+                  {
+                    "id" : "View 2",
+                    "params" : {
+                      "width" : 8
+                    },
+                    "type" : "Lona:View"
+                  },
+                  {
+                    "children" : [
+                      {
+                        "id" : "ThemedTokensListTemplate",
+                        "params" : {
+                          "descriptionText" : "There's only one template at the moment...",
+                          "image" : "file:\/\/.\/assets\/themed-tokens-list@2x.png",
+                          "titleText" : "More coming soon!"
+                        },
+                        "type" : "WorkspaceTemplateCard"
+                      }
+                    ],
+                    "id" : "View 1",
+                    "params" : {
+                      "opacity" : 0.59999999999999998
+                    },
+                    "type" : "Lona:View"
+                  }
+                ],
+                "id" : "TemplateListContent",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "flex" : 1,
+                  "flexDirection" : "row"
+                },
+                "type" : "Lona:View"
+              }
+            ],
+            "id" : "TemplateListContainer",
             "params" : {
-              "descriptionText" : "Simple lists of tokens (colors, text styles, etc). Great for new design systems.",
-              "image" : "file:\/\/.\/assets\/tokens-list@2x.png",
-              "isSelected" : true,
-              "titleText" : "Design Tokens"
-            },
-            "type" : "WorkspaceTemplateCard"
-          },
-          {
-            "id" : "View 2",
-            "params" : {
-              "width" : 8
+              "alignSelf" : "stretch",
+              "flex" : 1
             },
             "type" : "Lona:View"
           },
           {
-            "id" : "ThemedTokensListTemplate",
+            "id" : "VDivider",
             "params" : {
-              "descriptionText" : "For design systems with multiple themes, e.g. a \"light\" and \"dark\" mode.",
-              "image" : "file:\/\/.\/assets\/themed-tokens-list@2x.png",
-              "titleText" : "Themed Design Tokens"
+              "alignSelf" : "stretch",
+              "backgroundColor" : "grey200",
+              "marginLeft" : 40,
+              "marginRight" : 40,
+              "width" : 1
             },
-            "type" : "WorkspaceTemplateCard"
+            "type" : "Lona:View"
+          },
+          {
+            "children" : [
+              {
+                "id" : "TemplateListTitle 1",
+                "params" : {
+                  "font" : "sectionTitle",
+                  "marginBottom" : 20,
+                  "marginTop" : 12,
+                  "text" : "FILES IN THIS TEMPLATE"
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "TemplateFileCard",
+                "params" : {
+                  "subtitleText" : "A list of color tokens",
+                  "titleText" : "Colors.tokens"
+                },
+                "type" : "TemplateFileCard"
+              },
+              {
+                "id" : "CardSpacer",
+                "params" : {
+                  "backgroundColor" : "#D8D8D8",
+                  "height" : 8,
+                  "width" : 0
+                },
+                "type" : "Lona:View"
+              },
+              {
+                "id" : "TemplateFileCard 1",
+                "params" : {
+                  "subtitleText" : "A list of text style tokens",
+                  "titleText" : "TextStyles.tokens"
+                },
+                "type" : "TemplateFileCard"
+              },
+              {
+                "id" : "CardSpacer 1",
+                "params" : {
+                  "backgroundColor" : "#D8D8D8",
+                  "height" : 8,
+                  "width" : 0
+                },
+                "type" : "Lona:View"
+              },
+              {
+                "id" : "TemplateFileCard 2",
+                "params" : {
+                  "subtitleText" : "A list of shadow tokens",
+                  "titleText" : "Shadows.tokens"
+                },
+                "type" : "TemplateFileCard"
+              }
+            ],
+            "id" : "FileListContainer",
+            "params" : {
+              "alignSelf" : "stretch",
+              "width" : 321
+            },
+            "type" : "Lona:View"
           }
         ],
-        "id" : "View 1",
+        "id" : "ContentArea",
         "params" : {
           "alignSelf" : "stretch",
           "backgroundColor" : "grey50",
           "flexDirection" : "row",
+          "height" : 460,
           "paddingBottom" : 16,
-          "paddingLeft" : 16,
-          "paddingRight" : 16,
+          "paddingLeft" : 28,
+          "paddingRight" : 40,
           "paddingTop" : 16
         },
         "type" : "Lona:View"

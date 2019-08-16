@@ -232,6 +232,7 @@
 		6B6D4435218F6B070016262C /* LNAImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4433218F6B070016262C /* LNAImageView.swift */; };
 		6B6F19CE2304B49A00E5AC60 /* SwiftGraph.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */; };
 		6B6F19CF2304B49A00E5AC60 /* SwiftGraph.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6B6F19D12307222200E5AC60 /* TemplateFileCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */; };
 		6B73809422C66E59007534A0 /* TemplateBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B73809322C66E59007534A0 /* TemplateBrowser.swift */; };
 		6B73809622C67563007534A0 /* WorkspaceTemplateCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B73809522C67563007534A0 /* WorkspaceTemplateCard.swift */; };
 		6B73809822C6ED89007534A0 /* WorkspaceTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B73809722C6ED89007534A0 /* WorkspaceTemplate.swift */; };
@@ -579,6 +580,7 @@
 		6B6D4432218F6B070016262C /* NSImage+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSImage+Resizing.swift"; sourceTree = "<group>"; };
 		6B6D4433218F6B070016262C /* LNAImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LNAImageView.swift; sourceTree = "<group>"; };
 		6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftGraph.framework; path = Carthage/Build/Mac/SwiftGraph.framework; sourceTree = "<group>"; };
+		6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateFileCard.swift; sourceTree = "<group>"; };
 		6B73809322C66E59007534A0 /* TemplateBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateBrowser.swift; sourceTree = "<group>"; };
 		6B73809522C67563007534A0 /* WorkspaceTemplateCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkspaceTemplateCard.swift; sourceTree = "<group>"; };
 		6B73809722C6ED89007534A0 /* WorkspaceTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceTemplate.swift; sourceTree = "<group>"; };
@@ -1026,6 +1028,7 @@
 				303C3FED20A396C3008E1541 /* OpenProjectButton.swift */,
 				6B4DFCEE20A795070048BB43 /* RecentProjectItem.swift */,
 				307D440E2097DC17004B57F5 /* TabIcon.swift */,
+				6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */,
 				30C203D920BF5907007C3FE0 /* TextStylePreviewCard.swift */,
 				6B73809522C67563007534A0 /* WorkspaceTemplateCard.swift */,
 				307D440D2097DC16004B57F5 /* WorkspaceVerticalTabs.swift */,
@@ -1786,6 +1789,7 @@
 				6B1086FD217A38110024AE56 /* LRUCache.swift in Sources */,
 				30D9B40E1F79BADC00C8A3D4 /* NSMenuExtensions.swift in Sources */,
 				3090D78D1F01B050009277E7 /* CSParameter.swift in Sources */,
+				6B6F19D12307222200E5AC60 /* TemplateFileCard.swift in Sources */,
 				305ED04620530257000D07C3 /* LonaModule.swift in Sources */,
 				6B0AEFBC1EBF74D800F35BBF /* ComponentDocument.swift in Sources */,
 				303C3FF920A4F894008E1541 /* ComponentPreview.swift in Sources */,

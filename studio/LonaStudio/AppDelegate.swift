@@ -143,9 +143,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    private static func createSheetWindow() -> NSWindow {
+    private static func createSheetWindow(size: NSSize) -> NSWindow {
         let sheetWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 500, height: 300),
+            contentRect: NSRect(origin: .zero, size: size),
             styleMask: [.titled],
             backing: NSWindow.BackingStoreType.retained,
             defer: false,
@@ -217,7 +217,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
 
                 if CSUserPreferences.useExperimentalFeatures {
-                    let sheetWindow = AppDelegate.createSheetWindow()
+                    let sheetWindow = AppDelegate.createSheetWindow(size: .init(width: 924, height: 635))
                     let templateBrowser = TemplateBrowser()
                     sheetWindow.contentView = templateBrowser
 
