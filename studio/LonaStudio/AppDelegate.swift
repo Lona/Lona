@@ -216,23 +216,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     }
                 }
 
-                if CSUserPreferences.useExperimentalFeatures {
-                    let sheetWindow = AppDelegate.createSheetWindow(size: .init(width: 924, height: 635))
-                    let templateBrowser = TemplateBrowser()
-                    sheetWindow.contentView = templateBrowser
+                let sheetWindow = AppDelegate.createSheetWindow(size: .init(width: 924, height: 635))
+                let templateBrowser = TemplateBrowser()
+                sheetWindow.contentView = templateBrowser
 
-                    templateBrowser.onClickDone = {
-                        finished(template: .designTokens)
-                    }
-
-                    templateBrowser.onClickCancel = {
-                        self.welcomeWindow?.endSheet(sheetWindow)
-                    }
-
-                    self.welcomeWindow?.beginSheet(sheetWindow)
-                } else {
-                    finished(template: .componentLibrary)
+                templateBrowser.onClickDone = {
+                    finished(template: .designTokens)
                 }
+
+                templateBrowser.onClickCancel = {
+                    self.welcomeWindow?.endSheet(sheetWindow)
+                }
+
+                self.welcomeWindow?.beginSheet(sheetWindow)
             }
 
             welcome.onOpenProject = {

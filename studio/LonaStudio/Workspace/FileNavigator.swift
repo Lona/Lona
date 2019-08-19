@@ -160,13 +160,15 @@ class FileNavigator: NSBox {
                 return newFilePath
             }
 
-            menu.addItem(NSMenuItem(title: "New Component", onClick: { [unowned self] in
-                guard let newFileName = self.promptForName(
-                    messageText: "Enter a new component name",
-                    placeholderText: "Component name") else { return }
+            if CSUserPreferences.useExperimentalFeatures {
+                menu.addItem(NSMenuItem(title: "New Component", onClick: { [unowned self] in
+                    guard let newFileName = self.promptForName(
+                        messageText: "Enter a new component name",
+                        placeholderText: "Component name") else { return }
 
-                _ = self.performCreateComponent?(makePath(filename: newFileName, withExtension: "component"))
-            }))
+                    _ = self.performCreateComponent?(makePath(filename: newFileName, withExtension: "component"))
+                }))
+            }
 
             menu.addItem(NSMenuItem(title: "New Markdown File", onClick: { [unowned self] in
                 guard let newFileName = self.promptForName(
