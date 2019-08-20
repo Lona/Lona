@@ -127,7 +127,7 @@ public class LogicCompilerConfigurationInput: NSView {
 
         switch result {
         case .success(let evaluationContext):
-            return evaluationContext.values[expression.uuid]
+            return evaluationContext.evaluate(uuid: expression.uuid)
         case .failure(let error):
             Swift.print("Eval failure", error)
             return nil
