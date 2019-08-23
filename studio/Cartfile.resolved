@@ -1,7 +1,7 @@
 github "dabbott/ColorPicker" "c1e637d2af9813ddba6a9b8e5e51f164780981ba"
 github "dabbott/ControlledComponents" "264729ba7769e8fd2a66eb4fad63fd6348eae767"
 github "dabbott/FileTree" "d92c10dcdbd805736373da2908e839ffd3eb7239"
-github "dabbott/Logic" "6ddddf1719b73b1a0c33deece30a37e202df8f9d"
+github "dabbott/Logic" "c2cbb10e565d6c0f2082680d959e92caa77a2d63"
 github "davecom/SwiftGraph" "3.0.0"
 github "dylan/colors" "0.9.10"
 github "njdehoog/Witness" "0.1.3"
