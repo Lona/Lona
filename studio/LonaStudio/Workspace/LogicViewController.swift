@@ -366,6 +366,8 @@ class LogicViewController: NSViewController {
                 nextFocusId: query.isEmpty ? variableId : valueId,
                 documentation: ({ builder in
                     return LightMark.makeScrollView(markdown: """
+I> Type a variable name and then press enter!
+
 # Color Variable
 
 Define a color variable that can be used throughout your design system and UI components.
@@ -411,6 +413,8 @@ There are a variety of naming conventions for colors, each with their own streng
                 nextFocusId: query.isEmpty ? variableId : valueId,
                 documentation: ({ builder in
                     return LightMark.makeScrollView(markdown: """
+I> Type a variable name and then press enter!
+
 # Shadow Variable
 
 Define a shadow variable that can be used throughout your design system and UI components.
@@ -441,6 +445,8 @@ Define a shadow variable that can be used throughout your design system and UI c
                 nextFocusId: query.isEmpty ? variableId : valueId,
                 documentation: ({ builder in
                     return LightMark.makeScrollView(markdown: """
+I> Type a variable name and then press enter!
+
 # Text Style Variable
 
 Define a text style variable that can be used throughout your design system and UI components.
@@ -464,6 +470,8 @@ Define a text style variable that can be used throughout your design system and 
                 nextFocusId: query.isEmpty ? patternId : valueId,
                 documentation: ({ builder in
                     LightMark.makeScrollView(markdown: """
+I> Type a variable group name and then press enter!
+
 # Variable Group
 
 A group of variables and other declarations, sometimes called a namespace.
