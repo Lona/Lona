@@ -212,6 +212,11 @@ class LogicViewController: NSViewController {
 
                 view.onChangeColorValue = { color in
                     colorValue = color
+
+                    // Setting the color to nil is a hack to force the color picker to re-draw even if the color values are equal.
+                    // The Color library tests for equality in a way that prevents us from changing the hue of the color when the
+                    // saturation and lightness are 0.
+                    view.colorValue = nil
                     view.colorValue = colorValue
 
                     builder.setListItem(.colorRow(name: "Color", code: color.cssString, color.NSColor, false))
