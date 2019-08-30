@@ -878,10 +878,13 @@ class WorkspaceViewController: NSSplitViewController {
                 return
             }
 
-            if documentWasAlreadyOpen && previousDocument.className == newDocument.className {
-                newDocument.showWindows()
-                return
-            }
+            // TODO: This improves the UX of opening files (particularly components), since we can preserve the
+            // window state of a document when switching between files. However, it causes some files to be unopenable
+            // after double clicking in the directory view, so we've disabled it for now.
+//            if documentWasAlreadyOpen && previousDocument.className == newDocument.className {
+//                newDocument.showWindows()
+//                return
+//            }
 
             NSDocumentController.shared.removeDocument(previousDocument)
 
