@@ -203,6 +203,10 @@ class LogicViewController: NSViewController {
                     if let data = data, let cssString = String(data: data, encoding: .utf8) {
                         return SwiftColor(cssString: cssString)
                     } else {
+                        // Improve the empty state by setting alpha to 1 initially
+                        if css == "" {
+                            return SwiftColor(red: 0, green: 0, blue: 0)
+                        }
                         return SwiftColor(cssString: css)
                     }
                 }
