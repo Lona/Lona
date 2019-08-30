@@ -73,6 +73,7 @@ class LogicViewController: NSViewController {
 
         divider.fillColor = NSSplitView.defaultDividerColor
 
+        logicEditor.placeholderText = "Search or create"
         logicEditor.fillColor = Colors.contentBackground
         logicEditor.canvasStyle.textMargin = .init(width: 10, height: 6)
         logicEditor.showsFilterBar = true
@@ -318,30 +319,42 @@ class LogicViewController: NSViewController {
             let suggestions = suggestionBuilder(query) {
             all = suggestions
         } else {
-            all = LogicEditor.defaultSuggestionsForNode(rootNode, selectedNode, query)
+            switch selectedNode {
+            case .declaration:
+                all = [
+                    LGCDeclaration.Suggestion.variable(query: query),
+                    LGCDeclaration.Suggestion.namespace(query: query),
+                    LGCDeclaration.Suggestion.record(query: query),
+                    LGCDeclaration.Suggestion.enum(query: query),
+                    LGCDeclaration.Suggestion.import
+                    ].compactMap { $0 }
+            default:
+                all = LogicEditor.defaultSuggestionsForNode(rootNode, selectedNode, query)
+            }
         }
 
         switch selectedNode {
         case .declaration:
             let variableId = UUID()
+            let valueId = UUID()
             let colorVariable = LogicSuggestionItem(
-                title: "Color Variable",
+                title: "Color Variable\(query.isEmpty ? "" : ": " + query)",
                 category: "Declarations".uppercased(),
                 node: LGCSyntaxNode.declaration(
                     LGCDeclaration.variable(
                         id: UUID(),
-                        name: LGCPattern(id: variableId, name: "name"),
+                        name: LGCPattern(id: variableId, name: query.isEmpty ? "name" : query),
                         annotation: LGCTypeAnnotation.typeIdentifier(
                             id: UUID(),
                             identifier: LGCIdentifier(id: UUID(), string: "Color", isPlaceholder: false),
                             genericArguments: .empty
                         ),
-                        initializer: .literalExpression(id: UUID(), literal: .color(id: UUID(), value: "white")),
+                        initializer: .literalExpression(id: valueId, literal: .color(id: UUID(), value: "white")),
                         comment: nil
                     )
                 ),
-                suggestionFilters: [.recommended],
-                nextFocusId: variableId,
+                suggestionFilters: [.recommended, .all],
+                nextFocusId: query.isEmpty ? variableId : valueId,
                 documentation: ({ builder in
                     return LightMark.makeScrollView(markdown: """
 # Color Variable
@@ -367,12 +380,12 @@ There are a variety of naming conventions for colors, each with their own streng
             )
 
             let shadowVariable = LogicSuggestionItem(
-                title: "Shadow Variable",
+                title: "Shadow Variable\(query.isEmpty ? "" : ": " + query)",
                 category: "Declarations".uppercased(),
                 node: LGCSyntaxNode.declaration(
                     LGCDeclaration.variable(
                         id: UUID(),
-                        name: LGCPattern(id: variableId, name: "name"),
+                        name: LGCPattern(id: variableId, name: query.isEmpty ? "name" : query),
                         annotation: LGCTypeAnnotation.typeIdentifier(
                             id: UUID(),
                             identifier: LGCIdentifier(id: UUID(), string: "Shadow", isPlaceholder: false),
@@ -380,13 +393,13 @@ There are a variety of naming conventions for colors, each with their own streng
                         ),
                         initializer: .identifierExpression(
                             id: UUID(),
-                            identifier: LGCIdentifier(id: UUID(), string: "value", isPlaceholder: true)
+                            identifier: LGCIdentifier(id: valueId, string: "value", isPlaceholder: true)
                         ),
                         comment: nil
                     )
                 ),
-                suggestionFilters: [.recommended],
-                nextFocusId: variableId,
+                suggestionFilters: [.recommended, .all],
+                nextFocusId: query.isEmpty ? variableId : valueId,
                 documentation: ({ builder in
                     return LightMark.makeScrollView(markdown: """
 # Shadow Variable
@@ -397,12 +410,12 @@ Define a shadow variable that can be used throughout your design system and UI c
             )
 
             let textStyleVariable = LogicSuggestionItem(
-                title: "Text Style Variable",
+                title: "Text Style Variable\(query.isEmpty ? "" : ": " + query)",
                 category: "Declarations".uppercased(),
                 node: LGCSyntaxNode.declaration(
                     LGCDeclaration.variable(
                         id: UUID(),
-                        name: LGCPattern(id: variableId, name: "name"),
+                        name: LGCPattern(id: variableId, name: query.isEmpty ? "name" : query),
                         annotation: LGCTypeAnnotation.typeIdentifier(
                             id: UUID(),
                             identifier: LGCIdentifier(id: UUID(), string: "TextStyle", isPlaceholder: false),
@@ -410,13 +423,13 @@ Define a shadow variable that can be used throughout your design system and UI c
                         ),
                         initializer: .identifierExpression(
                             id: UUID(),
-                            identifier: LGCIdentifier(id: UUID(), string: "value", isPlaceholder: true)
+                            identifier: LGCIdentifier(id: valueId, string: "value", isPlaceholder: true)
                         ),
                         comment: nil
                     )
                 ),
-                suggestionFilters: [.recommended],
-                nextFocusId: variableId,
+                suggestionFilters: [.recommended, .all],
+                nextFocusId: query.isEmpty ? variableId : valueId,
                 documentation: ({ builder in
                     return LightMark.makeScrollView(markdown: """
 # Text Style Variable
@@ -429,17 +442,17 @@ Define a text style variable that can be used throughout your design system and 
             let patternId = UUID()
 
             let namespace = LogicSuggestionItem(
-                title: "Variable Group",
+                title: "Variable Group\(query.isEmpty ? "" : ": " + query)",
                 category: "Declarations".uppercased(),
                 node: LGCSyntaxNode.declaration(
                     LGCDeclaration.namespace(
                         id: UUID(),
-                        name: LGCPattern(id: patternId, name: "name"),
-                        declarations: .next(LGCDeclaration.makePlaceholder(), .empty)
+                        name: LGCPattern(id: patternId, name: query.isEmpty ? "Name" : query),
+                        declarations: .next(LGCDeclaration.placeholder(id: valueId), .empty)
                     )
                 ),
                 suggestionFilters: [.recommended],
-                nextFocusId: patternId,
+                nextFocusId: query.isEmpty ? patternId : valueId,
                 documentation: ({ builder in
                     LightMark.makeScrollView(markdown: """
 # Variable Group
