@@ -1,0 +1,88 @@
+{
+  "devices" : [
+    {
+      "height" : 1,
+      "heightMode" : "At Least",
+      "name" : "",
+      "width" : 924
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Title",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "titleText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Subtitle",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "subtitleText"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "titleText",
+      "type" : "String"
+    },
+    {
+      "name" : "subtitleText",
+      "type" : "String"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Title",
+        "params" : {
+          "text" : "Title"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "Subtitle",
+        "params" : {
+          "font" : "regularMuted",
+          "marginTop" : 4,
+          "text" : "Subtitle"
+        },
+        "type" : "Lona:Text"
+      }
+    ],
+    "id" : "View 1",
+    "params" : {
+      "alignSelf" : "stretch",
+      "backgroundColor" : "white",
+      "borderColor" : "grey200",
+      "borderRadius" : 4,
+      "borderWidth" : 1,
+      "paddingBottom" : 14,
+      "paddingLeft" : 14,
+      "paddingRight" : 14,
+      "paddingTop" : 14
+    },
+    "type" : "Lona:View"
+  }
+}

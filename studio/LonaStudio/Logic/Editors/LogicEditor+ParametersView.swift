@@ -53,7 +53,7 @@ It's best to use **camelCase** capitalization when choosing parameter names. Thi
                 guard let parent = rootNode.pathTo(id: syntaxNode.uuid)?.dropLast().last else { return [] }
 
                 switch parent {
-                case .functionParameter(.parameter(id: _, externalName: _, localName: _, annotation: let annotation, defaultValue: _)):
+                case .functionParameter(.parameter(id: _, externalName: _, localName: _, annotation: let annotation, defaultValue: _, _)):
                     guard let csType = annotation.csType(environmentTypes: types) else { return [] }
                     return [
                         LogicSuggestionItem(

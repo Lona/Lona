@@ -31,9 +31,6 @@ public class CodeEditor: NSBox {
     // MARK: Public
 
     public var generatedCode: String = "" { didSet { update() } }
-    public var titleText: String = "" { didSet { update() } }
-    public var subtitleText: String = "" { didSet { update() } }
-    public var fileIcon: NSImage = NSImage() { didSet { update() } }
     public var commandPreview: String = "" { didSet { update() } }
     public var compilerTargetValues: [String] = [] { didSet { update() } }
     public var compilerTargetIndex: Int = 0 { didSet { update() } }
@@ -44,8 +41,6 @@ public class CodeEditor: NSBox {
 
     // MARK: Private
 
-    private let editorHeaderView = EditorHeader()
-
     private let outputPreview = GeneratedOutputPreview()
 
     private func setUpViews() {
@@ -53,23 +48,14 @@ public class CodeEditor: NSBox {
         borderType = .noBorder
         contentViewMargins = .zero
 
-        editorHeaderView.dividerColor = NSSplitView.defaultDividerColor
-
-        addSubview(editorHeaderView)
         addSubview(outputPreview)
     }
 
     private func setUpConstraints() {
         translatesAutoresizingMaskIntoConstraints = false
-        editorHeaderView.translatesAutoresizingMaskIntoConstraints = false
         outputPreview.translatesAutoresizingMaskIntoConstraints = false
 
-        editorHeaderView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        editorHeaderView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        editorHeaderView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        editorHeaderView.heightAnchor.constraint(equalToConstant: 38).isActive = true
-
-        outputPreview.topAnchor.constraint(equalTo: editorHeaderView.bottomAnchor).isActive = true
+        outputPreview.topAnchor.constraint(equalTo: topAnchor).isActive = true
         outputPreview.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         outputPreview.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         outputPreview.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
@@ -99,9 +85,5 @@ public class CodeEditor: NSBox {
         outputPreview.frameworkValues = compilerFrameworkValues
         outputPreview.compilerTargetIndex = compilerTargetIndex
         outputPreview.frameworkIndex = compilerFrameworkIndex
-
-        editorHeaderView.titleText = titleText
-        editorHeaderView.subtitleText = subtitleText
-        editorHeaderView.fileIcon = fileIcon
     }
 }

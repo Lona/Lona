@@ -73,7 +73,8 @@ class WorkspaceViewController: NSSplitViewController {
         }
         set {
             if newValue && !codeViewVisible {
-                insertSplitViewItem(codeItem, at: 2)
+                let mainIndex = splitViewItems.firstIndex(of: mainItem)!
+                insertSplitViewItem(codeItem, at: mainIndex + 1)
             } else if !newValue && codeViewVisible {
                 removeSplitViewItem(codeItem)
             }
@@ -128,6 +129,21 @@ class WorkspaceViewController: NSSplitViewController {
     }()
 
     private lazy var editorViewController = EditorViewController()
+
+    private lazy var companionViewController = EditorViewController()
+
+    func updateEditorHeader(parameters: EditorHeader.Parameters) {
+        editorViewController.titleText = parameters.titleText
+        editorViewController.subtitleText = parameters.subtitleText
+        editorViewController.fileIcon = parameters.fileIcon
+    }
+
+    func updateCompanionHeader(parameters: EditorHeader.Parameters) {
+        companionViewController.titleText = parameters.titleText
+        companionViewController.subtitleText = parameters.subtitleText
+        companionViewController.fileIcon = parameters.fileIcon
+    }
+
     private lazy var componentEditorViewController: ComponentEditorViewController = {
         let controller = ComponentEditorViewController()
 
@@ -270,7 +286,8 @@ class WorkspaceViewController: NSSplitViewController {
         return controller
     }()
 
-    private lazy var markdownViewController = MarkdownViewController()
+    private lazy var markdownViewController = MarkdownViewController(editable: true, preview: false)
+    private lazy var markdownPreviewViewController = MarkdownViewController(editable: false, preview: true)
 
     private lazy var imageViewController = ImageViewController()
 
@@ -286,7 +303,7 @@ class WorkspaceViewController: NSSplitViewController {
         }
         set {
             if newValue && !inspectorViewVisible {
-                insertSplitViewItem(sidebarItem, at: 2)
+                insertSplitViewItem(sidebarItem, at: splitViewItems.count)
             } else if !newValue && inspectorViewVisible {
                 removeSplitViewItem(sidebarItem)
             }
@@ -408,7 +425,28 @@ class WorkspaceViewController: NSSplitViewController {
         }
 
         fileNavigator.performCreateLogicFile = { path in
-            return performCreateFile(path: path, document: LogicDocument(), ofType: "Logic")
+            let document = LogicDocument()
+
+            let name = URL(fileURLWithPath: path).deletingPathExtension().lastPathComponent
+
+            document.content = .topLevelDeclarations(
+                .init(
+                    id: UUID(),
+                    declarations: .init(
+                        [
+                            WorkspaceTemplate.makeImport(name: "Color"),
+                            WorkspaceTemplate.makeNamespace(name: name, declarations:
+                                [
+                                    .placeholder(id: UUID())
+                                ]
+                            ),
+                            .placeholder(id: UUID())
+                        ]
+                    )
+                )
+            )
+
+            return performCreateFile(path: path, document: document, ofType: "Logic")
         }
 
         fileNavigator.performCreateComponent = { path in
@@ -427,7 +465,7 @@ class WorkspaceViewController: NSSplitViewController {
 
     private lazy var contentListItem = NSSplitViewItem(contentListWithViewController: fileNavigatorViewController)
     private lazy var mainItem = NSSplitViewItem(viewController: editorViewController)
-    private lazy var codeItem = NSSplitViewItem(viewController: codeEditorViewController)
+    private lazy var codeItem = NSSplitViewItem(viewController: companionViewController)
     private lazy var sidebarItem = NSSplitViewItem(viewController: inspectorViewController)
 
     private func setUpLayout() {
@@ -454,14 +492,50 @@ class WorkspaceViewController: NSSplitViewController {
 
     private func update() {
         inspectorView.content = inspectedContent
-        editorViewController.document = document
+
+        companionViewController.contentView = codeEditorViewController.contentView
         codeEditorViewController.document = document
 
         guard let document = document else {
             editorViewController.contentView = nil
-            inspectorViewVisible = true
+            inspectorViewVisible = false
+
+            let titleText = "No document"
+            let subtitleText = ""
+            let fileIcon: NSImage? = nil
+
+            editorViewController.titleText = titleText
+            editorViewController.subtitleText = subtitleText
+            editorViewController.fileIcon = fileIcon
+
+            companionViewController.titleText = titleText
+            companionViewController.subtitleText = subtitleText
+            companionViewController.fileIcon = fileIcon
+
             return
         }
+
+        codeEditorViewController.updateEditorHeader = { [weak self] parameters in
+            guard let self = self else { return }
+            self.updateCompanionHeader(parameters: parameters)
+        }
+
+        let titleText = document.fileURL?.lastPathComponent ?? "Untitled"
+        let subtitleText = document.isDocumentEdited == true ? " — Edited" : ""
+        let fileIcon: NSImage?
+        if let fileURL = document.fileURL {
+            fileIcon = NSWorkspace.shared.icon(forFile: fileURL.path)
+        } else {
+            fileIcon = NSImage()
+        }
+
+        editorViewController.titleText = titleText
+        editorViewController.subtitleText = subtitleText
+        editorViewController.fileIcon = fileIcon
+
+        companionViewController.titleText = titleText
+        companionViewController.subtitleText = subtitleText
+        companionViewController.fileIcon = fileIcon
 
         if document is ComponentDocument {
             inspectorViewVisible = true
@@ -513,6 +587,7 @@ class WorkspaceViewController: NSSplitViewController {
             inspectorViewVisible = false
 
             editorViewController.contentView = logicViewController.view
+            updateCompanionHeader(parameters: codeEditorViewController.headerParameters)
 
             logicViewController.rootNode = document.content
             logicViewController.onChangeRootNode = { rootNode in
@@ -544,7 +619,6 @@ class WorkspaceViewController: NSSplitViewController {
                 textStyleEditorViewController.textStyles = file.styles
             } else {
                 editorViewController.contentView = nil
-                return
             }
 
             inspectorView.onChangeContent = { newContent, changeType in
@@ -621,29 +695,35 @@ class WorkspaceViewController: NSSplitViewController {
                 imageViewController.image = content
             } else {
                 editorViewController.contentView = nil
-                return
             }
         } else if let document = document as? MarkdownDocument {
             inspectorViewVisible = false
 
             editorViewController.contentView = markdownViewController.view
+            companionViewController.contentView = markdownPreviewViewController.view
 
             markdownViewController.content = document.content
             markdownViewController.onChange = { [unowned self] value in
                 self.markdownViewController.content = value
+                self.markdownPreviewViewController.content = value
                 document.content = value
+
+                document.updateChangeCount(.changeDone)
+                self.editorViewController.subtitleText = " — Edited"
             }
+
+            markdownPreviewViewController.content = document.content
         } else if let document = document as? DirectoryDocument {
             inspectorViewVisible = false
             if let content = document.content {
                 editorViewController.contentView = directoryViewController.view
 
                 directoryViewController.componentNames = content.componentNames
+                directoryViewController.logicFileNames = content.logicFileNames
                 directoryViewController.readme = content.readme
                 directoryViewController.folderName = content.folderName
             } else {
                 editorViewController.contentView = nil
-                return
             }
         }
     }
@@ -798,10 +878,13 @@ class WorkspaceViewController: NSSplitViewController {
                 return
             }
 
-            if documentWasAlreadyOpen && previousDocument.className == newDocument.className {
-                newDocument.showWindows()
-                return
-            }
+            // TODO: This improves the UX of opening files (particularly components), since we can preserve the
+            // window state of a document when switching between files. However, it causes some files to be unopenable
+            // after double clicking in the directory view, so we've disabled it for now.
+//            if documentWasAlreadyOpen && previousDocument.className == newDocument.className {
+//                newDocument.showWindows()
+//                return
+//            }
 
             NSDocumentController.shared.removeDocument(previousDocument)
 

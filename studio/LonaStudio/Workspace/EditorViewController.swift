@@ -35,8 +35,6 @@ class EditorViewController: NSViewController {
 
     // MARK: Public
 
-    public var document: NSDocument? { didSet { update() } }
-
     public var contentView: NSView? {
         didSet {
             if let contentView = contentView {
@@ -66,6 +64,21 @@ class EditorViewController: NSViewController {
     private let contentContainerView = NSView(frame: .zero)
     private let editorHeaderView = EditorHeader()
 
+    public var titleText: String {
+        get { return editorHeaderView.titleText }
+        set { editorHeaderView.titleText = newValue }
+    }
+
+    public var subtitleText: String {
+        get { return editorHeaderView.subtitleText }
+        set { editorHeaderView.subtitleText = newValue }
+    }
+
+    public var fileIcon: NSImage? {
+        get { return editorHeaderView.fileIcon }
+        set { editorHeaderView.fileIcon = newValue }
+    }
+
     private func setUpViews() {
         self.view = contentContainerView
 
@@ -84,19 +97,5 @@ class EditorViewController: NSViewController {
         editorHeaderView.heightAnchor.constraint(equalToConstant: 38).isActive = true
     }
 
-    private func update() {
-        if let document = document {
-            editorHeaderView.titleText = document.fileURL?.lastPathComponent ?? "Untitled"
-            editorHeaderView.subtitleText = document.isDocumentEdited == true ? " — Edited" : ""
-            if let fileURL = document.fileURL {
-                editorHeaderView.fileIcon = NSWorkspace.shared.icon(forFile: fileURL.path)
-            } else {
-                editorHeaderView.fileIcon = NSImage()
-            }
-        } else {
-            editorHeaderView.titleText = "No document"
-//            editorHeaderView.subtitleText = ""
-            editorHeaderView.fileIcon = NSImage()
-        }
-    }
+    private func update() {}
 }

@@ -1,54 +1,62 @@
 const xml = `<?xml version="1.0"?>
 <FunctionCallExpression>
   <IdentifierExpression name="ThemedColor"/>
-  <FunctionCallArgument label="light">
-    <LiteralExpression>
-      <Color value="pink"/>
-    </LiteralExpression>
-  </FunctionCallArgument>
-  <FunctionCallArgument label="dark">
-    <LiteralExpression>
-      <Color value="purple"/>
-    </LiteralExpression>
-  </FunctionCallArgument>
+  <Argument label="light">
+    <Literal type="Color" value="pink"/>
+  </Argument>
+  <Argument label="dark">
+    <Literal type="Color" value="purple"/>
+  </Argument>
 </FunctionCallExpression>`
 
 const json = {
   data: {
     arguments: [
       {
-        expression: {
-          data: {
-            id: '0',
-            literal: {
-              data: {
-                id: '0',
-                value: 'pink',
+        data: {
+          expression: {
+            data: {
+              id: '0',
+              literal: {
+                data: {
+                  id: '0',
+                  value: 'pink',
+                },
+                type: 'color',
               },
-              type: 'color',
             },
+            type: 'literalExpression',
           },
-          type: 'literalExpression',
+          id: '0',
+          label: 'light',
         },
-        id: '0',
-        label: 'light',
+        type: 'argument',
       },
       {
-        expression: {
-          data: {
-            id: '0',
-            literal: {
-              data: {
-                id: '0',
-                value: 'purple',
+        data: {
+          expression: {
+            data: {
+              id: '0',
+              literal: {
+                data: {
+                  id: '0',
+                  value: 'purple',
+                },
+                type: 'color',
               },
-              type: 'color',
             },
+            type: 'literalExpression',
           },
-          type: 'literalExpression',
+          id: '0',
+          label: 'dark',
         },
-        id: '0',
-        label: 'dark',
+        type: 'argument',
+      },
+      {
+        data: {
+          id: '0',
+        },
+        type: 'placeholder',
       },
     ],
     expression: {

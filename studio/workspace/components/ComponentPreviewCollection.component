@@ -21,6 +21,7 @@
   ],
   "examples" : [
     {
+      "id" : "Default",
       "name" : "Default",
       "params" : {
 
@@ -52,13 +53,20 @@
       }
     },
     {
+      "name" : "logicFileNames",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
       "name" : "onSelectComponent",
       "type" : {
-        "name": "Function",
-        "parameters": [
+        "name" : "Function",
+        "parameters" : [
           {
-            "label": "_",
-            "type": "String"
+            "label" : "_",
+            "type" : "String"
           }
         ]
       }

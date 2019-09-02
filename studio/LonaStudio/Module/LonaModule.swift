@@ -7,7 +7,6 @@
 //
 
 import AppKit
-import Logic
 
 class LonaModule {
     struct ComponentFile {
@@ -21,6 +20,10 @@ class LonaModule {
 
     init(url: URL) {
         self.url = url
+    }
+
+    var logic: LogicModule {
+        return LogicModule(url: url)
     }
 
     var colorsFileUrls: [URL] {
@@ -37,21 +40,6 @@ class LonaModule {
 
     var gradientsFileUrls: [URL] {
         return FileSearch.search(filesIn: url, withSuffix: "gradients.json")
-    }
-
-    var logicFileUrls: [URL] {
-        return FileSearch.search(filesIn: url, matching: LonaModule.logicRE)
-    }
-
-    var logicFileContents: LGCProgram {
-        let programs: [LGCProgram] = logicFileUrls.compactMap {
-            guard let data = try? Data(contentsOf: $0) else { return nil }
-            guard let syntaxNode = try? LogicDocument.read(from: data) else { return nil }
-            guard let program = LGCProgram.make(from: syntaxNode) else { return nil }
-            return program
-        }
-
-        return .join(programs: programs)
     }
 
     var assetsFileUrls: [URL] {
@@ -123,8 +111,6 @@ class LonaModule {
 
     private static let vectorRE = try! NSRegularExpression(pattern: #"\.svg$"#)
 
-    private static let logicRE = try! NSRegularExpression(pattern: #"\.logic$"#)
-
     private static var cachedTypes: [URL: [CSType]] = [:]
 
     static var current: LonaModule {
@@ -179,8 +165,6 @@ class LonaModule {
     }
 
     static func build(target: String, framework: String, onComplete: ((LonaNode.ProcessResult) -> Void)?) -> Bool {
-        guard let compilerPath = CSUserPreferences.compilerURL?.path else { return false }
-
         let workspacePath = CSUserPreferences.workspaceURL.path
 
         let dialog = NSOpenPanel()
@@ -198,7 +182,7 @@ class LonaModule {
         guard let generatedOutputUrl = dialog.url else { return false }
 
         let arguments = [
-            compilerPath,
+            LonaNode.compilerPath,
             "workspace",
             "--workspace", workspacePath,
             "--target", target,

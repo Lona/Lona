@@ -77,16 +77,20 @@ public class LogicNumberInput: NSView {
         logicEditor.suggestionsForNode = { [unowned self] rootNode, node, query in
             guard case .expression(let expression) = node else { return [] }
 
-            let program: LGCSyntaxNode = .program(LogicNumberInput.makeProgram(from: expression).expandImports(importLoader: Library.load))
+            let program: LGCSyntaxNode = .program(LogicNumberInput.makeProgram(from: expression).expandImports(importLoader: LogicLoader.load))
 
-            return StandardConfiguration.suggestions(rootNode: program, node: node, query: query, formattingOptions: self.logicEditor.formattingOptions) ?? []
+            return StandardConfiguration.suggestions(
+                rootNode: program,
+                node: node,
+                formattingOptions: self.logicEditor.formattingOptions
+                )?(query) ?? []
         }
     }
 
     private func evaluateExpression(node: LGCSyntaxNode) -> LogicValue? {
         guard case .expression(let expression) = node else { return nil }
 
-        let program: LGCSyntaxNode = .program(LogicNumberInput.makeProgram(from: expression).expandImports(importLoader: Library.load))
+        let program: LGCSyntaxNode = .program(LogicNumberInput.makeProgram(from: expression).expandImports(importLoader: LogicLoader.load))
         let scopeContext = Compiler.scopeContext(program)
         let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
 
@@ -98,7 +102,7 @@ public class LogicNumberInput: NSView {
 
         switch result {
         case .success(let evaluationContext):
-            return evaluationContext.values[expression.uuid]
+            return evaluationContext.evaluate(uuid: expression.uuid)
         case .failure(let error):
             Swift.print("Eval failure", error)
             return nil
@@ -133,6 +137,6 @@ public class LogicNumberInput: NSView {
             )
         )
 
-        return LGCProgram.join(programs: [LonaModule.current.logicFileContents, program])
+        return LGCProgram.join(programs: [LonaModule.current.logic.program, program])
     }
 }

@@ -13,6 +13,7 @@
     "start": "bsb -make-world -w",
     "clean": "bsb -clean-world",
     "bundle": "npm run clean && npm run build && webpack",
+    "deploy": "rm -rf ../../studio/LonaStudio/Scripting/Modules/lonac && cp -r build ../../studio/LonaStudio/Scripting/Modules/lonac",
     "format": "bsrefmt --parse=re --print=re --in-place src/**/*.re",
     "prepublishOnly": "yarn clean && yarn build && yarn bundle",
     "snapshotJsDom": "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/react-dom --framework=reactdom --styleFramework=styledcomponents",
@@ -65,7 +66,7 @@
     "webpack-cli": "^3.2.3"
   },
   "dependencies": {
-    "@lona/serialization": "^0.0.5",
+    "@lona/serialization": "^0.0.10",
     "lodash.lowerfirst": "^4.3.1",
     "lodash.snakecase": "^4.1.1",
     "memfs": "^2.8.0",

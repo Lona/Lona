@@ -29,7 +29,13 @@ class LogicDocument: NSDocument {
             id: UUID(),
             declarations: .init([.makePlaceholder()])
         )
-    )
+    ) {
+        didSet {
+            if let url = fileURL {
+                invalidateCaches(url: url)
+            }
+        }
+    }
 
     override func makeWindowControllers() {
         WorkspaceWindowController.create(andAttachTo: self)
@@ -61,6 +67,10 @@ class LogicDocument: NSDocument {
 
     override func read(from data: Data, ofType typeName: String) throws {
         content = try LogicDocument.read(from: data)
+
+        if let url = fileURL {
+            invalidateCaches(url: url)
+        }
     }
 
     public static func read(from data: Data) throws -> LGCSyntaxNode {
@@ -73,5 +83,16 @@ class LogicDocument: NSDocument {
         // Normalize the imported data
         // TODO: Figure out why multiple placeholders are loaded
         return decoded.replace(id: UUID(), with: .literal(.boolean(id: UUID(), value: true)))
+    }
+
+    override func save(to url: URL, ofType typeName: String, for saveOperation: NSDocument.SaveOperationType, completionHandler: @escaping (Error?) -> Void) {
+        super.save(to: url, ofType: typeName, for: saveOperation, completionHandler: completionHandler)
+
+        invalidateCaches(url: url)
+    }
+
+    public func invalidateCaches(url: URL) {
+        LogicViewController.invalidateThumbnail(url: url)
+        LogicModule.updateFile(url: url, value: content)
     }
 }

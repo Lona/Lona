@@ -55,7 +55,7 @@ public class LabeledColorInput: LabeledInput {
     private func evaluateExpression(node: LGCSyntaxNode) -> LogicValue? {
         guard case .expression(let expression) = node else { return nil }
 
-        let program: LGCSyntaxNode = .program(LabeledColorInput.makeExpressionProgram(from: expression).expandImports(importLoader: Library.load))
+        let program: LGCSyntaxNode = .program(LabeledColorInput.makeExpressionProgram(from: expression).expandImports(importLoader: LogicLoader.load))
         let scopeContext = Compiler.scopeContext(program)
         let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
 
@@ -67,7 +67,7 @@ public class LabeledColorInput: LabeledInput {
 
         switch result {
         case .success(let evaluationContext):
-            return evaluationContext.values[expression.uuid]
+            return evaluationContext.evaluate(uuid: expression.uuid)
         case .failure(let error):
             Swift.print("Eval failure", error)
             return nil
@@ -140,9 +140,18 @@ public class LabeledColorInput: LabeledInput {
         logicValueInput.suggestionsForNode = { rootNode, node, query in
             guard case .expression(let expression) = node else { return [] }
 
-            let program: LGCSyntaxNode = .program(LabeledColorInput.makeExpressionProgram(from: expression).expandImports(importLoader: Library.load))
+            let program: LGCSyntaxNode = .program(LabeledColorInput.makeExpressionProgram(from: expression).expandImports(importLoader: LogicLoader.load))
 
-            return StandardConfiguration.suggestions(rootNode: program, node: node, query: query, formattingOptions: .init(style: .natural, locale: .en_US, getColor: {_ in nil})) ?? []
+            return StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: .normal)?(query) ?? []
+        }
+
+        logicValueInput.logicEditor.formattingOptions.getArguments = { [unowned self] id in
+            return StandardConfiguration.formatArguments(
+                rootNode: self.logicValueInput.rootNode,
+                id: id,
+                unificationContext: nil,
+                substitution: nil
+            )
         }
     }
 }

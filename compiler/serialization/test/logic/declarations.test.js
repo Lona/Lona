@@ -84,6 +84,26 @@ test('variable declaration -> json', () => {
 
 //
 
+test('array variable declaration -> xml', () => {
+  const { xml, json } = require('./mocks/declarations/arrayVariable')
+
+  const source = JSON.stringify(json)
+  const converted = convertLogic(source, 'xml')
+
+  expect(converted).toBe(xml)
+})
+
+test('array variable declaration -> json', () => {
+  const { xml, json } = require('./mocks/declarations/arrayVariable')
+
+  const converted = convertLogic(xml, 'json')
+  const parsed = JSON.parse(converted)
+
+  expect(parsed).toStrictEqual(json)
+})
+
+//
+
 test('namespace declaration -> xml', () => {
   const { xml, json } = require('./mocks/declarations/namespace')
 

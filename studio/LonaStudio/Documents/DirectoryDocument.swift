@@ -12,6 +12,7 @@ import Foundation
 class DirectoryDocument: NSDocument {
     struct DirectoryContent {
         var componentNames: [String]
+        var logicFileNames: [String]
         var readme: String?
         var folderName: String
     }
@@ -43,12 +44,15 @@ class DirectoryDocument: NSDocument {
     override func read(from url: URL, ofType typeName: String) throws {
         let files = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
 
+        var logicFileNames: [String] = []
         var componentNames: [String] = []
         var readme: String? = nil
 
         try files.enumerated().forEach {offset, url in
             if url.pathExtension == "component" {
                 componentNames.append(url.deletingPathExtension().lastPathComponent)
+            } else if url.pathExtension == "logic" || url.pathExtension == "tokens" {
+                logicFileNames.append(url.path)
             } else if url.lastPathComponent == "README.md" {
                 readme = try String(contentsOf: url)
             }
@@ -56,6 +60,6 @@ class DirectoryDocument: NSDocument {
 
         let folderName = CSUserPreferences.workspaceURL == url ? CSWorkspacePreferences.workspaceName : url.lastPathComponent
 
-        content = DirectoryContent(componentNames: componentNames.sorted(), readme: readme, folderName: folderName)
+        content = DirectoryContent(componentNames: componentNames.sorted(), logicFileNames: logicFileNames, readme: readme, folderName: folderName)
     }
 }

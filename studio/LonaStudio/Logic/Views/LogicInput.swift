@@ -55,7 +55,7 @@ public class LogicInput: NSView {
 
     // MARK: Private
 
-    private var logicEditor = LogicEditor()
+    public let logicEditor = LogicEditor()
 
     private func setUpViews() {
         logicEditor.fillColor = Colors.contentBackground
@@ -69,9 +69,6 @@ public class LogicInput: NSView {
             switch node {
             case .literal(.color(id: _, value: let code)):
                 return .color(CSColors.parse(css: code).color)
-//            case .identifier(let identifier) where self.isTextStyleEditor:
-//                let textStyle = CSTypography.getFontBy(id: identifier.string)
-//                return .label(textStyle.font.apply(to: "T"), textStyle.getCSColor().color)
             default:
                 return nil
             }

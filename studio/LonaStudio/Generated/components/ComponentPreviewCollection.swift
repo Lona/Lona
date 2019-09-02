@@ -20,8 +20,8 @@ public class ComponentPreviewCollection: NSBox {
     update()
   }
 
-  public convenience init(readme: String, componentNames: [String]) {
-    self.init(Parameters(readme: readme, componentNames: componentNames))
+  public convenience init(readme: String, componentNames: [String], logicFileNames: [String]) {
+    self.init(Parameters(readme: readme, componentNames: componentNames, logicFileNames: logicFileNames))
   }
 
   public convenience init() {
@@ -55,6 +55,15 @@ public class ComponentPreviewCollection: NSBox {
     set {
       if parameters.componentNames != newValue {
         parameters.componentNames = newValue
+      }
+    }
+  }
+
+  public var logicFileNames: [String] {
+    get { return parameters.logicFileNames }
+    set {
+      if parameters.logicFileNames != newValue {
+        parameters.logicFileNames = newValue
       }
     }
   }
@@ -99,20 +108,28 @@ extension ComponentPreviewCollection {
   public struct Parameters: Equatable {
     public var readme: String
     public var componentNames: [String]
+    public var logicFileNames: [String]
     public var onSelectComponent: ((String) -> Void)?
 
-    public init(readme: String, componentNames: [String], onSelectComponent: ((String) -> Void)? = nil) {
+    public init(
+      readme: String,
+      componentNames: [String],
+      logicFileNames: [String],
+      onSelectComponent: ((String) -> Void)? = nil)
+    {
       self.readme = readme
       self.componentNames = componentNames
+      self.logicFileNames = logicFileNames
       self.onSelectComponent = onSelectComponent
     }
 
     public init() {
-      self.init(readme: "", componentNames: [])
+      self.init(readme: "", componentNames: [], logicFileNames: [])
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return lhs.readme == rhs.readme && lhs.componentNames == rhs.componentNames
+      return lhs.readme == rhs.readme &&
+        lhs.componentNames == rhs.componentNames && lhs.logicFileNames == rhs.logicFileNames
     }
   }
 }
@@ -136,12 +153,23 @@ extension ComponentPreviewCollection {
       self.parameters = parameters
     }
 
-    public init(readme: String, componentNames: [String], onSelectComponent: ((String) -> Void)? = nil) {
-      self.init(Parameters(readme: readme, componentNames: componentNames, onSelectComponent: onSelectComponent))
+    public init(
+      readme: String,
+      componentNames: [String],
+      logicFileNames: [String],
+      onSelectComponent: ((String) -> Void)? = nil)
+    {
+      self
+        .init(
+          Parameters(
+            readme: readme,
+            componentNames: componentNames,
+            logicFileNames: logicFileNames,
+            onSelectComponent: onSelectComponent))
     }
 
     public init() {
-      self.init(readme: "", componentNames: [])
+      self.init(readme: "", componentNames: [], logicFileNames: [])
     }
   }
 }

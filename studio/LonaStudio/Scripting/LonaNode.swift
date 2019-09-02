@@ -109,6 +109,11 @@ enum LonaNode {
     static var binaryPath: String {
         return Bundle.main.path(forResource: "node", ofType: "")!
     }
+
+    static var compilerPath: String {
+        let bundledCompilerPath = binaryPath + "/../Modules/lonac"
+        return CSUserPreferences.compilerURL?.path ?? bundledCompilerPath
+    }
 }
 
 public extension Process {

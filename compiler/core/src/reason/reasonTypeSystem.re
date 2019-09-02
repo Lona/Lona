@@ -202,6 +202,9 @@ let renderRecordTypeCaseParameter =
       entity: TypeSystem.recordTypeCaseParameter,
     )
     : renderedRecordTypeCaseParameter => {
+  let isOptional =
+    TypeSystem.Access.typeCaseParameterEntityName(entity.value) == "Optional";
+
   let rendered =
     renderTypeCaseParameterEntity(
       options,
@@ -214,31 +217,54 @@ let renderRecordTypeCaseParameter =
       value: rendered.annotation,
     },
     decoder:
-      FunctionCallExpression({
-        expression: IdentifierExpression({name: "Json.Decode.field"}),
-        arguments: [
-          LiteralExpression({literal: String(entity.key)}),
-          if (rendered.annotation.parameters == []) {
-            IdentifierExpression({
-              name: formatDecoderIdentifier(rendered.annotation.name),
-            });
-          } else {
+      if (isOptional) {
+        FunctionCallExpression({
+          expression: IdentifierExpression({name: "Json.Decode.optional"}),
+          arguments: [
             FunctionCallExpression({
-              expression:
+              expression: IdentifierExpression({name: "Json.Decode.field"}),
+              arguments: [
+                LiteralExpression({literal: String(entity.key)}),
                 IdentifierExpression({
-                  name: formatDecoderIdentifier(rendered.annotation.name),
+                  name:
+                    rendered.annotation.parameters
+                    |> List.map((parameter: typeAnnotation) =>
+                         formatDecoderIdentifier(parameter.name)
+                       )
+                    |> List.hd,
                 }),
-              arguments:
-                rendered.annotation.parameters
-                |> List.map((parameter: typeAnnotation) =>
-                     formatDecoderIdentifier(parameter.name)
-                   )
-                |> List.map(name => IdentifierExpression({name: name})),
-            });
-          },
-          IdentifierExpression({name: fieldName}),
-        ],
-      }),
+              ],
+            }),
+            IdentifierExpression({name: fieldName}),
+          ],
+        });
+      } else {
+        FunctionCallExpression({
+          expression: IdentifierExpression({name: "Json.Decode.field"}),
+          arguments: [
+            LiteralExpression({literal: String(entity.key)}),
+            if (rendered.annotation.parameters == []) {
+              IdentifierExpression({
+                name: formatDecoderIdentifier(rendered.annotation.name),
+              });
+            } else {
+              FunctionCallExpression({
+                expression:
+                  IdentifierExpression({
+                    name: formatDecoderIdentifier(rendered.annotation.name),
+                  }),
+                arguments:
+                  rendered.annotation.parameters
+                  |> List.map((parameter: typeAnnotation) =>
+                       formatDecoderIdentifier(parameter.name)
+                     )
+                  |> List.map(name => IdentifierExpression({name: name})),
+              });
+            },
+            IdentifierExpression({name: fieldName}),
+          ],
+        });
+      },
   };
 };
 

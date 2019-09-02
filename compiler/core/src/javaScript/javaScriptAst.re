@@ -40,6 +40,10 @@ and callExpression = {
   callee: node,
   arguments: list(node),
 }
+and memberExpression = {
+  memberName: string,
+  expression: node,
+}
 and jSXAttribute = {
   name: string,
   value: node,
@@ -95,6 +99,7 @@ and node =
   | FunctionExpression(functionExpression)
   | ArrowFunctionExpression(functionExpression)
   | CallExpression(callExpression)
+  | MemberExpression(memberExpression)
   | JSXAttribute(jSXAttribute)
   | JSXElement(jSXElement)
   | JSXExpressionContainer(node)

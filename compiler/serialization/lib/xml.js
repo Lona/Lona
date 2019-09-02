@@ -13,8 +13,22 @@ function build(root) {
     return processChildren(builder.ele(name, attributes), children)
   }
 
-  const builder = xmlbuilder.create(root.name)
-  const result = root.children.reduce(process, builder)
+  function createRoot(item) {
+    const { name, attributes = {}, children = [] } = item
+
+    const builder = xmlbuilder.create(name)
+
+    const withAttributes = Object.entries(attributes).reduce(
+      (result, [key, value]) => {
+        return result.att(key, value)
+      },
+      builder
+    )
+
+    return children.reduce(process, withAttributes)
+  }
+
+  const result = createRoot(root)
   const xmlString = result.end({ pretty: true })
 
   return xmlString

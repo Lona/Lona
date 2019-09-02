@@ -43,6 +43,93 @@ enum WorkspaceTemplate {
         }
     }
 
+    static func makeColor(name: String, colorString: String) -> LGCDeclaration {
+        return .variable(
+            name: name,
+            annotation: .typeIdentifier(name: "Color"),
+            initializer: .colorLiteral(colorString)
+        )
+    }
+
+    static func makeShadow(name: String, y: CGFloat? = nil, blur: CGFloat? = nil, colorIdentifier: String? = nil) -> LGCDeclaration {
+        var arguments: [LGCFunctionCallArgument] = []
+
+        if let y = y {
+            arguments.append(.argument(id: UUID(), label: "y", expression: .numberLiteral(y)))
+        }
+
+        if let blur = blur {
+            arguments.append(.argument(id: UUID(), label: "blur", expression: .numberLiteral(blur)))
+        }
+
+        if let colorIdentifier = colorIdentifier {
+            arguments.append(.argument(id: UUID(), label: "color", expression: .identifierExpression(id: UUID(), identifier: .init(colorIdentifier))))
+        }
+
+        return .variable(
+            name: name,
+            annotation: .typeIdentifier(name: "Shadow"),
+            initializer: .functionCallExpression(
+                id: UUID(),
+                expression: .identifierExpression(id: UUID(), identifier: .init("Shadow")),
+                arguments: .init(arguments)
+            )
+        )
+    }
+
+    static func makeOptional(expression: LGCExpression) -> LGCExpression {
+        return .functionCallExpression(
+            id: UUID(),
+            expression: .memberExpression(
+                id: UUID(),
+                expression: LGCExpression.identifierExpression(id: UUID(), identifier: .init("Optional")),
+                memberName: .init("value")
+            ),
+            arguments: .init(
+                [
+                    .argument(id: UUID(), label: nil, expression: expression)
+                ]
+            )
+        )
+    }
+
+    static func makeTextStyle(name: String, fontSize: CGFloat, colorIdentifier: String) -> LGCDeclaration {
+        return .variable(
+            name: name,
+            annotation: .typeIdentifier(name: "TextStyle"),
+            initializer: .functionCallExpression(
+                id: UUID(),
+                expression: .identifierExpression(id: UUID(), identifier: .init("TextStyle")),
+                arguments: .init(
+                    [
+                        .argument(
+                            id: UUID(),
+                            label: "fontSize",
+                            expression: makeOptional(expression: .numberLiteral(fontSize))
+                        ),
+                        .argument(
+                            id: UUID(),
+                            label: "color",
+                            expression: makeOptional(expression: .identifierExpression(id: UUID(), identifier: .init(colorIdentifier)))
+                        )
+                    ]
+                )
+            )
+        )
+    }
+
+    static func makeImport(name: String) -> LGCDeclaration {
+        return .importDeclaration(id: UUID(), name: LGCPattern(id: UUID(), name: name))
+    }
+
+    static func makeNamespace(name: String, declarations: [LGCDeclaration]) -> LGCDeclaration {
+        return .namespace(
+            id: UUID(),
+            name: .init(id: UUID(), name: name),
+            declarations: LGCList<LGCDeclaration>(declarations)
+        )
+    }
+
     static func makeDesignTokensWorkspace(workspaceName: String) -> VirtualNode {
         return VirtualDirectory(name: workspaceName) {
             [
@@ -52,40 +139,79 @@ enum WorkspaceTemplate {
                 VirtualFile(name: "lona.json") {
                     CSData.Object([:])
                 },
-                VirtualFile(name: "Colors.logic", contents: {
+                VirtualFile(name: "Colors.tokens", contents: {
                     let program = LGCSyntaxNode.topLevelDeclarations(
                         .init(
                             id: UUID(),
                             declarations: LGCList<LGCDeclaration>(
                                 [
-                                    .namespace(
-                                        id: UUID(),
-                                        name: .init(id: UUID(), name: "Colors"),
-                                        declarations: LGCList<LGCDeclaration>(
-                                            [
-                                                .variable(
-                                                    id: UUID(),
-                                                    name: .init(id: UUID(), name: "red50"),
-                                                    annotation: .typeIdentifier(
-                                                        id: UUID(),
-                                                        identifier: .init(id: UUID(), string: "Color"),
-                                                        genericArguments: .empty
-                                                    ),
-                                                    initializer: .literalExpression(
-                                                        id: UUID(),
-                                                        literal: .color(id: UUID(), value: "#F0A0B0")
-                                                    ),
-                                                    comment: nil
-                                                )
-                                            ]
-                                        )
+                                    makeImport(name: "Color"),
+                                    makeNamespace(
+                                        name: "Colors",
+                                        declarations: [
+                                            makeColor(name: "red", colorString: "#F03E3E"),
+                                            makeColor(name: "pink", colorString: "#D6336C"),
+                                            makeColor(name: "grape", colorString: "#AE3EC9"),
+                                            makeColor(name: "violet", colorString: "#7048E8"),
+                                            makeColor(name: "indigo", colorString: "#4263EB"),
+                                            makeColor(name: "blue", colorString: "#1C7ED6"),
+                                            makeColor(name: "cyan", colorString: "#1098AD"),
+                                            makeColor(name: "teal", colorString: "#0CA678"),
+                                            makeColor(name: "green", colorString: "#37B24D"),
+                                            makeColor(name: "lime", colorString: "#74B816"),
+                                            makeColor(name: "yellow", colorString: "#F59F00"),
+                                            makeColor(name: "orange", colorString: "#F76707")
+                                        ]
                                     )
                                 ]
                             )
                         )
                     )
-                    let data: Data = try! LogicDocument.encode(program)
-                    return data
+                    return try! LogicDocument.encode(program)
+                }),
+                VirtualFile(name: "Shadows.tokens", contents: {
+                    let program = LGCSyntaxNode.topLevelDeclarations(
+                        .init(
+                            id: UUID(),
+                            declarations: LGCList<LGCDeclaration>(
+                                [
+                                    makeImport(name: "Shadow"),
+                                    makeColor(name: "shadowColor", colorString: "rgba(0,0,0,0.4)"),
+                                    makeNamespace(
+                                        name: "Shadows",
+                                        declarations: [
+                                            makeShadow(name: "small", y: 1, blur: 2, colorIdentifier: "shadowColor"),
+                                            makeShadow(name: "medium", y: 2, blur: 4, colorIdentifier: "shadowColor"),
+                                            makeShadow(name: "large", y: 3, blur: 6, colorIdentifier: "shadowColor")
+                                        ]
+                                    )
+                                ]
+                            )
+                        )
+                    )
+                    return try! LogicDocument.encode(program)
+                }),
+                VirtualFile(name: "TextStyles.tokens", contents: {
+                    let program = LGCSyntaxNode.topLevelDeclarations(
+                        .init(
+                            id: UUID(),
+                            declarations: LGCList<LGCDeclaration>(
+                                [
+                                    makeImport(name: "TextStyle"),
+                                    makeColor(name: "textColor", colorString: "#222"),
+                                    makeNamespace(
+                                        name: "TextStyle",
+                                        declarations: [
+                                            makeTextStyle(name: "display", fontSize: 28, colorIdentifier: "textColor"),
+                                            makeTextStyle(name: "heading", fontSize: 17, colorIdentifier: "textColor"),
+                                            makeTextStyle(name: "body", fontSize: 15, colorIdentifier: "textColor")
+                                        ]
+                                    )
+                                ]
+                            )
+                        )
+                    )
+                    return try! LogicDocument.encode(program)
                 })
             ]
         }

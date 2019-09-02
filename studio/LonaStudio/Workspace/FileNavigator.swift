@@ -9,6 +9,7 @@
 import AppKit
 import FileTree
 import Foundation
+import Logic
 
 private class FileTreeCellView: NSTableCellView {
     public var onChangeBackgroundStyle: ((NSView.BackgroundStyle) -> Void)?
@@ -159,13 +160,15 @@ class FileNavigator: NSBox {
                 return newFilePath
             }
 
-            menu.addItem(NSMenuItem(title: "New Component", onClick: { [unowned self] in
-                guard let newFileName = self.promptForName(
-                    messageText: "Enter a new component name",
-                    placeholderText: "Component name") else { return }
+            if CSUserPreferences.useExperimentalFeatures {
+                menu.addItem(NSMenuItem(title: "New Component", onClick: { [unowned self] in
+                    guard let newFileName = self.promptForName(
+                        messageText: "Enter a new component name",
+                        placeholderText: "Component name") else { return }
 
-                _ = self.performCreateComponent?(makePath(filename: newFileName, withExtension: "component"))
-            }))
+                    _ = self.performCreateComponent?(makePath(filename: newFileName, withExtension: "component"))
+                }))
+            }
 
             menu.addItem(NSMenuItem(title: "New Markdown File", onClick: { [unowned self] in
                 guard let newFileName = self.promptForName(
@@ -176,12 +179,12 @@ class FileNavigator: NSBox {
             }))
 
 
-            menu.addItem(NSMenuItem(title: "New Logic File", onClick: { [unowned self] in
+            menu.addItem(NSMenuItem(title: "New Tokens File", onClick: { [unowned self] in
                 guard let newFileName = self.promptForName(
-                    messageText: "Enter a new logic file name",
+                    messageText: "Enter a new tokens file name",
                     placeholderText: "File name") else { return }
 
-                _ = self.performCreateLogicFile?(makePath(filename: newFileName, withExtension: "logic"))
+                _ = self.performCreateLogicFile?(makePath(filename: newFileName, withExtension: "tokens"))
             }))
 
             menu.addItem(NSMenuItem(title: "New Folder", onClick: { [unowned self] in
@@ -334,6 +337,8 @@ class FileNavigator: NSBox {
                 else { return defaultImage(for: path) }
             image.size = NSSize(width: size.width, height: (image.size.height / image.size.width) * size.height)
             return image
+        } else if url.pathExtension == "logic" || url.pathExtension == "tokens" {
+            return LogicViewController.thumbnail(for: url, within: size, style: .bordered)
         } else {
             return defaultImage(for: path)
         }
@@ -341,7 +346,12 @@ class FileNavigator: NSBox {
 
     private func displayNameForFile(atPath path: String) -> String {
         let url = URL(fileURLWithPath: path)
-        return url.pathExtension == "component" ? url.deletingPathExtension().lastPathComponent : url.lastPathComponent
+        switch url.pathExtension {
+        case "component", "logic", "tokens":
+            return url.deletingPathExtension().lastPathComponent
+        default:
+            return url.lastPathComponent
+        }
     }
 
     private func rowViewForFile(atPath path: String) -> NSView {
@@ -360,7 +370,7 @@ class FileNavigator: NSBox {
             iconView = LonaFileIcon()
         } else if path.hasSuffix("colors.json") {
             iconView = ColorsFileIcon()
-        } else if path.hasSuffix(".component") {
+        } else if path.hasSuffix(".component") || path.hasSuffix(".logic") || path.hasSuffix(".tokens") {
             let imageView = NSImageView(image: imageForFile(atPath: path, size: thumbnailSize) )
             imageView.imageScaling = .scaleProportionallyUpOrDown
             iconView = imageView

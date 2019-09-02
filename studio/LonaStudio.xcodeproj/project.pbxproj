@@ -220,6 +220,7 @@
 		6B58868B2134D9E800CCA69F /* ColorInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5886892134D9E800CCA69F /* ColorInspector.swift */; };
 		6B58868D2134DD3F00CCA69F /* CoreTextInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B58868C2134DD3F00CCA69F /* CoreTextInput.swift */; };
 		6B59893F21B86B27004DD3B1 /* RenderableElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B59893E21B86B27004DD3B1 /* RenderableElement.swift */; };
+		6B5A6AC822FB860A00CA004E /* LogicPreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5A6AC722FB860900CA004E /* LogicPreviewCard.swift */; };
 		6B5D4D2B213E19B9004F8AC3 /* EditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5D4D2A213E19B9004F8AC3 /* EditorViewController.swift */; };
 		6B5D4D2D213E1CB0004F8AC3 /* EditorHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5D4D2C213E1CB0004F8AC3 /* EditorHeader.swift */; };
 		6B5D4DA1213F05AF004F8AC3 /* CodeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5D4DA0213F05AF004F8AC3 /* CodeEditor.swift */; };
@@ -229,6 +230,9 @@
 		6B6D4427218F55B50016262C /* CGSize+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4426218F55B50016262C /* CGSize+Resizing.swift */; };
 		6B6D4434218F6B070016262C /* NSImage+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4432218F6B070016262C /* NSImage+Resizing.swift */; };
 		6B6D4435218F6B070016262C /* LNAImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4433218F6B070016262C /* LNAImageView.swift */; };
+		6B6F19CE2304B49A00E5AC60 /* SwiftGraph.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */; };
+		6B6F19CF2304B49A00E5AC60 /* SwiftGraph.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6B6F19D12307222200E5AC60 /* TemplateFileCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */; };
 		6B73809422C66E59007534A0 /* TemplateBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B73809322C66E59007534A0 /* TemplateBrowser.swift */; };
 		6B73809622C67563007534A0 /* WorkspaceTemplateCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B73809522C67563007534A0 /* WorkspaceTemplateCard.swift */; };
 		6B73809822C6ED89007534A0 /* WorkspaceTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B73809722C6ED89007534A0 /* WorkspaceTemplate.swift */; };
@@ -242,6 +246,7 @@
 		6B7DBF6022A87B050062031E /* LogicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7DBF5F22A87B050062031E /* LogicViewController.swift */; };
 		6B7DBF6422A885350062031E /* LogicNumberInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7DBF6322A885350062031E /* LogicNumberInput.swift */; };
 		6B80645A21D8322B006560C7 /* CanvasTableHeaderExtra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B80645921D8322A006560C7 /* CanvasTableHeaderExtra.swift */; };
+		6B87001622EFBC42007C589C /* Logic+Builders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B87001522EFBC42007C589C /* Logic+Builders.swift */; };
 		6B892C6022CAB81600D0AEDA /* GeneratedOutputPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B892C5F22CAB81500D0AEDA /* GeneratedOutputPreview.swift */; };
 		6B8D7DA021BED32E0087A3F7 /* LayoutInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D7D9D21BED32E0087A3F7 /* LayoutInspector.swift */; };
 		6B8D7DA321BF04B60087A3F7 /* InspectorSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D7DA221BF04B60087A3F7 /* InspectorSectionHeader.swift */; };
@@ -290,6 +295,7 @@
 		6BF7795B22D51A4D009A4119 /* ToolbarStatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF7795A22D51A4D009A4119 /* ToolbarStatusBar.swift */; };
 		6BF894D32214E3DD000CD863 /* Differ.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BF894D12214E3CD000CD863 /* Differ.framework */; };
 		6BF894D42214E3DD000CD863 /* Differ.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BF894D12214E3CD000CD863 /* Differ.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6BFAE60423009AB700B150E2 /* LogicModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BFAE60323009AB700B150E2 /* LogicModule.swift */; };
 		6BFC4E0621C9C5A10030938B /* CanvasInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BFC4E0521C9C5A10030938B /* CanvasInspector.swift */; };
 		76AB58E053220594F098A3C5 /* Pods_LonaStudioTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDA2F7370DB15639E08B399A /* Pods_LonaStudioTests.framework */; };
 		783A74CD337C61784E60C467 /* Pods_LonaStudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7949560983378CFD6EC6FFD5 /* Pods_LonaStudio.framework */; };
@@ -332,6 +338,7 @@
 				6B2DC1AC21361C4700679668 /* ColorPicker.framework in Embed Frameworks */,
 				6BF894D42214E3DD000CD863 /* Differ.framework in Embed Frameworks */,
 				6B5886872134D6BB00CCA69F /* ControlledComponents.framework in Embed Frameworks */,
+				6B6F19CF2304B49A00E5AC60 /* SwiftGraph.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -562,6 +569,7 @@
 		6B5886892134D9E800CCA69F /* ColorInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorInspector.swift; sourceTree = "<group>"; };
 		6B58868C2134DD3F00CCA69F /* CoreTextInput.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreTextInput.swift; sourceTree = "<group>"; };
 		6B59893E21B86B27004DD3B1 /* RenderableElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderableElement.swift; sourceTree = "<group>"; };
+		6B5A6AC722FB860900CA004E /* LogicPreviewCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogicPreviewCard.swift; sourceTree = "<group>"; };
 		6B5D4D2A213E19B9004F8AC3 /* EditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorViewController.swift; sourceTree = "<group>"; };
 		6B5D4D2C213E1CB0004F8AC3 /* EditorHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditorHeader.swift; sourceTree = "<group>"; };
 		6B5D4DA0213F05AF004F8AC3 /* CodeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeEditor.swift; sourceTree = "<group>"; };
@@ -571,6 +579,8 @@
 		6B6D4426218F55B50016262C /* CGSize+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Resizing.swift"; sourceTree = "<group>"; };
 		6B6D4432218F6B070016262C /* NSImage+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSImage+Resizing.swift"; sourceTree = "<group>"; };
 		6B6D4433218F6B070016262C /* LNAImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LNAImageView.swift; sourceTree = "<group>"; };
+		6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftGraph.framework; path = Carthage/Build/Mac/SwiftGraph.framework; sourceTree = "<group>"; };
+		6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateFileCard.swift; sourceTree = "<group>"; };
 		6B73809322C66E59007534A0 /* TemplateBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateBrowser.swift; sourceTree = "<group>"; };
 		6B73809522C67563007534A0 /* WorkspaceTemplateCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkspaceTemplateCard.swift; sourceTree = "<group>"; };
 		6B73809722C6ED89007534A0 /* WorkspaceTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceTemplate.swift; sourceTree = "<group>"; };
@@ -584,6 +594,7 @@
 		6B7DBF5F22A87B050062031E /* LogicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicViewController.swift; sourceTree = "<group>"; };
 		6B7DBF6322A885350062031E /* LogicNumberInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicNumberInput.swift; sourceTree = "<group>"; };
 		6B80645921D8322A006560C7 /* CanvasTableHeaderExtra.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasTableHeaderExtra.swift; sourceTree = "<group>"; };
+		6B87001522EFBC42007C589C /* Logic+Builders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Logic+Builders.swift"; sourceTree = "<group>"; };
 		6B892C5F22CAB81500D0AEDA /* GeneratedOutputPreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneratedOutputPreview.swift; sourceTree = "<group>"; };
 		6B8D7D9D21BED32E0087A3F7 /* LayoutInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutInspector.swift; sourceTree = "<group>"; };
 		6B8D7DA221BF04B60087A3F7 /* InspectorSectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InspectorSectionHeader.swift; sourceTree = "<group>"; };
@@ -627,6 +638,7 @@
 		6BE89BBB21B7452800F35AC3 /* LonaViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaViewModel.swift; sourceTree = "<group>"; };
 		6BF7795A22D51A4D009A4119 /* ToolbarStatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarStatusBar.swift; sourceTree = "<group>"; };
 		6BF894D12214E3CD000CD863 /* Differ.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Differ.framework; path = Carthage/Build/Mac/Differ.framework; sourceTree = "<group>"; };
+		6BFAE60323009AB700B150E2 /* LogicModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicModule.swift; sourceTree = "<group>"; };
 		6BFC4E0521C9C5A10030938B /* CanvasInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasInspector.swift; sourceTree = "<group>"; };
 		7949560983378CFD6EC6FFD5 /* Pods_LonaStudio.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LonaStudio.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		834F922A5808C8E689B2FD19 /* Pods-LonaStudioTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudioTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudioTests/Pods-LonaStudioTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -663,6 +675,7 @@
 				6B2DC1AB21361C4700679668 /* ColorPicker.framework in Frameworks */,
 				6BF894D32214E3DD000CD863 /* Differ.framework in Frameworks */,
 				6B2DC1AD21361C4700679668 /* Colors.framework in Frameworks */,
+				6B6F19CE2304B49A00E5AC60 /* SwiftGraph.framework in Frameworks */,
 				783A74CD337C61784E60C467 /* Pods_LonaStudio.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -772,6 +785,7 @@
 		305ED04420530238000D07C3 /* Module */ = {
 			isa = PBXGroup;
 			children = (
+				6BFAE60323009AB700B150E2 /* LogicModule.swift */,
 				305ED04520530257000D07C3 /* LonaModule.swift */,
 				6B73809722C6ED89007534A0 /* WorkspaceTemplate.swift */,
 			);
@@ -1010,9 +1024,11 @@
 				6BA5BBDA2174FA2100F086A7 /* FileNavigatorHeader.swift */,
 				30F870C220865858007ADA5B /* IconRow.swift */,
 				6BC605CC21F78F240087311A /* LabeledDropdownRow.swift */,
+				6B5A6AC722FB860900CA004E /* LogicPreviewCard.swift */,
 				303C3FED20A396C3008E1541 /* OpenProjectButton.swift */,
 				6B4DFCEE20A795070048BB43 /* RecentProjectItem.swift */,
 				307D440E2097DC17004B57F5 /* TabIcon.swift */,
+				6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */,
 				30C203D920BF5907007C3FE0 /* TextStylePreviewCard.swift */,
 				6B73809522C67563007534A0 /* WorkspaceTemplateCard.swift */,
 				307D440D2097DC16004B57F5 /* WorkspaceVerticalTabs.swift */,
@@ -1067,6 +1083,7 @@
 				6BBE0F69212B26C900CEE8C1 /* FileTree.framework */,
 				7949560983378CFD6EC6FFD5 /* Pods_LonaStudio.framework */,
 				EDA2F7370DB15639E08B399A /* Pods_LonaStudioTests.framework */,
+				6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */,
 				6BA6E894212F92B0009CD33C /* Witness.framework */,
 			);
 			name = Frameworks;
@@ -1141,6 +1158,7 @@
 			isa = PBXGroup;
 			children = (
 				6B1DE3E722D7BA0300FC565E /* CompilerConfiguration.logic */,
+				6B87001522EFBC42007C589C /* Logic+Builders.swift */,
 				6B1DE3E922D7BA1F00FC565E /* LogicLoader.swift */,
 				6BC2D4512263D80C003A9F63 /* Editors */,
 				6BC2D44C22639E24003A9F63 /* Suggestions */,
@@ -1624,6 +1642,7 @@
 				6B73809422C66E59007534A0 /* TemplateBrowser.swift in Sources */,
 				6B8D7DA321BF04B60087A3F7 /* InspectorSectionHeader.swift in Sources */,
 				6B1086FB217A34340024AE56 /* Data+String.swift in Sources */,
+				6B87001622EFBC42007C589C /* Logic+Builders.swift in Sources */,
 				6B4203E921BC49C700D59317 /* CanvasAreaView.swift in Sources */,
 				30F7C9521ED4AE23009D27DF /* CoreComponentInspectorView.swift in Sources */,
 				6B73809622C67563007534A0 /* WorkspaceTemplateCard.swift in Sources */,
@@ -1707,6 +1726,7 @@
 				BA3001781FDB97430003E7D2 /* ShadowStylePickerView.swift in Sources */,
 				6BC2D44922639B83003A9F63 /* LogicSuggestions.swift in Sources */,
 				3084164D1EDB2A5B00A1CA6D /* Button+Init.swift in Sources */,
+				6BFAE60423009AB700B150E2 /* LogicModule.swift in Sources */,
 				6BA6E89B213080CE009CD33C /* ComponentEditorViewController.swift in Sources */,
 				036A4EA221E1FD3B00948DBD /* KeyHandlingCollectionView.swift in Sources */,
 				307B7B4F1F9A71C5001A62D9 /* MetadataEditorView.swift in Sources */,
@@ -1746,6 +1766,7 @@
 				306DA4F61F34E42F002772DC /* DimensionSizingRule.swift in Sources */,
 				6B7DBF6022A87B050062031E /* LogicViewController.swift in Sources */,
 				30516B491F43C46200940B3B /* SequenceExtensions.swift in Sources */,
+				6B5A6AC822FB860A00CA004E /* LogicPreviewCard.swift in Sources */,
 				6B51612E21373FBB00714555 /* CoreColorWellPicker.swift in Sources */,
 				BA547E5E203A9B1700136FC0 /* InspectorView.swift in Sources */,
 				3094DFEA1F6AECB300E5C7F0 /* NSOutlineViewExtensions.swift in Sources */,
@@ -1768,6 +1789,7 @@
 				6B1086FD217A38110024AE56 /* LRUCache.swift in Sources */,
 				30D9B40E1F79BADC00C8A3D4 /* NSMenuExtensions.swift in Sources */,
 				3090D78D1F01B050009277E7 /* CSParameter.swift in Sources */,
+				6B6F19D12307222200E5AC60 /* TemplateFileCard.swift in Sources */,
 				305ED04620530257000D07C3 /* LonaModule.swift in Sources */,
 				6B0AEFBC1EBF74D800F35BBF /* ComponentDocument.swift in Sources */,
 				303C3FF920A4F894008E1541 /* ComponentPreview.swift in Sources */,

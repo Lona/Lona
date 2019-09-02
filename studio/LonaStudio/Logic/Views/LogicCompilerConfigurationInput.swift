@@ -59,7 +59,7 @@ public class LogicCompilerConfigurationInput: NSView {
                 ),
                 arguments: .init(
                     [
-                        .init(
+                        .argument(
                             id: UUID(),
                             label: "target",
                             expression: .functionCallExpression(
@@ -72,7 +72,7 @@ public class LogicCompilerConfigurationInput: NSView {
                                 arguments: .empty
                             )
                         ),
-                        .init(
+                        .argument(
                             id: UUID(),
                             label: "framework",
                             expression: .functionCallExpression(
@@ -109,8 +109,8 @@ public class LogicCompilerConfigurationInput: NSView {
 
             let program = LGCSyntaxNode.program(LogicCompilerConfigurationInput.makeProgram(from: expression))
 
-            return StandardConfiguration.suggestions(rootNode: program, node: node, query: query, formattingOptions:
-                .init(style: LogicViewController.formattingStyle, locale: .en_US, getColor: { _ in nil })) ?? []
+            let formattingOptions = LogicFormattingOptions.init(style: LogicViewController.formattingStyle, locale: .en_US, getColor: { _ in nil })
+            return StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: formattingOptions)?(query) ?? []
         }
     }
 
@@ -127,7 +127,7 @@ public class LogicCompilerConfigurationInput: NSView {
 
         switch result {
         case .success(let evaluationContext):
-            return evaluationContext.values[expression.uuid]
+            return evaluationContext.evaluate(uuid: expression.uuid)
         case .failure(let error):
             Swift.print("Eval failure", error)
             return nil
