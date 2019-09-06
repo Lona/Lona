@@ -80,6 +80,7 @@ class LogicViewController: NSViewController {
         logicEditor.showsMinimap = true
         logicEditor.showsLineButtons = true
         logicEditor.suggestionFilter = LogicViewController.suggestionFilter
+        TooltipWindow.contentInsets = .init(top: 4, left: 8, bottom: 6, right: 8)
 
         logicEditor.onInsertBelow = { [unowned self] rootNode, node in
             StandardConfiguration.handleMenuItem(logicEditor: self.logicEditor, action: .insertBelow(node.uuid))
