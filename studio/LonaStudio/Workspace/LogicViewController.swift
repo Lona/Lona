@@ -78,7 +78,19 @@ class LogicViewController: NSViewController {
         logicEditor.canvasStyle.textMargin = .init(width: 10, height: 6)
         logicEditor.showsFilterBar = true
         logicEditor.showsMinimap = true
+        logicEditor.showsLineButtons = true
         logicEditor.suggestionFilter = LogicViewController.suggestionFilter
+
+        logicEditor.onInsertBelow = { [unowned self] rootNode, node in
+            StandardConfiguration.handleMenuItem(logicEditor: self.logicEditor, action: .insertBelow(node.uuid))
+        }
+
+        logicEditor.contextMenuForNode = { [unowned self] rootNode, node in
+            return StandardConfiguration.menu(rootNode: rootNode, node: node, allowComments: false, handleMenuAction: { [unowned self] action in
+                StandardConfiguration.handleMenuItem(logicEditor: self.logicEditor, action: action)
+                self.onChangeRootNode?(self.logicEditor.rootNode)
+            })
+        }
 
         logicEditor.onChangeSuggestionFilter = { [unowned self] value in
             self.logicEditor.suggestionFilter = value
@@ -625,7 +637,7 @@ extension LogicViewController {
         guard let pdfData = LogicCanvasView.pdf(
             size: canvasSize,
             mediaBox: viewportRect,
-            formattedContent: LGCSyntaxNode.program(rootNode).formatted(using: formattingOptions),
+            formattedContent: .init(LGCSyntaxNode.program(rootNode).formatted(using: formattingOptions)),
             getElementDecoration: getElementDecoration) else { return NSImage() }
 
         let image = NSImage(size: size, flipped: false, drawingHandler: { rect in
