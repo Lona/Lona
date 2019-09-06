@@ -39,6 +39,7 @@ public class LogicNumberInput: NSView {
     private var logicEditor = LogicEditor()
 
     private func setUpViews() {
+        logicEditor.showsLineButtons = false
         logicEditor.showsDropdown = false
         logicEditor.supportsLineSelection = false
         logicEditor.scrollsVertically = false

@@ -59,6 +59,7 @@ public class LogicInput: NSView {
 
     private func setUpViews() {
         logicEditor.fillColor = Colors.contentBackground
+        logicEditor.showsLineButtons = false
         logicEditor.showsDropdown = false
         logicEditor.supportsLineSelection = false
         logicEditor.scrollsVertically = false
