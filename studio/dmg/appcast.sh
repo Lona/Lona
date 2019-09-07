@@ -30,7 +30,7 @@ cp LonaStudio.dmg "$TARGET"
 
 echo "Generating appcast"
 
-../tools/sparkle/bin/generate_appcast "$LONASTUDIO_DSA_PRIVATE_KEY" "$LONASTUDIO_APPCAST_DIRECTORY"
+../Pods/Sparkle/bin/generate_appcast "$LONASTUDIO_DSA_PRIVATE_KEY" "$LONASTUDIO_APPCAST_DIRECTORY"
 
 echo "Generated appcast!"
 echo ""
