@@ -1986,7 +1986,7 @@
 				INFOPLIST_FILE = LonaStudio/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				PRODUCT_BUNDLE_IDENTIFIER = com.devinabbott.ComponentStudio;
+				PRODUCT_BUNDLE_IDENTIFIER = com.devinabbott.LonaStudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -2010,7 +2010,7 @@
 				INFOPLIST_FILE = LonaStudio/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				PRODUCT_BUNDLE_IDENTIFIER = com.devinabbott.ComponentStudio;
+				PRODUCT_BUNDLE_IDENTIFIER = com.devinabbott.LonaStudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
