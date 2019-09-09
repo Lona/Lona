@@ -4,11 +4,6 @@ DIR=$(dirname "$0")
 
 pushd "$DIR"/../build
 
-if [[ -z "${LONASTUDIO_DSA_PRIVATE_KEY}" ]]; then
-	echo "You must configure the DSA private key: LONASTUDIO_DSA_PRIVATE_KEY"
-	exit 1
-fi
-
 if [[ -z "${LONASTUDIO_APPCAST_DIRECTORY}" ]]; then
 	echo "You must set the path to the appcast directory: LONASTUDIO_APPCAST_DIRECTORY"
 	exit 1
@@ -30,7 +25,7 @@ cp LonaStudio.dmg "$TARGET"
 
 echo "Generating appcast"
 
-../Pods/Sparkle/bin/generate_appcast "$LONASTUDIO_DSA_PRIVATE_KEY" "$LONASTUDIO_APPCAST_DIRECTORY"
+../Pods/Sparkle/bin/generate_appcast "$LONASTUDIO_APPCAST_DIRECTORY"
 
 echo "Generated appcast!"
 echo ""

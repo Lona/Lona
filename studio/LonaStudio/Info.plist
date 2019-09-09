@@ -98,9 +98,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.6</string>
+	<string>1.0.10</string>
 	<key>CFBundleVersion</key>
-	<string>1.0.6</string>
+	<string>1.0.10</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.developer-tools</string>
 	<key>LSMinimumSystemVersion</key>
@@ -122,7 +122,7 @@
 	<true/>
 	<key>SUFeedURL</key>
 	<string>https://www.lona.design/releases/appcast.xml</string>
-	<key>SUPublicDSAKeyFile</key>
-	<string>dsa_pub.pem</string>
+	<key>SUPublicEDKey</key>
+	<string>bQJ+droOF5NHoGmrtUejnsW0yHtoi53Hkg2zpDqRXD0=</string>
 </dict>
 </plist>

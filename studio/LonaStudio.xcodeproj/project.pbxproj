@@ -112,7 +112,6 @@
 		30B5B1A11EC36A70002068CE /* PopupField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B5B1A01EC36A70002068CE /* PopupField.swift */; };
 		30B5B1A31EC3AE44002068CE /* ColorPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B5B1A21EC3AE44002068CE /* ColorPickerView.swift */; };
 		30B5B1A71EC3BF4F002068CE /* ColorPickerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B5B1A61EC3BF4F002068CE /* ColorPickerButton.swift */; };
-		30C0C92E1F5F77040079D077 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 30C0C92D1F5F77040079D077 /* dsa_pub.pem */; };
 		30C203DB20BF5908007C3FE0 /* TextStylePreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C203D920BF5907007C3FE0 /* TextStylePreviewCard.swift */; };
 		30C203DD20BF5910007C3FE0 /* TextStyleBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C203DC20BF5910007C3FE0 /* TextStyleBrowser.swift */; };
 		30C203DF20BF5955007C3FE0 /* TextStylePreviewCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C203DE20BF5955007C3FE0 /* TextStylePreviewCollection.swift */; };
@@ -461,7 +460,6 @@
 		30B5B1A01EC36A70002068CE /* PopupField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopupField.swift; sourceTree = "<group>"; };
 		30B5B1A21EC3AE44002068CE /* ColorPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPickerView.swift; sourceTree = "<group>"; };
 		30B5B1A61EC3BF4F002068CE /* ColorPickerButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPickerButton.swift; sourceTree = "<group>"; };
-		30C0C92D1F5F77040079D077 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		30C203D920BF5907007C3FE0 /* TextStylePreviewCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextStylePreviewCard.swift; sourceTree = "<group>"; };
 		30C203DC20BF5910007C3FE0 /* TextStyleBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextStyleBrowser.swift; sourceTree = "<group>"; };
 		30C203DE20BF5955007C3FE0 /* TextStylePreviewCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStylePreviewCollection.swift; sourceTree = "<group>"; };
@@ -953,7 +951,6 @@
 		30CE64481F008F43008D01AD /* Assets */ = {
 			isa = PBXGroup;
 			children = (
-				30C0C92D1F5F77040079D077 /* dsa_pub.pem */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -1397,7 +1394,6 @@
 				307D44152097DDAB004B57F5 /* icon-tab-docs.png in Resources */,
 				6B73809D22C7B3BF007534A0 /* tokens-list@2x.png in Resources */,
 				301D7EDC1F47A29D0098AB0D /* Modules in Resources */,
-				30C0C92E1F5F77040079D077 /* dsa_pub.pem in Resources */,
 				6B73809E22C7B3BF007534A0 /* tokens-list.png in Resources */,
 				30F870DD20865859007ADA5B /* icon-material-design-example.png in Resources */,
 				30F870DF20865859007ADA5B /* LonaIcon_256x256.png in Resources */,
