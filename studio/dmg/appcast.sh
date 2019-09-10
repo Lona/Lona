@@ -16,7 +16,7 @@ fi
 
 ../dmg/build-dmg.sh
 
-VERSION=$(mdls -name kMDItemVersion LonaStudio.app | awk -F'"' '{print $2}')
+VERSION=$(plutil -p LonaStudio.app/Contents/Info.plist | grep CFBundleShortVersionString | grep -o '[0-9.]\+')
 TARGET="$LONASTUDIO_APPCAST_DIRECTORY"/LonaStudio_"$VERSION".dmg
 
 echo "Copying .dmg to $TARGET"
