@@ -608,6 +608,7 @@
 		6BA6E89E21324207009CD33C /* ForeignTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForeignTypes.swift; sourceTree = "<group>"; };
 		6BA775C821C59E2A0033C03C /* DimensionsInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DimensionsInspector.swift; sourceTree = "<group>"; };
 		6BA775CA21C59E330033C03C /* DimensionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DimensionType.swift; sourceTree = "<group>"; };
+		6BA8985923271BE800AA8F78 /* LonaStudio.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LonaStudio.entitlements; sourceTree = "<group>"; };
 		6BABAFE42139C0EE002B8C8F /* Toolbar.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Toolbar.xcassets; sourceTree = "<group>"; };
 		6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceToolbar.swift; sourceTree = "<group>"; };
 		6BBE0F69212B26C900CEE8C1 /* FileTree.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FileTree.framework; path = Carthage/Build/Mac/FileTree.framework; sourceTree = "<group>"; };
@@ -1120,6 +1121,7 @@
 		6B0AEFB61EBF74D800F35BBF /* LonaStudio */ = {
 			isa = PBXGroup;
 			children = (
+				6BA8985923271BE800AA8F78 /* LonaStudio.entitlements */,
 				307D441F209B6CE9004B57F5 /* Web */,
 				6B0AEFC21EBF74D800F35BBF /* Info.plist */,
 				6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */,
@@ -1350,6 +1352,11 @@
 						CreatedOnToolsVersion = 8.1;
 						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.HardenedRuntime = {
+								enabled = 1;
+							};
+						};
 					};
 					BA9BDC5220132C29004C4D9D = {
 						CreatedOnToolsVersion = 9.2;
@@ -1989,9 +1996,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_ENTITLEMENTS = LonaStudio/LonaStudio.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Pods/Sparkle",
@@ -2012,10 +2021,12 @@
 			baseConfigurationReference = ABA583EA99B83FD52B085CE5 /* Pods-LonaStudio.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = LonaStudio/LonaStudio.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Pods/Sparkle",
