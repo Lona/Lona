@@ -12,7 +12,4 @@ fi
 # npm install -g appdmg
 appdmg ../dmg/appdmg.json LonaStudio.dmg
 
-# https://stackoverflow.com/questions/23824815/how-to-add-codesigning-to-dmg-file-in-mac
-codesign -s "Developer ID Application: Devin Abbott (CV2RHZWPY9)" LonaStudio.dmg
-
 popd

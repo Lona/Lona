@@ -1461,14 +1461,14 @@
 		};
 		6BA89858232717D400AA8F78 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			files = (
 			);
 			inputPaths = (
 			);
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "codesign --force -o runtime -s \"Developer ID Application\" \"${PODS_ROOT}/Sparkle/Sparkle.framework/Resources/Autoupdate.app/Contents/MacOS/Autoupdate\"\ncodesign --force -o runtime -s \"Developer ID Application\" \"${PODS_ROOT}/Sparkle/Sparkle.framework/Resources/Autoupdate.app/Contents/MacOS/fileop\"\n";
 		};
