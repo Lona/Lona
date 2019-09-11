@@ -1,38 +1,38 @@
+#!/bin/bash
+
+DIR=$(dirname "$0")
+
+pushd "$DIR"/../build
+
+if [[ -z "${LONASTUDIO_APPCAST_DIRECTORY}" ]]; then
+	echo "You must set the path to the appcast directory: LONASTUDIO_APPCAST_DIRECTORY"
+	exit 1
+fi
+
 if ! [ -e LonaStudio.app ]; then
 	echo "Put the archived app, LonaStudio.app, in this directory to update the appcast."
 	exit 1
 fi
 
-if ! [ -e LonaStudio.zip ]; then
-	echo "You must first build a zip in order to appcast."
-	exit 1
-fi
+../dmg/build-dmg.sh
 
-if [[ -z "${COMPONENT_STUDIO_DSA_PRIVATE_KEY}" ]]; then
-	echo "You must set the path to the private key: COMPONENT_STUDIO_DSA_PRIVATE_KEY"
-  	exit 1
-fi
+VERSION=$(plutil -p LonaStudio.app/Contents/Info.plist | grep CFBundleShortVersionString | grep -o '[0-9.]\+')
+TARGET="$LONASTUDIO_APPCAST_DIRECTORY"/LonaStudio_"$VERSION".dmg
 
-if [[ -z "${COMPONENT_STUDIO_APPCAST_DIRECTORY}" ]]; then
-	echo "You must set the path to the appcast directory: COMPONENT_STUDIO_APPCAST_DIRECTORY"
-  	exit 1
-fi
+echo "Copying .dmg to $TARGET"
 
-VERSION=$(mdls -name kMDItemVersion LonaStudio.app | awk -F'"' '{print $2}')
-TARGET="$COMPONENT_STUDIO_APPCAST_DIRECTORY"LonaStudio_"$VERSION".zip
-
-echo "Copying .zip to $TARGET"
-
-cp LonaStudio.zip "$TARGET"
+cp LonaStudio.dmg "$TARGET"
 
 echo "Generating appcast"
 
-../Pods/Sparkle/bin/generate_appcast "$COMPONENT_STUDIO_DSA_PRIVATE_KEY" "$COMPONENT_STUDIO_APPCAST_DIRECTORY"
+../Pods/Sparkle/bin/generate_appcast "$LONASTUDIO_APPCAST_DIRECTORY"
 
 echo "Generated appcast!"
 echo ""
 
-cat "$COMPONENT_STUDIO_APPCAST_DIRECTORY"appcast.xml
+cat "$LONASTUDIO_APPCAST_DIRECTORY"/appcast.xml
 
 echo ""
 echo ""
+
+popd

@@ -112,7 +112,6 @@
 		30B5B1A11EC36A70002068CE /* PopupField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B5B1A01EC36A70002068CE /* PopupField.swift */; };
 		30B5B1A31EC3AE44002068CE /* ColorPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B5B1A21EC3AE44002068CE /* ColorPickerView.swift */; };
 		30B5B1A71EC3BF4F002068CE /* ColorPickerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B5B1A61EC3BF4F002068CE /* ColorPickerButton.swift */; };
-		30C0C92E1F5F77040079D077 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 30C0C92D1F5F77040079D077 /* dsa_pub.pem */; };
 		30C203DB20BF5908007C3FE0 /* TextStylePreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C203D920BF5907007C3FE0 /* TextStylePreviewCard.swift */; };
 		30C203DD20BF5910007C3FE0 /* TextStyleBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C203DC20BF5910007C3FE0 /* TextStyleBrowser.swift */; };
 		30C203DF20BF5955007C3FE0 /* TextStylePreviewCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C203DE20BF5955007C3FE0 /* TextStylePreviewCollection.swift */; };
@@ -461,7 +460,6 @@
 		30B5B1A01EC36A70002068CE /* PopupField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopupField.swift; sourceTree = "<group>"; };
 		30B5B1A21EC3AE44002068CE /* ColorPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPickerView.swift; sourceTree = "<group>"; };
 		30B5B1A61EC3BF4F002068CE /* ColorPickerButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPickerButton.swift; sourceTree = "<group>"; };
-		30C0C92D1F5F77040079D077 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		30C203D920BF5907007C3FE0 /* TextStylePreviewCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextStylePreviewCard.swift; sourceTree = "<group>"; };
 		30C203DC20BF5910007C3FE0 /* TextStyleBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextStyleBrowser.swift; sourceTree = "<group>"; };
 		30C203DE20BF5955007C3FE0 /* TextStylePreviewCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStylePreviewCollection.swift; sourceTree = "<group>"; };
@@ -610,6 +608,7 @@
 		6BA6E89E21324207009CD33C /* ForeignTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForeignTypes.swift; sourceTree = "<group>"; };
 		6BA775C821C59E2A0033C03C /* DimensionsInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DimensionsInspector.swift; sourceTree = "<group>"; };
 		6BA775CA21C59E330033C03C /* DimensionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DimensionType.swift; sourceTree = "<group>"; };
+		6BA8985923271BE800AA8F78 /* LonaStudio.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LonaStudio.entitlements; sourceTree = "<group>"; };
 		6BABAFE42139C0EE002B8C8F /* Toolbar.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Toolbar.xcassets; sourceTree = "<group>"; };
 		6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceToolbar.swift; sourceTree = "<group>"; };
 		6BBE0F69212B26C900CEE8C1 /* FileTree.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FileTree.framework; path = Carthage/Build/Mac/FileTree.framework; sourceTree = "<group>"; };
@@ -953,7 +952,6 @@
 		30CE64481F008F43008D01AD /* Assets */ = {
 			isa = PBXGroup;
 			children = (
-				30C0C92D1F5F77040079D077 /* dsa_pub.pem */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -1123,6 +1121,7 @@
 		6B0AEFB61EBF74D800F35BBF /* LonaStudio */ = {
 			isa = PBXGroup;
 			children = (
+				6BA8985923271BE800AA8F78 /* LonaStudio.entitlements */,
 				307D441F209B6CE9004B57F5 /* Web */,
 				6B0AEFC21EBF74D800F35BBF /* Info.plist */,
 				6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */,
@@ -1298,6 +1297,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6B0AEFC51EBF74D800F35BBF /* Build configuration list for PBXNativeTarget "LonaStudio" */;
 			buildPhases = (
+				6BA89858232717D400AA8F78 /* ShellScript */,
 				0D07092F8B9DD494FF4F76C4 /* [CP] Check Pods Manifest.lock */,
 				6B0AEFB01EBF74D700F35BBF /* Sources */,
 				6B0AEFB11EBF74D700F35BBF /* Frameworks */,
@@ -1352,6 +1352,11 @@
 						CreatedOnToolsVersion = 8.1;
 						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.HardenedRuntime = {
+								enabled = 1;
+							};
+						};
 					};
 					BA9BDC5220132C29004C4D9D = {
 						CreatedOnToolsVersion = 9.2;
@@ -1397,7 +1402,6 @@
 				307D44152097DDAB004B57F5 /* icon-tab-docs.png in Resources */,
 				6B73809D22C7B3BF007534A0 /* tokens-list@2x.png in Resources */,
 				301D7EDC1F47A29D0098AB0D /* Modules in Resources */,
-				30C0C92E1F5F77040079D077 /* dsa_pub.pem in Resources */,
 				6B73809E22C7B3BF007534A0 /* tokens-list.png in Resources */,
 				30F870DD20865859007ADA5B /* icon-material-design-example.png in Resources */,
 				30F870DF20865859007ADA5B /* LonaIcon_256x256.png in Resources */,
@@ -1454,6 +1458,19 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		6BA89858232717D400AA8F78 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "codesign --force -o runtime -s \"Developer ID Application\" \"${PODS_ROOT}/Sparkle/Sparkle.framework/Resources/Autoupdate.app/Contents/MacOS/Autoupdate\"\ncodesign --force -o runtime -s \"Developer ID Application\" \"${PODS_ROOT}/Sparkle/Sparkle.framework/Resources/Autoupdate.app/Contents/MacOS/fileop\"\n";
 		};
 		AE944FBCF020B00505E3912C /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1975,9 +1992,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_ENTITLEMENTS = LonaStudio/LonaStudio.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Pods/Sparkle",
@@ -1986,7 +2005,7 @@
 				INFOPLIST_FILE = LonaStudio/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				PRODUCT_BUNDLE_IDENTIFIER = com.devinabbott.ComponentStudio;
+				PRODUCT_BUNDLE_IDENTIFIER = com.devinabbott.LonaStudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -1998,10 +2017,12 @@
 			baseConfigurationReference = ABA583EA99B83FD52B085CE5 /* Pods-LonaStudio.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = LonaStudio/LonaStudio.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Pods/Sparkle",
@@ -2010,7 +2031,7 @@
 				INFOPLIST_FILE = LonaStudio/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				PRODUCT_BUNDLE_IDENTIFIER = com.devinabbott.ComponentStudio;
+				PRODUCT_BUNDLE_IDENTIFIER = com.devinabbott.LonaStudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;

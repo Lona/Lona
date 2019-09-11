@@ -98,9 +98,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.4</string>
+	<string>1.0.11</string>
 	<key>CFBundleVersion</key>
-	<string>1.0.4</string>
+	<string>1.0.11</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.developer-tools</string>
 	<key>LSMinimumSystemVersion</key>
@@ -111,7 +111,7 @@
 		<true/>
 	</dict>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2017 Devin Abbott. All rights reserved.</string>
+	<string>Copyright © 2019 Devin Abbott. All rights reserved.</string>
 	<key>NSMainStoryboardFile</key>
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
@@ -121,8 +121,8 @@
 	<key>SUEnableSystemProfiling</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://www.componentstudioapp.com/updates/appcast.xml</string>
-	<key>SUPublicDSAKeyFile</key>
-	<string>dsa_pub.pem</string>
+	<string>https://www.lona.design/releases/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>bQJ+droOF5NHoGmrtUejnsW0yHtoi53Hkg2zpDqRXD0=</string>
 </dict>
 </plist>
