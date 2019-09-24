@@ -147,7 +147,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let sheetWindow = NSWindow(
             contentRect: NSRect(origin: .zero, size: size),
             styleMask: [.titled],
-            backing: NSWindow.BackingStoreType.retained,
+            backing: .buffered,
             defer: false,
             screen: nil)
 
@@ -167,7 +167,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if welcomeWindow == nil {
             let size = NSSize(width: 720, height: 460)
             let initialRect = NSRect(origin: .zero, size: size)
-            let window = NSWindow(contentRect: initialRect, styleMask: [.closable, .titled, .fullSizeContentView], backing: .retained, defer: false)
+            let window = NSWindow(contentRect: initialRect, styleMask: [.closable, .titled, .fullSizeContentView], backing: .buffered, defer: false)
             window.center()
             window.title = "Welcome"
             window.isReleasedWhenClosed = false

@@ -101,7 +101,7 @@ class VideoUtils {
             ]
 
             let settings: [String: AnyObject] = [
-                AVVideoCodecKey: AVVideoCodecH264 as AnyObject,
+                AVVideoCodecKey: AVVideoCodecType.h264 as AnyObject,
                 AVVideoWidthKey: size.width as AnyObject,
                 AVVideoHeightKey: size.height as AnyObject,
                 AVVideoCompressionPropertiesKey: compressionProperties
