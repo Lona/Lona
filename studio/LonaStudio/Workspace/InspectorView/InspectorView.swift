@@ -64,7 +64,7 @@ final class InspectorView: NSBox {
     private let headerView = EditorHeader(
         titleText: "Parameters",
         subtitleText: "",
-        dividerColor: NSSplitView.defaultDividerColor,
+        dividerColor: .clear,
         fileIcon: nil)
 
     private let scrollView = NSScrollView(frame: .zero)

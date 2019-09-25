@@ -469,6 +469,13 @@ class WorkspaceViewController: NSSplitViewController {
     private lazy var sidebarItem = NSSplitViewItem(viewController: inspectorViewController)
 
     private func setUpLayout() {
+        let newSplitView = InvisibleSplitView()
+        newSplitView.isVertical = splitView.isVertical
+        newSplitView.dividerStyle = splitView.dividerStyle
+        newSplitView.autosaveName = splitView.autosaveName
+        newSplitView.identifier = splitView.identifier
+        self.splitView = newSplitView
+
         minimumThicknessForInlineSidebars = 180
 
         contentListItem.collapseBehavior = .preferResizingSiblingsWithFixedSplitView
@@ -710,6 +717,7 @@ class WorkspaceViewController: NSSplitViewController {
 
                 document.updateChangeCount(.changeDone)
                 self.editorViewController.subtitleText = " — Edited"
+                return true
             }
 
             markdownPreviewViewController.content = document.content

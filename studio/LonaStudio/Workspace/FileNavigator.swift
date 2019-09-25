@@ -122,6 +122,8 @@ class FileNavigator: NSBox {
         borderType = .noBorder
         contentViewMargins = .zero
 
+        fillColor = Colors.headerBackground
+
         fileTree.showRootFile = false
         fileTree.rowViewForFile = { [unowned self] path, _ in self.rowViewForFile(atPath: path) }
         fileTree.imageForFile = { [unowned self] path, size in self.imageForFile(atPath: path, size: size) }
@@ -132,7 +134,7 @@ class FileNavigator: NSBox {
         }
 
         headerView.fileIcon = NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
-        headerView.dividerColor = NSSplitView.defaultDividerColor
+//        headerView.dividerColor = NSSplitView.defaultDividerColor
         headerView.onClick = { [unowned self] in self.onAction?(self.rootPath) }
         headerView.menuForHeader = { [unowned self] in self.menuForFile(atPath: self.rootPath) }
 
