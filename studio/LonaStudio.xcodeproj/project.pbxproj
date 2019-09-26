@@ -291,7 +291,7 @@
 		6BD96653217FB0DB0012F173 /* default-workspace-thumbnail@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6BD96651217FB0DB0012F173 /* default-workspace-thumbnail@2x.png */; };
 		6BDF4D2E20A67272006E99C4 /* BrowserToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDF4D2D20A67272006E99C4 /* BrowserToolbar.swift */; };
 		6BE89BBC21B7452800F35AC3 /* LonaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE89BBB21B7452800F35AC3 /* LonaViewModel.swift */; };
-		6BEA1A76233AE8E00008FF7E /* InvisibleSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEA1A75233AE8E00008FF7E /* InvisibleSplitView.swift */; };
+		6BEA1A76233AE8E00008FF7E /* SubtleSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEA1A75233AE8E00008FF7E /* SubtleSplitView.swift */; };
 		6BF7795B22D51A4D009A4119 /* ToolbarStatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF7795A22D51A4D009A4119 /* ToolbarStatusBar.swift */; };
 		6BF894D32214E3DD000CD863 /* Differ.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BF894D12214E3CD000CD863 /* Differ.framework */; };
 		6BF894D42214E3DD000CD863 /* Differ.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BF894D12214E3CD000CD863 /* Differ.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -636,7 +636,7 @@
 		6BD96651217FB0DB0012F173 /* default-workspace-thumbnail@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default-workspace-thumbnail@2x.png"; sourceTree = "<group>"; };
 		6BDF4D2D20A67272006E99C4 /* BrowserToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserToolbar.swift; sourceTree = "<group>"; };
 		6BE89BBB21B7452800F35AC3 /* LonaViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaViewModel.swift; sourceTree = "<group>"; };
-		6BEA1A75233AE8E00008FF7E /* InvisibleSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvisibleSplitView.swift; sourceTree = "<group>"; };
+		6BEA1A75233AE8E00008FF7E /* SubtleSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtleSplitView.swift; sourceTree = "<group>"; };
 		6BF7795A22D51A4D009A4119 /* ToolbarStatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarStatusBar.swift; sourceTree = "<group>"; };
 		6BF894D12214E3CD000CD863 /* Differ.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Differ.framework; path = Carthage/Build/Mac/Differ.framework; sourceTree = "<group>"; };
 		6BFAE60323009AB700B150E2 /* LogicModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicModule.swift; sourceTree = "<group>"; };
@@ -750,7 +750,6 @@
 				6BA5BBD82174F2A500F086A7 /* FileNavigator.swift */,
 				036A4E9921E1F5FB00948DBD /* ImagePreview.swift */,
 				036A4E8D21E0EF0100948DBD /* ImageViewController.swift */,
-				6BEA1A75233AE8E00008FF7E /* InvisibleSplitView.swift */,
 				036A4EA121E1FD3B00948DBD /* KeyHandlingCollectionView.swift */,
 				6B0F5B8D2138970C007DBBB2 /* LayerList.swift */,
 				6B0F5B8B21389620007DBBB2 /* LayerListHeader.swift */,
@@ -763,6 +762,7 @@
 				307B7B4E1F9A71C5001A62D9 /* MetadataEditorView.swift */,
 				303C3FEF20A3A05D008E1541 /* RecentProjectsList.swift */,
 				300A0AFB1EDA0CBC00704DB7 /* SectionSplitter.swift */,
+				6BEA1A75233AE8E00008FF7E /* SubtleSplitView.swift */,
 				6BA5BBDE2176D93D00F086A7 /* TextStyleEditorViewController.swift */,
 				30C203DE20BF5955007C3FE0 /* TextStylePreviewCollection.swift */,
 				6B39E6F2212DB3AD0012DA4C /* UtilitiesView.swift */,
@@ -1767,7 +1767,7 @@
 				303BDE6D1F76E61300B4CE5A /* VideoUtils.swift in Sources */,
 				305A19521F4638F800EA033C /* NSStackViewExtensions.swift in Sources */,
 				6B0A29E6212736F900A96B0F /* Alert.swift in Sources */,
-				6BEA1A76233AE8E00008FF7E /* InvisibleSplitView.swift in Sources */,
+				6BEA1A76233AE8E00008FF7E /* SubtleSplitView.swift in Sources */,
 				0310D107220B13D5007B3546 /* RPCService.swift in Sources */,
 				6B6D4435218F6B070016262C /* LNAImageView.swift in Sources */,
 				303C3FEE20A396C3008E1541 /* OpenProjectButton.swift in Sources */,

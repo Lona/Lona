@@ -169,8 +169,6 @@ extension MarkdownViewController {
 
         let (errors, compiled, evaluation) = evaluate(rootNode: program)
 
-//        Swift.print("-- RootNode \(count) --\n" + rootNode.hierarchyDescription())
-
         let formattingOptions: LogicFormattingOptions = LogicFormattingOptions(
             style: .visual,
             getError: ({ id in
@@ -207,15 +205,12 @@ extension MarkdownViewController {
         )
 
         let suggestionsForNode: ((LGCSyntaxNode, LGCSyntaxNode, String) -> [LogicSuggestionItem]) = { _, node, query in
-//            Swift.print("-- Suggestion Root \(count) \(rootNode.uuid) --\n" + rootNode.hierarchyDescription())
-
             let suggestionBuilder = StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: formattingOptions)
 
             if let suggestionBuilder = suggestionBuilder, let suggestions = suggestionBuilder(query) {
                 return suggestions
             } else {
                 return node.suggestions(within: rootNode, for: query)
-//                return LogicEditor.defaultSuggestionsForNode(rootNode, node, query)
             }
         }
 

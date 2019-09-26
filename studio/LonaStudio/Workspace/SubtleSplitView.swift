@@ -1,5 +1,5 @@
 //
-//  InvisibleSplitView.swift
+//  SubtleSplitView.swift
 //  LonaStudio
 //
 //  Created by Devin Abbott on 9/24/19.
@@ -8,7 +8,7 @@
 
 import AppKit
 
-public class InvisibleSplitView: NSSplitView {
+public class SubtleSplitView: NSSplitView {
     public override var dividerColor: NSColor {
         return Colors.dividerSubtle
     }
