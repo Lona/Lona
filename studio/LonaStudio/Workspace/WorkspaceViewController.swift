@@ -9,6 +9,7 @@
 import AppKit
 import FileTree
 import Foundation
+import Logic
 
 private func getDirectory() -> URL? {
     let dialog = NSOpenPanel()
@@ -711,6 +712,8 @@ class WorkspaceViewController: NSSplitViewController {
 
             markdownViewController.content = document.content
             markdownViewController.onChange = { [unowned self] value in
+                let value = value.isEmpty ? [BlockEditor.Block.makeDefaultEmptyBlock()] : value
+
                 self.markdownViewController.content = value
                 self.markdownPreviewViewController.content = value
                 document.content = value
