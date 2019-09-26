@@ -32,7 +32,7 @@ class CSParameterLayer: CSLayer {
     }
 
     override func decode(parameters: [String: CSData]) -> [String: CSData] {
-        var parameters = super.decode(parameters: parameters)
+        let parameters = super.decode(parameters: parameters)
 
         parameterName = parameters["parameterName"]?.stringValue ?? "children"
 

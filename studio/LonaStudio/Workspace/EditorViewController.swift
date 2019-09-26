@@ -82,7 +82,7 @@ class EditorViewController: NSViewController {
     private func setUpViews() {
         self.view = contentContainerView
 
-        editorHeaderView.dividerColor = NSSplitView.defaultDividerColor
+        editorHeaderView.fillColor = Colors.contentBackground
     }
 
     private func setUpConstraints() {

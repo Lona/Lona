@@ -7,6 +7,7 @@
 //
 
 import AppKit
+import Logic
 
 class MarkdownDocument: NSDocument {
     override init() {
@@ -23,21 +24,21 @@ class MarkdownDocument: NSDocument {
         return windowControllers[0].contentViewController as? WorkspaceViewController
     }
 
-    var content: String = ""
+    var content: [BlockEditor.Block] = []
 
     override func makeWindowControllers() {
         WorkspaceWindowController.create(andAttachTo: self)
     }
 
     override func data(ofType typeName: String) throws -> Data {
-        guard let data = content.data(using: .utf8) else {
+        guard let data = MarkdownFile.makeMarkdownData(content) else {
             throw NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotWriteToFile, userInfo: nil)
         }
         return data
     }
 
     override func read(from data: Data, ofType typeName: String) throws {
-        guard let content = data.utf8String() else {
+        guard let content = MarkdownFile.makeBlocks(data) else {
             throw NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotOpenFile, userInfo: nil)
         }
         self.content = content

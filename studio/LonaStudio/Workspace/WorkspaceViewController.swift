@@ -9,6 +9,7 @@
 import AppKit
 import FileTree
 import Foundation
+import Logic
 
 private func getDirectory() -> URL? {
     let dialog = NSOpenPanel()
@@ -287,7 +288,6 @@ class WorkspaceViewController: NSSplitViewController {
     }()
 
     private lazy var markdownViewController = MarkdownViewController(editable: true, preview: false)
-    private lazy var markdownPreviewViewController = MarkdownViewController(editable: false, preview: true)
 
     private lazy var imageViewController = ImageViewController()
 
@@ -469,6 +469,13 @@ class WorkspaceViewController: NSSplitViewController {
     private lazy var sidebarItem = NSSplitViewItem(viewController: inspectorViewController)
 
     private func setUpLayout() {
+        let newSplitView = SubtleSplitView()
+        newSplitView.isVertical = splitView.isVertical
+        newSplitView.dividerStyle = splitView.dividerStyle
+        newSplitView.autosaveName = splitView.autosaveName
+        newSplitView.identifier = splitView.identifier
+        self.splitView = newSplitView
+
         minimumThicknessForInlineSidebars = 180
 
         contentListItem.collapseBehavior = .preferResizingSiblingsWithFixedSplitView
@@ -700,19 +707,18 @@ class WorkspaceViewController: NSSplitViewController {
             inspectorViewVisible = false
 
             editorViewController.contentView = markdownViewController.view
-            companionViewController.contentView = markdownPreviewViewController.view
 
             markdownViewController.content = document.content
             markdownViewController.onChange = { [unowned self] value in
+                let value = value.isEmpty ? [BlockEditor.Block.makeDefaultEmptyBlock()] : value
+
                 self.markdownViewController.content = value
-                self.markdownPreviewViewController.content = value
                 document.content = value
 
                 document.updateChangeCount(.changeDone)
                 self.editorViewController.subtitleText = " — Edited"
+                return true
             }
-
-            markdownPreviewViewController.content = document.content
         } else if let document = document as? DirectoryDocument {
             inspectorViewVisible = false
             if let content = document.content {
