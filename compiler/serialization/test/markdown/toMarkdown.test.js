@@ -106,4 +106,17 @@ describe('convert mdast to markdown', () => {
 
     expect(mdx).toBe('## a')
   })
+
+  test('image', () => {
+    const json = {
+      type: 'image',
+      alt: 'alt',
+      url: 'url',
+      children: [],
+    }
+
+    const mdx = toMarkdown(json)
+
+    expect(mdx).toBe('![alt](url)')
+  })
 })

@@ -24,6 +24,9 @@ module.exports = function toMarkdown(node) {
 ${node.value}
 \`\`\``
     }
+    case 'image': {
+      return `![${node.alt}](${node.url})`
+    }
     case 'strong': {
       return `**${childrenValue()}**`
     }
