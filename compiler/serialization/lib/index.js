@@ -1,6 +1,7 @@
 const stringify = require('json-stable-stringify')
 
 const xml = require('./xml')
+const mdx = require('./mdx')
 const {
   convertTypesJsonToXml,
   convertTypesXmlToJson,
@@ -13,11 +14,14 @@ const {
 const SERIALIZATION_FORMAT = {
   JSON: 'json',
   XML: 'xml',
+  MDX: 'mdx',
 }
 
 const CONVERSION_TYPE = {
   XML_TO_JSON: 'xmlToJSON',
   JSON_TO_XML: 'jsonToXML',
+  MDX_TO_JSON: 'mdxToJSON',
+  JSON_TO_MDX: 'jsonToMDX',
   NONE: 'none',
 }
 
@@ -62,6 +66,12 @@ function detectConversionType(contents, targetFormat, options = {}) {
     }
     case 'xml:json': {
       return CONVERSION_TYPE.XML_TO_JSON
+    }
+    case 'json:mdx': {
+      return CONVERSION_TYPE.JSON_TO_MDX
+    }
+    case 'mdx:json': {
+      return CONVERSION_TYPE.MDX_TO_JSON
     }
     default:
       throw new Error(`Unknown Serialization conversion`)
@@ -117,7 +127,7 @@ function convertLogic(contents, targetFormat, options = {}) {
       try {
         jsonContents = JSON.parse(contents)
       } catch (e) {
-        throw new Error(`Failed to decode types as JSON.`)
+        throw new Error(`Failed to decode logic as JSON.`)
       }
 
       const xmlRepresentation = convertLogicJsonToXml(jsonContents)
@@ -131,7 +141,7 @@ function convertLogic(contents, targetFormat, options = {}) {
         jsonContents = xml.parse(contents)
       } catch (e) {
         console.log(e)
-        throw new Error(`Failed to decode types as XML.`)
+        throw new Error(`Failed to decode logic as XML.`)
       }
 
       const jsonRepresentation = convertLogicXmlToJson(jsonContents)
@@ -143,9 +153,44 @@ function convertLogic(contents, targetFormat, options = {}) {
   }
 }
 
+function convertDocument(contents, targetFormat, options = {}) {
+  const conversionType = detectConversionType(contents, targetFormat, options)
+
+  switch (conversionType) {
+    case CONVERSION_TYPE.NONE:
+      return contents
+    case CONVERSION_TYPE.JSON_TO_MDX: {
+      let jsonContents
+
+      try {
+        jsonContents = JSON.parse(contents)
+      } catch (e) {
+        throw new Error(`Failed to decode document as JSON.`)
+      }
+
+      return mdx.print(jsonContents, convertLogic)
+    }
+    case CONVERSION_TYPE.MDX_TO_JSON: {
+      let jsonContents
+
+      try {
+        jsonContents = mdx.parse(contents, convertLogic)
+      } catch (e) {
+        console.log(e)
+        throw new Error(`Failed to decode document as MDX.`)
+      }
+
+      return stringify(jsonContents, { space: '  ' })
+    }
+    default:
+      throw new Error(`Unknown Serialization conversion`)
+  }
+}
+
 module.exports = {
   SERIALIZATION_FORMAT,
   convertTypes,
   convertLogic,
+  convertDocument,
   detectFormat,
 }
