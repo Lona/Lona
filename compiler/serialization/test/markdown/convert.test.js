@@ -63,19 +63,12 @@ a`
     const json = {
       children: [
         {
-          type: 'paragraph',
+          type: 'image',
           data: {
-            children: [
-              {
-                type: 'image',
-                data: {
-                  alt: 'alt',
-                  url: 'url',
-                  title: null,
-                  children: [],
-                },
-              },
-            ],
+            alt: 'alt',
+            url: 'url',
+            title: null,
+            children: [],
           },
         },
       ],

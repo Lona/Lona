@@ -3879,6 +3879,20 @@ md5.js@^1.3.4:
     inherits "^2.0.1"
     safe-buffer "^5.1.2"
 
+mdast-flatten-image-paragraphs@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/mdast-flatten-image-paragraphs/-/mdast-flatten-image-paragraphs-1.0.0.tgz#340e03bbc694b3f6b12532fca56997cda57ff537"
+  integrity sha512-xalAJqig/e8ODwgdQUpunHGL9KnHz3DVNtmQQL5m1VFKHMAQg7DSShNMkv7qT2Bn3iGoGoBj6ySjlyjceMu6FA==
+  dependencies:
+    unist-util-flatmap "1.0.x"
+
+mdast-move-images-to-root@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/mdast-move-images-to-root/-/mdast-move-images-to-root-1.0.0.tgz#59e4c48c64a9dba2b65c5581c34c01c3b74a5b78"
+  integrity sha512-oRwleFtUVWCB0ejkVzEV0ans8TaswxoXY3ORR38B3/nPbkkWnNq/F3KPnAa/K4C04K50Z7xQ5Bj4zw1+Of7Y1Q==
+  dependencies:
+    unist-util-flatmap "1.0.x"
+
 mdast-squeeze-paragraphs@^3.0.0:
   version "3.0.5"
   resolved "https://registry.yarnpkg.com/mdast-squeeze-paragraphs/-/mdast-squeeze-paragraphs-3.0.5.tgz#f428b6b944f8faef454db9b58f170c4183cb2e61"
@@ -5716,6 +5730,11 @@ unist-builder@1.0.4, unist-builder@^1.0.1:
   integrity sha512-v6xbUPP7ILrT15fHGrNyHc1Xda8H3xVhP7/HAIotHOhVPjH5dCXA097C3Rry1Q2O+HbOLCao4hfPB+EYEjHgVg==
   dependencies:
     object-assign "^4.1.0"
+
+unist-util-flatmap@1.0.x:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/unist-util-flatmap/-/unist-util-flatmap-1.0.0.tgz#f914ed6b36ff040afce938d848f379f88b94b448"
+  integrity sha512-IG32jcKJlhARCYT2LsYPJWdoXYkzz3ESAdl1aa2hn9Auh+cgUmU6wgkII4yCc/1GgeWibRdELdCZh/p3QKQ1dQ==
 
 unist-util-generated@^1.1.0:
   version "1.1.4"
