@@ -26,6 +26,9 @@ module.exports = [
         'process.env.NODE_ENV': JSON.stringify('production'),
       }),
     ],
+    node: {
+      fs: 'empty',
+    },
     module: {
       rules: [
         {

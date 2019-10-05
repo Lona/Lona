@@ -6,11 +6,10 @@ module.exports = function toMarkdown(node) {
   }
 
   switch (type) {
+    // Block Nodes
+
     case 'root': {
       return childrenValue('\n\n')
-    }
-    case 'text': {
-      return node.value
     }
     case 'heading': {
       const prefix = '#'.repeat(node.depth) + ' '
@@ -19,10 +18,19 @@ module.exports = function toMarkdown(node) {
     case 'paragraph': {
       return childrenValue()
     }
+    case 'thematicBreak': {
+      return '---'
+    }
     case 'code': {
       return `\`\`\`tokens
 ${node.value}
 \`\`\``
+    }
+
+    // Inline Block Nodes
+
+    case 'text': {
+      return node.value
     }
     case 'image': {
       return `![${node.alt}](${node.url})`
