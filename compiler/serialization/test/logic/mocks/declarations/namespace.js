@@ -26,4 +26,8 @@ const json = {
   type: 'declaration',
 }
 
-module.exports = { json, xml }
+const code = `enum Colors {
+
+}`
+
+module.exports = { json, xml, code }

@@ -43,4 +43,6 @@ const json = {
   type: 'declaration',
 }
 
-module.exports = { json, xml }
+const code = 'let x: Number = 123'
+
+module.exports = { json, xml, code }

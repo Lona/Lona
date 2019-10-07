@@ -35,8 +35,8 @@
     return { data: { id: uuid() }, type: 'placeholder' }
   }
 
-  function appendingPlaceholder(list) {
-    return list.concat([placeholder()])
+  function normalizeListWithPlaceholder(list) {
+    return (list || []).concat([placeholder()])
   }
 }
 
@@ -45,11 +45,22 @@ start =
     return topLevelDeclarations
   }
 
+statement =
+  declaration:declaration {
+    return {
+      data: {
+        content: declaration,
+        id: uuid()
+      },
+      type: 'declaration'
+    }
+  }
+
 topLevelDeclarations =
   declarations:declarationList {
     return {
       data: {
-      	declarations: appendingPlaceholder(declarations),
+      	declarations: normalizeListWithPlaceholder(declarations),
         id: uuid(),
       },
       type: 'topLevelDeclarations'
@@ -67,6 +78,8 @@ declaration =
       data,
       type: 'importDeclaration',
     }
+  } / value:enumDeclaration {
+    return value
   }
 
 declarationList =
@@ -82,14 +95,52 @@ importDeclaration =
     }
   }
 
-variableDeclaration =
-  "let" _ name:pattern _ ":" _ annotation:typeAnnotation _ "=" _ initializer:expression {
+enumDeclaration =
+  "enum" _ name:pattern _ "{" _ declarations:declarationList? _ "}" {
     return {
+      data: {
+        id: uuid(),
+        name,
+        // Delete declaration modifier for now, since we don't store these
+        declarations: normalizeListWithPlaceholder(declarations).map(declaration => {
+          delete declaration.data.declarationModifier
+          return declaration
+        }),
+      },
+      type: 'namespace',
+    }
+
+    // TODO: If there are cases, return an enum
+    // return {
+    //   data: {
+    //     id: uuid(),
+    //     name,
+    //     genericParameters: [],
+    //     cases: [],
+    //     comment: null,
+    //   },
+    //   type: 'enum'
+    // }
+  }
+
+declarationModifier = "static" { return text() }
+
+variableDeclaration =
+  declarationModifier:(declarationModifier _)?
+  "let" _ name:pattern _ ":" _
+  annotation:typeAnnotation _ "=" _ initializer:expression {
+    const result = {
       annotation,
       id: uuid(),
       initializer,
       name,
     }
+
+    if (declarationModifier) {
+      result.declarationModifier = declarationModifier[0]
+    }
+
+    return result
   }
 
 pattern = name:rawIdentifier { return { id: uuid(), name } }

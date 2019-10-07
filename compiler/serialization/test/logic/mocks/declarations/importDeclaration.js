@@ -18,4 +18,6 @@ const json = {
   type: 'declaration',
 }
 
-module.exports = { json, xml }
+const code = 'import Prelude'
+
+module.exports = { json, xml, code }

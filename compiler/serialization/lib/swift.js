@@ -4,10 +4,18 @@ function parse(code, options) {
   return parser.parse(code, options)
 }
 
-function print(node) {
+function print(node, options = {}) {
+  const { indent = 0 } = options
+
   const { type, data } = node
 
   switch (node.type) {
+    // Declaration statement
+    case 'declaration': {
+      const { content } = data
+
+      return print(content)
+    }
     case 'topLevelDeclarations': {
       const { declarations } = data
 
@@ -23,14 +31,44 @@ function print(node) {
 
       return `import ${name}`
     }
+    case 'namespace': {
+      const {
+        name: { name },
+        declarations,
+      } = data
+
+      const normalizedDeclarations = declarations.map(declaration => {
+        return {
+          ...declaration,
+          data: { ...declaration.data, declarationModifier: 'static' },
+        }
+      })
+
+      const printedDeclarations = normalizedDeclarations
+        .filter(declaration => declaration.type !== 'placeholder')
+        .map(print)
+        .map(x => ' '.repeat(indent + 2) + x)
+        .join('\n\n')
+
+      return `enum ${name} {
+${printedDeclarations}
+}`
+    }
     case 'variable': {
       const {
         annotation,
         initializer,
         name: { name },
+        declarationModifier,
       } = data
 
-      return `let ${name}: ${print(annotation)} = ${print(initializer)}`
+      const printedDeclarationModifier = declarationModifier
+        ? declarationModifier + ' '
+        : ''
+
+      return `${printedDeclarationModifier}let ${name}: ${print(
+        annotation
+      )} = ${print(initializer)}`
     }
     case 'typeIdentifier': {
       const {
