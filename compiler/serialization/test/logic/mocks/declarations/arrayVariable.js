@@ -72,4 +72,8 @@ const json = {
   type: 'variable',
 }
 
+const code = `[
+  42
+]`
+
 module.exports = { json, xml }
