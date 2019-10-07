@@ -24,26 +24,6 @@ test('record -> json', () => {
 
 //
 
-test('top level declarations -> xml', () => {
-  const { xml, json } = require('./mocks/declarations/topLevelDeclarations')
-
-  const source = JSON.stringify(json)
-  const converted = convertLogic(source, 'xml')
-
-  expect(converted).toBe(xml)
-})
-
-test('top level declarations -> json', () => {
-  const { xml, json } = require('./mocks/declarations/topLevelDeclarations')
-
-  const converted = convertLogic(xml, 'json')
-  const parsed = JSON.parse(converted)
-
-  expect(parsed).toStrictEqual(json)
-})
-
-//
-
 test('import declaration -> xml', () => {
   const { xml, json } = require('./mocks/declarations/importDeclaration')
 
