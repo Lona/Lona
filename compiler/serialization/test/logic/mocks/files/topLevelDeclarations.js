@@ -7,6 +7,14 @@ const xml = `<?xml version="1.0"?>
   </Namespace>
 </Declarations>`
 
+const code = `import Prelude
+
+let x: Number = 123
+
+enum Test {
+  static let b: Boolean = false
+}`
+
 const json = {
   data: {
     declarations: [
@@ -119,13 +127,5 @@ const json = {
   },
   type: 'topLevelDeclarations',
 }
-
-const code = `import Prelude
-
-let x: Number = 123
-
-enum Test {
-  static let b: Boolean = false
-}`
 
 module.exports = { json, xml, code }

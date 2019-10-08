@@ -1,6 +1,8 @@
 const xml = `<?xml version="1.0"?>
 <Declaration.ImportDeclaration name="Prelude"/>`
 
+const code = 'import Prelude'
+
 const json = {
   data: {
     content: {
@@ -17,7 +19,5 @@ const json = {
   },
   type: 'declaration',
 }
-
-const code = 'import Prelude'
 
 module.exports = { json, xml, code }
