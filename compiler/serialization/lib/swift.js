@@ -68,7 +68,7 @@ function printWithOptions(node, options = {}) {
         const printedDeclarations = normalizedDeclarations
           .filter(declaration => declaration.type !== 'placeholder')
           .map(x => print(x))
-          .map(x => indentBlock(x, 2))
+          .map(x => indentBlock(x, indent))
           .join('\n')
 
         return `enum ${name} {
