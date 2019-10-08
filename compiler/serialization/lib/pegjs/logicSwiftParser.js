@@ -7,7 +7,12 @@ const grammar = fs.readFileSync(
   'utf8'
 )
 const parser = pegjs.generate(grammar, {
-  allowedStartRules: ['topLevelDeclarations', 'statement', 'declaration'],
+  allowedStartRules: [
+    'topLevelDeclarations',
+    'statement',
+    'declaration',
+    'expression',
+  ],
 })
 
 module.exports = parser

@@ -96,6 +96,21 @@ ${printedDeclarations}
         ? `${string}<${genericArguments.map(print).join(', ')}>`
         : string
     }
+    case 'memberExpression': {
+      const {
+        expression,
+        memberName: { string },
+      } = data
+
+      return print(expression) + '.' + string
+    }
+    case 'identifierExpression': {
+      const {
+        identifier: { string },
+      } = data
+
+      return string
+    }
     case 'literalExpression': {
       const { literal } = data
 

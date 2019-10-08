@@ -163,44 +163,95 @@ variableDeclaration =
     return result
   }
 
-pattern = name:rawIdentifier { return { id: uuid(), name } }
+expression =
+  literalExpression /
+  memberExpression /
+  identifierExpression
 
-identifier =
-  string:rawIdentifier {
+memberExpression =
+  expression:identifierExpression "." memberName:identifier {
     return {
-      id: uuid(),
-      isPlaceholder: false,
-      string
+      data: { expression, id: uuid(), memberName },
+      type: 'memberExpression',
     }
   }
 
+literalExpression =
+  literal:literal {
+    return {
+      data: { id: uuid(), literal },
+      type: 'literalExpression',
+    }
+  }
+
+identifierExpression =
+  identifier:identifier {
+    return {
+      data: { id: uuid(), identifier },
+      type: 'identifierExpression'
+    }
+  }
+
+expressionList =
+  head:expression tail:("," _ expression)* {
+    return buildList(head, tail, 2)
+  }
+
+// memberExpression =
+//   head:identifier "." tail:memberExpression {
+//     return buildList(head, tail, 2)
+//   }
+
+// Literals
+
 literal =
+  booleanLiteral /
+  numberLiteral /
+  stringLiteral /
+  arrayLiteral /
+  colorLiteral
+
+booleanLiteral =
   value:booleanValue {
     return {
       data: { id: uuid(), value },
       type: 'boolean',
     }
-  } / value:numberValue {
+  }
+
+numberLiteral =
+  value:numberValue {
     return {
       data: { id: uuid(), value },
       type: 'number',
     }
-  } / value:stringValue {
+  }
+
+stringLiteral =
+  value:stringValue {
     return {
       data: { id: uuid(), value },
       type: 'string',
     }
-  } / value:arrayValue {
+  }
+
+arrayLiteral =
+  value:arrayValue {
     return {
       data: { id: uuid(), value },
       type: 'array',
     }
-  } / value:colorValue {
+  }
+
+colorLiteral =
+  value:colorValue {
     return {
       data: { id: uuid(), value },
       type: 'color',
     }
   }
+
+// Type Annotations
 
 typeAnnotation =
   identifier:identifier genericArguments:( "<" typeAnnotationList ">" )? {
@@ -219,20 +270,18 @@ typeAnnotationList =
     return buildList(head, tail, 2)
   }
 
-expression =
-  literal:literal {
+pattern = name:rawIdentifier { return { id: uuid(), name } }
+
+identifier =
+  string:rawIdentifier {
     return {
-      data: { id: uuid(), literal },
-      type: 'literalExpression',
+      id: uuid(),
+      isPlaceholder: false,
+      string
     }
   }
 
-expressionList =
-  head:expression tail:("," _ expression)* {
-    return buildList(head, tail, 2)
-  }
-
-// Literal values
+// Values
 
 numberValue = floatValue / intValue
 
@@ -244,7 +293,7 @@ booleanValue = "true" / "false" { return text() === "true" }
 
 stringValue = "\"" (! "\"" .)* "\"" { return text().slice(1, -1) }
 
-arrayValue = "[" _ expressionList:expressionList _ "]" {
+arrayValue = "[" _ expressionList:expressionList? _ "]" {
   return normalizeListWithPlaceholder(expressionList)
 }
 
