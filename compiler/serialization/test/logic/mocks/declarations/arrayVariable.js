@@ -72,8 +72,8 @@ const json = {
   type: 'variable',
 }
 
-const code = `[
+const code = `let x: Array<Number> = [
   42
 ]`
 
-module.exports = { json, xml }
+module.exports = { json, xml, code }

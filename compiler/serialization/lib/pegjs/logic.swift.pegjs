@@ -165,10 +165,15 @@ literal =
       data: { id: uuid(), value },
       type: 'number',
     }
-  } / stringValue {
+  } / value:stringValue {
     return {
       data: { id: uuid(), value },
       type: 'string',
+    }
+  } / value:arrayValue {
+    return {
+      data: { id: uuid(), value },
+      type: 'array',
     }
   }
 
@@ -197,6 +202,11 @@ expression =
     }
   }
 
+expressionList =
+  head:expression tail:("," _ expression)* {
+    return buildList(head, tail, 2)
+  }
+
 // Literal values
 
 numberValue = floatValue / intValue
@@ -208,6 +218,10 @@ intValue = [+\-] ? [0-9]+ { return Number(text()) }
 booleanValue = "true" / "false" { return text() === "true" }
 
 stringValue = "\"" (! "\"" .)* "\"" { return text().slice(1, -1) }
+
+arrayValue = "[" _ expressionList:expressionList _ "]" {
+  return normalizeListWithPlaceholder(expressionList)
+}
 
 // Source characters
 

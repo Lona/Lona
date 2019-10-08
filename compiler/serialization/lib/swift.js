@@ -20,7 +20,7 @@ function print(node, options = {}) {
       const { declarations } = data
 
       return declarations
-        .filter(declaration => declaration.type !== 'placeholder')
+        .filter(node => node.type !== 'placeholder')
         .map(print)
         .join('\n\n')
     }
@@ -95,6 +95,19 @@ ${printedDeclarations}
       const { value } = data
 
       return JSON.stringify(value)
+    }
+    case 'array': {
+      const { value } = data
+
+      const printedExpressions = value
+        .filter(node => node.type !== 'placeholder')
+        .map(print)
+        .map(x => ' '.repeat(indent + 2) + x)
+        .join('\n\n')
+
+      return `[
+${printedExpressions}
+]`
     }
   }
 }
