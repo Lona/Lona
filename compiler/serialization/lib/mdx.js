@@ -49,9 +49,7 @@ function parse(src, convertLogic) {
 
   const parsed = map(withoutExtras, node => {
     if (node.type === 'code' && node.lang === 'tokens') {
-      node.parsed = JSON.parse(
-        convertLogic(node.value, 'json', { sourceFormat: 'xml' })
-      )
+      node.parsed = JSON.parse(convertLogic(node.value, 'json'))
     }
 
     return node
@@ -79,9 +77,7 @@ function print(normalizedFormat, convertLogic) {
 
   const encodedTokensAst = map(ast, node => {
     if (node.type === 'code' && node.lang === 'tokens') {
-      node.value = convertLogic(JSON.stringify(node.parsed), 'xml', {
-        sourceFormat: 'json',
-      })
+      node.value = convertLogic(JSON.stringify(node.parsed), 'xml')
       delete node.parsed
     }
 

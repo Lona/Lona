@@ -1,4 +1,4 @@
-const { convertDocument } = require('../../lib/index')
+const { convertDocument, SERIALIZATION_FORMAT } = require('../../lib/index')
 
 describe('mdx <-> json', () => {
   describe('root', () => {
@@ -41,19 +41,18 @@ a`
     }
 
     test('mdx -> json', () => {
-      const convertedToJson = JSON.parse(
-        convertDocument(mdx, 'json', { sourceFormat: 'mdx' })
+      const converted = JSON.parse(
+        convertDocument(mdx, SERIALIZATION_FORMAT.JSON)
       )
-
-      expect(convertedToJson).toStrictEqual(json)
+      expect(converted).toStrictEqual(json)
     })
 
     test('json -> mdx', () => {
-      const convertedToMdx = convertDocument(JSON.stringify(json), 'mdx', {
-        sourceFormat: 'json',
-      })
-
-      expect(convertedToMdx).toBe(mdx)
+      const converted = convertDocument(
+        JSON.stringify(json),
+        SERIALIZATION_FORMAT.SOURCE
+      )
+      expect(converted).toBe(mdx)
     })
   })
 
@@ -75,19 +74,18 @@ a`
     }
 
     test('mdx -> json', () => {
-      const convertedToJson = JSON.parse(
-        convertDocument(mdx, 'json', { sourceFormat: 'mdx' })
+      const converted = JSON.parse(
+        convertDocument(mdx, SERIALIZATION_FORMAT.JSON)
       )
-
-      expect(convertedToJson).toStrictEqual(json)
+      expect(converted).toStrictEqual(json)
     })
 
     test('json -> mdx', () => {
-      const convertedToMdx = convertDocument(JSON.stringify(json), 'mdx', {
-        sourceFormat: 'json',
-      })
-
-      expect(convertedToMdx).toBe(mdx)
+      const converted = convertDocument(
+        JSON.stringify(json),
+        SERIALIZATION_FORMAT.SOURCE
+      )
+      expect(converted).toBe(mdx)
     })
   })
 })

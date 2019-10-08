@@ -3,9 +3,9 @@
 const fs = require('fs')
 const { convertTypes, convertLogic, convertDocument } = require('./lib/index')
 
-const [, , filename, kind, targetFormat, sourceFormat] = process.argv
+const [, , filename, kind, targetFormat] = process.argv
 
-const usage = 'usage: filename kind targetFormat [sourceFormat]'
+const usage = 'usage: filename kind targetFormat'
 
 if (!filename) {
   console.log('No filename')
@@ -40,9 +40,7 @@ function convertLogicFile(file, targetFormat) {
 function convertDocumentFile(file, targetFormat) {
   const contents = fs.readFileSync(filename, 'utf8')
 
-  return convertDocument(contents, targetFormat, {
-    sourceFormat: sourceFormat || 'mdx',
-  })
+  return convertDocument(contents, targetFormat)
 }
 
 try {
