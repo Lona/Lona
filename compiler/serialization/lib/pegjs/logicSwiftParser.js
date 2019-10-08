@@ -9,6 +9,7 @@ const grammar = fs.readFileSync(
 const parser = pegjs.generate(grammar, {
   allowedStartRules: [
     'topLevelDeclarations',
+    'program',
     'statement',
     'declaration',
     'expression',

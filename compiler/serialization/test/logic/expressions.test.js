@@ -23,6 +23,16 @@ describe('function call expression', () => {
     const parsed = JSON.parse(converted)
     expect(parsed).toStrictEqual(json)
   })
+
+  test('code -> json', () => {
+    const converted = parseSwift(code, { generateId, startRule: 'expression' })
+    expect(converted).toStrictEqual(json)
+  })
+
+  test('json -> code', () => {
+    const converted = printSwift(json)
+    expect(converted).toBe(code)
+  })
 })
 
 describe('member expression', () => {
@@ -41,10 +51,7 @@ describe('member expression', () => {
   })
 
   test('code -> json', () => {
-    const converted = parseSwift(code, {
-      generateId,
-      startRule: 'expression',
-    })
+    const converted = parseSwift(code, { generateId, startRule: 'expression' })
     expect(converted).toStrictEqual(json)
   })
 

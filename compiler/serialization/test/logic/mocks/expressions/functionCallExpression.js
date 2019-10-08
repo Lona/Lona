@@ -9,6 +9,8 @@ const xml = `<?xml version="1.0"?>
   </Argument>
 </FunctionCallExpression>`
 
+const code = `ThemedColor(light: #color(css: "pink"), dark: #color(css: "purple"))`
+
 const json = {
   data: {
     arguments: [
@@ -75,4 +77,4 @@ const json = {
   type: 'functionCallExpression',
 }
 
-module.exports = { json, xml }
+module.exports = { json, xml, code }

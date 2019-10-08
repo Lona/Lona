@@ -9,6 +9,15 @@ const xml = `<?xml version="1.0"?>
   </Declaration.Namespace>
 </Program>`
 
+const code = `import Prelude
+
+enum Colors {
+  static let a: Color = #color(css: "#FF3409")
+  enum Nested {
+    static let b: Color = #color(css: "#3449FF")
+  }
+}`
+
 const json = {
   data: {
     block: [
@@ -152,4 +161,4 @@ const json = {
   type: 'program',
 }
 
-module.exports = { json, xml }
+module.exports = { json, xml, code }

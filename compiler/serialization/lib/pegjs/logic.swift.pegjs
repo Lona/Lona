@@ -40,9 +40,26 @@
   }
 }
 
-start =
-  _ topLevelDeclarations:topLevelDeclarations _ {
-    return topLevelDeclarations
+topLevelDeclarations =
+  _ declarations:declarationList _ {
+    return {
+      data: {
+      	declarations: normalizeListWithPlaceholder(declarations),
+        id: uuid(),
+      },
+      type: 'topLevelDeclarations'
+    }
+  }
+
+program =
+  _ statementList:statementList _ {
+    return {
+      data: {
+        block: normalizeListWithPlaceholder(statementList),
+        id: uuid()
+      },
+      type: 'program',
+    }
   }
 
 statement =
@@ -56,15 +73,9 @@ statement =
     }
   }
 
-topLevelDeclarations =
-  declarations:declarationList {
-    return {
-      data: {
-      	declarations: normalizeListWithPlaceholder(declarations),
-        id: uuid(),
-      },
-      type: 'topLevelDeclarations'
-    }
+statementList =
+  head:statement tail:(_ statement)* {
+    return buildList(head, tail, 1)
   }
 
 declaration =
@@ -165,8 +176,17 @@ variableDeclaration =
 
 expression =
   literalExpression /
+  functionCallExpression /
   memberExpression /
   identifierExpression
+
+functionCallExpression =
+  expression:identifierExpression "(" args:functionCallArgumentList ")" {
+    return {
+      data: { expression, id: uuid(), arguments: normalizeListWithPlaceholder(args) },
+      type: 'functionCallExpression',
+    }
+  }
 
 memberExpression =
   expression:identifierExpression "." memberName:identifier {
@@ -197,10 +217,24 @@ expressionList =
     return buildList(head, tail, 2)
   }
 
-// memberExpression =
-//   head:identifier "." tail:memberExpression {
-//     return buildList(head, tail, 2)
-//   }
+// Function Call Argument
+
+functionCallArgumentList =
+  head:functionCallArgument tail:("," _ functionCallArgument)* {
+    return buildList(head, tail, 2)
+  }
+
+functionCallArgument =
+  label:rawIdentifier _ ":" _ expression:expression {
+    return {
+      data: {
+        expression,
+        id: uuid(),
+        label
+      },
+      type: 'argument',
+    }
+  }
 
 // Literals
 

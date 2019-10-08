@@ -4,7 +4,7 @@ const { parse: parseSwift, print: printSwift } = require('../../lib/swift')
 jest.mock('uuid/v4', () => () => `0`)
 
 describe('colors file', () => {
-  const { xml, json } = require('./mocks/files/colors')
+  const { xml, json, code } = require('./mocks/files/colors')
 
   test('json -> xml', () => {
     const source = JSON.stringify(json)
@@ -16,6 +16,19 @@ describe('colors file', () => {
     const converted = convertLogic(xml, 'json')
     const parsed = JSON.parse(converted)
     expect(parsed).toStrictEqual(json)
+  })
+
+  test('code -> json', () => {
+    const converted = parseSwift(code, {
+      generateId: () => '0',
+      startRule: 'program',
+    })
+    expect(converted).toStrictEqual(json)
+  })
+
+  test('json -> code', () => {
+    const converted = printSwift(json)
+    expect(converted).toBe(code)
   })
 })
 
@@ -40,7 +53,6 @@ describe('top level declarations', () => {
   })
 
   test('json -> code', () => {
-    const { code, json } = require('./mocks/files/topLevelDeclarations')
     const converted = printSwift(json)
     expect(converted).toBe(code)
   })
