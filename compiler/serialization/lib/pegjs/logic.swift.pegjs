@@ -78,6 +78,12 @@ declaration =
       data,
       type: 'importDeclaration',
     }
+  } / data:recordDeclaration {
+    return {
+      data,
+      type: 'record',
+    }
+  // This case determines its own type (enum/namespace)
   } / value:enumDeclaration {
     return value
   }
@@ -95,17 +101,31 @@ importDeclaration =
     }
   }
 
+recordDeclaration =
+  "struct" _ name:pattern _ "{" _ declarations:declarationList? _ "}" {
+    return {
+      // Delete declaration modifier for now, since we don't store these
+      declarations: normalizeListWithPlaceholder(declarations).map(declaration => {
+        delete declaration.data.declarationModifier
+        return declaration
+      }),
+      genericParameters: [],
+      id: uuid(),
+      name,
+    }
+  }
+
 enumDeclaration =
   "enum" _ name:pattern _ "{" _ declarations:declarationList? _ "}" {
     return {
       data: {
-        id: uuid(),
-        name,
         // Delete declaration modifier for now, since we don't store these
         declarations: normalizeListWithPlaceholder(declarations).map(declaration => {
           delete declaration.data.declarationModifier
           return declaration
         }),
+        id: uuid(),
+        name,
       },
       type: 'namespace',
     }
@@ -175,6 +195,11 @@ literal =
       data: { id: uuid(), value },
       type: 'array',
     }
+  } / value:colorValue {
+    return {
+      data: { id: uuid(), value },
+      type: 'color',
+    }
   }
 
 typeAnnotation =
@@ -222,6 +247,8 @@ stringValue = "\"" (! "\"" .)* "\"" { return text().slice(1, -1) }
 arrayValue = "[" _ expressionList:expressionList _ "]" {
   return normalizeListWithPlaceholder(expressionList)
 }
+
+colorValue = "#color(css:" _ value:stringValue _ ")" { return value }
 
 // Source characters
 

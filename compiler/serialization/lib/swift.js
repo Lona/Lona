@@ -48,9 +48,25 @@ function print(node, options = {}) {
         .filter(declaration => declaration.type !== 'placeholder')
         .map(print)
         .map(x => ' '.repeat(indent + 2) + x)
-        .join('\n\n')
+        .join('\n')
 
       return `enum ${name} {
+${printedDeclarations}
+}`
+    }
+    case 'record': {
+      const {
+        name: { name },
+        declarations,
+      } = data
+
+      const printedDeclarations = declarations
+        .filter(declaration => declaration.type !== 'placeholder')
+        .map(print)
+        .map(x => ' '.repeat(indent + 2) + x)
+        .join('\n')
+
+      return `struct ${name} {
 ${printedDeclarations}
 }`
     }
@@ -95,6 +111,11 @@ ${printedDeclarations}
       const { value } = data
 
       return JSON.stringify(value)
+    }
+    case 'color': {
+      const { value } = data
+
+      return `#color(css: ${JSON.stringify(value)})`
     }
     case 'array': {
       const { value } = data

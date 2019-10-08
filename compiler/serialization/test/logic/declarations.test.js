@@ -83,27 +83,31 @@ describe('variable declaration', () => {
   })
 })
 
-//
+describe('array variable declaration', () => {
+  const { xml, json, code } = require('./mocks/declarations/record')
 
-test('record -> xml', () => {
-  const { xml, json } = require('./mocks/declarations/record')
+  test('json -> xml', () => {
+    const source = JSON.stringify(json)
+    const converted = convertLogic(source, 'xml')
+    expect(converted).toBe(xml)
+  })
 
-  const source = JSON.stringify(json)
-  const converted = convertLogic(source, 'xml')
+  test('xml -> json', () => {
+    const converted = convertLogic(xml, 'json')
+    const parsed = JSON.parse(converted)
+    expect(parsed).toStrictEqual(json)
+  })
 
-  expect(converted).toBe(xml)
+  test('code -> json', () => {
+    const converted = parseSwift(code, { generateId, startRule: 'declaration' })
+    expect(converted).toStrictEqual(json)
+  })
+
+  test('json -> code', () => {
+    const converted = printSwift(json)
+    expect(converted).toBe(code)
+  })
 })
-
-test('record -> json', () => {
-  const { xml, json } = require('./mocks/declarations/record')
-
-  const converted = convertLogic(xml, 'json')
-  const parsed = JSON.parse(converted)
-
-  expect(parsed).toStrictEqual(json)
-})
-
-//
 
 describe('array variable declaration', () => {
   const { xml, json, code } = require('./mocks/declarations/arrayVariable')
