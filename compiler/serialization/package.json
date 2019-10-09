@@ -40,7 +40,8 @@
     "pegjs": "^0.10.0",
     "uuid": "^3.3.2",
     "xml2js": "^0.4.19",
-    "xmlbuilder": "^12.0.0"
+    "xmlbuilder": "^12.0.0",
+    "yargs": "^14.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
