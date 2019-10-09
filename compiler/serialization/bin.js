@@ -14,7 +14,9 @@ if (!filename) {
 }
 
 if (kind !== 'types' && kind !== 'logic' && kind !== 'document') {
-  console.log('Only type and logic files support conversion currently')
+  console.log(
+    'Only type, logic, and document files support conversion currently'
+  )
   console.log(usage)
   process.exit(1)
 }
