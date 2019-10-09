@@ -10,16 +10,30 @@ Token files support a special kind of code block, marked with the language "toke
 
 ### API
 
-Supported formats: `'xml'`, `'json'`, `'source'`
-
 #### `convertDocument: (String, Format) -> String`
 
-Example: Convert a document to XML
+Supported formats: `'json'`, `'source'`
+
+Example: Convert a `.md` document to JSON
 
 ```js
 import serialization from '@lona/serialization'
 
-const lonaDocument = '...' // XML, JSON, or source code of a Lona file
+const lonaDocument = '...' // source code of a Lona document
 
-const lonaXml = serialization.convertDocument(lonaDocument, 'xml')
+const lonaXml = serialization.convertDocument(lonaDocument, 'json')
+```
+
+#### `convertLogic: (String, Format) -> String`
+
+Supported formats: `'json'`, `'xml'`, `'source'`
+
+Example: Convert a `.tokens` file to JSON
+
+```js
+import serialization from '@lona/serialization'
+
+const lonaTokens = '...' // source code of a Lona tokens file
+
+const lonaXml = serialization.convertDocument(lonaDocument, 'json')
 ```
