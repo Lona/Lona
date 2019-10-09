@@ -243,16 +243,6 @@ class LogicViewController: NSViewController {
                     }
                 }
 
-                view.onReset = {
-                    let color = SwiftColor(cssString: css)
-
-                    colorValue = color
-                    view.colorValue = colorValue
-
-                    builder.onChangeValue(nil)
-                    builder.setListItem(nil)
-                }
-
                 view.onSubmit = {
                     builder.onSubmit()
                 }

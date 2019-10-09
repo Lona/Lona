@@ -41,11 +41,6 @@ public class ColorSuggestionEditor: NSBox {
 
   // MARK: Public
 
-  public var onReset: (() -> Void)? {
-    get { return parameters.onReset }
-    set { parameters.onReset = newValue }
-  }
-
   public var onSubmit: (() -> Void)? {
     get { return parameters.onSubmit }
     set { parameters.onSubmit = newValue }
@@ -78,7 +73,6 @@ public class ColorSuggestionEditor: NSBox {
   private var pickerContainerView = NSBox()
   private var colorPickerView = CoreColorPicker()
   private var footerView = NSBox()
-  private var resetButtonView = Button()
   private var spacerView = NSBox()
   private var submitButtonView = Button()
 
@@ -99,11 +93,9 @@ public class ColorSuggestionEditor: NSBox {
     addSubview(pickerContainerView)
     addSubview(footerView)
     pickerContainerView.addSubview(colorPickerView)
-    footerView.addSubview(resetButtonView)
     footerView.addSubview(spacerView)
     footerView.addSubview(submitButtonView)
 
-    resetButtonView.titleText = "Reset"
     submitButtonView.titleText = "OK"
   }
 
@@ -112,7 +104,6 @@ public class ColorSuggestionEditor: NSBox {
     pickerContainerView.translatesAutoresizingMaskIntoConstraints = false
     footerView.translatesAutoresizingMaskIntoConstraints = false
     colorPickerView.translatesAutoresizingMaskIntoConstraints = false
-    resetButtonView.translatesAutoresizingMaskIntoConstraints = false
     spacerView.translatesAutoresizingMaskIntoConstraints = false
     submitButtonView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -136,29 +127,16 @@ public class ColorSuggestionEditor: NSBox {
     let colorPickerViewTrailingAnchorConstraint = colorPickerView
       .trailingAnchor
       .constraint(equalTo: pickerContainerView.trailingAnchor, constant: -12)
-    let resetButtonViewHeightAnchorParentConstraint = resetButtonView
-      .heightAnchor
-      .constraint(lessThanOrEqualTo: footerView.heightAnchor, constant: -24)
     let spacerViewHeightAnchorParentConstraint = spacerView
       .heightAnchor
-      .constraint(lessThanOrEqualTo: footerView.heightAnchor, constant: -24)
+      .constraint(lessThanOrEqualTo: footerView.heightAnchor, constant: -12)
     let submitButtonViewHeightAnchorParentConstraint = submitButtonView
       .heightAnchor
-      .constraint(lessThanOrEqualTo: footerView.heightAnchor, constant: -24)
-    let resetButtonViewLeadingAnchorConstraint = resetButtonView
+      .constraint(lessThanOrEqualTo: footerView.heightAnchor, constant: -12)
+    let spacerViewLeadingAnchorConstraint = spacerView
       .leadingAnchor
       .constraint(equalTo: footerView.leadingAnchor, constant: 12)
-    let resetButtonViewTopAnchorConstraint = resetButtonView
-      .topAnchor
-      .constraint(equalTo: footerView.topAnchor, constant: 12)
-    let resetButtonViewCenterYAnchorConstraint = resetButtonView
-      .centerYAnchor
-      .constraint(equalTo: footerView.centerYAnchor)
-    let resetButtonViewBottomAnchorConstraint = resetButtonView
-      .bottomAnchor
-      .constraint(equalTo: footerView.bottomAnchor, constant: -12)
-    let spacerViewLeadingAnchorConstraint = spacerView.leadingAnchor.constraint(equalTo: resetButtonView.trailingAnchor)
-    let spacerViewTopAnchorConstraint = spacerView.topAnchor.constraint(equalTo: footerView.topAnchor, constant: 12)
+    let spacerViewTopAnchorConstraint = spacerView.topAnchor.constraint(equalTo: footerView.topAnchor)
     let spacerViewCenterYAnchorConstraint = spacerView.centerYAnchor.constraint(equalTo: footerView.centerYAnchor)
     let spacerViewBottomAnchorConstraint = spacerView
       .bottomAnchor
@@ -169,9 +147,7 @@ public class ColorSuggestionEditor: NSBox {
     let submitButtonViewLeadingAnchorConstraint = submitButtonView
       .leadingAnchor
       .constraint(equalTo: spacerView.trailingAnchor)
-    let submitButtonViewTopAnchorConstraint = submitButtonView
-      .topAnchor
-      .constraint(equalTo: footerView.topAnchor, constant: 12)
+    let submitButtonViewTopAnchorConstraint = submitButtonView.topAnchor.constraint(equalTo: footerView.topAnchor)
     let submitButtonViewCenterYAnchorConstraint = submitButtonView
       .centerYAnchor
       .constraint(equalTo: footerView.centerYAnchor)
@@ -180,7 +156,6 @@ public class ColorSuggestionEditor: NSBox {
       .constraint(equalTo: footerView.bottomAnchor, constant: -12)
     let colorPickerViewHeightAnchorConstraint = colorPickerView.heightAnchor.constraint(equalToConstant: 240)
 
-    resetButtonViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     spacerViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     submitButtonViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 
@@ -195,13 +170,8 @@ public class ColorSuggestionEditor: NSBox {
       colorPickerViewTopAnchorConstraint,
       colorPickerViewLeadingAnchorConstraint,
       colorPickerViewTrailingAnchorConstraint,
-      resetButtonViewHeightAnchorParentConstraint,
       spacerViewHeightAnchorParentConstraint,
       submitButtonViewHeightAnchorParentConstraint,
-      resetButtonViewLeadingAnchorConstraint,
-      resetButtonViewTopAnchorConstraint,
-      resetButtonViewCenterYAnchorConstraint,
-      resetButtonViewBottomAnchorConstraint,
       spacerViewLeadingAnchorConstraint,
       spacerViewTopAnchorConstraint,
       spacerViewCenterYAnchorConstraint,
@@ -218,12 +188,7 @@ public class ColorSuggestionEditor: NSBox {
   private func update() {
     colorPickerView.colorValue = colorValue
     colorPickerView.onChangeColorValue = handleOnChangeColorValue
-    resetButtonView.onClick = handleOnReset
     submitButtonView.onClick = handleOnSubmit
-  }
-
-  private func handleOnReset() {
-    onReset?()
   }
 
   private func handleOnSubmit() {
@@ -240,18 +205,15 @@ public class ColorSuggestionEditor: NSBox {
 extension ColorSuggestionEditor {
   public struct Parameters: Equatable {
     public var colorValue: ColorPickerColor
-    public var onReset: (() -> Void)?
     public var onSubmit: (() -> Void)?
     public var onChangeColorValue: ColorPickerHandler
 
     public init(
       colorValue: ColorPickerColor,
-      onReset: (() -> Void)? = nil,
       onSubmit: (() -> Void)? = nil,
       onChangeColorValue: ColorPickerHandler = nil)
     {
       self.colorValue = colorValue
-      self.onReset = onReset
       self.onSubmit = onSubmit
       self.onChangeColorValue = onChangeColorValue
     }
@@ -287,17 +249,10 @@ extension ColorSuggestionEditor {
 
     public init(
       colorValue: ColorPickerColor,
-      onReset: (() -> Void)? = nil,
       onSubmit: (() -> Void)? = nil,
       onChangeColorValue: ColorPickerHandler = nil)
     {
-      self
-        .init(
-          Parameters(
-            colorValue: colorValue,
-            onReset: onReset,
-            onSubmit: onSubmit,
-            onChangeColorValue: onChangeColorValue))
+      self.init(Parameters(colorValue: colorValue, onSubmit: onSubmit, onChangeColorValue: onChangeColorValue))
     }
 
     public init() {
