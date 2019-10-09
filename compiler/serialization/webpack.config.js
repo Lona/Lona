@@ -29,8 +29,22 @@ module.exports = [
     node: {
       fs: 'empty',
     },
+    resolve: {
+      alias: {
+        './pegjs/logicSwiftParser': resolve(
+          __dirname,
+          'lib/pegjs/logic.swift.pegjs'
+        ),
+      },
+    },
     module: {
       rules: [
+        {
+          test: /\.pegjs$/,
+          use: {
+            loader: 'pegjs-loader',
+          },
+        },
         {
           test: /\.m?js$/,
           exclude: /(node_modules)/,

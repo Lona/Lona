@@ -50,6 +50,7 @@
     "babel-loader": "^8.0.5",
     "esm": "^3.2.22",
     "jest": "^24.8.0",
+    "pegjs-loader": "^0.5.5",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3"
   },

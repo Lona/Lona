@@ -77,7 +77,7 @@ function print(normalizedFormat, convertLogic) {
 
   const encodedTokensAst = map(ast, node => {
     if (node.type === 'code' && node.lang === 'tokens') {
-      node.value = convertLogic(JSON.stringify(node.parsed), 'xml')
+      node.value = convertLogic(JSON.stringify(node.parsed), 'source')
       delete node.parsed
     }
 
