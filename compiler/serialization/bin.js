@@ -23,11 +23,20 @@ yargs
   .command(
     'document file targetFormat',
     'Convert a Lona document to the specified format',
-    yargs => addSharedArguments(yargs),
+    yargs => {
+      addSharedArguments(yargs)
+      yargs.option('e', {
+        alias: 'embeddedFormat',
+        describe: 'The format of token blocks in MDX',
+        type: 'string',
+      })
+    },
     argv => {
-      const { file, targetFormat, sourceFormat } = argv
+      const { file, targetFormat, sourceFormat, embeddedFormat } = argv
       const contents = fs.readFileSync(file, 'utf8')
-      const converted = convertDocument(contents, targetFormat)
+      const converted = convertDocument(contents, targetFormat, {
+        embeddedFormat,
+      })
       console.log(converted)
     }
   )

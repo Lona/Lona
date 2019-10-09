@@ -153,13 +153,13 @@ function decodeDocument(contents, format) {
   }
 }
 
-function encodeDocument(ast, format) {
+function encodeDocument(ast, format, options) {
   try {
     switch (format) {
       case SERIALIZATION_FORMAT.JSON:
         return stringify(ast, { space: '  ' })
       case SERIALIZATION_FORMAT.SOURCE:
-        return mdx.print(ast, convertLogic)
+        return mdx.print(ast, convertLogic, options)
       default:
         throw new Error(`Unknown encoding format ${format}`)
     }
@@ -172,10 +172,10 @@ function encodeDocument(ast, format) {
 function convertDocument(contents, targetFormat, options = {}) {
   const sourceFormat = normalizeFormat(contents, options.sourceFormat)
 
-  if (sourceFormat === targetFormat) return contents
+  if (sourceFormat === targetFormat && !options.embeddedFormat) return contents
 
   const ast = decodeDocument(contents, sourceFormat)
-  return encodeDocument(ast, targetFormat)
+  return encodeDocument(ast, targetFormat, options)
 }
 
 module.exports = {

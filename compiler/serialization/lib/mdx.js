@@ -64,7 +64,7 @@ function parse(src, convertLogic) {
   return normalizedFormat.data
 }
 
-function print(normalizedFormat, convertLogic) {
+function print(normalizedFormat, convertLogic, options = {}) {
   function toAst(node) {
     const { type, data } = node
 
@@ -77,7 +77,13 @@ function print(normalizedFormat, convertLogic) {
 
   const encodedTokensAst = map(ast, node => {
     if (node.type === 'code' && node.lang === 'tokens') {
-      node.value = convertLogic(JSON.stringify(node.parsed), 'source')
+      const embeddedFormat = options.embeddedFormat || 'xml'
+      let value = convertLogic(JSON.stringify(node.parsed), embeddedFormat)
+      // Prettify embedded JSON
+      if (embeddedFormat === 'json') {
+        value = JSON.stringify(JSON.parse(value), null, 2)
+      }
+      node.value = value
       delete node.parsed
     }
 
