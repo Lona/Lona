@@ -130,7 +130,7 @@ ${printedDeclarations}
       case 'argument': {
         const { expression, label } = data
 
-        return `${label}: ${print(expression)}`
+        return label ? `${label}: ${print(expression)}` : print(expression)
       }
       case 'memberExpression': {
         const {
