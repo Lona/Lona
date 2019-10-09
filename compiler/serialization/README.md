@@ -21,19 +21,19 @@ import serialization from '@lona/serialization'
 
 const lonaDocument = '...' // source code of a Lona document
 
-const lonaXml = serialization.convertDocument(lonaDocument, 'json')
+const lonaJson = serialization.convertDocument(lonaDocument, 'json')
 ```
 
 #### `convertLogic: (String, Format) -> String`
 
 Supported formats: `'json'`, `'xml'`, `'source'`
 
-Example: Convert a `.tokens` file to JSON
+Example: Convert a `.tokens` file to XML
 
 ```js
 import serialization from '@lona/serialization'
 
 const lonaTokens = '...' // source code of a Lona tokens file
 
-const lonaXml = serialization.convertDocument(lonaDocument, 'json')
+const lonaXml = serialization.convertDocument(lonaTokens, 'xml')
 ```
