@@ -282,10 +282,10 @@
   dependencies:
     "@glimmer/util" "^0.30.5"
 
-"@lona/serialization@^0.0.12":
-  version "0.0.12"
-  resolved "https://registry.yarnpkg.com/@lona/serialization/-/serialization-0.0.12.tgz#550e9aae45d2805e576cc6185cf02d29a0c8cbb5"
-  integrity sha512-iSztbsvSx1nw9cYoGJlQ+k7lIUvUiiz+ZschAepARzBWl+OuMz6E5y9Clox+V/hqzGi+MXt9L9HDA9S6v33Xng==
+"@lona/serialization@^0.0.13":
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/@lona/serialization/-/serialization-0.0.13.tgz#6111fae5960761cbf4250d028b166427cef062c9"
+  integrity sha512-x4E8bRqqpOeV7GbgPi0QEKXh3I6sUpI+UYOMWqxgYoXU9V5n1GklCJ2InEZh4g8E0lXHDA54wKTtSJjkasKPnQ==
   dependencies:
     "@mdx-js/mdx" "^1.5.0"
     json-stable-stringify "^1.0.1"

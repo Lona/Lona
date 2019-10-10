@@ -82,6 +82,21 @@ module Workspace = {
        });
   };
 
+  let documentFiles =
+      (workspacePath: string, ~ignore: list(string))
+      : list(file(LogicAst.syntaxNode)) => {
+    let searchPath = Path.join([|workspacePath, "**/*.md"|]);
+    let paths = FileSearch.sync(searchPath, ~options={ignore: ignore}, ());
+    paths
+    |> List.map(path => {
+         let data = Node.Fs.readFileSync(path, `utf8);
+         let jsonContents = Serialization.program(data);
+         let json = jsonContents |> Js.Json.parseExn;
+         let contents = LogicAst.Decode.syntaxNode(json);
+         {path, contents};
+       });
+  };
+
   let colorsFile =
       (workspacePath: string, ~ignore: list(string)): file(list(Color.t)) => {
     let path = findPathWithSuffix(workspacePath, "colors.json", ~ignore);
@@ -294,7 +309,11 @@ let load =
                Workspace.logicFiles(
                  workspacePath,
                  ~ignore=lonaFile.contents.ignore,
-               ),
+               )
+               @ Workspace.documentFiles(
+                   workspacePath,
+                   ~ignore=lonaFile.contents.ignore,
+                 ),
              logicLibraries:
                Workspace.logicFiles(
                  logicLibrariesPath,

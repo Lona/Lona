@@ -20,6 +20,8 @@ let scanResult =
   };
 let options = scanResult.options;
 
+[@bs.val] [@bs.module "path"] external extname: string => string = "";
+
 [@bs.val] [@bs.module "fs-extra"] external ensureDirSync: string => unit = "";
 
 [@bs.val] [@bs.module "fs-extra"]
@@ -452,7 +454,7 @@ let convertWorkspace = (target, workspace, output) => {
               let filename =
                 formatFilename(
                   target,
-                  Path.basename_ext(file.path, ".logic"),
+                  Path.basename_ext(file.path, extname(file.path)),
                 )
                 ++ getTargetExtension(target);
               let dirname = Path.dirname(file.path);
@@ -462,9 +464,15 @@ let convertWorkspace = (target, workspace, output) => {
                   ~workspaceFile=Path.join2(dirname, filename),
                 );
 
-              let converted = convertLogic(target, config, file.contents);
-
-              writeAnnotatedFile(outputPath, converted);
+              /* Only convert non-empty files */
+              switch (file.contents) {
+              | TopLevelDeclarations(
+                  TopLevelDeclarations({declarations: Next(_)}),
+                ) =>
+                let converted = convertLogic(target, config, file.contents);
+                writeAnnotatedFile(outputPath, converted);
+              | _ => ()
+              };
             });
        };
 
