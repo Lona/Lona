@@ -10,13 +10,13 @@ import Foundation
 import Logic
 
 private let designTokensReadmeContents = """
-## Overview
+# Design System
 
-Here we define the tokens (colors, text styles, shadows, etc) of our design system.
+Our design system contains the following token definitions:
 
-We then use the Lona compiler to convert this design system to platform-specific code.
-
-> You can learn more about Lona [here](https://github.com/airbnb/Lona).
+Colors
+Text Styles
+Shadows
 """
 
 private let componentLibraryReadmeContents = """
@@ -29,6 +29,57 @@ Here we define the components, tokens (colors, text styles, shadows, etc), and d
 We then use the Lona compiler to convert this design system to platform-specific code.
 
 > You can learn more about Lona [here](https://github.com/airbnb/Lona).
+"""
+
+private let colorsDocumentContents = """
+# Colors
+
+These are the core colors in our design system.
+
+```tokens
+enum Colors {
+  static let red: Color = #color(css: "#F03E3E")
+  static let pink: Color = #color(css: "#D6336C")
+  static let grape: Color = #color(css: "#AE3EC9")
+  static let violet: Color = #color(css: "#7048E8")
+  static let indigo: Color = #color(css: "#4263EB")
+  static let blue: Color = #color(css: "#1C7ED6")
+  static let cyan: Color = #color(css: "#1098AD")
+  static let teal: Color = #color(css: "#0CA678")
+  static let green: Color = #color(css: "#37B24D")
+  static let lime: Color = #color(css: "#74B816")
+  static let yellow: Color = #color(css: "#F59F00")
+  static let orange: Color = #color(css: "#F76707")
+}
+```
+"""
+
+private let textStylesDocumentContents = """
+# TextStyles
+
+These are the core colors in our design system.
+
+```tokens
+enum TextStyles {
+  static let display: TextStyle = TextStyle(fontSize: Optional.value(28), color: Optional.value(#color(css: "black")))
+  static let heading: TextStyle = TextStyle(fontSize: Optional.value(17), color: Optional.value(#color(css: "black")))
+  static let body: TextStyle = TextStyle(fontSize: Optional.value(15), color: Optional.value(#color(css: "black")))
+}
+```
+"""
+
+private let shadowsDocumentContents = """
+# Shadows
+
+These are the core shadows in our design system.
+
+```tokens
+enum Shadows {
+  static let small: Shadow = Shadow(y: 1, blur: 2, color: #color(css: "rgba(0,0,0,0.4)"))
+  static let medium: Shadow = Shadow(y: 2, blur: 4, color: #color(css: "rgba(0,0,0,0.4)"))
+  static let large: Shadow = Shadow(y: 3, blur: 6, color: #color(css: "rgba(0,0,0,0.4)"))
+}
+```
 """
 
 enum WorkspaceTemplate {
@@ -139,79 +190,14 @@ enum WorkspaceTemplate {
                 VirtualFile(name: "lona.json") {
                     CSData.Object([:])
                 },
-                VirtualFile(name: "Colors.tokens", contents: {
-                    let program = LGCSyntaxNode.topLevelDeclarations(
-                        .init(
-                            id: UUID(),
-                            declarations: LGCList<LGCDeclaration>(
-                                [
-                                    makeImport(name: "Color"),
-                                    makeNamespace(
-                                        name: "Colors",
-                                        declarations: [
-                                            makeColor(name: "red", colorString: "#F03E3E"),
-                                            makeColor(name: "pink", colorString: "#D6336C"),
-                                            makeColor(name: "grape", colorString: "#AE3EC9"),
-                                            makeColor(name: "violet", colorString: "#7048E8"),
-                                            makeColor(name: "indigo", colorString: "#4263EB"),
-                                            makeColor(name: "blue", colorString: "#1C7ED6"),
-                                            makeColor(name: "cyan", colorString: "#1098AD"),
-                                            makeColor(name: "teal", colorString: "#0CA678"),
-                                            makeColor(name: "green", colorString: "#37B24D"),
-                                            makeColor(name: "lime", colorString: "#74B816"),
-                                            makeColor(name: "yellow", colorString: "#F59F00"),
-                                            makeColor(name: "orange", colorString: "#F76707")
-                                        ]
-                                    )
-                                ]
-                            )
-                        )
-                    )
-                    return try! LogicDocument.encode(program)
+                VirtualFile(name: "Colors.md", contents: {
+                    return colorsDocumentContents.data(using: .utf8)!
                 }),
-                VirtualFile(name: "Shadows.tokens", contents: {
-                    let program = LGCSyntaxNode.topLevelDeclarations(
-                        .init(
-                            id: UUID(),
-                            declarations: LGCList<LGCDeclaration>(
-                                [
-                                    makeImport(name: "Shadow"),
-                                    makeColor(name: "shadowColor", colorString: "rgba(0,0,0,0.4)"),
-                                    makeNamespace(
-                                        name: "Shadows",
-                                        declarations: [
-                                            makeShadow(name: "small", y: 1, blur: 2, colorIdentifier: "shadowColor"),
-                                            makeShadow(name: "medium", y: 2, blur: 4, colorIdentifier: "shadowColor"),
-                                            makeShadow(name: "large", y: 3, blur: 6, colorIdentifier: "shadowColor")
-                                        ]
-                                    )
-                                ]
-                            )
-                        )
-                    )
-                    return try! LogicDocument.encode(program)
+                VirtualFile(name: "TextStyles.md", contents: {
+                    return textStylesDocumentContents.data(using: .utf8)!
                 }),
-                VirtualFile(name: "TextStyles.tokens", contents: {
-                    let program = LGCSyntaxNode.topLevelDeclarations(
-                        .init(
-                            id: UUID(),
-                            declarations: LGCList<LGCDeclaration>(
-                                [
-                                    makeImport(name: "TextStyle"),
-                                    makeColor(name: "textColor", colorString: "#222"),
-                                    makeNamespace(
-                                        name: "TextStyle",
-                                        declarations: [
-                                            makeTextStyle(name: "display", fontSize: 28, colorIdentifier: "textColor"),
-                                            makeTextStyle(name: "heading", fontSize: 17, colorIdentifier: "textColor"),
-                                            makeTextStyle(name: "body", fontSize: 15, colorIdentifier: "textColor")
-                                        ]
-                                    )
-                                ]
-                            )
-                        )
-                    )
-                    return try! LogicDocument.encode(program)
+                VirtualFile(name: "Shadows.md", contents: {
+                    return shadowsDocumentContents.data(using: .utf8)!
                 })
             ]
         }

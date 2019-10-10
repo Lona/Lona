@@ -171,21 +171,12 @@ class FileNavigator: NSBox {
                 }))
             }
 
-            menu.addItem(NSMenuItem(title: "New Markdown File", onClick: { [unowned self] in
+            menu.addItem(NSMenuItem(title: "New Document", onClick: { [unowned self] in
                 guard let newFileName = self.promptForName(
-                    messageText: "Enter a new markdown file name",
+                    messageText: "Enter a new document name",
                     placeholderText: "File name") else { return }
 
                 _ = self.performCreateMarkdownFile?(makePath(filename: newFileName, withExtension: "md"))
-            }))
-
-
-            menu.addItem(NSMenuItem(title: "New Tokens File", onClick: { [unowned self] in
-                guard let newFileName = self.promptForName(
-                    messageText: "Enter a new tokens file name",
-                    placeholderText: "File name") else { return }
-
-                _ = self.performCreateLogicFile?(makePath(filename: newFileName, withExtension: "tokens"))
             }))
 
             menu.addItem(NSMenuItem(title: "New Folder", onClick: { [unowned self] in
@@ -348,7 +339,7 @@ class FileNavigator: NSBox {
     private func displayNameForFile(atPath path: String) -> String {
         let url = URL(fileURLWithPath: path)
         switch url.pathExtension {
-        case "component", "logic", "tokens":
+        case "component", "logic", "tokens", "md":
             return url.deletingPathExtension().lastPathComponent
         default:
             return url.lastPathComponent
