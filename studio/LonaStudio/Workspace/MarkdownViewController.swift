@@ -7,6 +7,7 @@
 //
 
 import AppKit
+import Differ
 import Logic
 
 // MARK: - MarkdownViewController
@@ -36,7 +37,26 @@ class MarkdownViewController: NSViewController {
 
     public var preview: Bool = true
 
-    public var content: [BlockEditor.Block] = [] { didSet { update() } }
+    public var content: [BlockEditor.Block] = [] {
+        didSet {
+            let diff = oldValue.extendedDiff(content)
+
+            let tokensChanged = diff.contains(where: { element in
+                switch element {
+                case .delete(at: let index), .insert(at: let index):
+                    if case .tokens = content[index].content {
+                        return true
+                    } else {
+                        return false
+                    }
+                case .move:
+                    return false
+                }
+            })
+
+            update(shouldUpdateTokenBlocks: tokensChanged)
+        }
+    }
 
     public var onChange: (([BlockEditor.Block]) -> Bool)? {
         get { return contentView.onChangeBlocks }
@@ -50,7 +70,7 @@ class MarkdownViewController: NSViewController {
         setUpViews()
         setUpConstraints()
 
-        update()
+        update(shouldUpdateTokenBlocks: true)
     }
 
     private let containerView = NSBox()
@@ -79,9 +99,12 @@ class MarkdownViewController: NSViewController {
         contentView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor).isActive = true
     }
 
-    private func update() {
+    private func update(shouldUpdateTokenBlocks: Bool) {
         contentView.blocks = content
-        configure(blocks: content)
+
+        if shouldUpdateTokenBlocks {
+            configure(blocks: content)
+        }
     }
 }
 
@@ -133,10 +156,15 @@ extension MarkdownViewController {
             })
         )
 
+        let makeSuggestionBuilder: (LGCSyntaxNode, LGCSyntaxNode, LogicFormattingOptions) -> ((String) -> [LogicSuggestionItem]?)? = Memoize.one({
+            rootNode, node, formattingOptions in
+            return StandardConfiguration.suggestions(rootNode: rootNode, node: node, formattingOptions: formattingOptions)
+        })
+
         let suggestionsForNode: ((LGCSyntaxNode, LGCSyntaxNode, String) -> [LogicSuggestionItem]) = { _, node, query in
             let compiled = LonaModule.current.logic.compiled
 
-            let suggestionBuilder = StandardConfiguration.suggestions(rootNode: compiled.programNode, node: node, formattingOptions: formattingOptions)
+            let suggestionBuilder = makeSuggestionBuilder(compiled.programNode, node, formattingOptions)
 
             if let suggestionBuilder = suggestionBuilder, let suggestions = suggestionBuilder(query) {
                 return suggestions
