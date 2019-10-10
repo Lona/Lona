@@ -1,4 +1,5 @@
 const stringify = require('json-stable-stringify')
+const uuid = require('uuid/v4')
 
 const xml = require('./xml')
 const mdx = require('./mdx')
@@ -178,6 +179,33 @@ function convertDocument(contents, targetFormat, options = {}) {
   return encodeDocument(ast, targetFormat, options)
 }
 
+function extractProgram(contents, options = {}) {
+  const sourceFormat = normalizeFormat(contents, options.sourceFormat)
+
+  const ast = decodeDocument(contents, sourceFormat)
+
+  const { children } = ast
+
+  const declarations = children
+    .filter(child => child.type === 'code' && child.data.lang === 'tokens')
+    // Get Logic syntax node
+    .map(child => child.data.parsed)
+    // Get declarations
+    .map(node => node.data.declarations)
+
+  const flattened = [].concat(...declarations)
+
+  const topLevelDeclarations = {
+    data: {
+      declarations: flattened,
+      id: uuid().toUpperCase(),
+    },
+    type: 'topLevelDeclarations',
+  }
+
+  return stringify(topLevelDeclarations, { space: '  ' })
+}
+
 module.exports = {
   SERIALIZATION_FORMAT,
   convertTypes,
@@ -189,5 +217,6 @@ module.exports = {
   encodeTypes,
   encodeLogic,
   encodeDocument,
+  extractProgram,
   detectFormat,
 }

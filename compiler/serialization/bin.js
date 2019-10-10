@@ -4,7 +4,12 @@ const path = require('path')
 const fs = require('fs')
 const yargs = require('yargs')
 
-const { convertTypes, convertLogic, convertDocument } = require('./lib/index')
+const {
+  convertTypes,
+  convertLogic,
+  convertDocument,
+  extractProgram,
+} = require('./lib/index')
 
 function addSharedArguments(yargs) {
   yargs.positional('file', {
@@ -62,10 +67,21 @@ yargs
       console.log(converted)
     }
   )
-  .demandCommand(1, '\nPass --help to see all available commands and options.')
+  .command(
+    'program file',
+    'Extract the executable contents of a Lona document',
+    yargs => {},
+    argv => {
+      const { file } = argv
+      const contents = fs.readFileSync(file, 'utf8')
+      const converted = extractProgram(contents)
+      console.log(converted)
+    }
+  )
+  .demandCommand(1, 'Pass --help to see all available commands and options.')
   .strict()
   .fail((msg, err, yargs) => {
     yargs.showHelp()
-    console.log(msg)
+    console.log('\n' + msg)
   })
   .help().argv
