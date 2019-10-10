@@ -1,6 +1,6 @@
 {
   "name": "@lona/serialization",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Convert Lona files between serialization formats",
   "main": "build/index.js",
   "bin": "./bin.js",
@@ -18,7 +18,9 @@
     "test:watch": "jest --watch",
     "build": "npm run build:node && npm run build:web",
     "build:web": "webpack",
-    "build:node": "babel lib --out-dir build",
+    "build:node": "npm run build:babel && npm run build:copyPegjs",
+    "build:copyPegjs": "cp lib/pegjs/logic.swift.pegjs build/pegjs/logic.swift.pegjs",
+    "build:babel": "babel lib --out-dir build",
     "prepublishOnly": "npm run build"
   },
   "author": "Devin Abbott",
