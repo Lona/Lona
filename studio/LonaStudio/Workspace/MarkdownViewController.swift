@@ -43,7 +43,13 @@ class MarkdownViewController: NSViewController {
 
             let tokensChanged = diff.contains(where: { element in
                 switch element {
-                case .delete(at: let index), .insert(at: let index):
+                case .delete(at: let index):
+                    if case .tokens = oldValue[index].content {
+                        return true
+                    } else {
+                        return false
+                    }
+                case .insert(at: let index):
                     if case .tokens = content[index].content {
                         return true
                     } else {
