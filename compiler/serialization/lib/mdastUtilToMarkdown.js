@@ -35,6 +35,9 @@ ${node.value}
     case 'image': {
       return `![${node.alt}](${node.url})`
     }
+    case 'link': {
+      return `[${childrenValue()}](${node.url})`
+    }
     case 'strong': {
       return `**${childrenValue()}**`
     }

@@ -120,6 +120,23 @@ describe('convert mdast to markdown', () => {
     expect(mdx).toBe('![alt](url)')
   })
 
+  test('link', () => {
+    const json = {
+      type: 'link',
+      url: 'url',
+      children: [
+        {
+          type: 'text',
+          value: 'a',
+        },
+      ],
+    }
+
+    const mdx = toMarkdown(json)
+
+    expect(mdx).toBe('[a](url)')
+  })
+
   test('thematicBreak', () => {
     const json = {
       type: 'thematicBreak',
