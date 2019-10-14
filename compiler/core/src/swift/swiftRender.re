@@ -2,7 +2,7 @@ open Prettier.Doc.Builders;
 
 let renderFloat = value => s(Format.floatToString(value));
 
-let reservedWords = ["true", "false", "default", "case"];
+let reservedWords = ["true", "false", "default", "case", "break"];
 
 let stringWithBackticksIfNeeded = (id: string) =>
   List.mem(id, reservedWords) ? "`" ++ id ++ "`" : id;

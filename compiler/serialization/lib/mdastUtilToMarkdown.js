@@ -19,7 +19,10 @@ module.exports = function toMarkdown(node) {
       return childrenValue()
     }
     case 'blockquote': {
-      return '> ' + childrenValue()
+      return childrenValue()
+        .split('\n')
+        .map(line => '> ' + line)
+        .join('\n')
     }
     case 'thematicBreak': {
       return '---'
@@ -49,6 +52,9 @@ ${node.value}
     }
     case 'inlineCode': {
       return `\`${node.value}\``
+    }
+    case 'break': {
+      return '  \n'
     }
     default:
       throw new Error(`Unknown mdx node ${type}`)

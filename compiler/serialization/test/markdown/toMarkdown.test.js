@@ -163,4 +163,27 @@ describe('convert mdast to markdown', () => {
 
     expect(mdx).toBe('> a')
   })
+
+  test('blockquote with break', () => {
+    const json = {
+      type: 'blockquote',
+      children: [
+        {
+          type: 'text',
+          value: 'a',
+        },
+        {
+          type: 'break',
+        },
+        {
+          type: 'text',
+          value: 'b',
+        },
+      ],
+    }
+
+    const mdx = toMarkdown(json)
+
+    expect(mdx).toBe('> a  \n> b')
+  })
 })
