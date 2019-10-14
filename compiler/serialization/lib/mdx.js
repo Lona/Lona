@@ -1,7 +1,11 @@
 const mdx = require('@mdx-js/mdx')
 
 const flattenImageParagraphs = require('mdast-flatten-image-paragraphs')()
-const moveImagesToRoot = require('mdast-move-images-to-root')()
+// const moveImagesToRoot = require('mdast-move-images-to-root')()
+
+const convertContentModel = require('./mdast/mdastConvertContentModel')()
+const flattenParagraphs = require('./mdast/flattenParagraphs')
+const moveToRoot = require('./mdast/moveToRoot')
 
 const toMarkdown = require('./mdastUtilToMarkdown')
 
@@ -40,7 +44,14 @@ function map(node, f) {
 function parse(src, convertLogic) {
   const mdast = getOutputs(src).mdast
 
-  const flattened = moveImagesToRoot(flattenImageParagraphs(mdast))
+  const transforms = [
+    flattenImageParagraphs,
+    flattenParagraphs('blockquote'),
+    moveToRoot('image'),
+    moveToRoot('blockquote'),
+  ]
+
+  const flattened = transforms.reduce((result, f) => f(result), mdast)
 
   const withoutExtras = map(flattened, node => {
     delete node.position

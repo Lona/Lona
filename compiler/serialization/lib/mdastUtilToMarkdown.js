@@ -18,6 +18,9 @@ module.exports = function toMarkdown(node) {
     case 'paragraph': {
       return childrenValue()
     }
+    case 'blockquote': {
+      return '> ' + childrenValue()
+    }
     case 'thematicBreak': {
       return '---'
     }

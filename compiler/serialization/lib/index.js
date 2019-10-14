@@ -75,7 +75,7 @@ function encodeTypes(ast, format) {
     }
   } catch (e) {
     console.error(e)
-    throw new Error(`Failed to encode logic as ${format}.`)
+    throw new Error(`Failed to encode types as ${format}.`)
   }
 }
 
@@ -166,7 +166,7 @@ function encodeDocument(ast, format, options) {
     }
   } catch (e) {
     console.error(e)
-    throw new Error(`Failed to encode document as ${format}.`)
+    throw new Error(`Failed to encode document as ${format}.\n${e}`)
   }
 }
 
