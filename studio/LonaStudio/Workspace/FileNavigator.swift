@@ -263,7 +263,7 @@ class FileNavigator: NSBox {
         headerView.translatesAutoresizingMaskIntoConstraints = false
         fileTree.translatesAutoresizingMaskIntoConstraints = false
 
-        headerView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        headerView.topAnchor.constraint(equalTo: topAnchor, constant: 24).isActive = true
         headerView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         headerView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
 
