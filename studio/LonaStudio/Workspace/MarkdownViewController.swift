@@ -236,7 +236,7 @@ extension MarkdownViewController {
                             }
                         }
 
-                        let view = ShadowPicker()
+                        let view = ShadowSuggestionEditor()
 
                         view.shadowValue = decodeValue(builder.initialValue)
 
@@ -246,6 +246,10 @@ extension MarkdownViewController {
                             if let data = try? JSONEncoder().encode(shadowValue) {
                                 builder.onChangeValue(data)
                             }
+                        }
+
+                        view.onSubmit = {
+                            builder.onSubmit()
                         }
 
                         builder.setNodeBuilder({ data in

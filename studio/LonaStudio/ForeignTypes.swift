@@ -9,6 +9,13 @@
 import Colors
 import ControlledComponents
 import class ColorPicker.ColorWellPicker
+import class ColorPicker.ShadowPicker
+import struct ColorPicker.PickerShadow
+
+public typealias ShadowPicker = ColorPicker.ShadowPicker
+public typealias PickerShadow = ColorPicker.PickerShadow
+public typealias ShadowPickerShadow = PickerShadow?
+public typealias ShadowPickerHandler = ((PickerShadow) -> Void)?
 
 public typealias ColorList = [CSColor]?
 public typealias ColorHandler = ((CSColor?) -> Void)?
@@ -74,6 +81,15 @@ extension NumberInput {
             onChange = { value in
                 newValue?(CGFloat(value))
             }
+        }
+    }
+}
+
+extension ShadowPicker {
+    public var optionalShadowValue: ShadowPickerShadow {
+        get { return shadowValue }
+        set {
+            self.shadowValue = newValue ?? PickerShadow(x: 0, y: 0, blur: 0, radius: 0, opacity: 0)
         }
     }
 }
