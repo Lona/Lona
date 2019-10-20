@@ -7,6 +7,7 @@
 //
 
 import AppKit
+import ColorPicker
 import Differ
 import Logic
 
@@ -173,6 +174,31 @@ extension MarkdownViewController {
             let suggestionBuilder = makeSuggestionBuilder(compiled.programNode, node, formattingOptions)
 
             if let suggestionBuilder = suggestionBuilder, let suggestions = suggestionBuilder(query) {
+                if let (context, substitution) = compiled.unification, let type = context.nodes[node.uuid] {
+                    let unifiedType = Unification.substitute(substitution, in: type)
+
+                    switch node {
+                    case .expression:
+                        if unifiedType == Unification.T.shadow {
+                            let shadowLiteralSuggestion = LogicSuggestionItem(
+                                title: "Shadow",
+                                category: LGCLiteral.Suggestion.categoryTitle,
+                                node: .expression(
+                                    .functionCallExpression(
+                                        id: UUID(),
+                                        expression: .identifierExpression(id: UUID(), identifier: .init("Shadow")),
+                                        arguments: .init([])
+                                    )
+                                )
+                            )
+
+                            return [shadowLiteralSuggestion] + suggestions
+                        }
+                    default:
+                        break
+                    }
+                }
+
                 return suggestions
             } else {
                 return node.suggestions(within: rootNode, for: query)
@@ -199,6 +225,68 @@ extension MarkdownViewController {
 
                 logicEditor.documentationForSuggestion = { rootNode, suggestionItem, query, formattingOptions, builder in
                     switch suggestionItem.node {
+                    case .expression(.functionCallExpression(_, expression: .identifierExpression(_, identifier: let identifier), arguments: _))
+                        where identifier.string == "Shadow" && suggestionItem.category == LGCLiteral.Suggestion.categoryTitle:
+
+                        let decodeValue: (Data?) -> PickerShadow = { data in
+                            if let data = data, let shadowValue = try? JSONDecoder().decode(PickerShadow.self, from: data) {
+                                return shadowValue
+                            } else {
+                                return .init(x: 0, y: 1, blur: 2, radius: 0, opacity: 0)
+                            }
+                        }
+
+                        let view = ShadowPicker()
+
+                        view.shadowValue = decodeValue(builder.initialValue)
+
+                        view.onChangeShadowValue = { shadowValue in
+                            view.shadowValue = shadowValue
+
+                            if let data = try? JSONEncoder().encode(shadowValue) {
+                                builder.onChangeValue(data)
+                            }
+                        }
+
+                        builder.setNodeBuilder({ data in
+                            let shadowValue = decodeValue(data)
+
+                            return .expression(
+                                .functionCallExpression(
+                                    id: UUID(),
+                                    expression: .identifierExpression(id: UUID(), identifier: .init("Shadow")),
+                                    arguments: .init([
+                                        .argument(
+                                            id: UUID(),
+                                            label: "x",
+                                            expression: .literalExpression(id: UUID(), literal: .number(id: UUID(), value: CGFloat(shadowValue.x)))
+                                        ),
+                                        .argument(
+                                            id: UUID(),
+                                            label: "y",
+                                            expression: .literalExpression(id: UUID(), literal: .number(id: UUID(), value: CGFloat(shadowValue.y)))
+                                        ),
+                                        .argument(
+                                            id: UUID(),
+                                            label: "blur",
+                                            expression: .literalExpression(id: UUID(), literal: .number(id: UUID(), value: CGFloat(shadowValue.blur)))
+                                        ),
+                                        .argument(
+                                            id: UUID(),
+                                            label: "radius",
+                                            expression: .literalExpression(id: UUID(), literal: .number(id: UUID(), value: CGFloat(shadowValue.radius)))
+                                        ),
+                                        .argument(
+                                            id: UUID(),
+                                            label: "color",
+                                            expression: .literalExpression(id: UUID(), literal: .color(id: UUID(), value: "black"))
+                                        )
+                                    ])
+                                )
+                            )
+                        })
+
+                        return view
                     case .expression(.literalExpression(id: _, literal: .color(id: _, value: let css))),
                          .literal(.color(id: _, value: let css)):
 
