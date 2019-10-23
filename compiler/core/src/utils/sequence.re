@@ -93,6 +93,18 @@ let dedupe = (f: ('a, list('a)) => bool, list: list('a)): list('a) =>
 let dedupeMem = (list: list('a)): list('a) =>
   dedupe((item, list) => List.mem(item, list), list);
 
+let intersectBy =
+    (f: ('a, 'a) => bool, list1: list('a), list2: list('a)): list('a) => {
+  let list1Contents =
+    list1 |> List.filter(a => list2 |> List.exists(b => f(a, b)));
+  let list2Contents =
+    list2 |> List.filter(a => list1 |> List.exists(b => f(a, b)));
+  dedupeMem(list1Contents @ list2Contents);
+};
+
+let intersectMem = (list1: list('a), list2: list('a)): list('a) =>
+  intersectBy((a, b) => a == b, list1, list2);
+
 let occurrences = (f: 'a => bool, list: list('a)): int =>
   List.fold_right((item, acc) => f(item) ? acc + 1 : acc, list, 0);
 
@@ -111,3 +123,6 @@ let joinGroups = (sep: 'a, groups: list(list('a))): list('a) => {
     tl |> List.fold_left((acc, nodes) => acc @ [sep] @ nodes, hd)
   };
 };
+
+let replaceAt = (targetIndex: int, newItem: 'a, list: list('a)): list('a) =>
+  list |> List.mapi((index, item) => targetIndex == index ? newItem : item);

@@ -17,3 +17,5 @@ let getExn = (value: option('a)): 'a =>
   | None => raise(Not_found)
   | Some(a) => a
   };
+
+let (!!) = getExn;

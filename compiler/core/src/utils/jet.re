@@ -15,6 +15,19 @@ class dictionary ('k, 'v) = {
   pub pairs = (): list(('k, 'v)) => data;
   pub assign = (other: dictionary('k, 'v)): unit =>
     other#pairs() |> List.iter(((k, v)) => self#set(k, v));
+  pub description = (): string => {
+    let items = List.map(((k, v)) => {j|$k: $v|j}, self#pairs());
+    "{ " ++ (items |> Format.joinWith(", ")) ++ " }";
+  };
+  pub customDescription =
+      (~describeKey: 'k => string, ~describeValue: 'v => string): string => {
+    let items =
+      List.map(
+        ((k, v)) => describeKey(k) ++ ": " ++ describeValue(v),
+        self#pairs(),
+      );
+    "{ " ++ (items |> Format.joinWith(", ")) ++ " }";
+  };
 };
 
 class scopeStack ('k, 'v) = {
