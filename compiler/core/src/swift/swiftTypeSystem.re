@@ -316,7 +316,10 @@ module Ast = {
             "operator": "=",
             "right":
               FunctionCallExpression({
-                "name": SwiftIdentifier("." ++ name),
+                "name":
+                  SwiftIdentifier(
+                    "." ++ SwiftFormat.stringWithSafeIdentifier(name),
+                  ),
                 "arguments": decodeParameters,
               }),
           }),
@@ -366,7 +369,10 @@ module Ast = {
           BinaryExpression({
             "left": SwiftIdentifier("self"),
             "operator": "=",
-            "right": SwiftIdentifier("." ++ name),
+            "right":
+              SwiftIdentifier(
+                "." ++ SwiftFormat.stringWithSafeIdentifier(name),
+              ),
           }),
         ]
       | RecordCase(name, parameters) => [
@@ -1454,6 +1460,10 @@ module Build = {
                 }),
             };
           } else if (TypeSystem.Match.constant(entity)) {
+            let needsCustomCodable =
+              TypeSystem.Access.constantCases(entity)
+              |> List.map(TypeSystem.Access.typeCaseName)
+              |> List.exists(id => !SwiftFormat.isSafeIdentifier(id));
             {
               name: Some(conversionOptions.swiftOptions.typePrefix ++ name),
               node:
@@ -1468,7 +1478,18 @@ module Build = {
                     ]),
                   ],
                   "modifier": Some(PublicModifier),
-                  "body": enumCases,
+                  "body":
+                    enumCases
+                    @ (
+                      needsCustomCodable ?
+                        [Empty]
+                        @ constantCodable(
+                            conversionOptions,
+                            StringEncoding,
+                            genericType.cases,
+                          ) :
+                        []
+                    ),
                 }),
             };
           } else {
