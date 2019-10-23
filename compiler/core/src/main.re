@@ -132,7 +132,7 @@ let convertTypes = (target, contents) => {
     let types =
       json
       |> TypeSystem.Decode.typesFile
-      |> SwiftTypeSystem.render(options.swift)
+      |> SwiftTypeSystem.render(options)
       |> List.map((convertedType: SwiftTypeSystem.convertedType) =>
            convertedType.contents
          )
@@ -428,7 +428,7 @@ let convertWorkspace = (target, workspace, output) => {
        if (target == Types.Swift) {
          userTypes
          |> UserTypes.TypeSystem.toTypeSystemFile
-         |> SwiftTypeSystem.render(options.swift)
+         |> SwiftTypeSystem.render(options)
          |> List.iter((convertedType: SwiftTypeSystem.convertedType) => {
               let importStatement =
                 switch (options.swift.framework) {
