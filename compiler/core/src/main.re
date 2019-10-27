@@ -138,6 +138,9 @@ let convertTypes = (target, contents) => {
          )
       |> Format.joinWith("\n\n");
     importStatement ++ types;
+  | Types.JavaScript =>
+    let types = json |> TypeSystem.Decode.typesFile;
+    JavaScriptTypeSystem.renderToString(types);
   | Types.Reason =>
     let types = json |> TypeSystem.Decode.typesFile;
     ReasonTypeSystem.renderToString(types);
