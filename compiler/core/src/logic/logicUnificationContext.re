@@ -3,15 +3,15 @@ open Operators;
 
 type t = {
   constraints: ref(list(LogicUnify.constraint_)),
-  nodes: Jet.dictionary(string, LogicUnify.t),
-  patternTypes: Jet.dictionary(string, LogicUnify.t),
+  nodes: Jet.Dictionary.t(string, LogicUnify.t),
+  patternTypes: Jet.Dictionary.t(string, LogicUnify.t),
   typeNameGenerator: LogicNameGenerator.t,
 };
 
 let makeEmptyContext = (): t => {
   constraints: ref([]),
-  nodes: new Jet.dictionary,
-  patternTypes: new Jet.dictionary,
+  nodes: new Jet.Dictionary.t,
+  patternTypes: new Jet.Dictionary.t,
   typeNameGenerator: (new LogicNameGenerator.t)("?"),
 };
 

@@ -1,35 +1,47 @@
-type func =
-  | ColorSaturate
-  | ColorSetHue
-  | ColorSetSaturation
-  | ColorSetLightness
-  | ColorFromHSL
-  | NumberRange
-  | ArrayAt
-  | StringConcat
-  | EnumInit(string)
-/* | RecordInit(members: KeyValueList<String, (Unification.T, LogicValue?)>) */
-and recordMember = {
-  key: string,
-  value: option(value),
-}
-and memory =
-  | Unit
-  | Bool(bool)
-  | Number(float)
-  | String(string)
-  | Enum(string, list(value))
-  | Record(list(recordMember))
-  | Function(func)
-and value = {
-  type_: string,
-  memory,
+module Value = {
+  type t = {
+    type_: LogicUnify.t,
+    memory,
+  }
+  and memory =
+    | Unit
+    | Bool(bool)
+    | Number(float)
+    | String(string)
+    | Enum(string, list(t))
+    | Record(Jet.Dictionary.t(string, option(t)))
+    | Function(func)
+  and func =
+    | ColorSaturate
+    | ColorSetHue
+    | ColorSetSaturation
+    | ColorSetLightness
+    | ColorFromHSL
+    | NumberRange
+    | ArrayAt
+    | StringConcat
+    | RecordInit(Jet.Dictionary.t(string, (LogicUnify.t, option(t))))
+    | EnumInit(string);
 };
 
-type thunk = {
-  label: string,
-  dependencies: list(string),
-  f: value => value,
+module Thunk = {
+  type t = {
+    label: string,
+    dependencies: list(string),
+    f: list(Value.t) => Value.t,
+  };
+};
+
+module Context = {
+  type t = {
+    values: Jet.Dictionary.t(string, Value.t),
+    thunks: Jet.Dictionary.t(string, Thunk.t),
+  };
+
+  let empty = () => {
+    values: new Jet.Dictionary.t,
+    thunks: new Jet.Dictionary.t,
+  };
 };
 
 let evaluate =

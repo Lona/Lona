@@ -21,7 +21,7 @@ type unificationError =
     )
   | KindMismatch(t, t);
 
-type substitution = Jet.dictionary(t, t);
+type substitution = Jet.Dictionary.t(t, t);
 
 type constraint_ = {
   head: t,
@@ -100,7 +100,7 @@ let rec genericNames = (type_: t): list(string) =>
   };
 
 let replaceGenericsWithEvars = (getName: unit => string, type_: t): t => {
-  let substitution: Jet.dictionary(t, t) = new Jet.dictionary;
+  let substitution: Jet.Dictionary.t(t, t) = new Jet.Dictionary.t;
   genericNames(type_)
   |> List.iter(name => {
        substitution#set(Gen(name), Evar(getName()));
@@ -112,7 +112,7 @@ let replaceGenericsWithEvars = (getName: unit => string, type_: t): t => {
 let unify =
     (
       ~constraints: list(constraint_),
-      ~substitution: substitution=new Jet.dictionary,
+      ~substitution: substitution=new Jet.Dictionary.t,
       (),
     )
     : substitution => {

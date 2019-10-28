@@ -1,40 +1,42 @@
 /* Experimental class-based library */
 
-class dictionary ('k, 'v) = {
-  as self;
-  val mutable data: list(('k, 'v)) = [];
-  pub set = (k: 'k, v: 'v): unit => {
-    let rest = data |> List.remove_assoc(k);
-    data = [(k, v), ...rest];
-  };
-  pub get = (k: 'k): option('v) =>
-    switch (data |> List.assoc(k)) {
-    | value => Some(value)
-    | exception Not_found => None
+module Dictionary = {
+  class t ('k, 'v) = {
+    as self;
+    val mutable data: list(('k, 'v)) = [];
+    pub set = (k: 'k, v: 'v): unit => {
+      let rest = data |> List.remove_assoc(k);
+      data = [(k, v), ...rest];
     };
-  pub getExn = (k: 'k): 'v => data |> List.assoc(k);
-  pub keys = (): list('k) => data |> List.map(((k, _)) => k);
-  pub values = (): list('v) => data |> List.map(((_, v)) => v);
-  pub pairs = (): list(('k, 'v)) => data;
-  pub assign = (other: dictionary('k, 'v)): unit =>
-    other#pairs() |> List.iter(((k, v)) => self#set(k, v));
-  pub description = (): string => {
-    let items = List.map(((k, v)) => {j|$k: $v|j}, self#pairs());
-    "{ " ++ (items |> Format.joinWith(", ")) ++ " }";
-  };
-  pub customDescription =
-      (~describeKey: 'k => string, ~describeValue: 'v => string): string => {
-    let items =
-      List.map(
-        ((k, v)) => describeKey(k) ++ ": " ++ describeValue(v),
-        self#pairs(),
-      );
-    "{ " ++ (items |> Format.joinWith(", ")) ++ " }";
+    pub get = (k: 'k): option('v) =>
+      switch (data |> List.assoc(k)) {
+      | value => Some(value)
+      | exception Not_found => None
+      };
+    pub getExn = (k: 'k): 'v => data |> List.assoc(k);
+    pub keys = (): list('k) => data |> List.map(((k, _)) => k);
+    pub values = (): list('v) => data |> List.map(((_, v)) => v);
+    pub pairs = (): list(('k, 'v)) => data;
+    pub assign = (other: t('k, 'v)): unit =>
+      other#pairs() |> List.iter(((k, v)) => self#set(k, v));
+    pub description = (): string => {
+      let items = List.map(((k, v)) => {j|$k: $v|j}, self#pairs());
+      "{ " ++ (items |> Format.joinWith(", ")) ++ " }";
+    };
+    pub customDescription =
+        (~describeKey: 'k => string, ~describeValue: 'v => string): string => {
+      let items =
+        List.map(
+          ((k, v)) => describeKey(k) ++ ": " ++ describeValue(v),
+          self#pairs(),
+        );
+      "{ " ++ (items |> Format.joinWith(", ")) ++ " }";
+    };
   };
 };
 
 class scopeStack ('k, 'v) = {
-  val mutable scopes: list(dictionary('k, 'v)) = [new dictionary];
+  val mutable scopes: list(Dictionary.t('k, 'v)) = [new Dictionary.t];
   pub get = (k: 'k): option('v) =>
     scopes
     |> List.map(scope => scope#get(k))
@@ -44,14 +46,14 @@ class scopeStack ('k, 'v) = {
     let hd = List.hd(scopes);
     hd#set(k, v);
   };
-  pub push = (): unit => scopes = [new dictionary, ...scopes];
-  pub pop = (): dictionary('k, 'v) => {
+  pub push = (): unit => scopes = [new Dictionary.t, ...scopes];
+  pub pop = (): Dictionary.t('k, 'v) => {
     let [hd, ...rest] = scopes;
     scopes = rest;
     hd;
   };
-  pub flattened = (): dictionary('k, 'v) => {
-    let result: dictionary('k, 'v) = new dictionary;
+  pub flattened = (): Dictionary.t('k, 'v) => {
+    let result: Dictionary.t('k, 'v) = new Dictionary.t;
 
     scopes
     |> List.rev
