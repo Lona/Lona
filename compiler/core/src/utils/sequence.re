@@ -20,6 +20,9 @@ let rec compact = (items: list(option('a))): list('a) =>
   | [] => []
   };
 
+let compactMap = (f: 'a => option('b), items: list('a)): list('b) =>
+  items |> List.map(f) |> compact;
+
 let choose = (k: int, items: list('a)): list(list('a)) => {
   let rec inner = (acc, k, items) =>
     switch (k) {
