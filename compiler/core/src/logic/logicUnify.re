@@ -227,3 +227,15 @@ let unify =
 
   substitution;
 };
+
+/* Builtins */
+
+let unit: t = Cons("Void", []);
+let bool: t = Cons("Boolean", []);
+let number: t = Cons("Number", []);
+let string: t = Cons("String", []);
+let color: t = Cons("Color", []);
+let shadow: t = Cons("Shadow", []);
+let textStyle: t = Cons("TextStyle", []);
+let optional = (type_: t): t => Cons("Optional", [type_]);
+let array = (type_: t): t => Cons("Array", [type_]);

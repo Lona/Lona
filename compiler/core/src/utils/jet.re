@@ -1,3 +1,5 @@
+/* Experimental class-based library */
+
 class dictionary ('k, 'v) = {
   as self;
   val mutable data: list(('k, 'v)) = [];
@@ -57,5 +59,102 @@ class scopeStack ('k, 'v) = {
     |> List.iter(((k, v)) => result#set(k, v));
 
     result;
+  };
+};
+
+module Range = {
+  class t (start: int, finish: int) = {
+    as _;
+    /* Members */
+    val start = start;
+    val finish = finish;
+    pub start = start;
+    pub finish = finish;
+    /* Mutators */
+    pub clamped = (min, max) => {
+      let newStart = start < min ? min : start;
+      let newFinish = finish > max ? max : finish;
+      {<start: newStart, finish: newFinish>};
+    };
+    pub copy = {<>};
+    /* Accessors */
+    pub list = {
+      let rec range = (start: int, finish: int) =>
+        if (start < finish) {
+          [start, ...range(start + 1, finish)];
+        } else {
+          [];
+        };
+      range(start, finish);
+    };
+  };
+
+  let empty = (new t)(0, 0);
+
+  let clampWithin = (range: t, value: int) => {
+    let value = value < range#start ? range#start : value;
+    let value = value > range#finish ? range#finish : value;
+    value;
+  };
+};
+
+module Array = {
+  class t ('element) (list) = {
+    as self;
+    /* Private */
+    val elements: list('element) = list;
+    pub list = elements;
+    /* Iterators */
+    pub map = f => {<elements: List.map(f, elements)>};
+    pub iter = f => List.iter(f, elements);
+    /* Mutators */
+    pub append = element => {<elements: elements @ [element]>};
+    pub appendElements = newElements => {<elements: elements @ newElements>};
+    pub appendArray = (newArray: t('element)) => {<elements:
+                                                       elements @ newArray#list>};
+    pub insertArray = (i: int, newArray: t('element)) => {
+      let prefix = self#prefix(i);
+      let suffix = self#suffix(self#count - i);
+      {<elements: prefix#list @ newArray#list @ suffix#list>};
+    };
+    pub insertElements = (i: int, newElements: list('element)) =>
+      self#insertArray(i, (new t)(newElements));
+    pub insert = (i: int, newElement: 'element) =>
+      self#insertElements(i, [newElement]);
+    pub copy = {<>};
+    /* Accessors */
+    pub subrange = (range: Range.t) => {
+      let clampedRange = range#clamped(0, self#count);
+      let result = clampedRange#list |> List.map(i => List.nth(elements, i));
+      {<elements: result>};
+    };
+    pub prefix = (n: int) => {
+      let range = (new Range.t)(0, n)#clamped(0, self#count);
+      self#subrange(range);
+    };
+    pub suffix = (n: int) => {
+      let range =
+        (new Range.t)(self#count - n, self#count)#clamped(0, self#count);
+      self#subrange(range);
+    };
+    pub get = (i: int) =>
+      if (i >= self#count) {
+        None;
+      } else {
+        Some(List.nth(elements, i));
+      };
+    pub getExn = (i: int) => List.nth(elements, i);
+    pub first =
+      switch (elements) {
+      | [] => None
+      | [x, ..._] => Some(x)
+      };
+    pub last =
+      switch (elements) {
+      | [] => None
+      | _ => Some(List.nth(elements, self#count - 1))
+      };
+    pub count = List.length(elements);
+    pub isEmpty = self#count > 0;
   };
 };
