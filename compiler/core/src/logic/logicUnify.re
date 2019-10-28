@@ -88,6 +88,27 @@ let rec substitute = (substitution: substitution, type_: t): t => {
   };
 };
 
+let rec genericNames = (type_: t): list(string) =>
+  switch (type_) {
+  | Evar(_) => []
+  | Cons(_, parameters) =>
+    parameters |> List.map(genericNames) |> List.concat
+  | Gen(name) => [name]
+  | Fun(arguments, returnType) =>
+    let argumentTypes = arguments |> List.map(arg => arg.type_);
+    argumentTypes @ [returnType] |> List.map(genericNames) |> List.concat;
+  };
+
+let replaceGenericsWithEvars = (getName: unit => string, type_: t): t => {
+  let substitution: Jet.dictionary(t, t) = new Jet.dictionary;
+  genericNames(type_)
+  |> List.iter(name => {
+       substitution#set(Gen(name), Evar(getName()));
+       ();
+     });
+  substitute(substitution, type_);
+};
+
 let unify =
     (
       ~constraints: list(constraint_),

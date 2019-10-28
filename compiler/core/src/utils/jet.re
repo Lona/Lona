@@ -12,6 +12,7 @@ class dictionary ('k, 'v) = {
     | value => Some(value)
     | exception Not_found => None
     };
+  pub getExn = (k: 'k): 'v => data |> List.assoc(k);
   pub keys = (): list('k) => data |> List.map(((k, _)) => k);
   pub values = (): list('v) => data |> List.map(((_, v)) => v);
   pub pairs = (): list(('k, 'v)) => data;
