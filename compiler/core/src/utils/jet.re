@@ -8,6 +8,10 @@ module Dictionary = {
       let rest = data |> List.remove_assoc(k);
       data = [(k, v), ...rest];
     };
+    pub setting = (k: 'k, v: 'v) => {
+      let rest = data |> List.remove_assoc(k);
+      {<data: [(k, v), ...rest]>};
+    };
     pub get = (k: 'k): option('v) =>
       switch (data |> List.assoc(k)) {
       | value => Some(value)
@@ -32,6 +36,12 @@ module Dictionary = {
         );
       "{ " ++ (items |> Format.joinWith(", ")) ++ " }";
     };
+  };
+
+  let init = (pairs: list(('k, 'v))): t('k, 'v) => {
+    let dictionary = new t;
+    pairs |> List.iter(((k, v)) => dictionary#set(k, v));
+    dictionary;
   };
 };
 
