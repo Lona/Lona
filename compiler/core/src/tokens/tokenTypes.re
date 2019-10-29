@@ -117,7 +117,7 @@ module Decode = {
   and tokenValue: Js.Json.t => tokenValue =
     (json: Js.Json.t) => {
       let rec case = Json.Decode.field("type", Json.Decode.string, json);
-      let rec data = Json.Decode.field("data", x => x, json);
+      let rec data = Json.Decode.field("value", x => x, json);
       switch (case) {
       | "color" =>
         let rec decoded = colorValue(data);
@@ -146,7 +146,7 @@ module Decode = {
   and convertedFileContents: Js.Json.t => convertedFileContents =
     (json: Js.Json.t) => {
       let rec case = Json.Decode.field("type", Json.Decode.string, json);
-      let rec data = Json.Decode.field("data", x => x, json);
+      let rec data = Json.Decode.field("value", x => x, json);
       switch (case) {
       | "flatTokens" =>
         let rec decoded = Json.Decode.list(token, data);
@@ -174,4 +174,108 @@ module Decode = {
           json,
         ),
     };
+};
+
+module Encode = {
+  let rec fontWeight: fontWeight => Js.Json.t =
+    (value: fontWeight) =>
+      switch (value) {
+      | X100 => Json.Encode.string("100")
+      | X200 => Json.Encode.string("200")
+      | X300 => Json.Encode.string("300")
+      | X400 => Json.Encode.string("400")
+      | X500 => Json.Encode.string("500")
+      | X600 => Json.Encode.string("600")
+      | X700 => Json.Encode.string("700")
+      | X800 => Json.Encode.string("800")
+      | X900 => Json.Encode.string("900")
+      }
+  and colorValue: colorValue => Js.Json.t =
+    (value: colorValue) =>
+      Json.Encode.object_([("css", Json.Encode.string(value.css))])
+  and textStyleValue: textStyleValue => Js.Json.t =
+    (value: textStyleValue) =>
+      Json.Encode.object_([
+        (
+          "fontName",
+          Json.Encode.nullable(Json.Encode.string, value.fontName),
+        ),
+        (
+          "fontFamily",
+          Json.Encode.nullable(Json.Encode.string, value.fontFamily),
+        ),
+        ("fontWeight", fontWeight(value.fontWeight)),
+        (
+          "fontSize",
+          Json.Encode.nullable(Json.Encode.float, value.fontSize),
+        ),
+        (
+          "lineHeight",
+          Json.Encode.nullable(Json.Encode.float, value.lineHeight),
+        ),
+        (
+          "letterSpacing",
+          Json.Encode.nullable(Json.Encode.float, value.letterSpacing),
+        ),
+        ("color", Json.Encode.nullable(colorValue, value.color)),
+      ])
+  and shadowValue: shadowValue => Js.Json.t =
+    (value: shadowValue) =>
+      Json.Encode.object_([
+        ("x", Json.Encode.float(value.x)),
+        ("y", Json.Encode.float(value.y)),
+        ("blur", Json.Encode.float(value.blur)),
+        ("radius", Json.Encode.float(value.radius)),
+        ("color", colorValue(value.color)),
+      ])
+  and tokenValue: tokenValue => Js.Json.t =
+    (value: tokenValue) =>
+      switch (value) {
+      | Color(value0) =>
+        let rec case = Json.Encode.string("color");
+        let rec encoded = colorValue(value0);
+        Json.Encode.object_([("type", case), ("value", encoded)]);
+      | Shadow(value0) =>
+        let rec case = Json.Encode.string("shadow");
+        let rec encoded = shadowValue(value0);
+        Json.Encode.object_([("type", case), ("value", encoded)]);
+      | TextStyle(value0) =>
+        let rec case = Json.Encode.string("textStyle");
+        let rec encoded = textStyleValue(value0);
+        Json.Encode.object_([("type", case), ("value", encoded)]);
+      }
+  and token: token => Js.Json.t =
+    (value: token) =>
+      Json.Encode.object_([
+        (
+          "qualifiedName",
+          Json.Encode.list(Json.Encode.string, value.qualifiedName),
+        ),
+        ("value", tokenValue(value.value)),
+      ])
+  and convertedFileContents: convertedFileContents => Js.Json.t =
+    (value: convertedFileContents) =>
+      switch (value) {
+      | FlatTokens(value0) =>
+        let rec case = Json.Encode.string("flatTokens");
+        let rec encoded = Json.Encode.list(token, value0);
+        Json.Encode.object_([("type", case), ("value", encoded)]);
+      }
+  and convertedFile: convertedFile => Js.Json.t =
+    (value: convertedFile) =>
+      Json.Encode.object_([
+        ("inputPath", Json.Encode.string(value.inputPath)),
+        ("outputPath", Json.Encode.string(value.outputPath)),
+        ("name", Json.Encode.string(value.name)),
+        ("contents", convertedFileContents(value.contents)),
+      ])
+  and convertedWorkspace: convertedWorkspace => Js.Json.t =
+    (value: convertedWorkspace) =>
+      Json.Encode.object_([
+        ("files", Json.Encode.list(convertedFile, value.files)),
+        (
+          "flatTokensSchemaVersion",
+          Json.Encode.string(value.flatTokensSchemaVersion),
+        ),
+      ]);
 };

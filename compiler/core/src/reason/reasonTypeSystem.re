@@ -30,6 +30,16 @@ let formatDecoderIdentifier = string =>
   | _ => string
   };
 
+let formatEncoderIdentifier = string =>
+  switch (string) {
+  | "bool" => "Json.Encode.bool"
+  | "float" => "Json.Encode.float"
+  | "string" => "Json.Encode.string"
+  | "option" => "Json.Encode.nullable"
+  | "list" when !definesCustomListType => "Json.Encode.list"
+  | _ => string
+  };
+
 let formatTypeName = string =>
   formatNativeType(string) %? Format.lowerFirst(string);
 let formatCaseName = (name: string) =>
@@ -45,6 +55,7 @@ let formatGenericName = string => "'" ++ Format.lowerFirst(string);
 type renderedTypeCaseParameter = {
   annotation: typeAnnotation,
   decoder: expression,
+  encoder: expression,
 };
 
 let placeholderExpression = LiteralExpression({literal: String("...")});
@@ -175,6 +186,19 @@ let renderTypeCaseParameterEntity =
                    IdentifierExpression({name: "decoder" ++ name})
                  ),
           }),
+        encoder:
+          FunctionCallExpression({
+            expression:
+              IdentifierExpression({
+                name: formatEncoderIdentifier(entityTypeAnnotation.name),
+              }),
+            arguments:
+              genericTypeNames
+              |> List.map(name => formatEncoderIdentifier(name))
+              |> List.map(name =>
+                   IdentifierExpression({name: "encoder" ++ name})
+                 ),
+          }),
       };
     } else {
       let replacedGenerics: list(typeAnnotation) =
@@ -208,6 +232,25 @@ let renderTypeCaseParameterEntity =
                    ),
             });
           },
+        encoder:
+          if (replacedGenerics == []) {
+            IdentifierExpression({name: formatEncoderIdentifier(typeName)});
+          } else {
+            FunctionCallExpression({
+              expression:
+                IdentifierExpression({
+                  name: formatEncoderIdentifier(typeName),
+                }),
+              arguments:
+                replacedGenerics
+                |> List.map((annotation: typeAnnotation) => annotation.name)
+                |> List.map(name =>
+                     IdentifierExpression({
+                       name: formatEncoderIdentifier(name),
+                     })
+                   ),
+            });
+          },
       };
     };
   | GenericReference(name) => {
@@ -216,6 +259,7 @@ let renderTypeCaseParameterEntity =
         parameters: [],
       },
       decoder: IdentifierExpression({name: "decoder" ++ name}),
+      encoder: IdentifierExpression({name: "encoder" ++ name}),
     }
   };
 };
@@ -223,6 +267,7 @@ let renderTypeCaseParameterEntity =
 type renderedRecordTypeCaseParameter = {
   entry: recordTypeEntry,
   decoder: expression,
+  encoder: expression,
 };
 
 let renderRecordTypeCaseParameter =
@@ -296,6 +341,50 @@ let renderRecordTypeCaseParameter =
           ],
         });
       },
+    encoder:
+      if (isOptional) {
+        FunctionCallExpression({
+          expression:
+            IdentifierExpression({
+              name: formatEncoderIdentifier(rendered.annotation.name),
+            }),
+          arguments:
+            (
+              rendered.annotation.parameters
+              |> List.map((parameter: typeAnnotation) =>
+                   formatEncoderIdentifier(parameter.name)
+                 )
+              |> List.map(name => IdentifierExpression({name: name}))
+            )
+            @ [
+              MemberExpression({
+                expression: IdentifierExpression({name: "value"}),
+                memberName: entity.key,
+              }),
+            ],
+        });
+      } else {
+        FunctionCallExpression({
+          expression:
+            IdentifierExpression({
+              name: formatEncoderIdentifier(rendered.annotation.name),
+            }),
+          arguments:
+            (
+              rendered.annotation.parameters
+              |> List.map((parameter: typeAnnotation) =>
+                   formatEncoderIdentifier(parameter.name)
+                 )
+              |> List.map(name => IdentifierExpression({name: name}))
+            )
+            @ [
+              MemberExpression({
+                expression: IdentifierExpression({name: "value"}),
+                memberName: entity.key,
+              }),
+            ],
+        });
+      },
   };
 };
 
@@ -303,6 +392,7 @@ type renderedTypeCase = {
   variantCase,
   types: list(typeDeclaration),
   decoder: switchCase,
+  encoder: switchCase,
 };
 
 let renderTypeCase =
@@ -414,6 +504,142 @@ let renderTypeCase =
             ];
           },
       },
+      encoder: {
+        pattern:
+          if (parameters == []) {
+            IdentifierExpression({name: formatCaseName(name)});
+          } else {
+            FunctionCallExpression({
+              expression: IdentifierExpression({name: formatCaseName(name)}),
+              arguments:
+                parameters
+                |> List.mapi((index, _) =>
+                     IdentifierExpression({
+                       name: formatTypeName("value" ++ string_of_int(index)),
+                     })
+                   ),
+            });
+          },
+        body:
+          switch (renderedParameters) {
+          | [] => [
+              Expression(
+                FunctionCallExpression({
+                  expression:
+                    IdentifierExpression({name: "Json.Encode.string"}),
+                  arguments: [LiteralExpression({literal: String(name)})],
+                }),
+              ),
+            ]
+          | [a] => [
+              Variable([
+                {
+                  name: "case",
+                  quantifiedAnnotation: None,
+                  initializer_:
+                    FunctionCallExpression({
+                      expression:
+                        IdentifierExpression({name: "Json.Encode.string"}),
+                      arguments: [
+                        LiteralExpression({literal: String(name)}),
+                      ],
+                    }),
+                },
+              ]),
+              Variable([
+                {
+                  name: "encoded",
+                  quantifiedAnnotation: None,
+                  initializer_:
+                    FunctionCallExpression({
+                      expression: a.encoder,
+                      arguments: [IdentifierExpression({name: "value0"})],
+                    }),
+                },
+              ]),
+              Expression(
+                FunctionCallExpression({
+                  expression:
+                    IdentifierExpression({name: "Json.Encode.object_"}),
+                  arguments: [
+                    LiteralExpression({
+                      literal:
+                        Array([
+                          LiteralExpression({
+                            literal:
+                              Tuple([
+                                LiteralExpression({
+                                  literal: String(options.discriminant),
+                                }),
+                                IdentifierExpression({name: "case"}),
+                              ]),
+                          }),
+                          LiteralExpression({
+                            literal:
+                              Tuple([
+                                LiteralExpression({
+                                  literal: String(options.dataWrapper),
+                                }),
+                                IdentifierExpression({name: "encoded"}),
+                              ]),
+                          }),
+                        ]),
+                    }),
+                  ],
+                }),
+              ),
+            ]
+          | _ =>
+            let encoderName =
+              "tuple" ++ string_of_int(List.length(renderedParameters));
+
+            [
+              Variable([
+                {
+                  name:
+                    "("
+                    ++ (
+                      renderedParameters
+                      |> List.mapi((i, _) => "var" ++ string_of_int(i))
+                      |> Format.joinWith(", ")
+                    )
+                    ++ ")",
+                  quantifiedAnnotation: None,
+                  initializer_:
+                    FunctionCallExpression({
+                      expression:
+                        FunctionCallExpression({
+                          expression:
+                            IdentifierExpression({
+                              name: "Json.Encode." ++ encoderName,
+                            }),
+                          arguments:
+                            renderedParameters
+                            |> List.map(
+                                 (parameter: renderedTypeCaseParameter) =>
+                                 parameter.encoder
+                               ),
+                        }),
+                      arguments: [IdentifierExpression({name: "data"})],
+                    }),
+                },
+              ]),
+              Expression(
+                FunctionCallExpression({
+                  expression:
+                    IdentifierExpression({name: formatCaseName(name)}),
+                  arguments:
+                    renderedParameters
+                    |> List.mapi((i, _) =>
+                         IdentifierExpression({
+                           name: "var" ++ string_of_int(i),
+                         })
+                       ),
+                }),
+              ),
+            ];
+          },
+      },
     };
   | RecordCase(name, parameters) =>
     let renderedParameters =
@@ -469,6 +695,33 @@ let renderTypeCase =
           ),
         ],
       },
+      encoder: {
+        pattern: LiteralExpression({literal: String(name)}),
+        body: [
+          Expression(
+            FunctionCallExpression({
+              expression: IdentifierExpression({name: formatCaseName(name)}),
+              arguments: [
+                LiteralExpression({
+                  literal:
+                    Record(
+                      renderedParameters
+                      |> List.map(
+                           (parameter: renderedRecordTypeCaseParameter) =>
+                           (
+                             {
+                               key: parameter.entry.key,
+                               value: parameter.encoder,
+                             }: recordEntry
+                           )
+                         ),
+                    ),
+                }),
+              ],
+            }),
+          ),
+        ],
+      },
     };
   };
 };
@@ -476,6 +729,29 @@ let renderTypeCase =
 type renderedDeclarations = {
   types: list(typeDeclaration),
   decoders: list(variableDeclaration),
+  encoders: list(variableDeclaration),
+};
+
+let errorDecoding = (typeName: string): switchCase => {
+  pattern: IdentifierExpression({name: "_"}),
+  body: [
+    Expression(
+      FunctionCallExpression({
+        expression: IdentifierExpression({name: "Js.log"}),
+        arguments: [
+          LiteralExpression({
+            literal: String("Error decoding " ++ typeName),
+          }),
+        ],
+      }),
+    ),
+    Expression(
+      FunctionCallExpression({
+        expression: IdentifierExpression({name: "raise"}),
+        arguments: [IdentifierExpression({name: "Not_found"})],
+      }),
+    ),
+  ],
 };
 
 let renderEntity =
@@ -498,6 +774,8 @@ let renderEntity =
       renderedCases |> List.map((result: renderedTypeCase) => result.types);
     let decoderCases =
       renderedCases |> List.map((result: renderedTypeCase) => result.decoder);
+    let encoderCases =
+      renderedCases |> List.map((result: renderedTypeCase) => result.encoder);
 
     let standardVariantType = [
       {name: entityTypeAnnotation, value: VariantType({cases: cases})},
@@ -527,6 +805,28 @@ let renderEntity =
         ),
     };
 
+    let encoderAnnotation: quantifiedTypeAnnotation = {
+      forall: genericTypeNames |> List.map(formatGenericName),
+      annotation:
+        functionTypeAnnotation(
+          tupleNTypeAnnotation(
+            (
+              genericTypeNames
+              |> List.map(name =>
+                   {
+                     name: "Json.Encode.encoder",
+                     parameters: [
+                       {name: formatGenericName(name), parameters: []},
+                     ],
+                   }
+                 )
+            )
+            @ [entityTypeAnnotation],
+          ),
+          {name: "Js.Json.t", parameters: []},
+        ),
+    };
+
     let decoderParameters: list(functionParameter) =
       (
         genericTypeNames
@@ -538,6 +838,13 @@ let renderEntity =
           annotation: Some({name: "Js.Json.t", parameters: []}),
         },
       ];
+
+    let encoderParameters: list(functionParameter) =
+      (
+        genericTypeNames
+        |> List.map(name => {name: "encoder" ++ name, annotation: None})
+      )
+      @ [{name: "value", annotation: Some(entityTypeAnnotation)}];
 
     if (TypeSystem.Match.singleRecord(entity)) {
       switch (entity) {
@@ -588,6 +895,48 @@ let renderEntity =
                 }),
             },
           ],
+          encoders: [
+            {
+              name: typeName,
+              quantifiedAnnotation: Some(encoderAnnotation),
+              initializer_:
+                FunctionExpression({
+                  parameters: encoderParameters,
+                  returnType: None,
+                  body: [
+                    Expression(
+                      FunctionCallExpression({
+                        expression:
+                          IdentifierExpression({name: "Json.Encode.object_"}),
+                        arguments: [
+                          LiteralExpression({
+                            literal:
+                              Array(
+                                renderedParameters
+                                |> List.map(
+                                     (
+                                       parameter: renderedRecordTypeCaseParameter,
+                                     ) =>
+                                     LiteralExpression({
+                                       literal:
+                                         Tuple([
+                                           LiteralExpression({
+                                             literal:
+                                               String(parameter.entry.key),
+                                           }),
+                                           parameter.encoder,
+                                         ]),
+                                     })
+                                   ),
+                              ),
+                          }),
+                        ],
+                      }),
+                    ),
+                  ],
+                }),
+            },
+          ],
         };
       | _ => raise(Not_found)
       };
@@ -632,36 +981,26 @@ let renderEntity =
                   Expression(
                     SwitchExpression({
                       pattern: IdentifierExpression({name: "case"}),
-                      cases:
-                        decoderCases
-                        @ [
-                          {
-                            pattern: IdentifierExpression({name: "_"}),
-                            body: [
-                              Expression(
-                                FunctionCallExpression({
-                                  expression:
-                                    IdentifierExpression({name: "Js.log"}),
-                                  arguments: [
-                                    LiteralExpression({
-                                      literal:
-                                        String("Error decoding " ++ typeName),
-                                    }),
-                                  ],
-                                }),
-                              ),
-                              Expression(
-                                FunctionCallExpression({
-                                  expression:
-                                    IdentifierExpression({name: "raise"}),
-                                  arguments: [
-                                    IdentifierExpression({name: "Not_found"}),
-                                  ],
-                                }),
-                              ),
-                            ],
-                          },
-                        ],
+                      cases: decoderCases @ [errorDecoding(typeName)],
+                    }),
+                  ),
+                ],
+              }),
+          },
+        ],
+        encoders: [
+          {
+            name: typeName,
+            quantifiedAnnotation: Some(encoderAnnotation),
+            initializer_:
+              FunctionExpression({
+                parameters: encoderParameters,
+                returnType: None,
+                body: [
+                  Expression(
+                    SwitchExpression({
+                      pattern: IdentifierExpression({name: "value"}),
+                      cases: encoderCases,
                     }),
                   ),
                 ],
@@ -675,8 +1014,6 @@ let renderEntity =
         List.hd(TypeSystem.Access.entityRecursiveCases(entity));
       let constantCaseName = TypeSystem.Access.typeCaseName(constantCase);
       let recursiveCaseName = TypeSystem.Access.typeCaseName(recursiveCase);
-      let recursiveType =
-        List.hd(TypeSystem.Access.typeCaseParameterEntities(recursiveCase));
       {
         types: types @ standardVariantType,
         decoders: [
@@ -728,6 +1065,7 @@ let renderEntity =
               }),
           },
         ],
+        encoders: [],
       };
     } else {
       {
@@ -782,36 +1120,26 @@ let renderEntity =
                   Expression(
                     SwitchExpression({
                       pattern: IdentifierExpression({name: "case"}),
-                      cases:
-                        decoderCases
-                        @ [
-                          {
-                            pattern: IdentifierExpression({name: "_"}),
-                            body: [
-                              Expression(
-                                FunctionCallExpression({
-                                  expression:
-                                    IdentifierExpression({name: "Js.log"}),
-                                  arguments: [
-                                    LiteralExpression({
-                                      literal:
-                                        String("Error decoding " ++ typeName),
-                                    }),
-                                  ],
-                                }),
-                              ),
-                              Expression(
-                                FunctionCallExpression({
-                                  expression:
-                                    IdentifierExpression({name: "raise"}),
-                                  arguments: [
-                                    IdentifierExpression({name: "Not_found"}),
-                                  ],
-                                }),
-                              ),
-                            ],
-                          },
-                        ],
+                      cases: decoderCases @ [errorDecoding(typeName)],
+                    }),
+                  ),
+                ],
+              }),
+          },
+        ],
+        encoders: [
+          {
+            name: typeName,
+            quantifiedAnnotation: Some(encoderAnnotation),
+            initializer_:
+              FunctionExpression({
+                parameters: encoderParameters,
+                returnType: None,
+                body: [
+                  Expression(
+                    SwitchExpression({
+                      pattern: IdentifierExpression({name: "value"}),
+                      cases: encoderCases,
                     }),
                   ),
                 ],
@@ -820,7 +1148,7 @@ let renderEntity =
         ],
       };
     };
-  | NativeType(value) => {types: [], decoders: []}
+  | NativeType(_) => {types: [], decoders: [], encoders: []}
   };
 };
 
@@ -852,6 +1180,17 @@ let renderTypes =
           file.types
           |> List.map(renderEntity(conversionOptions))
           |> List.map(declarations => declarations.decoders)
+          |> List.concat,
+        ),
+      ],
+    }),
+    Module({
+      name: "Encode",
+      declarations: [
+        Variable(
+          file.types
+          |> List.map(renderEntity(conversionOptions))
+          |> List.map(declarations => declarations.encoders)
           |> List.concat,
         ),
       ],
