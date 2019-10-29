@@ -3,6 +3,8 @@ open ReasonAst;
 
 type conversionOptions = {nativeTypeNames: list(string)};
 
+let definesCustomListType = false;
+
 let formatNativeType = string =>
   switch (string) {
   | "UUID" => Some("string")
@@ -10,6 +12,7 @@ let formatNativeType = string =>
   | "CGFloat" => Some("float")
   | "String" => Some("string")
   | "Optional" => Some("option")
+  | "Array" => definesCustomListType ? None : Some("list")
   | _ => None
   };
 
@@ -19,12 +22,18 @@ let formatDecoderIdentifier = string =>
   | "float" => "Json.Decode.float"
   | "string" => "Json.Decode.string"
   | "option" => "Json.Decode.optional"
+  | "list" when !definesCustomListType => "Json.Decode.list"
   | _ => string
   };
 
 let formatTypeName = string =>
   formatNativeType(string) %? Format.lowerFirst(string);
-let formatCaseName = Format.upperFirst;
+let formatCaseName = (name: string) =>
+  if (Js.Re.test(name, Js.Re.fromString("^\\d"))) {
+    Format.upperFirst("X" ++ name);
+  } else {
+    Format.upperFirst(name);
+  };
 let formatRecordTypeName = (name, parent) =>
   Format.lowerFirst(name) ++ Format.upperFirst(parent);
 let formatGenericName = string => "'" ++ Format.lowerFirst(string);
@@ -176,7 +185,25 @@ let renderTypeCaseParameterEntity =
           name: typeName,
           parameters: replacedGenerics,
         },
-        decoder: IdentifierExpression({name: typeName}),
+        decoder:
+          if (replacedGenerics == []) {
+            IdentifierExpression({name: formatDecoderIdentifier(typeName)});
+          } else {
+            FunctionCallExpression({
+              expression:
+                IdentifierExpression({
+                  name: formatDecoderIdentifier(typeName),
+                }),
+              arguments:
+                replacedGenerics
+                |> List.map((annotation: typeAnnotation) => annotation.name)
+                |> List.map(name =>
+                     IdentifierExpression({
+                       name: formatDecoderIdentifier(name),
+                     })
+                   ),
+            });
+          },
       };
     };
   | GenericReference(name) => {

@@ -184,6 +184,7 @@ and renderTypeDeclarationValue = (node: typeDeclarationValue): doc('a) =>
   switch (node) {
   | VariantType(value) => renderVariantType(value)
   | RecordType(value) => renderRecordType(value)
+  | AliasType(value) => renderTypeAnnotation(value)
   }
 and renderTypeDeclaration = (node: typeDeclaration): doc('a) =>
   renderTypeAnnotation(node.name)

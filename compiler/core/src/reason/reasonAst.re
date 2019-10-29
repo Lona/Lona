@@ -64,6 +64,7 @@ and expression =
 and typeDeclarationValue =
   | VariantType(variantType)
   | RecordType(recordType)
+  | AliasType(typeAnnotation)
 and typeDeclaration = {
   name: typeAnnotation,
   value: typeDeclarationValue,
