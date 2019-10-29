@@ -339,6 +339,28 @@ let findContentsBelow = contents => {
   };
 };
 
+let flattenWorkspace = (config: Config.t): TokenTypes.convertedWorkspace => {
+  flatTokensSchemaVersion: "0.0.1",
+  files:
+    config.logicFiles
+    |> List.map((file: Config.file(LogicAst.syntaxNode)) => {
+         let relativeInputPath =
+           Path.relative(~from=config.workspacePath, ~to_=file.path, ());
+         let basename =
+           Path.basename_ext(relativeInputPath, extname(relativeInputPath));
+         let dirname = Path.dirname(relativeInputPath);
+         let relativeOutputPath =
+           Path.join2(dirname, basename ++ ".flat.json");
+
+         {
+           TokenTypes.inputPath: relativeInputPath,
+           outputPath: relativeOutputPath,
+           name: basename,
+           contents: FlatTokens([]),
+         };
+       }),
+};
+
 let convertWorkspace = (target, workspace, output) => {
   let fromDirectory = Path.resolve(workspace, "");
   let toDirectory = Path.resolve(output, "");
@@ -579,6 +601,15 @@ let convertWorkspace = (target, workspace, output) => {
      });
 };
 switch (scanResult.command) {
+| Flatten(workspacePath) =>
+  Config.load(Types.ReasonCompiler, options, workspacePath, "", nodeDirname)
+  |> Js.Promise.then_(config => {
+       (flattenWorkspace(config) |> TokenTypes.Encode.convertedWorkspace)
+       ->(Js.Json.stringifyWithSpace(2))
+       |> Js.log;
+       Js.Promise.resolve();
+     })
+  |> ignore
 | Workspace(target, workspacePath, outputPath) =>
   convertWorkspace(target, workspacePath, outputPath) |> ignore
 | Component(target, input) =>

@@ -14,7 +14,8 @@ module Command = {
     | Types(Types.compilerTarget, string)
     | Logic(Types.compilerTarget, inputReference, string)
     | Component(Types.compilerTarget, string)
-    | Workspace(Types.compilerTarget, string, string);
+    | Workspace(Types.compilerTarget, string, string)
+    | Flatten(string);
 
   exception Unknown(string);
 };
@@ -349,6 +350,14 @@ Type `lonac [command]` to see which options are required for that command. The f
           raise(Command.Unknown("Missing output directory path (--output)"))
         | (Some(target), Some(workspacePath), Some(outputPath)) =>
           Command.Workspace(target, workspacePath, outputPath)
+        }
+      | "flatten" =>
+        switch (workspaceRef^) {
+        | None =>
+          raise(
+            Command.Unknown("Missing workspace directory path (--workspace)"),
+          )
+        | Some(workspacePath) => Command.Flatten(workspacePath)
         }
       | name =>
         raise(
