@@ -55,8 +55,7 @@ and convertedWorkspace = convertedWorkspaceConvertedWorkspace;
 module Decode = {
   let rec fontWeight: Js.Json.t => fontWeight =
     (json: Js.Json.t) => {
-      let rec case = Json.Decode.field("type", Json.Decode.string, json);
-      let rec data = Json.Decode.field("data", x => x, json);
+      let rec case = Json.Decode.string(json);
       switch (case) {
       | "100" => X100
       | "200" => X200

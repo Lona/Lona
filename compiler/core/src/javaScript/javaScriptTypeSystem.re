@@ -325,24 +325,21 @@ let renderEntity =
       };
     } else if (TypeSystem.Match.constant(entity)) {
       let typeCases = TypeSystem.Access.constantCases(entity);
-      switch (entity) {
-      | GenericType({name}) =>
-        let recordTypeName =
-          formatRecordTypeName(name, entityTypeAnnotation.name);
-        [
-          TypeAliasDeclaration({
-            identifier: recordTypeName,
-            typeParameters: entityTypeAnnotation.arguments,
-            type_:
-              UnionType(
-                typeCases
-                |> List.map(TypeSystem.Access.typeCaseName)
-                |> List.map(string => JavaScriptAst.LiteralType(string)),
-              ),
-          }),
-        ];
-      | _ => raise(Not_found)
-      };
+
+      let recordTypeName =
+        formatRecordTypeName(genericType.name, entityTypeAnnotation.name);
+      [
+        TypeAliasDeclaration({
+          identifier: recordTypeName,
+          typeParameters: entityTypeAnnotation.arguments,
+          type_:
+            UnionType(
+              typeCases
+              |> List.map(TypeSystem.Access.typeCaseName)
+              |> List.map(string => JavaScriptAst.LiteralType(string)),
+            ),
+        }),
+      ];
     } else {
       [
         TypeAliasDeclaration({

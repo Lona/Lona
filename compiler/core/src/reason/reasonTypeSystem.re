@@ -587,6 +587,84 @@ let renderEntity =
         };
       | _ => raise(Not_found)
       };
+    } else if (TypeSystem.Match.constant(entity)) {
+      let typeCases = TypeSystem.Access.constantCases(entity);
+      let variantCases =
+        typeCases
+        |> List.map(TypeSystem.Access.typeCaseName)
+        |> List.map(name => {name: formatCaseName(name), associatedData: []});
+      {
+        types:
+          types
+          @ [
+            {
+              name: entityTypeAnnotation,
+              value: VariantType({cases: variantCases}),
+            },
+          ],
+        decoders: [
+          {
+            name: typeName,
+            quantifiedAnnotation: Some(decoderAnnotation),
+            initializer_:
+              FunctionExpression({
+                parameters: decoderParameters,
+                returnType: None,
+                body: [
+                  Variable([
+                    {
+                      name: "case",
+                      quantifiedAnnotation: None,
+                      initializer_:
+                        FunctionCallExpression({
+                          expression:
+                            IdentifierExpression({
+                              name: "Json.Decode.string",
+                            }),
+                          arguments: [IdentifierExpression({name: "json"})],
+                        }),
+                    },
+                  ]),
+                  Expression(
+                    SwitchExpression({
+                      pattern: IdentifierExpression({name: "case"}),
+                      cases:
+                        decoderCases
+                        @ [
+                          {
+                            pattern: IdentifierExpression({name: "_"}),
+                            body: [
+                              Expression(
+                                FunctionCallExpression({
+                                  expression:
+                                    IdentifierExpression({name: "Js.log"}),
+                                  arguments: [
+                                    LiteralExpression({
+                                      literal:
+                                        String("Error decoding " ++ typeName),
+                                    }),
+                                  ],
+                                }),
+                              ),
+                              Expression(
+                                FunctionCallExpression({
+                                  expression:
+                                    IdentifierExpression({name: "raise"}),
+                                  arguments: [
+                                    IdentifierExpression({name: "Not_found"}),
+                                  ],
+                                }),
+                              ),
+                            ],
+                          },
+                        ],
+                    }),
+                  ),
+                ],
+              }),
+          },
+        ],
+      };
     } else if (TypeSystem.Match.linkedList(entity)) {
       let constantCase = List.hd(TypeSystem.Access.constantCases(entity));
       let recursiveCase =
