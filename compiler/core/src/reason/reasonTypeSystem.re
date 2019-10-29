@@ -1,7 +1,11 @@
 open Operators;
 open ReasonAst;
 
-type conversionOptions = {nativeTypeNames: list(string)};
+type conversionOptions = {
+  discriminant: string,
+  dataWrapper: string,
+  nativeTypeNames: list(string),
+};
 
 let definesCustomListType = false;
 
@@ -746,7 +750,9 @@ let renderEntity =
                           expression:
                             IdentifierExpression({name: "Json.Decode.field"}),
                           arguments: [
-                            LiteralExpression({literal: String("type")}),
+                            LiteralExpression({
+                              literal: String(options.discriminant),
+                            }),
                             IdentifierExpression({
                               name: "Json.Decode.string",
                             }),
@@ -764,7 +770,9 @@ let renderEntity =
                           expression:
                             IdentifierExpression({name: "Json.Decode.field"}),
                           arguments: [
-                            LiteralExpression({literal: String("data")}),
+                            LiteralExpression({
+                              literal: String(options.dataWrapper),
+                            }),
                             identityFunction,
                             IdentifierExpression({name: "json"}),
                           ],
@@ -816,13 +824,19 @@ let renderEntity =
   };
 };
 
-let renderTypes = (file: TypeSystem.typesFile): list(ReasonAst.declaration) => {
+let renderTypes =
+    (options: Options.options, file: TypeSystem.typesFile)
+    : list(ReasonAst.declaration) => {
   let nativeTypeNames =
     file.types
     |> List.map(TypeSystem.Access.nativeTypeName)
     |> Sequence.compact;
 
-  let conversionOptions = {nativeTypeNames: nativeTypeNames};
+  let conversionOptions = {
+    discriminant: options.discriminant,
+    dataWrapper: options.dataWrapper,
+    nativeTypeNames,
+  };
 
   [
     Type(
@@ -845,8 +859,9 @@ let renderTypes = (file: TypeSystem.typesFile): list(ReasonAst.declaration) => {
   ];
 };
 
-let renderToString = (file: TypeSystem.typesFile): string =>
-  renderTypes(file)
+let renderToString =
+    (options: Options.options, file: TypeSystem.typesFile): string =>
+  renderTypes(options, file)
   |> List.map(ReasonRender.renderDeclaration)
   |> List.map(ReasonRender.toString)
   |> Format.joinWith("\n\n");

@@ -143,7 +143,7 @@ let convertTypes = (target, contents) => {
     JavaScriptTypeSystem.renderToString(types);
   | Types.Reason =>
     let types = json |> TypeSystem.Decode.typesFile;
-    ReasonTypeSystem.renderToString(types);
+    ReasonTypeSystem.renderToString(options, types);
   | _ => exit("Can't generate types for target")
   };
 };
