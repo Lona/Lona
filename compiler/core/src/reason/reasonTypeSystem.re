@@ -495,9 +495,11 @@ let renderEntity =
     let decoderCases =
       renderedCases |> List.map((result: renderedTypeCase) => result.decoder);
 
-    let types =
-      (recordTypes |> List.concat)
-      @ [{name: entityTypeAnnotation, value: VariantType({cases: cases})}];
+    let standardVariantType = [
+      {name: entityTypeAnnotation, value: VariantType({cases: cases})},
+    ];
+
+    let types = recordTypes |> List.concat;
 
     let decoderAnnotation: quantifiedTypeAnnotation = {
       forall: genericTypeNames |> List.map(formatGenericName),
@@ -542,8 +544,16 @@ let renderEntity =
         let recordTypeName =
           formatRecordTypeName(name, entityTypeAnnotation.name);
 
+        let aliasType: typeDeclaration = {
+          name: {
+            name,
+            parameters: [],
+          },
+          value: AliasType({name: recordTypeName, parameters: []}),
+        };
+
         {
-          types,
+          types: types @ [aliasType],
           decoders: [
             {
               name: typeName,
@@ -554,28 +564,20 @@ let renderEntity =
                   returnType: None,
                   body: [
                     Expression(
-                      FunctionCallExpression({
-                        expression:
-                          IdentifierExpression({name: formatCaseName(name)}),
-                        arguments: [
-                          LiteralExpression({
-                            literal:
-                              Record(
-                                renderedParameters
-                                |> List.map(
-                                     (
-                                       parameter: renderedRecordTypeCaseParameter,
-                                     ) =>
-                                     (
-                                       {
-                                         key: parameter.entry.key,
-                                         value: parameter.decoder,
-                                       }: recordEntry
-                                     )
-                                   ),
-                              ),
-                          }),
-                        ],
+                      LiteralExpression({
+                        literal:
+                          Record(
+                            renderedParameters
+                            |> List.map(
+                                 (parameter: renderedRecordTypeCaseParameter) =>
+                                 (
+                                   {
+                                     key: parameter.entry.key,
+                                     value: parameter.decoder,
+                                   }: recordEntry
+                                 )
+                               ),
+                          ),
                       }),
                     ),
                   ],
@@ -594,7 +596,7 @@ let renderEntity =
       let recursiveType =
         List.hd(TypeSystem.Access.typeCaseParameterEntities(recursiveCase));
       {
-        types,
+        types: types @ standardVariantType,
         decoders: [
           {
             name: typeName,
@@ -647,7 +649,7 @@ let renderEntity =
       };
     } else {
       {
-        types,
+        types: types @ standardVariantType,
         decoders: [
           {
             name: typeName,

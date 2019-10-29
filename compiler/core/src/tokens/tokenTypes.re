@@ -9,8 +9,7 @@ type fontWeight =
   | X800
   | X900
 and colorValueColorValue = {css: string}
-and colorValue =
-  | ColorValue(colorValueColorValue)
+and colorValue = colorValueColorValue
 and textStyleValueTextStyleValue = {
   fontName: option(string),
   fontFamily: option(string),
@@ -20,8 +19,7 @@ and textStyleValueTextStyleValue = {
   letterSpacing: option(float),
   color: option(colorValue),
 }
-and textStyleValue =
-  | TextStyleValue(textStyleValueTextStyleValue)
+and textStyleValue = textStyleValueTextStyleValue
 and shadowValueShadowValue = {
   x: float,
   y: float,
@@ -29,8 +27,7 @@ and shadowValueShadowValue = {
   radius: float,
   color: colorValue,
 }
-and shadowValue =
-  | ShadowValue(shadowValueShadowValue)
+and shadowValue = shadowValueShadowValue
 and tokenValue =
   | Color(colorValue)
   | Shadow(shadowValue)
@@ -39,8 +36,7 @@ and tokenToken = {
   qualifiedName: list(string),
   value: tokenValue,
 }
-and token =
-  | Token(tokenToken)
+and token = tokenToken
 and convertedFileContents =
   | FlatTokens(list(token))
 and convertedFileConvertedFile = {
@@ -49,14 +45,12 @@ and convertedFileConvertedFile = {
   name: string,
   contents: convertedFileContents,
 }
-and convertedFile =
-  | ConvertedFile(convertedFileConvertedFile)
+and convertedFile = convertedFileConvertedFile
 and convertedWorkspaceConvertedWorkspace = {
   files: list(convertedFile),
   flatTokensSchemaVersion: string,
 }
-and convertedWorkspace =
-  | ConvertedWorkspace(convertedWorkspaceConvertedWorkspace);
+and convertedWorkspace = convertedWorkspaceConvertedWorkspace;
 
 module Decode = {
   let rec fontWeight: Js.Json.t => fontWeight =
@@ -79,49 +73,48 @@ module Decode = {
       };
     }
   and colorValue: Js.Json.t => colorValue =
-    (json: Js.Json.t) =>
-      ColorValue({css: Json.Decode.field("css", Json.Decode.string, json)})
+    (json: Js.Json.t) => {
+      css: Json.Decode.field("css", Json.Decode.string, json),
+    }
   and textStyleValue: Js.Json.t => textStyleValue =
-    (json: Js.Json.t) =>
-      TextStyleValue({
-        fontName:
-          Json.Decode.optional(
-            Json.Decode.field("fontName", Json.Decode.string),
-            json,
-          ),
-        fontFamily:
-          Json.Decode.optional(
-            Json.Decode.field("fontFamily", Json.Decode.string),
-            json,
-          ),
-        fontWeight: Json.Decode.field("fontWeight", fontWeight, json),
-        fontSize:
-          Json.Decode.optional(
-            Json.Decode.field("fontSize", Json.Decode.float),
-            json,
-          ),
-        lineHeight:
-          Json.Decode.optional(
-            Json.Decode.field("lineHeight", Json.Decode.float),
-            json,
-          ),
-        letterSpacing:
-          Json.Decode.optional(
-            Json.Decode.field("letterSpacing", Json.Decode.float),
-            json,
-          ),
-        color:
-          Json.Decode.optional(Json.Decode.field("color", colorValue), json),
-      })
+    (json: Js.Json.t) => {
+      fontName:
+        Json.Decode.optional(
+          Json.Decode.field("fontName", Json.Decode.string),
+          json,
+        ),
+      fontFamily:
+        Json.Decode.optional(
+          Json.Decode.field("fontFamily", Json.Decode.string),
+          json,
+        ),
+      fontWeight: Json.Decode.field("fontWeight", fontWeight, json),
+      fontSize:
+        Json.Decode.optional(
+          Json.Decode.field("fontSize", Json.Decode.float),
+          json,
+        ),
+      lineHeight:
+        Json.Decode.optional(
+          Json.Decode.field("lineHeight", Json.Decode.float),
+          json,
+        ),
+      letterSpacing:
+        Json.Decode.optional(
+          Json.Decode.field("letterSpacing", Json.Decode.float),
+          json,
+        ),
+      color:
+        Json.Decode.optional(Json.Decode.field("color", colorValue), json),
+    }
   and shadowValue: Js.Json.t => shadowValue =
-    (json: Js.Json.t) =>
-      ShadowValue({
-        x: Json.Decode.field("x", Json.Decode.float, json),
-        y: Json.Decode.field("y", Json.Decode.float, json),
-        blur: Json.Decode.field("blur", Json.Decode.float, json),
-        radius: Json.Decode.field("radius", Json.Decode.float, json),
-        color: Json.Decode.field("color", colorValue, json),
-      })
+    (json: Js.Json.t) => {
+      x: Json.Decode.field("x", Json.Decode.float, json),
+      y: Json.Decode.field("y", Json.Decode.float, json),
+      blur: Json.Decode.field("blur", Json.Decode.float, json),
+      radius: Json.Decode.field("radius", Json.Decode.float, json),
+      color: Json.Decode.field("color", colorValue, json),
+    }
   and tokenValue: Js.Json.t => tokenValue =
     (json: Js.Json.t) => {
       let rec case = Json.Decode.field("type", Json.Decode.string, json);
@@ -142,16 +135,15 @@ module Decode = {
       };
     }
   and token: Js.Json.t => token =
-    (json: Js.Json.t) =>
-      Token({
-        qualifiedName:
-          Json.Decode.field(
-            "qualifiedName",
-            Json.Decode.list(Json.Decode.string),
-            json,
-          ),
-        value: Json.Decode.field("value", tokenValue, json),
-      })
+    (json: Js.Json.t) => {
+      qualifiedName:
+        Json.Decode.field(
+          "qualifiedName",
+          Json.Decode.list(Json.Decode.string),
+          json,
+        ),
+      value: Json.Decode.field("value", tokenValue, json),
+    }
   and convertedFileContents: Js.Json.t => convertedFileContents =
     (json: Js.Json.t) => {
       let rec case = Json.Decode.field("type", Json.Decode.string, json);
@@ -166,23 +158,21 @@ module Decode = {
       };
     }
   and convertedFile: Js.Json.t => convertedFile =
-    (json: Js.Json.t) =>
-      ConvertedFile({
-        inputPath: Json.Decode.field("inputPath", Json.Decode.string, json),
-        outputPath: Json.Decode.field("outputPath", Json.Decode.string, json),
-        name: Json.Decode.field("name", Json.Decode.string, json),
-        contents: Json.Decode.field("contents", convertedFileContents, json),
-      })
+    (json: Js.Json.t) => {
+      inputPath: Json.Decode.field("inputPath", Json.Decode.string, json),
+      outputPath: Json.Decode.field("outputPath", Json.Decode.string, json),
+      name: Json.Decode.field("name", Json.Decode.string, json),
+      contents: Json.Decode.field("contents", convertedFileContents, json),
+    }
   and convertedWorkspace: Js.Json.t => convertedWorkspace =
-    (json: Js.Json.t) =>
-      ConvertedWorkspace({
-        files:
-          Json.Decode.field("files", Json.Decode.list(convertedFile), json),
-        flatTokensSchemaVersion:
-          Json.Decode.field(
-            "flatTokensSchemaVersion",
-            Json.Decode.string,
-            json,
-          ),
-      });
+    (json: Js.Json.t) => {
+      files:
+        Json.Decode.field("files", Json.Decode.list(convertedFile), json),
+      flatTokensSchemaVersion:
+        Json.Decode.field(
+          "flatTokensSchemaVersion",
+          Json.Decode.string,
+          json,
+        ),
+    };
 };
