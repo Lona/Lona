@@ -229,6 +229,20 @@ let rec evaluate =
     | Expression(BinaryExpression(_)) => Js.log("TODO: Binary Expression")
     | Expression(FunctionCallExpression(_)) =>
       Js.log("TODO: Function Call Expression")
+    | Declaration(
+        Variable({
+          name: Pattern(pattern),
+          initializer_: Some(initializer_),
+        }),
+      ) =>
+      context#add(
+        pattern.id,
+        {
+          label: "Variable initializer for " ++ pattern.name,
+          dependencies: [uuid(Expression(initializer_))],
+          f: values => List.hd(values),
+        },
+      )
     | Declaration(Function({name: Pattern(pattern)})) =>
       let type_ = (unificationContext.patternTypes)#get(pattern.id);
       let fullPath = declarationPathTo(rootNode, uuid(node));

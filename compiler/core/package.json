@@ -16,6 +16,8 @@
     "deploy": "rm -rf ../../studio/LonaStudio/Scripting/Modules/lonac && cp -r build ../../studio/LonaStudio/Scripting/Modules/lonac",
     "format": "bsrefmt --parse=re --print=re --in-place src/**/*.re",
     "prepublishOnly": "yarn clean && yarn build && yarn bundle",
+    "snapshotFlatTokens": "node src/main.bs.js flatten --workspace ../../examples/FlatTokens > ../../examples/generated/FlatTokens/output.json",
+    "snapshotFlatTokens:watch": "nodemon --exec \"yarn snapshotFlatTokens\"",
     "snapshotJsDom": "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/react-dom --framework=reactdom --styleFramework=styledcomponents",
     "snapshotJsDom:watch": "nodemon --exec \"yarn snapshotJsDom\"",
     "snapshotJsNative": "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/react-native --framework=reactnative",
