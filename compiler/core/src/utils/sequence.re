@@ -10,6 +10,18 @@ let firstWhere = (f: 'a => bool, items: list('a)): option('a) =>
   | [a, ..._] => Some(a)
   };
 
+let firstIndexWhere = (f: 'a => bool, items: list('a)): option(int) => {
+  let enumerated = items |> List.mapi((i, item) => (i, item));
+  let found = enumerated |> firstWhere(((_, item)) => f(item));
+  switch (found) {
+  | Some((index, _)) => Some(index)
+  | None => None
+  };
+};
+
+let firstIndexMem = (item: 'a, items: list('a)): option(int) =>
+  items |> firstIndexWhere(x => item == x);
+
 let rejectWhere = (f: 'a => bool, items: list('a)) =>
   items |> List.filter(item => !f(item));
 

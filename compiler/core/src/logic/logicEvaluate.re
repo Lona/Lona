@@ -1,5 +1,6 @@
 open Jet;
 open LogicProtocol;
+open Monad;
 
 module Value = {
   type t = {
@@ -227,8 +228,113 @@ let rec evaluate =
       | None => ()
       };
     | Expression(BinaryExpression(_)) => Js.log("TODO: Binary Expression")
-    | Expression(FunctionCallExpression(_)) =>
-      Js.log("TODO: Function Call Expression")
+    | Expression(FunctionCallExpression({expression, arguments})) =>
+      let functionType = (unificationContext.nodes)#get(uuid(node));
+      switch (functionType) {
+      | None => Js.log("Unknown type of functionCallExpression")
+      | Some(functionType) =>
+        let resolvedType = LogicUnify.substitute(substitution, functionType);
+        switch (resolvedType) {
+        | Evar(_)
+        | Gen(_)
+        | Cons(_) =>
+          Js.log(
+            "Invalid functionCallExpression type (only functions are valid)",
+          )
+        | Fun(_, returnType) =>
+          let dependencies =
+            [uuid(Expression(expression))]
+            @ (
+              arguments
+              |> LogicUtils.unfoldPairs
+              |> Sequence.compactMap((arg: LogicAst.functionCallArgument) =>
+                   switch (arg) {
+                   | Argument({
+                       expression:
+                         IdentifierExpression({
+                           identifier: Identifier({isPlaceholder: true}),
+                         }),
+                     }) =>
+                     None
+                   | Argument({expression}) =>
+                     Some(uuid(Expression(expression)))
+                   | Placeholder(_) => None
+                   }
+                 )
+            );
+          context#add(
+            uuid(node),
+            {
+              label: "FunctionCallExpression",
+              dependencies,
+              f: values => {
+                let [functionValue, ...args] = values;
+                switch (functionValue.memory) {
+                | Function(EnumInit(patternName)) => {
+                    type_: returnType,
+                    memory: Enum(patternName, args),
+                  }
+                | Function(RecordInit(members)) =>
+                  let members: list((string, option(Value.t))) =
+                    members#pairs()
+                    |> List.map(((key, value)) => {
+                         let arg =
+                           arguments
+                           |> LogicUtils.unfoldPairs
+                           |> Sequence.firstWhere(
+                                (arg: LogicAst.functionCallArgument) =>
+                                switch (arg) {
+                                | Argument({label: Some(key)}) => true
+                                | Argument(_)
+                                | Placeholder(_) => false
+                                }
+                              );
+                         let argumentValue =
+                           arg
+                           >>= (
+                             (arg: LogicAst.functionCallArgument) =>
+                               switch (arg) {
+                               | Argument({
+                                   expression:
+                                     IdentifierExpression({
+                                       identifier:
+                                         Identifier({isPlaceholder: true}),
+                                     }),
+                                 }) =>
+                                 None
+                               | Argument({expression}) =>
+                                 let dependencyIndex =
+                                   dependencies
+                                   |> Sequence.firstIndexMem(
+                                        uuid(Expression(expression)),
+                                      );
+                                 switch (dependencyIndex) {
+                                 | Some(dependencyIndex) =>
+                                   Some(List.nth(values, dependencyIndex))
+                                 | None => None
+                                 };
+                               | Placeholder(_) => None
+                               }
+                           );
+                         switch (argumentValue) {
+                         | Some(argumentValue) => (key, Some(argumentValue))
+                         | None =>
+                           let (_, argumentValue) = value;
+                           (key, argumentValue);
+                         };
+                       });
+                  {
+                    type_: returnType,
+                    memory: Record(Dictionary.init(members)),
+                  };
+                | _ => Value.unit
+                };
+              },
+            },
+          );
+        };
+      };
+
     | Declaration(
         Variable({
           name: Pattern(pattern),
