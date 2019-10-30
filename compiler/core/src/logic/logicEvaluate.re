@@ -14,8 +14,9 @@ module Value = {
     | String(string)
     | Array(list(t))
     | Enum(string, list(t))
-    | Record(Dictionary.t(string, option(t)))
+    | Record(recordMembers)
     | Function(func)
+  and recordMembers = Dictionary.t(string, option(t))
   and recordInit = Dictionary.t(string, (LogicUnify.t, option(t)))
   and func =
     | Path(list(string))
@@ -265,10 +266,14 @@ let rec evaluate =
           },
         );
       | None =>
-        Js.log(
-          "Failed to find declaration pattern for identifier `" ++ id ++ "`",
-        );
-        ();
+        /* Js.log(
+             "Failed to find declaration (pattern) for identifier `"
+             ++ string
+             ++ "` ("
+             ++ id
+             ++ ")",
+           ); */
+        ()
       };
     | Expression(MemberExpression(_)) =>
       let patternId = (scopeContext.identifierToPattern)#get(uuid(node));

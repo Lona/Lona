@@ -289,20 +289,6 @@ let build =
           false,
           Declaration(
             Enumeration({
-              name: Pattern({id: functionId, name: functionName}),
-              genericParameters,
-            }),
-          ),
-        ) =>
-        (context.patternToTypeName)#set(functionId, functionName);
-
-        setGenericParameters(genericParameters, context);
-
-        context;
-      | (
-          true,
-          Declaration(
-            Enumeration({
               name: Pattern({name: functionName}),
               genericParameters,
             }),
@@ -310,19 +296,10 @@ let build =
         ) =>
         pushNamespace(functionName, context);
 
-        /* Add initializers for each case into the namespace */
-        /* cases
-           |> LogicUtils.unfoldPairs
-           |> List.iter((case: LogicAst.enumerationCase) =>
-                switch (case) {
-                | Placeholder(_) => ()
-                | EnumerationCase({name: Pattern({id: caseId, name: caseName})}) =>
-                  setInCurrentNamespace(caseName, caseId, context)
-                }
-              ); */
-
         setGenericParameters(genericParameters, context);
 
+        context;
+      | (true, Declaration(Enumeration(_))) =>
         popNamespace(context);
 
         context;
