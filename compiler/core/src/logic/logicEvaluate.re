@@ -40,6 +40,53 @@ module Value = {
       Some(List.hd(values))
     | _ => None
     };
+
+  let rec valueDescription = (value: t): string => {
+    let {type_, memory} = value;
+    "[ "
+    ++ memoryDescription(memory)
+    ++ ": $"
+    ++ LogicUnify.typeDescription(type_)
+    ++ " ]";
+  }
+  and memoryDescription = (memory: memory): string =>
+    switch (memory) {
+    | Unit => "Unit"
+    | Bool(bool) => "Bool(" ++ string_of_bool(bool) ++ ")"
+    | Number(float) => "Number(" ++ string_of_float(float) ++ ")"
+    | String(string) => "String(" ++ string ++ ")"
+    | Array(values) =>
+      "Array("
+      ++ (values |> List.map(valueDescription) |> Format.joinWith(", "))
+      ++ ")"
+    | Enum(string, associatedValues) =>
+      "Enum("
+      ++ string
+      ++ (
+        associatedValues
+        |> List.map(valueDescription)
+        |> Format.joinWith(", ")
+      )
+      ++ ")"
+    | Record(members) =>
+      "Record("
+      ++ (
+        members#pairs()
+        |> List.map(((k, v)) =>
+             k
+             ++ ": "
+             ++ (
+               switch (v) {
+               | Some(v) => valueDescription(v)
+               | None => "_"
+               }
+             )
+           )
+        |> Format.joinWith(", ")
+      )
+      ++ ")"
+    | Function(func) => "func"
+    };
 };
 
 module Thunk = {
@@ -67,11 +114,18 @@ module Context = {
         | Some((thunk: Thunk.t)) =>
           let resolvedDependencies =
             thunk.dependencies |> List.map(dep => self#evaluate(dep));
-          if (resolvedDependencies |> List.exists(dep => dep == None)) {
-            Js.log("Failed to evaluate thunk - missing deps");
+          /* Js.log2("Evaluating", thunk.label); */
+          switch (
+            resolvedDependencies
+            |> Sequence.firstIndexWhere(dep => dep == None)
+          ) {
+          | Some(index) =>
+            Js.log(
+              "Failed to evaluate thunk - missing dep "
+              ++ List.nth(thunk.dependencies, index),
+            );
             None;
-          } else {
-            /* Js.log2("Evaluating", thunk.label); */
+          | None =>
             let result = thunk.f(resolvedDependencies |> Sequence.compact);
             values#set(uuid, result);
             Some(result);
@@ -205,12 +259,16 @@ let rec evaluate =
         context#add(
           uuid(node),
           {
-            label: "Identifier expression " ++ string,
+            label: "IdentifierExpression " ++ string,
             dependencies: [patternId],
             f: values => List.hd(values),
           },
         );
-      | None => ()
+      | None =>
+        Js.log(
+          "Failed to find declaration pattern for identifier `" ++ id ++ "`",
+        );
+        ();
       };
     | Expression(MemberExpression(_)) =>
       let patternId = (scopeContext.identifierToPattern)#get(uuid(node));
@@ -229,7 +287,8 @@ let rec evaluate =
       };
     | Expression(BinaryExpression(_)) => Js.log("TODO: Binary Expression")
     | Expression(FunctionCallExpression({expression, arguments})) =>
-      let functionType = (unificationContext.nodes)#get(uuid(node));
+      let functionType =
+        (unificationContext.nodes)#get(uuid(Expression(expression)));
       switch (functionType) {
       | None => Js.log("Unknown type of functionCallExpression")
       | Some(functionType) =>
@@ -239,7 +298,8 @@ let rec evaluate =
         | Gen(_)
         | Cons(_) =>
           Js.log(
-            "Invalid functionCallExpression type (only functions are valid)",
+            "Invalid functionCallExpression type (only functions are valid): "
+            ++ LogicUnify.typeDescription(resolvedType),
           )
         | Fun(_, returnType) =>
           let dependencies =
@@ -284,7 +344,9 @@ let rec evaluate =
                            |> Sequence.firstWhere(
                                 (arg: LogicAst.functionCallArgument) =>
                                 switch (arg) {
-                                | Argument({label: Some(key)}) => true
+                                | Argument({label: Some(label)})
+                                    when key == label =>
+                                  true
                                 | Argument(_)
                                 | Placeholder(_) => false
                                 }
@@ -310,7 +372,9 @@ let rec evaluate =
                                       );
                                  switch (dependencyIndex) {
                                  | Some(dependencyIndex) =>
-                                   Some(List.nth(values, dependencyIndex))
+                                   let x =
+                                     Some(List.nth(values, dependencyIndex));
+                                   x;
                                  | None => None
                                  };
                                | Placeholder(_) => None
@@ -406,8 +470,9 @@ let rec evaluate =
                        let initialValue =
                          switch (initializer_) {
                          | Some(_) =>
+                           let value = Some(List.nth(values, index^));
                            index := index^ + 1;
-                           Some(List.nth(values, index^));
+                           value;
                          | None => None
                          };
 

@@ -363,43 +363,42 @@ let flattenWorkspace = (config: Config.t): TokenTypes.convertedWorkspace => {
   let substitution =
     LogicUnify.unify(~constraints=unificationContext.constraints^, ());
 
-  Js.log("-- Namespace --");
-  Js.log(LogicScope.namespaceDescription(scopeContext.namespace));
+  /* Js.log("-- Namespace --");
+     Js.log(LogicScope.namespaceDescription(scopeContext.namespace));
 
-  Js.log("-- Unification --");
-  Js.log(
-    LogicUnificationContext.description(scopeContext, unificationContext),
-  );
+     Js.log("-- Unification --");
+     Js.log(
+       LogicUnificationContext.description(scopeContext, unificationContext),
+     ); */
 
-  {
-    flatTokensSchemaVersion: "0.0.1",
-    files:
-      config.logicFiles
-      |> List.map((file: Config.file(LogicAst.syntaxNode)) => {
-           let relativeInputPath =
-             Path.relative(~from=config.workspacePath, ~to_=file.path, ());
-           let basename =
-             Path.basename_ext(
-               relativeInputPath,
-               extname(relativeInputPath),
-             );
-           let dirname = Path.dirname(relativeInputPath);
-           let relativeOutputPath =
-             Path.join2(dirname, basename ++ ".flat.json");
-
-           let evaluationContext =
-             LogicEvaluate.evaluate(
-               ~currentNode=file.contents,
-               ~rootNode=programNode,
-               ~scopeContext,
-               ~unificationContext,
-               ~substitution,
-               (),
-             );
-           switch (evaluationContext) {
-           | None =>
-             raise(FailedToEvaluate("Failed to evaluate " ++ file.path))
-           | Some(evaluationContext) =>
+  let evaluationContext =
+    LogicEvaluate.evaluate(
+      ~currentNode=programNode,
+      ~rootNode=programNode,
+      ~scopeContext,
+      ~unificationContext,
+      ~substitution,
+      (),
+    );
+  switch (evaluationContext) {
+  | None =>
+    Js.log("Failed to evaluate workspace.");
+    {flatTokensSchemaVersion: "0.0.1", files: []};
+  | Some(evaluationContext) => {
+      flatTokensSchemaVersion: "0.0.1",
+      files:
+        config.logicFiles
+        |> List.map((file: Config.file(LogicAst.syntaxNode)) => {
+             let relativeInputPath =
+               Path.relative(~from=config.workspacePath, ~to_=file.path, ());
+             let basename =
+               Path.basename_ext(
+                 relativeInputPath,
+                 extname(relativeInputPath),
+               );
+             let dirname = Path.dirname(relativeInputPath);
+             let relativeOutputPath =
+               Path.join2(dirname, basename ++ ".flat.json");
              let flatTokens =
                LogicFlatten.convert(config, evaluationContext, file.contents);
              {
@@ -408,8 +407,8 @@ let flattenWorkspace = (config: Config.t): TokenTypes.convertedWorkspace => {
                name: basename,
                contents: FlatTokens(flatTokens),
              };
-           };
-         }),
+           }),
+    }
   };
 };
 

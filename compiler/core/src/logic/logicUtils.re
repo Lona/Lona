@@ -111,7 +111,7 @@ let rec makeProgram =
 
 let standardImportsProgram: LogicAst.programProgram = {
   let libraryImports: list(LogicAst.statement) =
-    ["Prelude", "Color"]
+    ["Prelude", "Color", "Shadow"]
     |> List.map(libraryName =>
          (
            Declaration({
