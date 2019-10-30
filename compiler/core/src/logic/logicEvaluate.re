@@ -70,245 +70,280 @@ module Context = {
             Js.log("Failed to evaluate thunk - missing deps");
             None;
           } else {
+            /* Js.log2("Evaluating", thunk.label); */
             let result = thunk.f(resolvedDependencies |> Sequence.compact);
             values#set(uuid, result);
             Some(result);
           };
-        | None => None
+        | None =>
+          Js.log("No thunk for " ++ uuid);
+          None;
         }
       };
   };
+
+  let makeEmpty = () => new t;
 };
 
-let evaluate =
-    (
-      node: LogicAst.syntaxNode,
-      rootNode: LogicAst.syntaxNode,
-      scopeContext: LogicScope.scopeContext,
-      unificationContext: LogicUnificationContext.t,
-      substitution: LogicUnify.substitution,
-      context: Context.t,
-    )
-    : option(Context.t) => {
-  /* TODO: handle statements */
-  switch (node) {
-  | Literal(Boolean({value})) =>
-    context#add(
-      uuid(node),
-      {
-        label: "Boolean Literal",
-        dependencies: [],
-        f: _ => Value.bool(value),
-      },
-    )
-  | Literal(Number({value})) =>
-    context#add(
-      uuid(node),
-      {
-        label: "Number Literal",
-        dependencies: [],
-        f: _ => Value.number(value),
-      },
-    )
-  | Literal(String({value})) =>
-    context#add(
-      uuid(node),
-      {
-        label: "String Literal",
-        dependencies: [],
-        f: _ => Value.string(value),
-      },
-    )
-  | Literal(Color({value})) =>
-    context#add(
-      uuid(node),
-      {label: "Color Literal", dependencies: [], f: _ => Value.color(value)},
-    )
-  | Literal(Array({value: expressions})) =>
-    let type_ = (unificationContext.nodes)#get(uuid(node));
-
-    switch (type_) {
-    | None => Js.log("Failed to unify type of array")
-    | Some(type_) =>
-      let resolvedType = LogicUnify.substitute(substitution, type_);
-      let dependencies =
-        expressions
-        |> LogicUtils.unfoldPairs
-        |> Sequence.rejectWhere(LogicUtils.isPlaceholderExpression)
-        |> List.map(expression => uuid(Expression(expression)));
-
+let rec evaluate =
+        (
+          ~currentNode as node: LogicAst.syntaxNode,
+          ~rootNode: LogicAst.syntaxNode,
+          ~scopeContext: LogicScope.scopeContext,
+          ~unificationContext: LogicUnificationContext.t,
+          ~substitution: LogicUnify.substitution,
+          ~context: Context.t=Context.makeEmpty(),
+          (),
+        )
+        : option(Context.t) => {
+  let result =
+    subnodes(node)
+    |> List.fold_left(
+         (result, subnode) =>
+           switch (result) {
+           | Some(result) =>
+             evaluate(
+               ~currentNode=subnode,
+               ~rootNode,
+               ~scopeContext,
+               ~unificationContext,
+               ~substitution,
+               ~context=result,
+               (),
+             )
+           | None => None
+           },
+         Some(context),
+       );
+  switch (result) {
+  | Some(context) =>
+    /* TODO: handle statements */
+    switch (node) {
+    | Literal(Boolean({value})) =>
       context#add(
         uuid(node),
         {
-          label: "Array Literal",
-          dependencies,
-          f: values => {type_: resolvedType, memory: Array(values)},
-        },
-      );
-    };
-  | Expression(LiteralExpression({literal})) =>
-    context#add(
-      uuid(node),
-      {
-        label: "Literal expression",
-        dependencies: [uuid(Literal(literal))],
-        f: values => List.hd(values),
-      },
-    )
-  | Expression(IdentifierExpression({identifier: Identifier({id, string})})) =>
-    let patternId = (scopeContext.identifierToPattern)#get(id);
-
-    switch (patternId) {
-    | Some(patternId) =>
-      context#add(
-        id,
-        {
-          label: "Identifier " ++ string,
-          dependencies: [patternId],
-          f: values => List.hd(values),
-        },
-      );
-      context#add(
-        uuid(node),
-        {
-          label: "Identifier expression " ++ string,
-          dependencies: [patternId],
-          f: values => List.hd(values),
-        },
-      );
-    | None => ()
-    };
-  | Expression(MemberExpression(_)) =>
-    let patternId = (scopeContext.identifierToPattern)#get(uuid(node));
-
-    switch (patternId) {
-    | Some(patternId) =>
-      context#add(
-        uuid(node),
-        {
-          label: "Member expression",
-          dependencies: [patternId],
-          f: values => List.hd(values),
-        },
-      )
-    | None => ()
-    };
-  | Expression(BinaryExpression(_)) => Js.log("TODO: Binary Expression")
-  | Expression(FunctionCallExpression(_)) =>
-    Js.log("TODO: Function Call Expression")
-  | Declaration(Function({name: Pattern(pattern)})) =>
-    let type_ = (unificationContext.patternTypes)#get(pattern.id);
-    let fullPath = declarationPathTo(rootNode, uuid(node));
-
-    switch (type_) {
-    | Some(type_) =>
-      context#add(
-        pattern.id,
-        {
-          label: "Function declaration for " ++ pattern.name,
+          label: "Boolean Literal",
           dependencies: [],
-          f: _ => {type_, memory: Function(Path(fullPath))},
+          f: _ => Value.bool(value),
         },
       )
-    | None => Js.log("Unknown function type")
-    };
-  | Declaration(Record({name: Pattern(functionName), declarations})) =>
-    let type_ = (unificationContext.patternTypes)#get(functionName.id);
-
-    switch (type_) {
-    | Some(type_) =>
-      let resolvedType = LogicUnify.substitute(substitution, type_);
-
-      let dependencies =
-        declarations
-        |> LogicUtils.unfoldPairs
-        |> Sequence.compactMap((declaration: LogicAst.declaration) =>
-             switch (declaration) {
-             | Variable({initializer_: Some(initializer_)}) =>
-               Some(uuid(Expression(initializer_)))
-             | _ => None
-             }
-           );
-
+    | Literal(Number({value})) =>
       context#add(
-        functionName.id,
+        uuid(node),
         {
-          label: "Record declaration for " ++ functionName.name,
-          dependencies,
-          f: values => {
-            let parameterTypes: Value.recordInit = new Dictionary.t;
-
-            let index: ref(int) = ref(0);
-
-            declarations
-            |> LogicUtils.unfoldPairs
-            |> List.iter((declaration: LogicAst.declaration) =>
-                 switch (declaration) {
-                 | Variable({name: Pattern(pattern), initializer_}) =>
-                   let parameterType =
-                     (unificationContext.patternTypes)#get(pattern.id);
-
-                   switch (parameterType) {
-                   | Some(parameterType) =>
-                     let initialValue =
-                       switch (initializer_) {
-                       | Some(_) =>
-                         index := index^ + 1;
-                         Some(List.nth(values, index^));
-                       | None => None
-                       };
-
-                     parameterTypes#set(
-                       pattern.name,
-                       (parameterType, initialValue),
-                     );
-                   | None => ()
-                   };
-                 | _ => ()
-                 }
-               );
-
-            {
-              type_: resolvedType,
-              memory: Function(RecordInit(parameterTypes)),
-            };
-          },
+          label: "Number Literal",
+          dependencies: [],
+          f: _ => Value.number(value),
         },
-      );
-    | None => Js.log("Unknown record type")
-    };
-  | Declaration(
-      Enumeration({name: Pattern(functionName), cases: enumCases}),
-    ) =>
-    let type_ = (unificationContext.patternTypes)#get(functionName.id);
+      )
+    | Literal(String({value})) =>
+      context#add(
+        uuid(node),
+        {
+          label: "String Literal",
+          dependencies: [],
+          f: _ => Value.string(value),
+        },
+      )
+    | Literal(Color({value})) =>
+      context#add(
+        uuid(node),
+        {
+          label: "Color Literal",
+          dependencies: [],
+          f: _ => Value.color(value),
+        },
+      )
+    | Literal(Array({value: expressions})) =>
+      let type_ = (unificationContext.nodes)#get(uuid(node));
 
-    switch (type_) {
-    | Some(type_) =>
-      enumCases
-      |> LogicUtils.unfoldPairs
-      |> List.iter((enumCase: LogicAst.enumerationCase) =>
-           switch (enumCase) {
-           | EnumerationCase({name: Pattern(pattern)}) =>
-             let resolvedConsType =
-               LogicUnify.substitute(substitution, type_);
-             context#add(
-               pattern.id,
-               {
-                 label: "Enum case declaration for " ++ pattern.name,
-                 dependencies: [],
-                 f: _ => {
-                   type_: resolvedConsType,
-                   memory: Function(EnumInit(pattern.name)),
-                 },
-               },
+      switch (type_) {
+      | None => Js.log("Failed to unify type of array")
+      | Some(type_) =>
+        let resolvedType = LogicUnify.substitute(substitution, type_);
+        let dependencies =
+          expressions
+          |> LogicUtils.unfoldPairs
+          |> Sequence.rejectWhere(LogicUtils.isPlaceholderExpression)
+          |> List.map(expression => uuid(Expression(expression)));
+
+        context#add(
+          uuid(node),
+          {
+            label: "Array Literal",
+            dependencies,
+            f: values => {type_: resolvedType, memory: Array(values)},
+          },
+        );
+      };
+    | Expression(LiteralExpression({literal})) =>
+      context#add(
+        uuid(node),
+        {
+          label: "Literal expression",
+          dependencies: [uuid(Literal(literal))],
+          f: values => List.hd(values),
+        },
+      )
+    | Expression(
+        IdentifierExpression({identifier: Identifier({id, string})}),
+      ) =>
+      let patternId = (scopeContext.identifierToPattern)#get(id);
+
+      switch (patternId) {
+      | Some(patternId) =>
+        context#add(
+          id,
+          {
+            label: "Identifier " ++ string,
+            dependencies: [patternId],
+            f: values => List.hd(values),
+          },
+        );
+        context#add(
+          uuid(node),
+          {
+            label: "Identifier expression " ++ string,
+            dependencies: [patternId],
+            f: values => List.hd(values),
+          },
+        );
+      | None => ()
+      };
+    | Expression(MemberExpression(_)) =>
+      let patternId = (scopeContext.identifierToPattern)#get(uuid(node));
+
+      switch (patternId) {
+      | Some(patternId) =>
+        context#add(
+          uuid(node),
+          {
+            label: "Member expression",
+            dependencies: [patternId],
+            f: values => List.hd(values),
+          },
+        )
+      | None => ()
+      };
+    | Expression(BinaryExpression(_)) => Js.log("TODO: Binary Expression")
+    | Expression(FunctionCallExpression(_)) =>
+      Js.log("TODO: Function Call Expression")
+    | Declaration(Function({name: Pattern(pattern)})) =>
+      let type_ = (unificationContext.patternTypes)#get(pattern.id);
+      let fullPath = declarationPathTo(rootNode, uuid(node));
+
+      switch (type_) {
+      | Some(type_) =>
+        context#add(
+          pattern.id,
+          {
+            label: "Function declaration for " ++ pattern.name,
+            dependencies: [],
+            f: _ => {type_, memory: Function(Path(fullPath))},
+          },
+        )
+      | None => Js.log("Unknown function type")
+      };
+    | Declaration(Record({name: Pattern(functionName), declarations})) =>
+      let type_ = (unificationContext.patternTypes)#get(functionName.id);
+
+      switch (type_) {
+      | Some(type_) =>
+        let resolvedType = LogicUnify.substitute(substitution, type_);
+
+        let dependencies =
+          declarations
+          |> LogicUtils.unfoldPairs
+          |> Sequence.compactMap((declaration: LogicAst.declaration) =>
+               switch (declaration) {
+               | Variable({initializer_: Some(initializer_)}) =>
+                 Some(uuid(Expression(initializer_)))
+               | _ => None
+               }
              );
-           | _ => ()
-           }
-         )
-    | None => Js.log("Unknown record type")
-    };
-  | _ => ()
-  };
 
-  Some(context);
+        context#add(
+          functionName.id,
+          {
+            label: "Record declaration for " ++ functionName.name,
+            dependencies,
+            f: values => {
+              let parameterTypes: Value.recordInit = new Dictionary.t;
+
+              let index: ref(int) = ref(0);
+
+              declarations
+              |> LogicUtils.unfoldPairs
+              |> List.iter((declaration: LogicAst.declaration) =>
+                   switch (declaration) {
+                   | Variable({name: Pattern(pattern), initializer_}) =>
+                     let parameterType =
+                       (unificationContext.patternTypes)#get(pattern.id);
+
+                     switch (parameterType) {
+                     | Some(parameterType) =>
+                       let initialValue =
+                         switch (initializer_) {
+                         | Some(_) =>
+                           index := index^ + 1;
+                           Some(List.nth(values, index^));
+                         | None => None
+                         };
+
+                       parameterTypes#set(
+                         pattern.name,
+                         (parameterType, initialValue),
+                       );
+                     | None => ()
+                     };
+                   | _ => ()
+                   }
+                 );
+
+              {
+                type_: resolvedType,
+                memory: Function(RecordInit(parameterTypes)),
+              };
+            },
+          },
+        );
+      | None => Js.log("Unknown record type")
+      };
+    | Declaration(
+        Enumeration({name: Pattern(functionName), cases: enumCases}),
+      ) =>
+      let type_ = (unificationContext.patternTypes)#get(functionName.id);
+
+      switch (type_) {
+      | Some(type_) =>
+        enumCases
+        |> LogicUtils.unfoldPairs
+        |> List.iter((enumCase: LogicAst.enumerationCase) =>
+             switch (enumCase) {
+             | EnumerationCase({name: Pattern(pattern)}) =>
+               let resolvedConsType =
+                 LogicUnify.substitute(substitution, type_);
+               context#add(
+                 pattern.id,
+                 {
+                   label: "Enum case declaration for " ++ pattern.name,
+                   dependencies: [],
+                   f: _ => {
+                     type_: resolvedConsType,
+                     memory: Function(EnumInit(pattern.name)),
+                   },
+                 },
+               );
+             | _ => ()
+             }
+           )
+      | None => Js.log("Unknown record type")
+      };
+    | _ => ()
+    };
+
+    Some(context);
+  | None => None
+  };
 };

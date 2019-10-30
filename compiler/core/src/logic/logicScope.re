@@ -13,6 +13,11 @@ type scopeContext = {
   patternNames: scopeStack(string, uuid),
 };
 
+let namespaceDescription = (namespace: Dictionary.t(list(string), uuid)) =>
+  namespace#keys()
+  |> List.map(qualifiedName => Format.joinWith(".", qualifiedName))
+  |> Format.joinWith("\n");
+
 let pushNamespace = (name, context: scopeContext) =>
   context.currentNamespacePath := context.currentNamespacePath^ @ [name];
 

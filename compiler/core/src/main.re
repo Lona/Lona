@@ -339,26 +339,78 @@ let findContentsBelow = contents => {
   };
 };
 
-let flattenWorkspace = (config: Config.t): TokenTypes.convertedWorkspace => {
-  flatTokensSchemaVersion: "0.0.1",
-  files:
-    config.logicFiles
-    |> List.map((file: Config.file(LogicAst.syntaxNode)) => {
-         let relativeInputPath =
-           Path.relative(~from=config.workspacePath, ~to_=file.path, ());
-         let basename =
-           Path.basename_ext(relativeInputPath, extname(relativeInputPath));
-         let dirname = Path.dirname(relativeInputPath);
-         let relativeOutputPath =
-           Path.join2(dirname, basename ++ ".flat.json");
+exception FailedToEvaluate(string);
 
-         {
-           TokenTypes.inputPath: relativeInputPath,
-           outputPath: relativeOutputPath,
-           name: basename,
-           contents: FlatTokens([]),
-         };
-       }),
+let flattenWorkspace = (config: Config.t): TokenTypes.convertedWorkspace => {
+  let program =
+    config.logicFiles
+    |> List.map((file: Config.file(LogicAst.syntaxNode)) => file.contents)
+    |> Sequence.compactMap(LogicUtils.makeProgram)
+    |> LogicUtils.joinPrograms;
+  let program =
+    LogicUtils.joinPrograms([LogicUtils.standardImportsProgram, program]);
+  let programNode =
+    LogicAst.Program(
+      Program(LogicUtils.resolveImports(config, program, ())),
+    );
+  let scopeContext = LogicScope.build(programNode, ());
+  let unificationContext =
+    LogicUnificationContext.makeUnificationContext(
+      ~rootNode=programNode,
+      ~scopeContext,
+      (),
+    );
+  let substitution =
+    LogicUnify.unify(~constraints=unificationContext.constraints^, ());
+
+  Js.log("-- Namespace --");
+  Js.log(LogicScope.namespaceDescription(scopeContext.namespace));
+
+  Js.log("-- Unification --");
+  Js.log(
+    LogicUnificationContext.description(scopeContext, unificationContext),
+  );
+
+  {
+    flatTokensSchemaVersion: "0.0.1",
+    files:
+      config.logicFiles
+      |> List.map((file: Config.file(LogicAst.syntaxNode)) => {
+           let relativeInputPath =
+             Path.relative(~from=config.workspacePath, ~to_=file.path, ());
+           let basename =
+             Path.basename_ext(
+               relativeInputPath,
+               extname(relativeInputPath),
+             );
+           let dirname = Path.dirname(relativeInputPath);
+           let relativeOutputPath =
+             Path.join2(dirname, basename ++ ".flat.json");
+
+           let evaluationContext =
+             LogicEvaluate.evaluate(
+               ~currentNode=file.contents,
+               ~rootNode=programNode,
+               ~scopeContext,
+               ~unificationContext,
+               ~substitution,
+               (),
+             );
+           switch (evaluationContext) {
+           | None =>
+             raise(FailedToEvaluate("Failed to evaluate " ++ file.path))
+           | Some(evaluationContext) =>
+             let flatTokens =
+               LogicFlatten.convert(config, evaluationContext, file.contents);
+             {
+               TokenTypes.inputPath: relativeInputPath,
+               outputPath: relativeOutputPath,
+               name: basename,
+               contents: FlatTokens(flatTokens),
+             };
+           };
+         }),
+  };
 };
 
 let convertWorkspace = (target, workspace, output) => {
@@ -603,12 +655,16 @@ let convertWorkspace = (target, workspace, output) => {
 switch (scanResult.command) {
 | Flatten(workspacePath) =>
   Config.load(Types.ReasonCompiler, options, workspacePath, "", nodeDirname)
-  |> Js.Promise.then_(config => {
-       (flattenWorkspace(config) |> TokenTypes.Encode.convertedWorkspace)
-       ->(Js.Json.stringifyWithSpace(2))
-       |> Js.log;
-       Js.Promise.resolve();
-     })
+  |> Js.Promise.then_(config =>
+       switch (flattenWorkspace(config)) {
+       | flattened =>
+         (flattened |> TokenTypes.Encode.convertedWorkspace)
+         ->(Js.Json.stringifyWithSpace(2))
+         |> Js.log;
+         Js.Promise.resolve();
+       | exception (FailedToEvaluate(message)) => exit(message)
+       }
+     )
   |> ignore
 | Workspace(target, workspacePath, outputPath) =>
   convertWorkspace(target, workspacePath, outputPath) |> ignore

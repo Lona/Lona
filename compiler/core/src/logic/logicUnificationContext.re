@@ -8,6 +8,19 @@ type t = {
   typeNameGenerator: LogicNameGenerator.t,
 };
 
+let description = (scopeContext: LogicScope.scopeContext, context: t) =>
+  (scopeContext.namespace)#pairs()
+  |> List.map(((qualifiedName, id)) =>
+       switch ((context.nodes)#get(id)) {
+       | Some(type_) =>
+         Format.joinWith(".", qualifiedName)
+         ++ " : "
+         ++ LogicUnify.typeDescription(type_)
+       | None => Format.joinWith(".", qualifiedName) ++ " : " ++ id
+       }
+     )
+  |> Format.joinWith("\n");
+
 let makeEmptyContext = (): t => {
   constraints: ref([]),
   nodes: new Jet.Dictionary.t,
@@ -285,7 +298,14 @@ let makeUnificationContext =
         result.constraints :=
           result.constraints^
           @ [{head: annotationType, tail: initializerType}]
-      | None => Js.log("WARNING: No initializer type for " ++ initializerId)
+      | None =>
+        Js.log(
+          "WARNING: No initializer type for "
+          ++ pattern.name
+          ++ " ("
+          ++ initializerId
+          ++ ")",
+        )
       };
 
       (result.patternTypes)#set(pattern.id, annotationType);
@@ -370,6 +390,11 @@ let makeUnificationContext =
         );
 
       (result.nodes)#set(uuid(node), type_);
+    | (true, Expression(LiteralExpression({literal}))) =>
+      (result.nodes)#set(
+        uuid(node),
+        (result.nodes)#getExn(uuid(Literal(literal))),
+      )
     /* TODO: Binary expression */
     | (true, Literal(Boolean(_))) =>
       (result.nodes)#set(uuid(node), LogicUnify.bool)
