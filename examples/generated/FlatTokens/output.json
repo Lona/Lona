@@ -1,0 +1,99 @@
+{
+  "files": [
+    {
+      "inputPath": "Colors.md",
+      "outputPath": "Colors.flat.json",
+      "name": "Colors",
+      "contents": {
+        "type": "flatTokens",
+        "value": [
+          {
+            "qualifiedName": [
+              "primary"
+            ],
+            "value": {
+              "type": "color",
+              "value": {
+                "css": "#45CBFF"
+              }
+            }
+          },
+          {
+            "qualifiedName": [
+              "accent"
+            ],
+            "value": {
+              "type": "color",
+              "value": {
+                "css": "#45CBFF"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "inputPath": "README.md",
+      "outputPath": "README.flat.json",
+      "name": "README",
+      "contents": {
+        "type": "flatTokens",
+        "value": []
+      }
+    },
+    {
+      "inputPath": "Shadows.md",
+      "outputPath": "Shadows.flat.json",
+      "name": "Shadows",
+      "contents": {
+        "type": "flatTokens",
+        "value": [
+          {
+            "qualifiedName": [
+              "small"
+            ],
+            "value": {
+              "type": "shadow",
+              "value": {
+                "x": 0,
+                "y": 2,
+                "blur": 2,
+                "radius": 0,
+                "color": {
+                  "css": "black"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "inputPath": "TextStyles.md",
+      "outputPath": "TextStyles.flat.json",
+      "name": "TextStyles",
+      "contents": {
+        "type": "flatTokens",
+        "value": [
+          {
+            "qualifiedName": [
+              "heading1"
+            ],
+            "value": {
+              "type": "textStyle",
+              "value": {
+                "fontFamily": "Helvetica",
+                "fontWeight": "500",
+                "fontSize": 28,
+                "color": {
+                  "css": "teal"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "flatTokensSchemaVersion": "0.0.1"
+}
