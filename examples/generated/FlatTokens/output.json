@@ -83,7 +83,7 @@
               "type": "textStyle",
               "value": {
                 "fontFamily": "Helvetica",
-                "fontWeight": "500",
+                "fontWeight": "700",
                 "fontSize": 28,
                 "color": {
                   "css": "teal"

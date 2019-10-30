@@ -32,6 +32,27 @@ let getOptional =
   | _ => None
   };
 
+let getFontWeight =
+    (value: LogicEvaluate.Value.t): option(TokenTypes.fontWeight) =>
+  switch (value.type_, value.memory) {
+  | (Cons("FontWeight", _), Enum(tag, _)) =>
+    switch (tag) {
+    | "ultraLight" => Some(X100)
+    | "thin" => Some(X200)
+    | "light" => Some(X300)
+    | "regular" => Some(X400)
+    | "medium" => Some(X500)
+    | "semibold" => Some(X600)
+    | "bold" => Some(X700)
+    | "heavy" => Some(X800)
+    | "black" => Some(X900)
+    | _ =>
+      Js.log("Bad FontWeight: " ++ tag);
+      raise(Not_found);
+    }
+  | _ => None
+  };
+
 let getShadowValue =
     (value: LogicEvaluate.Value.t): option(TokenTypes.shadowValue) =>
   switch (value.type_, value.memory) {
@@ -86,8 +107,15 @@ let getTextStyleValue =
            | _ => None
            }
          );
-
-    let fontWeight = TokenTypes.X500;
+    let [fontWeight] =
+      ["fontWeight"]
+      |> List.map(name => getField(name, fields))
+      |> List.map((fieldValue: option(LogicEvaluate.Value.t)) =>
+           switch (fieldValue >>= getFontWeight) {
+           | Some(fontWeightValue) => fontWeightValue
+           | _ => X400
+           }
+         );
 
     Some({
       fontName,
