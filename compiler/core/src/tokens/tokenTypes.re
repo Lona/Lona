@@ -192,42 +192,57 @@ module Encode = {
       }
   and colorValue: colorValue => Js.Json.t =
     (value: colorValue) =>
-      Json.Encode.object_([("css", Json.Encode.string(value.css))])
+      Json.Encode.object_(
+        List.filter(
+          ((_, json)) => json != Js.Json.null,
+          [("css", Json.Encode.string(value.css))],
+        ),
+      )
   and textStyleValue: textStyleValue => Js.Json.t =
     (value: textStyleValue) =>
-      Json.Encode.object_([
-        (
-          "fontName",
-          Json.Encode.nullable(Json.Encode.string, value.fontName),
+      Json.Encode.object_(
+        List.filter(
+          ((_, json)) => json != Js.Json.null,
+          [
+            (
+              "fontName",
+              Json.Encode.nullable(Json.Encode.string, value.fontName),
+            ),
+            (
+              "fontFamily",
+              Json.Encode.nullable(Json.Encode.string, value.fontFamily),
+            ),
+            ("fontWeight", fontWeight(value.fontWeight)),
+            (
+              "fontSize",
+              Json.Encode.nullable(Json.Encode.float, value.fontSize),
+            ),
+            (
+              "lineHeight",
+              Json.Encode.nullable(Json.Encode.float, value.lineHeight),
+            ),
+            (
+              "letterSpacing",
+              Json.Encode.nullable(Json.Encode.float, value.letterSpacing),
+            ),
+            ("color", Json.Encode.nullable(colorValue, value.color)),
+          ],
         ),
-        (
-          "fontFamily",
-          Json.Encode.nullable(Json.Encode.string, value.fontFamily),
-        ),
-        ("fontWeight", fontWeight(value.fontWeight)),
-        (
-          "fontSize",
-          Json.Encode.nullable(Json.Encode.float, value.fontSize),
-        ),
-        (
-          "lineHeight",
-          Json.Encode.nullable(Json.Encode.float, value.lineHeight),
-        ),
-        (
-          "letterSpacing",
-          Json.Encode.nullable(Json.Encode.float, value.letterSpacing),
-        ),
-        ("color", Json.Encode.nullable(colorValue, value.color)),
-      ])
+      )
   and shadowValue: shadowValue => Js.Json.t =
     (value: shadowValue) =>
-      Json.Encode.object_([
-        ("x", Json.Encode.float(value.x)),
-        ("y", Json.Encode.float(value.y)),
-        ("blur", Json.Encode.float(value.blur)),
-        ("radius", Json.Encode.float(value.radius)),
-        ("color", colorValue(value.color)),
-      ])
+      Json.Encode.object_(
+        List.filter(
+          ((_, json)) => json != Js.Json.null,
+          [
+            ("x", Json.Encode.float(value.x)),
+            ("y", Json.Encode.float(value.y)),
+            ("blur", Json.Encode.float(value.blur)),
+            ("radius", Json.Encode.float(value.radius)),
+            ("color", colorValue(value.color)),
+          ],
+        ),
+      )
   and tokenValue: tokenValue => Js.Json.t =
     (value: tokenValue) =>
       switch (value) {
@@ -246,13 +261,18 @@ module Encode = {
       }
   and token: token => Js.Json.t =
     (value: token) =>
-      Json.Encode.object_([
-        (
-          "qualifiedName",
-          Json.Encode.list(Json.Encode.string, value.qualifiedName),
+      Json.Encode.object_(
+        List.filter(
+          ((_, json)) => json != Js.Json.null,
+          [
+            (
+              "qualifiedName",
+              Json.Encode.list(Json.Encode.string, value.qualifiedName),
+            ),
+            ("value", tokenValue(value.value)),
+          ],
         ),
-        ("value", tokenValue(value.value)),
-      ])
+      )
   and convertedFileContents: convertedFileContents => Js.Json.t =
     (value: convertedFileContents) =>
       switch (value) {
@@ -263,19 +283,29 @@ module Encode = {
       }
   and convertedFile: convertedFile => Js.Json.t =
     (value: convertedFile) =>
-      Json.Encode.object_([
-        ("inputPath", Json.Encode.string(value.inputPath)),
-        ("outputPath", Json.Encode.string(value.outputPath)),
-        ("name", Json.Encode.string(value.name)),
-        ("contents", convertedFileContents(value.contents)),
-      ])
+      Json.Encode.object_(
+        List.filter(
+          ((_, json)) => json != Js.Json.null,
+          [
+            ("inputPath", Json.Encode.string(value.inputPath)),
+            ("outputPath", Json.Encode.string(value.outputPath)),
+            ("name", Json.Encode.string(value.name)),
+            ("contents", convertedFileContents(value.contents)),
+          ],
+        ),
+      )
   and convertedWorkspace: convertedWorkspace => Js.Json.t =
     (value: convertedWorkspace) =>
-      Json.Encode.object_([
-        ("files", Json.Encode.list(convertedFile, value.files)),
-        (
-          "flatTokensSchemaVersion",
-          Json.Encode.string(value.flatTokensSchemaVersion),
+      Json.Encode.object_(
+        List.filter(
+          ((_, json)) => json != Js.Json.null,
+          [
+            ("files", Json.Encode.list(convertedFile, value.files)),
+            (
+              "flatTokensSchemaVersion",
+              Json.Encode.string(value.flatTokensSchemaVersion),
+            ),
+          ],
         ),
-      ]);
+      );
 };

@@ -909,26 +909,37 @@ let renderEntity =
                         expression:
                           IdentifierExpression({name: "Json.Encode.object_"}),
                         arguments: [
-                          LiteralExpression({
-                            literal:
-                              Array(
-                                renderedParameters
-                                |> List.map(
-                                     (
-                                       parameter: renderedRecordTypeCaseParameter,
-                                     ) =>
-                                     LiteralExpression({
-                                       literal:
-                                         Tuple([
-                                           LiteralExpression({
-                                             literal:
-                                               String(parameter.entry.key),
-                                           }),
-                                           parameter.encoder,
-                                         ]),
-                                     })
-                                   ),
-                              ),
+                          FunctionCallExpression({
+                            expression:
+                              IdentifierExpression({name: "List.filter"}),
+                            arguments: [
+                              IdentifierExpression({
+                                name: "((_, json)) => json != Js.Json.null",
+                              }),
+                              LiteralExpression({
+                                literal:
+                                  Array(
+                                    renderedParameters
+                                    |> List.map(
+                                         (
+                                           parameter: renderedRecordTypeCaseParameter,
+                                         ) =>
+                                         LiteralExpression({
+                                           literal:
+                                             Tuple([
+                                               LiteralExpression({
+                                                 literal:
+                                                   String(
+                                                     parameter.entry.key,
+                                                   ),
+                                               }),
+                                               parameter.encoder,
+                                             ]),
+                                         })
+                                       ),
+                                  ),
+                              }),
+                            ],
                           }),
                         ],
                       }),
