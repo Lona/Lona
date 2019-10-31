@@ -49,3 +49,6 @@ After clicking this button, type the name of a new directory. This will create a
 To open an existing workspace, either use `File > Open` or click the "Open workspace..." button:
 
 ![Open Workspace](../docs/images/open-workspace.png)
+
+### Compiler path
+After completing [Lona Compiler](#lona-compiler) path, you need to use `LonaStudio -> Preferences -> Custom Compiler Path` to set custom path or you can include `lonca` in your app module. You can find `lonac` path using `npm root -g` which expected to be `/usr/local/lib/node_modules/lonac`. Now you are ready to generate code from component!  
