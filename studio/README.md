@@ -50,5 +50,10 @@ To open an existing workspace, either use `File > Open` or click the "Open works
 
 ![Open Workspace](../docs/images/open-workspace.png)
 
-### Compiler path
-After completing [Lona Compiler](#lona-compiler) path, you need to use `LonaStudio -> Preferences -> Custom Compiler Path` to set custom path or you can include `lonca` in your app module. You can find `lonac` path using `npm root -g` which expected to be `/usr/local/lib/node_modules/lonac`. Now you are ready to generate code from component!  
+### Compiler
+
+The Lona Studio mac app binary includes a build of the Lona compiler. However, if you're building Lona Studio from source, you'll need to build the compiler. To build the compiler, follow [these instructions](https://github.com/airbnb/Lona/tree/master/compiler/core#setup) and then run `yarn deploy` to copy the built compiler into the appropriate Lona Studio directory.
+
+Alternately, you may install `lonac` via `npm` (e.g. `npm install --global lonac`) and set the path in Lona Studio. You can set the path in `LonaStudio -> Preferences -> Custom Compiler Path`. You can find the `lonac` path using `npm root -g` (which is expected to be `/usr/local/lib/node_modules/lonac`). 
+
+Now you're ready to generate code from Lona components!
