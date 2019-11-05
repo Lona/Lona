@@ -127,6 +127,9 @@ module.exports = function generateSketchLibrary(
         },
         tokens: tokens.files.reduce(
           (prev, file) => {
+            if (file.contents.type !== 'flatTokens') {
+              return prev
+            }
             file.contents.value.forEach(token => {
               if (token.value.type === 'color') {
                 prev.colors.push(token)
