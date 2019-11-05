@@ -86,30 +86,67 @@ module.exports = function generateSketchLibrary(
     // TODO: remove previous export
   }
 
-  return new Promise((resolve, reject) => {
-    log(`Getting the configuration of the workspace`)
-    exec(`node "${compiler}" config "${workspace}"`, (err, stdout, stderr) => {
-      if (err) {
-        err.stdout = stdout
-        err.stderr = stderr
-        return reject(err)
-      }
+  return Promise.all([
+    new Promise((resolve, reject) => {
+      log(`Getting the tokens of the workspace`)
+      exec(
+        `node "${compiler}" flatten --workspace "${workspace}"`,
+        (err, stdout, stderr) => {
+          if (err) {
+            err.stdout = stdout
+            err.stderr = stderr
+            return reject(err)
+          }
 
-      return resolve(stdout)
-    })
-  })
-    .then(rawConfig => {
-      const compilerConfig = JSON.parse(rawConfig)
+          return resolve(JSON.parse(stdout))
+        }
+      )
+    }),
+    new Promise((resolve, reject) => {
+      exec(
+        `node "${compiler}" config "${workspace}"`,
+        (err, stdout, stderr) => {
+          if (err) {
+            err.stdout = stdout
+            err.stderr = stderr
+            return reject(err)
+          }
 
+          return resolve(JSON.parse(stdout))
+        }
+      )
+    }),
+  ])
+    .then(([tokens, config]) => {
       return {
         paths: {
           output: babelOutput,
           sketchFile: sketchFilePath,
-          workspace: compilerConfig.paths.workspace,
-          colors: compilerConfig.paths.colors,
-          textStyles: compilerConfig.paths.textStyles,
-          components: compilerConfig.paths.components,
+          workspace,
+          components: config.paths.components,
         },
+        tokens: tokens.files.reduce(
+          (prev, file) => {
+            if (file.contents.type !== 'flatTokens') {
+              return prev
+            }
+            file.contents.value.forEach(token => {
+              if (token.value.type === 'color') {
+                prev.colors.push(token)
+              } else if (token.value.type === 'textStyle') {
+                prev.textStyles.push(token)
+              } else if (token.value.type === 'shadow') {
+                prev.shadows.push(token)
+              }
+            })
+            return prev
+          },
+          {
+            colors: [],
+            textStyles: [],
+            shadows: [],
+          }
+        ),
         devicePresetList,
         componentPathFilter,
       }

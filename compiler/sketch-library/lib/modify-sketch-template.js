@@ -59,6 +59,7 @@ module.exports = function modifySketchTemplate(
       red: c.red,
     },
   }))
+  sketchDoc.pages[0].name = 'Components'
   sketchDoc.pages[0].layers = sketchDoc.pages[0].layers.concat(layers)
   sketchDoc.images = images
 

@@ -49,20 +49,15 @@ function arrangeComponentLayerCollections(collections) {
 }
 
 module.exports = config => {
-  const _TextStyles = require(config.paths.textStyles
-    .replace(config.paths.workspace, config.paths.output)
-    .replace(/\.json$/gi, '')).default
-
-  const _Colors = require(config.paths.colors)
-
-  const colors = _Colors.colors
+  const colors = config.tokens.colors
     .map(color => {
-      const parsed = parseColor(color.value)
+      const parsed = parseColor(color.value.value.css)
       if (!parsed) {
         return undefined
       }
+
       return {
-        name: color.name,
+        name: color.qualifiedName.join('/'),
         red: parsed.values[0] / 255,
         green: parsed.values[1] / 255,
         blue: parsed.values[2] / 255,
@@ -73,13 +68,18 @@ module.exports = config => {
 
   TextStyles.create(
     {
-      idMap: Object.keys(_TextStyles).reduce((prev, k) => {
-        prev[k] = generateId(k)
+      idMap: config.tokens.textStyles.reduce((prev, k) => {
+        const name = k.qualifiedName.join('/')
+        prev[name] = generateId(name)
         return prev
       }, {}),
     },
-    Object.keys(_TextStyles).reduce((prev, k) => {
-      prev[k] = _TextStyles[k]
+    config.tokens.textStyles.reduce((prev, k) => {
+      const name = k.qualifiedName.join('/')
+      if (k.value.value.color) {
+        k.value.value.color = k.value.value.color.css
+      }
+      prev[name] = k.value.value
       return prev
     }, {})
   )
