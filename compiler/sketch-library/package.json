@@ -1,6 +1,6 @@
 {
   "name": "@lona/workspace-to-sketch-library",
-  "version": "0.1.12",
+  "version": "0.2.0",
   "description": "Generate a Sketch library from a Lona workspace",
   "main": "lib/index.js",
   "scripts": {
@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "jest": "^24.0.0",
-    "lonac": "^0.5.2",
+    "lonac": "^0.8.6",
     "webpack": "^4.29.0"
   },
   "jest": {
