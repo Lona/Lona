@@ -174,7 +174,7 @@ let build =
               | Some(patternId) =>
                 (context.identifierToPattern)#set(id, patternId)
               | None =>
-                Js.log2("Failed to find pattern for identifier:", string);
+                Log.warn2("Failed to find pattern for identifier:", string);
                 ();
               }
             }

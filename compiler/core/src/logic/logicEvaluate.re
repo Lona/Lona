@@ -115,13 +115,13 @@ module Context = {
         | Some((thunk: Thunk.t)) =>
           let resolvedDependencies =
             thunk.dependencies |> List.map(dep => self#evaluate(dep));
-          /* Js.log2("Evaluating", thunk.label); */
+          /* Log.warn2("Evaluating", thunk.label); */
           switch (
             resolvedDependencies
             |> Sequence.firstIndexWhere(dep => dep == None)
           ) {
           | Some(index) =>
-            Js.log(
+            Log.warn(
               "Failed to evaluate thunk - missing dep "
               ++ List.nth(thunk.dependencies, index),
             );
@@ -132,7 +132,7 @@ module Context = {
             Some(result);
           };
         | None =>
-          Js.log("No thunk for " ++ uuid);
+          Log.warn("No thunk for " ++ uuid);
           None;
         }
       };
@@ -215,7 +215,7 @@ let rec evaluate =
       let type_ = (unificationContext.nodes)#get(uuid(node));
 
       switch (type_) {
-      | None => Js.log("Failed to unify type of array")
+      | None => Log.warn("Failed to unify type of array")
       | Some(type_) =>
         let resolvedType = LogicUnify.substitute(substitution, type_);
         let dependencies =
@@ -266,7 +266,7 @@ let rec evaluate =
           },
         );
       | None =>
-        /* Js.log(
+        /* Log.warn(
              "Failed to find declaration (pattern) for identifier `"
              ++ string
              ++ "` ("
@@ -290,19 +290,19 @@ let rec evaluate =
         )
       | None => ()
       };
-    | Expression(BinaryExpression(_)) => Js.log("TODO: Binary Expression")
+    | Expression(BinaryExpression(_)) => Log.warn("TODO: Binary Expression")
     | Expression(FunctionCallExpression({expression, arguments})) =>
       let functionType =
         (unificationContext.nodes)#get(uuid(Expression(expression)));
       switch (functionType) {
-      | None => Js.log("Unknown type of functionCallExpression")
+      | None => Log.warn("Unknown type of functionCallExpression")
       | Some(functionType) =>
         let resolvedType = LogicUnify.substitute(substitution, functionType);
         switch (resolvedType) {
         | Evar(_)
         | Gen(_)
         | Cons(_) =>
-          Js.log(
+          Log.warn(
             "Invalid functionCallExpression type (only functions are valid): "
             ++ LogicUnify.typeDescription(resolvedType),
           )
@@ -432,7 +432,7 @@ let rec evaluate =
             f: _ => {type_, memory: Function(Path(fullPath))},
           },
         )
-      | None => Js.log("Unknown function type")
+      | None => Log.warn("Unknown function type")
       };
     | Declaration(Record({name: Pattern(functionName), declarations})) =>
       let type_ = (unificationContext.patternTypes)#get(functionName.id);
@@ -498,7 +498,7 @@ let rec evaluate =
             },
           },
         );
-      | None => Js.log("Unknown record type")
+      | None => Log.warn("Unknown record type")
       };
     | Declaration(
         Enumeration({name: Pattern(functionName), cases: enumCases}),
@@ -528,7 +528,7 @@ let rec evaluate =
              | _ => ()
              }
            )
-      | None => Js.log("Unknown record type")
+      | None => Log.warn("Unknown record type")
       };
     | _ => ()
     };

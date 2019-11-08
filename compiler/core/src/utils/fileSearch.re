@@ -1,3 +1,5 @@
+open Operators;
+
 [@bs.val] [@bs.module "glob"]
 external syncRaw: (string, Js.Json.t) => array(string) = "sync";
 
@@ -15,5 +17,18 @@ let sync = (glob: string, ~options: option(options)=?, ()): list(string) => {
       )
     };
 
-  syncRaw(glob, jsonOptions) |> Array.to_list;
+  let ignoreRegularExpressions =
+    (options %? {ignore: []}).ignore |> List.map(Js.Re.fromString);
+
+  let paths = syncRaw(glob, jsonOptions) |> Array.to_list;
+
+  paths
+  |> List.filter(path =>
+       !(
+         ignoreRegularExpressions
+         |> List.exists((regularExpression: Js.Re.t) =>
+              Js.Re.test(path, regularExpression)
+            )
+       )
+     );
 };

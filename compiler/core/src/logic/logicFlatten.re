@@ -38,7 +38,7 @@ let rec convert =
       |> unfoldPairs
       |> Sequence.rejectWhere(isPlaceholderDeclaration)
     | _ =>
-      Js.log("Unhandled top-level syntaxNode type");
+      Log.warn("Unhandled top-level syntaxNode type");
       [];
     };
   declarations
@@ -52,7 +52,7 @@ let rec convert =
          | Some(tokenValue) =>
            Some({TokenTypes.qualifiedName: [name], value: tokenValue})
          | None =>
-           Js.log("Failed to evaluate `" ++ name ++ "`");
+           Log.warn("Failed to evaluate `" ++ name ++ "`");
            None;
          };
        | _ => None

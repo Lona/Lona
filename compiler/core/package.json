@@ -1,9 +1,9 @@
 {
   "name": "lonac",
-  "version": "0.8.3",
+  "version": "0.8.6",
   "description": "Lona cross-platform code compiler",
   "main": "build/index.js",
-  "bin": "./build/index.js",
+  "bin": "./build/bin.js",
   "files": [
     "build",
     "README.md"

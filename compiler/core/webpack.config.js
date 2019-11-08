@@ -14,6 +14,10 @@ const copyPlugin = new CopyWebpackPlugin([
     to: join(paths.build, 'static'),
   },
   {
+    from: join(paths.src, 'bin.js'),
+    to: join(paths.build, 'bin.js'),
+  },
+  {
     from: join(
       paths.nodeModules,
       '@lona/serialization/build/pegjs/logic.swift.pegjs'
@@ -37,10 +41,6 @@ module.exports = [
     plugins: [
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify('production'),
-      }),
-      new webpack.BannerPlugin({
-        banner: '#!/usr/bin/env node',
-        raw: true,
       }),
       copyPlugin,
     ],

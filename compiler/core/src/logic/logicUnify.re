@@ -213,7 +213,7 @@ let unify =
         );
       | (Gen(_), _)
       | (_, Gen(_)) =>
-        Js.log3("tried to unify generics (problem?)", head, tail)
+        Log.warn3("tried to unify generics (problem?)", head, tail)
       | (Evar(_), _) => substitution#set(head, tail)
       | (_, Evar(_)) => substitution#set(tail, head)
       | (Cons(_, _), Fun(_, _))

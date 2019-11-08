@@ -299,7 +299,7 @@ let makeUnificationContext =
           result.constraints^
           @ [{head: annotationType, tail: initializerType}]
       | None =>
-        Js.log(
+        Log.warn(
           "WARNING: No initializer type for "
           ++ pattern.name
           ++ " ("

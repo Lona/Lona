@@ -166,7 +166,7 @@ let rec resolveImports =
              };
            | (true, Some(_)) => [statement]
            | (_, None) =>
-             Js.log2("Failed to find and import library", libraryName);
+             Log.warn2("Failed to find and import library", libraryName);
              [statement];
            };
          | _ => [statement]

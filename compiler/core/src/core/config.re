@@ -263,7 +263,7 @@ module Type = {
 };
 
 let exit = message => {
-  Js.log(message);
+  Log.warn(message);
   %bs.raw
   {|process.exit(1)|};
 };
@@ -285,6 +285,7 @@ let load =
       ++ "'. A workspace must contain a `lona.json` file.",
     )
   | Some(workspacePath) =>
+    Log.warn("Running compiler from: " ++ dirname);
     let logicLibrariesPath = Node.Path.join2(dirname, "static/logic");
     let lonaFile = Workspace.lonaFile(workspacePath);
     Js.Promise.(
@@ -315,10 +316,7 @@ let load =
                    ~ignore=lonaFile.contents.ignore,
                  ),
              logicLibraries:
-               Workspace.logicFiles(
-                 logicLibrariesPath,
-                 ~ignore=lonaFile.contents.ignore,
-               ),
+               Workspace.logicFiles(logicLibrariesPath, ~ignore=[]),
              colorsFile:
                Workspace.colorsFile(
                  workspacePath,
