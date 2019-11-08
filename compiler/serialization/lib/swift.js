@@ -1,19 +1,8 @@
+const { indentBlock } = require('./formatting')
 const parser = require('./pegjs/logicSwiftParser')
 
 function parse(code, options) {
   return parser.parse(code, options)
-}
-
-function indentLine(line, indent) {
-  return ' '.repeat(indent) + line
-}
-
-function indentLines(lines, indent) {
-  return lines.map(line => ' '.repeat(indent) + line)
-}
-
-function indentBlock(codeblock, indent) {
-  return indentLines(codeblock.split('\n'), indent).join('\n')
 }
 
 function printWithOptions(node, options = {}) {
