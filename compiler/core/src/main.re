@@ -361,7 +361,9 @@ let updateContentsPreservingCommentMarkers = (originalPath, newContents) => {
 exception FailedToEvaluate(string);
 
 let generateDocumentation = (config: Config.t): TokenTypes.convertedWorkspace => {
-   {flatTokensSchemaVersion: "0.0.1", files: []};
+  flatTokensSchemaVersion: "0.0.1",
+  files: [],
+};
 
 let flattenWorkspace = (config: Config.t): TokenTypes.convertedWorkspace => {
   let program =
