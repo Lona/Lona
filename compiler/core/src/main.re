@@ -339,6 +339,25 @@ let findContentsBelow = contents => {
   };
 };
 
+let updateContentsPreservingCommentMarkers = (originalPath, newContents) => {
+  let (contentsAbove, contentsBelow) =
+    switch (Fs.readFileAsUtf8Sync(originalPath)) {
+    | existing => (findContentsAbove(existing), findContentsBelow(existing))
+    | exception _ => (None, None)
+    };
+  let contents =
+    switch (contentsAbove) {
+    | Some(contentsAbove) => contentsAbove ++ newContents
+    | None => newContents
+    };
+  let contents =
+    switch (contentsBelow) {
+    | Some(contentsBelow) => contents ++ contentsBelow
+    | None => contents
+    };
+  contents;
+};
+
 exception FailedToEvaluate(string);
 
 let flattenWorkspace = (config: Config.t): TokenTypes.convertedWorkspace => {
@@ -750,10 +769,16 @@ switch (scanResult.command) {
        }
      )
   |> ignore;
-| Types(target, inputPath) =>
+| Types(target, inputPath, outputPath) =>
   let contents = Node.Fs.readFileSync(inputPath, `utf8);
   let jsonContents = Serialization.convert(contents, "types", "json");
-  convertTypes(target, jsonContents) |> Js.log;
+  let convertedContents = convertTypes(target, jsonContents);
+  switch (outputPath) {
+  | Some(path) =>
+    updateContentsPreservingCommentMarkers(path, convertedContents)
+    |> ensureDirAndWriteFile(path)
+  | None => convertedContents |> Js.log
+  };
 | Logic(target, input, initialWorkspaceSearchPath) =>
   let decode = contents: LogicAst.syntaxNode => {
     let jsonContents = Serialization.convert(contents, "logic", "json");

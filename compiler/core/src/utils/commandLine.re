@@ -11,7 +11,7 @@ module Command = {
     | Colors(Types.compilerTarget, inputReference)
     | TextStyles(Types.compilerTarget, inputReference)
     | Shadows(Types.compilerTarget, inputReference)
-    | Types(Types.compilerTarget, string)
+    | Types(Types.compilerTarget, string, option(string))
     | Logic(Types.compilerTarget, inputReference, string)
     | Component(Types.compilerTarget, string)
     | Workspace(Types.compilerTarget, string, string)
@@ -62,7 +62,7 @@ module Arguments = {
     let output = (container: ref(option(string))) => (
       "--output",
       Arg.String(setOptionalString(container)),
-      "[path] Output directory path",
+      "[path] Output path",
     );
 
     let input = (container: ref(option(string))) => (
@@ -314,12 +314,13 @@ Type `lonac [command]` to see which options are required for that command. The f
           Command.Shadows(target, File(path))
         }
       | "types" =>
-        switch (targetRef^, inputRef^) {
-        | (None, _) =>
+        switch (targetRef^, inputRef^, outputRef^) {
+        | (None, _, _) =>
           raise(Command.Unknown("Missing output target (--target)"))
-        | (_, None) =>
+        | (_, None, _) =>
           raise(Command.Unknown("Missing input path (--input)"))
-        | (Some(target), Some(path)) => Command.Types(target, path)
+        | (Some(target), Some(path), output) =>
+          Command.Types(target, path, output)
         }
       | "logic" =>
         switch (targetRef^, inputRef^) {
