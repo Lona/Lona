@@ -180,12 +180,18 @@ module Match = {
     | NativeType(_) => false
     };
 
-  let singleRecord = (entity: entity): bool =>
+  let singleRecord = (entity: entity): bool => {
+    let entityName = Access.entityName(entity);
     switch (entity) {
-    | GenericType({name: _, cases: [RecordCase(_)]}) => true
+    | GenericType({name: _, cases: [RecordCase(name, _)]})
+        when
+          name
+          |> Js.String.toLowerCase == (entityName |> Js.String.toLowerCase) =>
+      true
     | GenericType(_) => false
     | NativeType(_) => false
     };
+  };
 
   let linkedList = (entity: entity): bool =>
     switch (entity) {

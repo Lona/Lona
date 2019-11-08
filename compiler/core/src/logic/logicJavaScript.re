@@ -51,56 +51,6 @@ let sharedPrefix =
   inner(aPath, bPath);
 };
 
-let rec resolveImports =
-        (
-          config: Config.t,
-          program: LogicAst.programProgram,
-          ~existingImports: ref(list(string))=ref([]),
-          (),
-        )
-        : LogicAst.programProgram => {
-  let out =
-    program.block
-    |> unfoldPairs
-    |> Sequence.rejectWhere(isPlaceholderStatement)
-    |> List.map(statement =>
-         switch (statement) {
-         | LogicAst.Loop(_) => [statement]
-         | Declaration({
-             content:
-               ImportDeclaration({name: Pattern({name: libraryName})}),
-           }) =>
-           let alreadyFound = List.mem(libraryName, existingImports^);
-           let library =
-             config.logicLibraries
-             |> Sequence.firstWhere((file: Config.file(LogicAst.syntaxNode)) =>
-                  Node.Path.basename_ext(file.path, ".logic") == libraryName
-                );
-           switch (alreadyFound, library) {
-           | (false, Some(file)) =>
-             existingImports := [libraryName, ...existingImports^];
-             let libraryProgram = LogicUtils.makeProgram(file.contents);
-             switch (libraryProgram) {
-             | Some(program) =>
-               let resolvedProgram =
-                 resolveImports(config, program, ~existingImports, ());
-               let statements = resolvedProgram.block |> unfoldPairs;
-               [statement, ...statements];
-             | None => [statement]
-             };
-           | (true, Some(_)) => [statement]
-           | (_, None) =>
-             Js.log2("Failed to find and import library", libraryName);
-             [statement];
-           };
-         | _ => [statement]
-         }
-       )
-    |> List.concat;
-
-  {id: Uuid.next(), block: out |> foldPairs};
-};
-
 let rec convert =
         (config: Config.t, node: LogicAst.syntaxNode): JavaScriptAst.node =>
   switch (LogicUtils.makeProgram(node)) {

@@ -14,7 +14,51 @@ type binaryOperator =
   | Or
   | Noop;
 
-type importDeclaration = {
+/* Types */
+type interfaceDeclaration = {
+  identifier: string,
+  typeParameters: list(type_),
+  objectType,
+}
+and typeAliasDeclaration = {
+  identifier: string,
+  typeParameters: list(type_),
+  type_,
+}
+and type_ =
+  | LiteralType(string)
+  | UnionType(list(type_))
+  /*   | IntersectionType
+            | FunctionType
+            | ConstructorType
+            | ParenthesizedType
+       | PredefinedType(predefinedType)*/
+  | TypeReference(typeReference)
+  | ObjectType(objectType)
+  /* | ArrayType */
+  | TupleType(list(type_))
+/* | TypeQuery
+   | ThisType */
+/* and predefinedType =
+   | Any
+   | Number
+   | Boolean
+   | String
+   | Symbol
+   | Void */
+and objectType = {members: list(typeMember)}
+and typeReference = {
+  name: string,
+  arguments: list(type_),
+}
+and typeMember =
+  | PropertySignature(propertySignature)
+and propertySignature = {
+  name: string,
+  type_: option(type_),
+}
+/* JS */
+and importDeclaration = {
   source: string,
   specifiers: list(node),
 }
@@ -87,6 +131,10 @@ and lineEndComment = {
 }
 [@bs.deriving accessors]
 and node =
+  /* Types */
+  | InterfaceDeclaration(interfaceDeclaration)
+  | TypeAliasDeclaration(typeAliasDeclaration)
+  /* JS */
   | Return(node)
   | Literal(Types.lonaValue)
   | StringLiteral(string)

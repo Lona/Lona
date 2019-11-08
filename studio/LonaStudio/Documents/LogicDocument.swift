@@ -32,9 +32,13 @@ class LogicDocument: NSDocument {
     ) {
         didSet {
             if let url = fileURL {
-                invalidateCaches(url: url)
+                LogicModule.invalidateCaches(url: url, newValue: program)
             }
         }
+    }
+
+    var program: LGCProgram {
+        return LGCProgram.make(from: content)!
     }
 
     override func makeWindowControllers() {
@@ -69,7 +73,7 @@ class LogicDocument: NSDocument {
         content = try LogicDocument.read(from: data)
 
         if let url = fileURL {
-            invalidateCaches(url: url)
+            LogicModule.invalidateCaches(url: url, newValue: program)
         }
     }
 
@@ -88,11 +92,6 @@ class LogicDocument: NSDocument {
     override func save(to url: URL, ofType typeName: String, for saveOperation: NSDocument.SaveOperationType, completionHandler: @escaping (Error?) -> Void) {
         super.save(to: url, ofType: typeName, for: saveOperation, completionHandler: completionHandler)
 
-        invalidateCaches(url: url)
-    }
-
-    public func invalidateCaches(url: URL) {
-        LogicViewController.invalidateThumbnail(url: url)
-        LogicModule.updateFile(url: url, value: content)
+        LogicModule.invalidateCaches(url: url, newValue: program)
     }
 }

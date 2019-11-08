@@ -68,6 +68,18 @@ let variableBuilder =
   initializer_,
   comment: None,
 };
+
+let joinPrograms =
+    (programs: list(LogicAst.programProgram)): LogicAst.programProgram => {
+  let statements =
+    programs
+    |> List.map((program: LogicAst.programProgram) =>
+         program.block |> unfoldPairs
+       )
+    |> List.concat;
+  {LogicAst.id: Uuid.next(), block: statements |> foldPairs};
+};
+
 let rec makeProgram =
         (node: LogicAst.syntaxNode): option(LogicAst.programProgram) =>
   switch (node) {
@@ -96,6 +108,74 @@ let rec makeProgram =
     });
   | _ => None
   };
+
+let standardImportsProgram: LogicAst.programProgram = {
+  let libraryImports: list(LogicAst.statement) =
+    ["Prelude", "Color", "Shadow", "TextStyle"]
+    |> List.map(libraryName =>
+         (
+           Declaration({
+             id: Uuid.next(),
+             content:
+               LogicAst.ImportDeclaration({
+                 id: Uuid.next(),
+                 name: Pattern({id: Uuid.next(), name: libraryName}),
+               }),
+           }): LogicAst.statement
+         )
+       );
+  {id: Uuid.next(), block: libraryImports |> foldPairs};
+};
+
+let rec resolveImports =
+        (
+          config: Config.t,
+          program: LogicAst.programProgram,
+          ~existingImports: ref(list(string))=ref([]),
+          (),
+        )
+        : LogicAst.programProgram => {
+  let out =
+    program.block
+    |> unfoldPairs
+    |> Sequence.rejectWhere(isPlaceholderStatement)
+    |> List.map(statement =>
+         switch (statement) {
+         | LogicAst.Loop(_) => [statement]
+         | Declaration({
+             content:
+               ImportDeclaration({name: Pattern({name: libraryName})}),
+           }) =>
+           let alreadyFound = List.mem(libraryName, existingImports^);
+           let library =
+             config.logicLibraries
+             |> Sequence.firstWhere((file: Config.file(LogicAst.syntaxNode)) =>
+                  Node.Path.basename_ext(file.path, ".logic") == libraryName
+                );
+           switch (alreadyFound, library) {
+           | (false, Some(file)) =>
+             existingImports := [libraryName, ...existingImports^];
+             let libraryProgram = makeProgram(file.contents);
+             switch (libraryProgram) {
+             | Some(program) =>
+               let resolvedProgram =
+                 resolveImports(config, program, ~existingImports, ());
+               let statements = resolvedProgram.block |> unfoldPairs;
+               [statement, ...statements];
+             | None => [statement]
+             };
+           | (true, Some(_)) => [statement]
+           | (_, None) =>
+             Log.warn2("Failed to find and import library", libraryName);
+             [statement];
+           };
+         | _ => [statement]
+         }
+       )
+    |> List.concat;
+
+  {id: Uuid.next(), block: out |> foldPairs};
+};
 
 let lastIdentifier = (expression: LogicAst.expression) =>
   switch (expression) {

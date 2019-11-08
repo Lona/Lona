@@ -1,3 +1,17 @@
+let reservedWords = ["true", "false", "default", "case", "break"];
+
+let stringWithSafeIdentifier = (id: string) =>
+  if (Js.Re.test(id, Js.Re.fromString("^\\d"))) {
+    "_" ++ id;
+  } else if (List.mem(id, reservedWords)) {
+    "`" ++ id ++ "`";
+  } else {
+    id;
+  };
+
+let isSafeIdentifier = (id: string): bool =>
+  stringWithSafeIdentifier(id) == id;
+
 let layerName = layerName => Format.camelCase(layerName) ++ "View";
 
 /* let layerVariableName = (_: Types.layer, layer: Types.layer, variableName) =>

@@ -1,21 +1,59 @@
 const { convertLogic } = require('../../lib/index')
+const { parse: parseSwift, print: printSwift } = require('../../lib/swift')
 
 jest.mock('uuid/v4', () => () => `0`)
 
-test('colors file -> xml', () => {
-  const { xml, json } = require('./mocks/files/colors')
+describe('colors file', () => {
+  const { xml, json, code } = require('./mocks/files/colors')
 
-  const source = JSON.stringify(json)
-  const converted = convertLogic(source, 'xml')
+  test('json -> xml', () => {
+    const source = JSON.stringify(json)
+    const converted = convertLogic(source, 'xml')
+    expect(converted).toBe(xml)
+  })
 
-  expect(converted).toBe(xml)
+  test('xml -> json', () => {
+    const converted = convertLogic(xml, 'json')
+    const parsed = JSON.parse(converted)
+    expect(parsed).toStrictEqual(json)
+  })
+
+  test('code -> json', () => {
+    const converted = parseSwift(code, {
+      generateId: () => '0',
+      startRule: 'program',
+    })
+    expect(converted).toStrictEqual(json)
+  })
+
+  test('json -> code', () => {
+    const converted = printSwift(json)
+    expect(converted).toBe(code)
+  })
 })
 
-test('colors file -> json', () => {
-  const { xml, json } = require('./mocks/files/colors')
+describe('top level declarations', () => {
+  const { xml, json, code } = require('./mocks/files/topLevelDeclarations')
 
-  const converted = convertLogic(xml, 'json')
-  const parsed = JSON.parse(converted)
+  test('json -> xml', () => {
+    const source = JSON.stringify(json)
+    const converted = convertLogic(source, 'xml')
+    expect(converted).toBe(xml)
+  })
 
-  expect(parsed).toStrictEqual(json)
+  test('xml -> json', () => {
+    const converted = convertLogic(xml, 'json')
+    const parsed = JSON.parse(converted)
+    expect(parsed).toStrictEqual(json)
+  })
+
+  test('code -> json', () => {
+    const converted = parseSwift(code, { generateId: () => '0' })
+    expect(converted).toStrictEqual(json)
+  })
+
+  test('json -> code', () => {
+    const converted = printSwift(json)
+    expect(converted).toBe(code)
+  })
 })

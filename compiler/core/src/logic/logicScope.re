@@ -3,15 +3,20 @@ open Jet;
 type uuid = string;
 
 type scopeContext = {
-  namespace: dictionary(list(string), uuid),
+  namespace: Dictionary.t(list(string), uuid),
   currentNamespacePath: ref(list(string)),
   /* Values in these are never removed, even if a variable is out of scope */
-  patternToName: dictionary(uuid, string),
-  identifierToPattern: dictionary(uuid, uuid),
-  patternToTypeName: dictionary(uuid, string),
+  patternToName: Dictionary.t(uuid, string),
+  identifierToPattern: Dictionary.t(uuid, uuid),
+  patternToTypeName: Dictionary.t(uuid, string),
   /* This keeps track of the current scope */
   patternNames: scopeStack(string, uuid),
 };
+
+let namespaceDescription = (namespace: Dictionary.t(list(string), uuid)) =>
+  namespace#keys()
+  |> List.map(qualifiedName => Format.joinWith(".", qualifiedName))
+  |> Format.joinWith("\n");
 
 let pushNamespace = (name, context: scopeContext) =>
   context.currentNamespacePath := context.currentNamespacePath^ @ [name];
@@ -42,11 +47,11 @@ let setGenericParameters = (genericParameters, context: scopeContext) =>
      );
 
 let empty = (): scopeContext => {
-  namespace: new dictionary,
+  namespace: new Dictionary.t,
   currentNamespacePath: ref([]),
-  patternToName: new dictionary,
-  identifierToPattern: new dictionary,
-  patternToTypeName: new dictionary,
+  patternToName: new Dictionary.t,
+  identifierToPattern: new Dictionary.t,
+  patternToTypeName: new Dictionary.t,
   patternNames: new scopeStack,
 };
 
@@ -169,7 +174,7 @@ let build =
               | Some(patternId) =>
                 (context.identifierToPattern)#set(id, patternId)
               | None =>
-                Js.log2("Failed to find pattern for identifier:", string);
+                Log.warn2("Failed to find pattern for identifier:", string);
                 ();
               }
             }
@@ -284,20 +289,6 @@ let build =
           false,
           Declaration(
             Enumeration({
-              name: Pattern({id: functionId, name: functionName}),
-              genericParameters,
-            }),
-          ),
-        ) =>
-        (context.patternToTypeName)#set(functionId, functionName);
-
-        setGenericParameters(genericParameters, context);
-
-        context;
-      | (
-          true,
-          Declaration(
-            Enumeration({
               name: Pattern({name: functionName}),
               genericParameters,
             }),
@@ -305,19 +296,10 @@ let build =
         ) =>
         pushNamespace(functionName, context);
 
-        /* Add initializers for each case into the namespace */
-        /* cases
-           |> LogicUtils.unfoldPairs
-           |> List.iter((case: LogicAst.enumerationCase) =>
-                switch (case) {
-                | Placeholder(_) => ()
-                | EnumerationCase({name: Pattern({id: caseId, name: caseName})}) =>
-                  setInCurrentNamespace(caseName, caseId, context)
-                }
-              ); */
-
         setGenericParameters(genericParameters, context);
 
+        context;
+      | (true, Declaration(Enumeration(_))) =>
         popNamespace(context);
 
         context;

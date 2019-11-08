@@ -3,6 +3,8 @@ const xml = `<?xml version="1.0"?>
   <IdentifierExpression name="Colors"/>
 </MemberExpression>`
 
+const code = `Colors.primary`
+
 const json = {
   data: {
     expression: {
@@ -26,4 +28,4 @@ const json = {
   type: 'memberExpression',
 }
 
-module.exports = { json, xml }
+module.exports = { json, xml, code }

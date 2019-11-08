@@ -23,6 +23,8 @@ type convertedEntity = {
 };
 
 type conversionOptions = {
+  discriminant: string,
+  dataWrapper: string,
   nativeTypeNames: list(string),
   swiftOptions: SwiftOptions.options,
 };
@@ -309,14 +311,22 @@ module Ast = {
                    ),
                })
              );
-        [nestedUnkeyedDecodingContainer("container", "data")]
+        [
+          nestedUnkeyedDecodingContainer(
+            "container",
+            conversionOptions.dataWrapper,
+          ),
+        ]
         @ [
           BinaryExpression({
             "left": SwiftIdentifier("self"),
             "operator": "=",
             "right":
               FunctionCallExpression({
-                "name": SwiftIdentifier("." ++ name),
+                "name":
+                  SwiftIdentifier(
+                    "." ++ SwiftFormat.stringWithSafeIdentifier(name),
+                  ),
                 "arguments": decodeParameters,
               }),
           }),
@@ -353,7 +363,7 @@ module Ast = {
                           ),
                           SwiftIdentifier("self"),
                         ]),
-                        Some("data"),
+                        Some(conversionOptions.dataWrapper),
                         optionalType != None,
                       ),
                   }),
@@ -366,7 +376,10 @@ module Ast = {
           BinaryExpression({
             "left": SwiftIdentifier("self"),
             "operator": "=",
-            "right": SwiftIdentifier("." ++ name),
+            "right":
+              SwiftIdentifier(
+                "." ++ SwiftFormat.stringWithSafeIdentifier(name),
+              ),
           }),
         ]
       | RecordCase(name, parameters) => [
@@ -393,7 +406,7 @@ module Ast = {
                          "name": Some(SwiftIdentifier(parameter.key)),
                          "value":
                            containerDecode(
-                             "data",
+                             conversionOptions.dataWrapper,
                              MemberExpression([
                                SwiftIdentifier(
                                  switch (optionalType) {
@@ -443,8 +456,8 @@ module Ast = {
           [
             decodingContainer(
               "container",
-              "data",
-              NestedKeyed("data"),
+              conversionOptions.dataWrapper,
+              NestedKeyed(conversionOptions.dataWrapper),
               "DataCodingKeys",
             ),
           ] :
@@ -455,7 +468,7 @@ module Ast = {
           "modifiers": [],
           "pattern":
             IdentifierPattern({
-              "identifier": SwiftIdentifier("type"),
+              "identifier": SwiftIdentifier(conversionOptions.discriminant),
               "annotation": None,
             }),
           "init":
@@ -466,14 +479,14 @@ module Ast = {
                   SwiftIdentifier("String"),
                   SwiftIdentifier("self"),
                 ]),
-                Some("type"),
+                Some(conversionOptions.discriminant),
                 false,
               ),
             ),
         }),
         Empty,
         SwitchStatement({
-          "expression": SwiftIdentifier("type"),
+          "expression": SwiftIdentifier(conversionOptions.discriminant),
           "cases":
             (typeCases |> List.map(enumCaseDecoding(conversionOptions)))
             @ [
@@ -638,7 +651,7 @@ module Ast = {
         "modifiers": [],
         "pattern":
           IdentifierPattern({
-            "identifier": SwiftIdentifier("type"),
+            "identifier": SwiftIdentifier(conversionOptions.discriminant),
             "annotation": None,
           }),
         "init":
@@ -662,7 +675,7 @@ module Ast = {
       }),
       Empty,
       SwitchStatement({
-        "expression": SwiftIdentifier("type"),
+        "expression": SwiftIdentifier(conversionOptions.discriminant),
         "cases":
           (
             typeCases
@@ -863,7 +876,8 @@ module Ast = {
       });
 
     let enumCaseDataEncoding =
-        (typeCase: TypeSystem.typeCase): list(SwiftAst.node) =>
+        (conversionOptions: conversionOptions, typeCase: TypeSystem.typeCase)
+        : list(SwiftAst.node) =>
       switch (typeCase) {
       /* Multiple parameters are encoded as an array */
       | NormalCase(_, [_, _, ..._] as parameters) =>
@@ -877,14 +891,19 @@ module Ast = {
                  ]),
                )
              );
-        [nestedUnkeyedEncodingContainer("container", "data")]
+        [
+          nestedUnkeyedEncodingContainer(
+            "container",
+            conversionOptions.dataWrapper,
+          ),
+        ]
         @ encodeParameters;
       /* A single parameter is encoded automatically */
       | NormalCase(_, [parameter]) => [
           containerEncode(
             "container",
             SwiftIdentifier("value"),
-            Some("data"),
+            Some(conversionOptions.dataWrapper),
             isOptional(parameter.value),
           ),
         ]
@@ -892,7 +911,7 @@ module Ast = {
       | RecordCase(_, []) => []
       | RecordCase(_, [parameter]) => [
           containerEncode(
-            "data",
+            conversionOptions.dataWrapper,
             MemberExpression([SwiftIdentifier("value")]),
             Some(parameter.key),
             isOptional(parameter.value),
@@ -902,7 +921,7 @@ module Ast = {
         parameters
         |> List.map((parameter: TypeSystem.recordTypeCaseParameter) =>
              containerEncode(
-               "data",
+               conversionOptions.dataWrapper,
                MemberExpression([
                  SwiftIdentifier("value"),
                  SwiftIdentifier(parameter.key),
@@ -916,7 +935,9 @@ module Ast = {
     /* case .undefined:
          try container.encode("undefined", forKey: .type)
        */
-    let enumCaseEncoding = (typeCase: TypeSystem.typeCase): SwiftAst.node => {
+    let enumCaseEncoding =
+        (conversionOptions: conversionOptions, typeCase: TypeSystem.typeCase)
+        : SwiftAst.node => {
       let caseName = typeCase |> TypeSystem.Access.typeCaseName;
 
       let parameters =
@@ -948,11 +969,11 @@ module Ast = {
             containerEncode(
               "container",
               LiteralExpression(String(caseName)),
-              Some("type"),
+              Some(conversionOptions.discriminant),
               false,
             ),
           ]
-          @ enumCaseDataEncoding(typeCase),
+          @ enumCaseDataEncoding(conversionOptions, typeCase),
       });
     };
 
@@ -962,7 +983,11 @@ module Ast = {
        }
        */
     let enumEncoding =
-        (typeCases: list(TypeSystem.typeCase)): list(SwiftAst.node) => {
+        (
+          conversionOptions: conversionOptions,
+          typeCases: list(TypeSystem.typeCase),
+        )
+        : list(SwiftAst.node) => {
       let recordCaseLabels = TypeSystem.Access.allRecordCaseLabels(typeCases);
 
       [encodingContainer("encoder", "container", Keyed, "CodingKeys")]
@@ -971,8 +996,8 @@ module Ast = {
           [
             encodingContainer(
               "container",
-              "data",
-              NestedKeyed("data"),
+              conversionOptions.dataWrapper,
+              NestedKeyed(conversionOptions.dataWrapper),
               "DataCodingKeys",
             ),
           ] :
@@ -982,7 +1007,8 @@ module Ast = {
         Empty,
         SwitchStatement({
           "expression": SwiftIdentifier("self"),
-          "cases": typeCases |> List.map(enumCaseEncoding),
+          "cases":
+            typeCases |> List.map(enumCaseEncoding(conversionOptions)),
         }),
       ];
     };
@@ -1053,6 +1079,7 @@ module Ast = {
 
     let constantCaseEncoding =
         (
+          conversionOptions: conversionOptions,
           encoding: typeNameEncoding,
           index: int,
           typeCase: TypeSystem.typeCase,
@@ -1093,12 +1120,16 @@ module Ast = {
               false,
             ),
           ]
-          @ enumCaseDataEncoding(typeCase),
+          @ enumCaseDataEncoding(conversionOptions, typeCase),
       });
     };
 
     let constantEncoding =
-        (encoding: typeNameEncoding, typeCases: list(TypeSystem.typeCase))
+        (
+          conversionOptions: conversionOptions,
+          encoding: typeNameEncoding,
+          typeCases: list(TypeSystem.typeCase),
+        )
         : list(SwiftAst.node) => [
       encodingContainer("encoder", "container", SingleValue, "CodingKeys"),
       Empty,
@@ -1107,7 +1138,7 @@ module Ast = {
         "cases":
           typeCases
           |> List.mapi((index, case) =>
-               constantCaseEncoding(encoding, index, case)
+               constantCaseEncoding(conversionOptions, encoding, index, case)
              ),
       }),
     ];
@@ -1259,7 +1290,10 @@ module Build = {
       Empty,
       [
         LineComment("MARK: Codable"),
-        Ast.codingKeys("CodingKeys", ["type", "data"]),
+        Ast.codingKeys(
+          "CodingKeys",
+          [conversionOptions.discriminant, conversionOptions.dataWrapper],
+        ),
       ]
       @ (
         recordCaseLabels != [] ?
@@ -1269,7 +1303,9 @@ module Build = {
         Ast.Decoding.decodableInitializer(
           Ast.Decoding.enumDecoding(conversionOptions, cases),
         ),
-        Ast.Encoding.encodableFunction(Ast.Encoding.enumEncoding(cases)),
+        Ast.Encoding.encodableFunction(
+          Ast.Encoding.enumEncoding(conversionOptions, cases),
+        ),
       ],
     );
   };
@@ -1331,7 +1367,7 @@ module Build = {
           Ast.Decoding.constantDecoding(conversionOptions, encoding, cases),
         ),
         Ast.Encoding.encodableFunction(
-          Ast.Encoding.constantEncoding(encoding, cases),
+          Ast.Encoding.constantEncoding(conversionOptions, encoding, cases),
         ),
       ],
     );
@@ -1344,7 +1380,10 @@ module Build = {
       switch (genericType.cases) {
       | [head, ...tail] =>
         switch (head, tail) {
-        | (RecordCase(name, parameters), []) => {
+        | (RecordCase(name, parameters), [])
+            when
+              Js.String.toLowerCase(genericType.name)
+              == Js.String.toLowerCase(name) => {
             name: Some(conversionOptions.swiftOptions.typePrefix ++ name),
             node: record(conversionOptions, name, parameters),
           }
@@ -1454,6 +1493,10 @@ module Build = {
                 }),
             };
           } else if (TypeSystem.Match.constant(entity)) {
+            let needsCustomCodable =
+              TypeSystem.Access.constantCases(entity)
+              |> List.map(TypeSystem.Access.typeCaseName)
+              |> List.exists(id => !SwiftFormat.isSafeIdentifier(id));
             {
               name: Some(conversionOptions.swiftOptions.typePrefix ++ name),
               node:
@@ -1468,7 +1511,18 @@ module Build = {
                     ]),
                   ],
                   "modifier": Some(PublicModifier),
-                  "body": enumCases,
+                  "body":
+                    enumCases
+                    @ (
+                      needsCustomCodable ?
+                        [Empty]
+                        @ constantCodable(
+                            conversionOptions,
+                            StringEncoding,
+                            genericType.cases,
+                          ) :
+                        []
+                    ),
                 }),
             };
           } else {
@@ -1513,14 +1567,19 @@ type convertedType = {
 };
 
 let render =
-    (swiftOptions: SwiftOptions.options, file: TypeSystem.typesFile)
+    (options: Options.options, file: TypeSystem.typesFile)
     : list(convertedType) => {
   let nativeTypeNames =
     file.types
     |> List.map(TypeSystem.Access.nativeTypeName)
     |> Sequence.compact;
 
-  let conversionOptions = {nativeTypeNames, swiftOptions};
+  let conversionOptions = {
+    nativeTypeNames,
+    swiftOptions: options.swift,
+    discriminant: options.discriminant,
+    dataWrapper: options.dataWrapper,
+  };
 
   let entities =
     file.types

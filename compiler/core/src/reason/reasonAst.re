@@ -8,6 +8,7 @@ and literal =
   | Boolean(bool)
   | Number(float)
   | String(string)
+  | Tuple(list(expression))
   | Array(list(expression))
   | Record(list(recordEntry))
 /* Type Annotations */
@@ -53,6 +54,11 @@ and switchExpression = {
   pattern: expression,
   cases: list(switchCase),
 }
+and ternaryExpression = {
+  condition: expression,
+  consequent: expression,
+  alternate: expression,
+}
 and expression =
   | LiteralExpression(literalExpression)
   | IdentifierExpression(identifierExpression)
@@ -60,10 +66,12 @@ and expression =
   | FunctionCallExpression(functionCallExpression)
   | FunctionExpression(functionExpression)
   | SwitchExpression(switchExpression)
+  | TernaryExpression(ternaryExpression)
 /* Declarations */
 and typeDeclarationValue =
   | VariantType(variantType)
   | RecordType(recordType)
+  | AliasType(typeAnnotation)
 and typeDeclaration = {
   name: typeAnnotation,
   value: typeDeclarationValue,

@@ -4,6 +4,11 @@ const xml = `<?xml version="1.0"?>
   <Variable name="dark" type="Color" value="black"/>
 </Record>`
 
+const code = `struct ThemedColor {
+  let light: Color = #color(css: "white")
+  let dark: Color = #color(css: "black")
+}`
+
 const json = {
   data: {
     declarations: [
@@ -94,4 +99,4 @@ const json = {
   type: 'record',
 }
 
-module.exports = { json, xml }
+module.exports = { json, xml, code }

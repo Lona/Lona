@@ -1,6 +1,10 @@
 const stringify = require('json-stable-stringify')
+const uuid = require('uuid/v4')
 
 const xml = require('./xml')
+const mdx = require('./mdx')
+const swift = require('./swift')
+
 const {
   convertTypesJsonToXml,
   convertTypesXmlToJson,
@@ -10,15 +14,12 @@ const {
   convertLogicXmlToJson,
 } = require('./convert/logic')
 
+// Format
+
 const SERIALIZATION_FORMAT = {
   JSON: 'json',
   XML: 'xml',
-}
-
-const CONVERSION_TYPE = {
-  XML_TO_JSON: 'xmlToJSON',
-  JSON_TO_XML: 'jsonToXML',
-  NONE: 'none',
+  SOURCE: 'source',
 }
 
 function detectFormat(contents) {
@@ -28,124 +29,194 @@ function detectFormat(contents) {
   if (contents.startsWith('<')) {
     return SERIALIZATION_FORMAT.XML
   }
-
-  return null
+  return SERIALIZATION_FORMAT.SOURCE
 }
 
-function detectConversionType(contents, targetFormat, options = {}) {
-  const sourceFormat = options.sourceFormat || detectFormat(contents)
+function normalizeFormat(contents, sourceFormat) {
+  const normalized = sourceFormat || detectFormat(contents)
 
-  if (!sourceFormat) {
+  if (!Object.values(SERIALIZATION_FORMAT).includes(normalized)) {
     throw new Error(
-      `Unable to detect source Serialization format, and none was specified`
+      `Invalid source serialization format specified: ${normalized}`
     )
   }
 
-  if (!Object.values(SERIALIZATION_FORMAT).includes(sourceFormat)) {
-    throw new Error(
-      `Invalid source Serialization format specified: ${sourceFormat}`
-    )
-  }
+  return normalized
+}
 
-  if (!Object.values(SERIALIZATION_FORMAT).includes(targetFormat)) {
-    throw new Error(
-      `Invalid target Serialization format specified: ${targetFormat}`
-    )
-  }
+// Types
 
-  switch (`${sourceFormat}:${targetFormat}`) {
-    case 'json:json':
-    case 'xml:xml':
-      return CONVERSION_TYPE.NONE
-    case 'json:xml': {
-      return CONVERSION_TYPE.JSON_TO_XML
+function decodeTypes(contents, format) {
+  try {
+    switch (format) {
+      case SERIALIZATION_FORMAT.JSON:
+        return JSON.parse(contents)
+      case SERIALIZATION_FORMAT.XML:
+        return convertTypesXmlToJson(xml.parse(contents))
+      default:
+        throw new Error(`Unknown decoding format ${format}`)
     }
-    case 'xml:json': {
-      return CONVERSION_TYPE.XML_TO_JSON
+  } catch (e) {
+    console.error(e)
+    throw new Error(`Failed to decode logic as ${format}.`)
+  }
+}
+
+function encodeTypes(ast, format) {
+  try {
+    switch (format) {
+      case SERIALIZATION_FORMAT.JSON:
+        return stringify(ast, { space: '  ' })
+      case SERIALIZATION_FORMAT.XML:
+        const types = convertTypesJsonToXml(ast)
+        return xml.build({ name: 'root', children: types })
+      default:
+        throw new Error(`Unknown encoding format ${format}`)
     }
-    default:
-      throw new Error(`Unknown Serialization conversion`)
+  } catch (e) {
+    console.error(e)
+    throw new Error(`Failed to encode types as ${format}.`)
   }
 }
 
 function convertTypes(contents, targetFormat, options = {}) {
-  const conversionType = detectConversionType(contents, targetFormat, options)
+  const sourceFormat = normalizeFormat(contents, options.sourceFormat)
 
-  switch (conversionType) {
-    case CONVERSION_TYPE.NONE:
-      return contents
-    case CONVERSION_TYPE.JSON_TO_XML: {
-      let jsonContents
+  if (sourceFormat === targetFormat) return contents
 
-      try {
-        jsonContents = JSON.parse(contents)
-      } catch (e) {
-        throw new Error(`Failed to decode types as JSON.`)
-      }
+  const ast = decodeTypes(contents, sourceFormat)
+  return encodeTypes(ast, targetFormat)
+}
 
-      const types = convertTypesJsonToXml(jsonContents)
+// Logic
 
-      return xml.build({ name: 'root', children: types })
+function decodeLogic(contents, format) {
+  try {
+    switch (format) {
+      case SERIALIZATION_FORMAT.JSON:
+        return JSON.parse(contents)
+      case SERIALIZATION_FORMAT.XML:
+        return convertLogicXmlToJson(xml.parse(contents))
+      case SERIALIZATION_FORMAT.SOURCE:
+        return swift.parse(contents)
+      default:
+        throw new Error(`Unknown decoding format ${format}`)
     }
-    case CONVERSION_TYPE.XML_TO_JSON: {
-      let jsonContents
+  } catch (e) {
+    console.error(e)
+    throw new Error(`Failed to decode logic as ${format}.`)
+  }
+}
 
-      try {
-        jsonContents = xml.parse(contents)
-      } catch (e) {
-        throw new Error(`Failed to decode types as XML.`)
-      }
-
-      const types = convertTypesXmlToJson(jsonContents)
-
-      return JSON.stringify(types, null, 2)
+function encodeLogic(ast, format) {
+  try {
+    switch (format) {
+      case SERIALIZATION_FORMAT.JSON:
+        return stringify(ast, { space: '  ' })
+      case SERIALIZATION_FORMAT.XML:
+        const xmlRepresentation = convertLogicJsonToXml(ast)
+        return xml.build(xmlRepresentation)
+      case SERIALIZATION_FORMAT.SOURCE:
+        return swift.print(ast)
+      default:
+        throw new Error(`Unknown encoding format ${format}`)
     }
-    default:
-      throw new Error(`Unknown Serialization conversion`)
+  } catch (e) {
+    console.error(e)
+    throw new Error(`Failed to encode logic as ${format}.`)
   }
 }
 
 function convertLogic(contents, targetFormat, options = {}) {
-  const conversionType = detectConversionType(contents, targetFormat, options)
+  const sourceFormat = normalizeFormat(contents, options.sourceFormat)
 
-  switch (conversionType) {
-    case CONVERSION_TYPE.NONE:
-      return contents
-    case CONVERSION_TYPE.JSON_TO_XML: {
-      let jsonContents
+  if (sourceFormat === targetFormat) return contents
 
-      try {
-        jsonContents = JSON.parse(contents)
-      } catch (e) {
-        throw new Error(`Failed to decode types as JSON.`)
-      }
+  const ast = decodeLogic(contents, sourceFormat)
+  return encodeLogic(ast, targetFormat)
+}
 
-      const xmlRepresentation = convertLogicJsonToXml(jsonContents)
+// Document
 
-      return xml.build(xmlRepresentation)
+function decodeDocument(contents, format) {
+  try {
+    switch (format) {
+      case SERIALIZATION_FORMAT.JSON:
+        return JSON.parse(contents)
+      case SERIALIZATION_FORMAT.SOURCE:
+        return mdx.parse(contents, convertLogic)
+      default:
+        throw new Error(`Unknown decoding format ${format}`)
     }
-    case CONVERSION_TYPE.XML_TO_JSON: {
-      let jsonContents
-
-      try {
-        jsonContents = xml.parse(contents)
-      } catch (e) {
-        console.log(e)
-        throw new Error(`Failed to decode types as XML.`)
-      }
-
-      const jsonRepresentation = convertLogicXmlToJson(jsonContents)
-
-      return stringify(jsonRepresentation, { space: '  ' })
-    }
-    default:
-      throw new Error(`Unknown Serialization conversion`)
+  } catch (e) {
+    console.error(e)
+    throw new Error(`Failed to decode document as ${format}.`)
   }
+}
+
+function encodeDocument(ast, format, options) {
+  try {
+    switch (format) {
+      case SERIALIZATION_FORMAT.JSON:
+        return stringify(ast, { space: '  ' })
+      case SERIALIZATION_FORMAT.SOURCE:
+        return mdx.print(ast, convertLogic, options)
+      default:
+        throw new Error(`Unknown encoding format ${format}`)
+    }
+  } catch (e) {
+    console.error(e)
+    throw new Error(`Failed to encode document as ${format}.\n${e}`)
+  }
+}
+
+function convertDocument(contents, targetFormat, options = {}) {
+  const sourceFormat = normalizeFormat(contents, options.sourceFormat)
+
+  if (sourceFormat === targetFormat && !options.embeddedFormat) return contents
+
+  const ast = decodeDocument(contents, sourceFormat)
+  return encodeDocument(ast, targetFormat, options)
+}
+
+function extractProgram(contents, options = {}) {
+  const sourceFormat = normalizeFormat(contents, options.sourceFormat)
+
+  const ast = decodeDocument(contents, sourceFormat)
+
+  const { children } = ast
+
+  const declarations = children
+    .filter(child => child.type === 'code' && child.data.lang === 'tokens')
+    // Get Logic syntax node
+    .map(child => child.data.parsed)
+    // Get declarations
+    .map(node => node.data.declarations)
+
+  const flattened = [].concat(...declarations)
+
+  const topLevelDeclarations = {
+    data: {
+      declarations: flattened,
+      id: uuid().toUpperCase(),
+    },
+    type: 'topLevelDeclarations',
+  }
+
+  return stringify(topLevelDeclarations, { space: '  ' })
 }
 
 module.exports = {
   SERIALIZATION_FORMAT,
   convertTypes,
   convertLogic,
+  convertDocument,
+  decodeTypes,
+  decodeLogic,
+  decodeDocument,
+  encodeTypes,
+  encodeLogic,
+  encodeDocument,
+  extractProgram,
   detectFormat,
 }

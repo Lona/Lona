@@ -1,53 +1,87 @@
 #!/usr/bin/env node
 
+const path = require('path')
 const fs = require('fs')
-const { convertTypes, convertLogic } = require('./lib/index')
+const yargs = require('yargs')
 
-const [, , filename, kind, format] = process.argv
+const {
+  convertTypes,
+  convertLogic,
+  convertDocument,
+  extractProgram,
+} = require('./lib/index')
 
-if (!filename) {
-  console.log('No filename')
-  process.exit(1)
+function addSharedArguments(yargs) {
+  yargs.positional('file', {
+    type: 'string',
+    describe: 'The file to convert',
+  })
+  yargs.positional('targetFormat', {
+    type: 'string',
+    describe: 'The target format',
+  })
 }
 
-if (kind !== 'types' && kind !== 'logic') {
-  console.log('Only type and logic files support conversion currently')
-  process.exit(1)
-}
-
-if (!format) {
-  console.log('No serialization format')
-  process.exit(1)
-}
-
-function convertTypesFile(file, targetFormat) {
-  const contents = fs.readFileSync(filename, 'utf8')
-
-  return convertTypes(contents, targetFormat)
-}
-
-function convertLogicFile(file, targetFormat) {
-  const contents = fs.readFileSync(filename, 'utf8')
-
-  return convertLogic(contents, targetFormat)
-}
-
-try {
-  switch (kind) {
-    case 'types': {
-      const convertedString = convertTypesFile(filename, format)
-      console.log(convertedString)
-      break
+yargs
+  .scriptName('@lona/serialization')
+  .usage('Usage: @lona/serialization <command> [options]')
+  .command(
+    'document file targetFormat',
+    'Convert a Lona document to the specified format',
+    yargs => {
+      addSharedArguments(yargs)
+      yargs.option('e', {
+        alias: 'embeddedFormat',
+        describe: 'The format of token blocks in MDX',
+        type: 'string',
+      })
+    },
+    argv => {
+      const { file, targetFormat, sourceFormat, embeddedFormat } = argv
+      const contents = fs.readFileSync(file, 'utf8')
+      const converted = convertDocument(contents, targetFormat, {
+        embeddedFormat,
+      })
+      console.log(converted)
     }
-    case 'logic': {
-      const convertedString = convertLogicFile(filename, format)
-      console.log(convertedString)
-      break
+  )
+  .command(
+    'logic file targetFormat',
+    'Convert a Lona logic (tokens) file to the specified format',
+    yargs => addSharedArguments(yargs),
+    argv => {
+      const { file, targetFormat, sourceFormat } = argv
+      const contents = fs.readFileSync(file, 'utf8')
+      const converted = convertLogic(contents, targetFormat)
+      console.log(converted)
     }
-    default:
-      console.log('Unknown kind of file')
-  }
-} catch (e) {
-  console.error(e)
-  process.exit(1)
-}
+  )
+  .command(
+    'types file targetFormat',
+    'Convert a Lona types file to the specified format',
+    yargs => addSharedArguments(yargs),
+    argv => {
+      const { file, targetFormat, sourceFormat } = argv
+      const contents = fs.readFileSync(file, 'utf8')
+      const converted = convertTypes(contents, targetFormat)
+      console.log(converted)
+    }
+  )
+  .command(
+    'program file',
+    'Extract the executable contents of a Lona document',
+    yargs => {},
+    argv => {
+      const { file } = argv
+      const contents = fs.readFileSync(file, 'utf8')
+      const converted = extractProgram(contents)
+      console.log(converted)
+    }
+  )
+  .demandCommand(1, 'Pass --help to see all available commands and options.')
+  .strict()
+  .fail((msg, err, yargs) => {
+    yargs.showHelp()
+    console.log('\n' + msg)
+  })
+  .help().argv

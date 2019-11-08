@@ -20,6 +20,8 @@ let scanResult =
   };
 let options = scanResult.options;
 
+[@bs.val] [@bs.module "path"] external extname: string => string = "";
+
 [@bs.val] [@bs.module "fs-extra"] external ensureDirSync: string => unit = "";
 
 [@bs.val] [@bs.module "fs-extra"]
@@ -130,15 +132,18 @@ let convertTypes = (target, contents) => {
     let types =
       json
       |> TypeSystem.Decode.typesFile
-      |> SwiftTypeSystem.render(options.swift)
+      |> SwiftTypeSystem.render(options)
       |> List.map((convertedType: SwiftTypeSystem.convertedType) =>
            convertedType.contents
          )
       |> Format.joinWith("\n\n");
     importStatement ++ types;
+  | Types.JavaScript =>
+    let types = json |> TypeSystem.Decode.typesFile;
+    JavaScriptTypeSystem.renderToString(types);
   | Types.Reason =>
     let types = json |> TypeSystem.Decode.typesFile;
-    ReasonTypeSystem.renderToString(types);
+    ReasonTypeSystem.renderToString(options, types);
   | _ => exit("Can't generate types for target")
   };
 };
@@ -334,6 +339,79 @@ let findContentsBelow = contents => {
   };
 };
 
+exception FailedToEvaluate(string);
+
+let flattenWorkspace = (config: Config.t): TokenTypes.convertedWorkspace => {
+  let program =
+    config.logicFiles
+    |> List.map((file: Config.file(LogicAst.syntaxNode)) => file.contents)
+    |> Sequence.compactMap(LogicUtils.makeProgram)
+    |> LogicUtils.joinPrograms;
+  let program =
+    LogicUtils.joinPrograms([LogicUtils.standardImportsProgram, program]);
+  let programNode =
+    LogicAst.Program(
+      Program(LogicUtils.resolveImports(config, program, ())),
+    );
+  let scopeContext = LogicScope.build(programNode, ());
+  let unificationContext =
+    LogicUnificationContext.makeUnificationContext(
+      ~rootNode=programNode,
+      ~scopeContext,
+      (),
+    );
+  let substitution =
+    LogicUnify.unify(~constraints=unificationContext.constraints^, ());
+
+  /* Js.log("-- Namespace --");
+     Js.log(LogicScope.namespaceDescription(scopeContext.namespace));
+
+     Js.log("-- Unification --");
+     Js.log(
+       LogicUnificationContext.description(scopeContext, unificationContext),
+     ); */
+
+  let evaluationContext =
+    LogicEvaluate.evaluate(
+      ~currentNode=programNode,
+      ~rootNode=programNode,
+      ~scopeContext,
+      ~unificationContext,
+      ~substitution,
+      (),
+    );
+  switch (evaluationContext) {
+  | None =>
+    Js.log("Failed to evaluate workspace.");
+    {flatTokensSchemaVersion: "0.0.1", files: []};
+  | Some(evaluationContext) => {
+      flatTokensSchemaVersion: "0.0.1",
+      files:
+        config.logicFiles
+        |> List.map((file: Config.file(LogicAst.syntaxNode)) => {
+             let relativeInputPath =
+               Path.relative(~from=config.workspacePath, ~to_=file.path, ());
+             let basename =
+               Path.basename_ext(
+                 relativeInputPath,
+                 extname(relativeInputPath),
+               );
+             let dirname = Path.dirname(relativeInputPath);
+             let relativeOutputPath =
+               Path.join2(dirname, basename ++ ".flat.json");
+             let flatTokens =
+               LogicFlatten.convert(config, evaluationContext, file.contents);
+             {
+               TokenTypes.inputPath: relativeInputPath,
+               outputPath: relativeOutputPath,
+               name: basename,
+               contents: FlatTokens(flatTokens),
+             };
+           }),
+    }
+  };
+};
+
 let convertWorkspace = (target, workspace, output) => {
   let fromDirectory = Path.resolve(workspace, "");
   let toDirectory = Path.resolve(output, "");
@@ -426,7 +504,7 @@ let convertWorkspace = (target, workspace, output) => {
        if (target == Types.Swift) {
          userTypes
          |> UserTypes.TypeSystem.toTypeSystemFile
-         |> SwiftTypeSystem.render(options.swift)
+         |> SwiftTypeSystem.render(options)
          |> List.iter((convertedType: SwiftTypeSystem.convertedType) => {
               let importStatement =
                 switch (options.swift.framework) {
@@ -452,7 +530,7 @@ let convertWorkspace = (target, workspace, output) => {
               let filename =
                 formatFilename(
                   target,
-                  Path.basename_ext(file.path, ".logic"),
+                  Path.basename_ext(file.path, extname(file.path)),
                 )
                 ++ getTargetExtension(target);
               let dirname = Path.dirname(file.path);
@@ -462,9 +540,15 @@ let convertWorkspace = (target, workspace, output) => {
                   ~workspaceFile=Path.join2(dirname, filename),
                 );
 
-              let converted = convertLogic(target, config, file.contents);
-
-              writeAnnotatedFile(outputPath, converted);
+              /* Only convert non-empty files */
+              switch (file.contents) {
+              | TopLevelDeclarations(
+                  TopLevelDeclarations({declarations: Next(_)}),
+                ) =>
+                let converted = convertLogic(target, config, file.contents);
+                writeAnnotatedFile(outputPath, converted);
+              | _ => ()
+              };
             });
        };
 
@@ -568,6 +652,19 @@ let convertWorkspace = (target, workspace, output) => {
      });
 };
 switch (scanResult.command) {
+| Flatten(workspacePath) =>
+  Config.load(Types.ReasonCompiler, options, workspacePath, "", nodeDirname)
+  |> Js.Promise.then_(config =>
+       switch (flattenWorkspace(config)) {
+       | flattened =>
+         (flattened |> TokenTypes.Encode.convertedWorkspace)
+         ->(Js.Json.stringifyWithSpace(2))
+         |> Js.log;
+         Js.Promise.resolve();
+       | exception (FailedToEvaluate(message)) => exit(message)
+       }
+     )
+  |> ignore
 | Workspace(target, workspacePath, outputPath) =>
   convertWorkspace(target, workspacePath, outputPath) |> ignore
 | Component(target, input) =>

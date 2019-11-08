@@ -6,7 +6,7 @@ let parseFile = content => {
     ignore:
       switch (json |> optional(field("ignore", list(string)))) {
       | Some(files) => files
-      | None => [".git", "node_modules"]
+      | None => ["node_modules", ".git"]
       },
   };
 };

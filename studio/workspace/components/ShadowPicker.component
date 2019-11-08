@@ -1,0 +1,53 @@
+{
+  "devices" : [
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    },
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7",
+      "width" : 375
+    },
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7+",
+      "width" : 414
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+    {
+      "name" : "optionalShadowValue",
+      "type" : "ShadowPickerShadow"
+    },
+    {
+      "name" : "onChangeShadowValue",
+      "type" : "ShadowPickerHandler"
+    }
+  ],
+  "root" : {
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch",
+      "backgroundColor" : "red50",
+      "flex" : 1
+    },
+    "type" : "Lona:View"
+  }
+}

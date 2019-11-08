@@ -46,18 +46,6 @@
     {
       "assignee" : [
         "layers",
-        "ResetButton",
-        "onClick"
-      ],
-      "content" : [
-        "parameters",
-        "onReset"
-      ],
-      "type" : "AssignExpr"
-    },
-    {
-      "assignee" : [
-        "layers",
         "SubmitButton",
         "onClick"
       ],
@@ -69,12 +57,6 @@
     }
   ],
   "params" : [
-    {
-      "name" : "onReset",
-      "type" : {
-        "name" : "Function"
-      }
-    },
     {
       "name" : "onSubmit",
       "type" : {
@@ -115,13 +97,6 @@
       {
         "children" : [
           {
-            "id" : "ResetButton",
-            "params" : {
-              "titleText" : "Reset"
-            },
-            "type" : "Button"
-          },
-          {
             "id" : "Spacer",
             "params" : {
               "alignSelf" : "stretch",
@@ -144,8 +119,7 @@
           "flexDirection" : "row",
           "paddingBottom" : 12,
           "paddingLeft" : 12,
-          "paddingRight" : 12,
-          "paddingTop" : 12
+          "paddingRight" : 12
         },
         "type" : "Lona:View"
       }

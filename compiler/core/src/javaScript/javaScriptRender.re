@@ -31,8 +31,21 @@ let smartPath = (path: list(string), pathNode) =>
 /* Render AST */
 let rec render = ast: Prettier.Doc.t('a) =>
   switch (ast) {
-  | Ast.Identifier(path) =>
-    path |> List.map(smartPath(path)) |> concat |> group
+  /* Types */
+  | Ast.InterfaceDeclaration(o) =>
+    s("interface ")
+    <+> s(o.identifier)
+    <+> renderTypeParameters(o.typeParameters)
+    <+> s(" ")
+    <+> renderObjectType(o.objectType)
+  | TypeAliasDeclaration(o) =>
+    s("type ")
+    <+> s(o.identifier)
+    <+> renderTypeParameters(o.typeParameters)
+    <+> s(" = ")
+    <+> renderType(o.type_)
+  /* JS */
+  | Identifier(path) => path |> List.map(smartPath(path)) |> concat |> group
   | Literal(value) => s(Js.Json.stringify(value.data))
   | StringLiteral(value) =>
     concat([
@@ -256,6 +269,53 @@ let rec render = ast: Prettier.Doc.t('a) =>
     concat([render(o.line), lineSuffix(s(" // " ++ o.comment))])
   | Empty
   | Unknown => empty
+  }
+and renderTypeParameters =
+    (parameters: list(JavaScriptAst.type_)): Prettier.Doc.t('a) =>
+  if (parameters == []) {
+    empty;
+  } else {
+    s("<")
+    <+> (parameters |> List.map(renderType) |> join(line))
+    <+> s(">");
+  }
+and renderObjectType =
+    (objectType: JavaScriptAst.objectType): Prettier.Doc.t('a) => {
+  let renderedMembers =
+    objectType.members
+    |> List.map((member: JavaScriptAst.typeMember) =>
+         switch (member) {
+         | PropertySignature({name, type_}) =>
+           switch (type_) {
+           | Some(TypeReference({name: "option", arguments: [value]})) =>
+             s(name) <+> s("?: ") <+> renderType(value)
+           | Some(type_) => s(name) <+> s(": ") <+> renderType(type_)
+           | None => s(name)
+           }
+         }
+       )
+    |> join(s(",") <+> hardline);
+  s("{") <+> indent(hardline <+> renderedMembers) <+> hardline <+> s("}");
+}
+and renderType = (type_: JavaScriptAst.type_): Prettier.Doc.t('a) =>
+  switch (type_) {
+  | LiteralType(string) => s("'" ++ string ++ "'")
+  | TypeReference({name, arguments: []}) => s(name)
+  /* | TypeReference({name: "option", arguments: [value]}) =>
+     renderType(value) <+> s(" | null") */
+  | TypeReference({name, arguments}) =>
+    s(name)
+    <+> s("<")
+    <+> (arguments |> List.map(renderType) |> join(line))
+    <+> s(">")
+  | UnionType(types) => types |> List.map(renderType) |> join(s(" | "))
+  | TupleType(types) =>
+    s("[")
+    <+> softline
+    <+> (types |> List.map(renderType) |> join(s(", ")))
+    <+> softline
+    <+> s(" ]")
+  | ObjectType(objectType) => renderObjectType(objectType)
   }
 and renderBlockBody =
     (nodes: list(Ast.node), preferMultiLine: bool): Prettier.Doc.t('a) => {

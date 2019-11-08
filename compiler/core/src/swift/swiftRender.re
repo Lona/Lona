@@ -2,16 +2,15 @@ open Prettier.Doc.Builders;
 
 let renderFloat = value => s(Format.floatToString(value));
 
-let reservedWords = ["true", "false", "default", "case"];
-
-let stringWithBackticksIfNeeded = (id: string) =>
-  List.mem(id, reservedWords) ? "`" ++ id ++ "`" : id;
-
-let nodeWithBackticksIfNeeded = (id: SwiftAst.node): SwiftAst.node =>
+let nodeWithSafeIdentifier = (id: SwiftAst.node): SwiftAst.node =>
   switch (id) {
   | SwiftIdentifier(string) =>
-    SwiftIdentifier(stringWithBackticksIfNeeded(string))
-  | _ => SwiftIdentifier("$ Bad call to nodeWithBackticksIfNeeded")
+    if (Js.Re.test(string, Js.Re.fromString("$\\d"))) {
+      SwiftIdentifier("_" ++ string);
+    } else {
+      SwiftIdentifier(SwiftFormat.stringWithSafeIdentifier(string));
+    }
+  | _ => SwiftIdentifier("$ Bad call to nodeWithSafeIdentifier")
   };
 
 let renderAccessLevelModifier = node =>
@@ -467,7 +466,7 @@ let rec render = ast: Prettier.Doc.t('a) =>
       ]),
     );
   | EnumCase(o) =>
-    let name = nodeWithBackticksIfNeeded(o##name);
+    let name = nodeWithSafeIdentifier(o##name);
     switch (o##value) {
     | None =>
       let parameters =
@@ -646,7 +645,7 @@ and renderPattern = node =>
   switch (node) {
   | WildcardPattern => s("_")
   | IdentifierPattern(o) =>
-    let name = nodeWithBackticksIfNeeded(o##identifier);
+    let name = nodeWithSafeIdentifier(o##identifier);
     switch (o##annotation) {
     | None => render(name)
     | Some(typeAnnotation) =>
@@ -676,7 +675,10 @@ and renderPattern = node =>
       | None => s("")
       };
     group(
-      maybeTypeIdentifier <+> s(".") <+> s(o##caseName) <+> maybePattern,
+      maybeTypeIdentifier
+      <+> s(".")
+      <+> s(SwiftFormat.stringWithSafeIdentifier(o##caseName))
+      <+> maybePattern,
     );
   }
 and renderInitializerBlock = (node: SwiftAst.initializerBlock) =>

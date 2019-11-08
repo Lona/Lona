@@ -1,6 +1,6 @@
 {
   "name": "@lona/serialization",
-  "version": "0.0.10",
+  "version": "0.0.13",
   "description": "Convert Lona files between serialization formats",
   "main": "build/index.js",
   "bin": "./bin.js",
@@ -18,7 +18,9 @@
     "test:watch": "jest --watch",
     "build": "npm run build:node && npm run build:web",
     "build:web": "webpack",
-    "build:node": "babel lib --out-dir build",
+    "build:node": "npm run build:babel && npm run build:copyPegjs",
+    "build:copyPegjs": "cp lib/pegjs/logic.swift.pegjs build/pegjs/logic.swift.pegjs",
+    "build:babel": "babel lib --out-dir build",
     "prepublishOnly": "npm run build"
   },
   "author": "Devin Abbott",
@@ -33,10 +35,16 @@
   },
   "homepage": "https://github.com/airbnb/Lona",
   "dependencies": {
+    "@mdx-js/mdx": "^1.5.0",
     "json-stable-stringify": "^1.0.1",
+    "mdast-flatten-image-paragraphs": "^1.0.0",
+    "mdast-move-images-to-root": "^1.0.0",
+    "pegjs": "^0.10.0",
+    "unist-util-flatmap": "^1.0.0",
     "uuid": "^3.3.2",
     "xml2js": "^0.4.19",
-    "xmlbuilder": "^12.0.0"
+    "xmlbuilder": "^12.0.0",
+    "yargs": "^14.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
@@ -46,6 +54,7 @@
     "babel-loader": "^8.0.5",
     "esm": "^3.2.22",
     "jest": "^24.8.0",
+    "pegjs-loader": "^0.5.5",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3"
   },

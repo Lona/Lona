@@ -14,7 +14,8 @@ module Command = {
     | Types(Types.compilerTarget, string)
     | Logic(Types.compilerTarget, inputReference, string)
     | Component(Types.compilerTarget, string)
-    | Workspace(Types.compilerTarget, string, string);
+    | Workspace(Types.compilerTarget, string, string)
+    | Flatten(string);
 
   exception Unknown(string);
 };
@@ -113,6 +114,18 @@ module Arguments = {
       "[prefix] Generated type prefix",
     );
 
+    let discriminant = (container: ref(option(string))) => (
+      "--typeDiscriminant",
+      Arg.String(setOptionalString(container)),
+      "[name] Encode/decode enum types using this to distinguish cases",
+    );
+
+    let typeDataWrapper = (container: ref(option(string))) => (
+      "--typeDataWrapper",
+      Arg.String(setOptionalString(container)),
+      "[name] Wrap enum type contents using this to avoid collisions with the discriminant",
+    );
+
     /* JS options */
 
     let styleFramework = (container: ref(option(string))) => (
@@ -192,6 +205,8 @@ Type `lonac [command]` to see which options are required for that command. The f
     let debugContraintsRef: ref(bool) = ref(false);
     let generateCollectionViewRef: ref(bool) = ref(false);
     let typePrefixRef: ref(option(string)) = ref(None);
+    let discriminantRef: ref(option(string)) = ref(None);
+    let typeDataWrapperRef: ref(option(string)) = ref(None);
 
     /* JS options */
     let styleFrameworkRef: ref(option(string)) = ref(None);
@@ -212,6 +227,8 @@ Type `lonac [command]` to see which options are required for that command. The f
         Spec.debugConstraints(debugContraintsRef),
         Spec.generateCollectionView(generateCollectionViewRef),
         Spec.typePrefix(typePrefixRef),
+        Spec.discriminant(discriminantRef),
+        Spec.typeDataWrapper(typeDataWrapperRef),
         /* JS options */
         Spec.styleFramework(styleFrameworkRef),
         Spec.styledComponentsVersion(styledComponentsVersionRef),
@@ -334,6 +351,14 @@ Type `lonac [command]` to see which options are required for that command. The f
         | (Some(target), Some(workspacePath), Some(outputPath)) =>
           Command.Workspace(target, workspacePath, outputPath)
         }
+      | "flatten" =>
+        switch (workspaceRef^) {
+        | None =>
+          raise(
+            Command.Unknown("Missing workspace directory path (--workspace)"),
+          )
+        | Some(workspacePath) => Command.Flatten(workspacePath)
+        }
       | name =>
         raise(
           Command.Unknown(
@@ -350,6 +375,16 @@ Type `lonac [command]` to see which options are required for that command. The f
       options: {
         preset: Options.Standard,
         filterComponents: filterComponentsRef^,
+        discriminant:
+          switch (discriminantRef^) {
+          | Some(value) => value
+          | None => "type"
+          },
+        dataWrapper:
+          switch (typeDataWrapperRef^) {
+          | Some(value) => value
+          | None => "data"
+          },
         swift: {
           framework:
             switch (frameworkRef^) {

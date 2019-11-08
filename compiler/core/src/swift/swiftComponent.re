@@ -90,7 +90,12 @@ module Doc = {
         entity => {
           let convertedEntity =
             SwiftTypeSystem.Build.entity(
-              {nativeTypeNames: [], swiftOptions},
+              {
+                nativeTypeNames: [],
+                swiftOptions,
+                discriminant: "type",
+                dataWrapper: "data",
+              },
               entity,
             );
           switch (convertedEntity.name) {

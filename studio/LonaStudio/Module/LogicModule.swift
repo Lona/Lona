@@ -128,10 +128,23 @@ public class LogicModule {
 
     // MARK: Public Static
 
+    public static func invalidateCaches(url: URL, newValue: LGCProgram) {
+        LogicViewController.invalidateThumbnail(url: url)
+        LogicModule.updateFile(url: url, value: newValue)
+    }
+
+    public static func updateFile(url: URL, value: MDXRoot) {
+        updateFile(url: url, value: value.program())
+    }
+
     public static func updateFile(url: URL, value: LGCSyntaxNode) {
+        updateFile(url: url, value: LGCProgram.make(from: value)!)
+    }
+
+    public static func updateFile(url: URL, value: LGCProgram) {
         // TODO: Remove only those modules which rely on this url
         compiledCache.removeAll(keepingCapacity: true)
-        programCache[url] = LGCProgram.make(from: value)
+        programCache[url] = value
     }
 
     public static func load(url: URL) -> LGCProgram? {
@@ -144,15 +157,27 @@ public class LogicModule {
             return nil
         }
 
-        guard let syntaxNode = try? LogicDocument.read(from: data) else {
-            Swift.print("Failed to decode \(url)")
-            return nil
+        func getProgram() -> LGCProgram? {
+            if url.pathExtension == "md" || url.pathExtension == "mdx" {
+                guard let mdxRoot = MarkdownFile.makeMDXRoot(data) else { return nil }
+
+                return mdxRoot.program()
+            } else {
+                guard let syntaxNode = try? LogicDocument.read(from: data) else {
+                    Swift.print("Failed to decode \(url)")
+                    return nil
+                }
+
+                guard let program = LGCProgram.make(from: syntaxNode) else {
+                    Swift.print("Failed to make program from \(url)")
+                    return nil
+                }
+
+                return program
+            }
         }
 
-        guard let program = LGCProgram.make(from: syntaxNode) else {
-            Swift.print("Failed to make program from \(url)")
-            return nil
-        }
+        let program = getProgram()
 
         programCache[url] = program
 
@@ -161,7 +186,7 @@ public class LogicModule {
 
     // MARK: Private Static
 
-    private static let logicRE = try! NSRegularExpression(pattern: #"\.(logic|tokens)$"#)
+    private static let logicRE = try! NSRegularExpression(pattern: #"\.(logic|tokens|md|mdx)$"#)
 
     private static let preludeProgram = LGCProgram(
         id: UUID(),
@@ -170,6 +195,18 @@ public class LogicModule {
                 .declaration(
                     id: UUID(),
                     content: .importDeclaration(id: UUID(), name: .init(id: UUID(), name: "Prelude"))
+                ),
+                .declaration(
+                    id: UUID(),
+                    content: .importDeclaration(id: UUID(), name: .init(id: UUID(), name: "Color"))
+                ),
+                .declaration(
+                    id: UUID(),
+                    content: .importDeclaration(id: UUID(), name: .init(id: UUID(), name: "Shadow"))
+                ),
+                .declaration(
+                    id: UUID(),
+                    content: .importDeclaration(id: UUID(), name: .init(id: UUID(), name: "TextStyle"))
                 )
             ]
         )

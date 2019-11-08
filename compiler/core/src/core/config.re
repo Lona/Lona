@@ -82,6 +82,21 @@ module Workspace = {
        });
   };
 
+  let documentFiles =
+      (workspacePath: string, ~ignore: list(string))
+      : list(file(LogicAst.syntaxNode)) => {
+    let searchPath = Path.join([|workspacePath, "**/*.md"|]);
+    let paths = FileSearch.sync(searchPath, ~options={ignore: ignore}, ());
+    paths
+    |> List.map(path => {
+         let data = Node.Fs.readFileSync(path, `utf8);
+         let jsonContents = Serialization.program(data);
+         let json = jsonContents |> Js.Json.parseExn;
+         let contents = LogicAst.Decode.syntaxNode(json);
+         {path, contents};
+       });
+  };
+
   let colorsFile =
       (workspacePath: string, ~ignore: list(string)): file(list(Color.t)) => {
     let path = findPathWithSuffix(workspacePath, "colors.json", ~ignore);
@@ -248,7 +263,7 @@ module Type = {
 };
 
 let exit = message => {
-  Js.log(message);
+  Log.warn(message);
   %bs.raw
   {|process.exit(1)|};
 };
@@ -270,6 +285,7 @@ let load =
       ++ "'. A workspace must contain a `lona.json` file.",
     )
   | Some(workspacePath) =>
+    Log.warn("Running compiler from: " ++ dirname);
     let logicLibrariesPath = Node.Path.join2(dirname, "static/logic");
     let lonaFile = Workspace.lonaFile(workspacePath);
     Js.Promise.(
@@ -294,12 +310,13 @@ let load =
                Workspace.logicFiles(
                  workspacePath,
                  ~ignore=lonaFile.contents.ignore,
-               ),
+               )
+               @ Workspace.documentFiles(
+                   workspacePath,
+                   ~ignore=lonaFile.contents.ignore,
+                 ),
              logicLibraries:
-               Workspace.logicFiles(
-                 logicLibrariesPath,
-                 ~ignore=lonaFile.contents.ignore,
-               ),
+               Workspace.logicFiles(logicLibrariesPath, ~ignore=[]),
              colorsFile:
                Workspace.colorsFile(
                  workspacePath,

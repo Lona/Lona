@@ -1,0 +1,134 @@
+{
+  "devices" : [
+    {
+      "deviceId" : "iPhone SE",
+      "heightMode" : "At Least"
+    },
+    {
+      "deviceId" : "Pixel 2",
+      "heightMode" : "At Least"
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "ShadowPicker",
+        "optionalShadowValue"
+      ],
+      "content" : [
+        "parameters",
+        "shadowValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ShadowPicker",
+        "onChangeShadowValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeShadowValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "SubmitButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onSubmit"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "onSubmit",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "shadowValue",
+      "type" : "ShadowPickerShadow"
+    },
+    {
+      "name" : "onChangeShadowValue",
+      "type" : "ShadowPickerHandler"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "ShadowPicker",
+            "params" : {
+
+            },
+            "type" : "ShadowPicker"
+          }
+        ],
+        "id" : "PickerContainer",
+        "params" : {
+          "alignSelf" : "stretch",
+          "flex" : 1,
+          "paddingBottom" : 12,
+          "paddingLeft" : 12,
+          "paddingRight" : 12,
+          "paddingTop" : 12
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "Spacer",
+            "params" : {
+              "alignSelf" : "stretch",
+              "flex" : 1
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "SubmitButton",
+            "params" : {
+              "titleText" : "OK"
+            },
+            "type" : "Button"
+          }
+        ],
+        "id" : "Footer",
+        "params" : {
+          "alignItems" : "center",
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "paddingBottom" : 12,
+          "paddingLeft" : 12,
+          "paddingRight" : 12
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

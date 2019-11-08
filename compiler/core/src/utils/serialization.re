@@ -4,6 +4,9 @@ external convertLogic: (string, string) => string = "";
 [@bs.val] [@bs.module "@lona/serialization"]
 external convertTypes: (string, string) => string = "";
 
+[@bs.val] [@bs.module "@lona/serialization"]
+external program: string => string = "extractProgram";
+
 let convert = (contents: string, kind: string, encoding: string) =>
   switch (kind) {
   | "logic" => convertLogic(contents, encoding)

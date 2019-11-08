@@ -3,6 +3,10 @@ const xml = `<?xml version="1.0"?>
   <Literal type="Number" value="42"/>
 </Variable>`
 
+const code = `let x: Array<Number> = [
+  42
+]`
+
 const json = {
   data: {
     annotation: {
@@ -72,4 +76,4 @@ const json = {
   type: 'variable',
 }
 
-module.exports = { json, xml }
+module.exports = { json, xml, code }

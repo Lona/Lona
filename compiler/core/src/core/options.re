@@ -9,4 +9,6 @@ type options = {
   filterComponents: option(string),
   swift: SwiftOptions.options,
   javaScript: JavaScriptOptions.options,
+  discriminant: string,
+  dataWrapper: string,
 };

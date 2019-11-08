@@ -4,7 +4,7 @@ open Operators;
 
 type doc('a) = Prettier.Doc.t('a);
 
-let reservedWords = ["initializer"];
+let reservedWords = ["initializer", "object"];
 
 let renderFloat = value => s(Format.floatToString(value));
 
@@ -41,6 +41,13 @@ and renderLiteral = (node: literal): doc('a) =>
       s(value |> Js.String.replaceByRe([%re "/\"/g"], "\\\"")),
       s("\""),
     ])
+  | Tuple(nodes) =>
+    renderDelimitedBlock(
+      ~startDelimiter="(",
+      ~endDelimiter=")",
+      ~joinDelimiter=s(","),
+      ~contents=nodes |> List.map(renderExpression),
+    )
   | Array(nodes) =>
     renderDelimitedBlock(
       ~startDelimiter="[",
@@ -115,6 +122,22 @@ and renderExpression = (node: expression): doc('a) =>
     <+> (value.cases |> List.map(renderSwitchCase) |> join(hardline))
     <+> hardline
     <+> s("}")
+  | TernaryExpression(value) =>
+    s("(")
+    <+> indent(
+          hardline
+          <+> renderExpression(value.condition)
+          <+> indent(
+                hardline
+                <+> s("?")
+                <+> renderExpression(value.consequent)
+                <+> hardline
+                <+> s(" : ")
+                <+> renderExpression(value.alternate)
+                <+> hardline,
+              ),
+        )
+    <+> s("}")
   }
 and renderTypeAnnotation = (node: typeAnnotation): doc('a) =>
   switch (node) {
@@ -184,6 +207,7 @@ and renderTypeDeclarationValue = (node: typeDeclarationValue): doc('a) =>
   switch (node) {
   | VariantType(value) => renderVariantType(value)
   | RecordType(value) => renderRecordType(value)
+  | AliasType(value) => renderTypeAnnotation(value)
   }
 and renderTypeDeclaration = (node: typeDeclaration): doc('a) =>
   renderTypeAnnotation(node.name)

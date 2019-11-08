@@ -712,8 +712,8 @@ class WorkspaceViewController: NSSplitViewController {
             markdownViewController.onChange = { [unowned self] value in
                 let value = value.isEmpty ? [BlockEditor.Block.makeDefaultEmptyBlock()] : value
 
-                self.markdownViewController.content = value
                 document.content = value
+                self.markdownViewController.content = value
 
                 document.updateChangeCount(.changeDone)
                 self.editorViewController.subtitleText = " — Edited"

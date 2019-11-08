@@ -1,6 +1,10 @@
 const xml = `<?xml version="1.0"?>
 <Declaration.Namespace name="Colors"/>`
 
+const code = `enum Colors {
+
+}`
+
 const json = {
   data: {
     content: {
@@ -26,4 +30,4 @@ const json = {
   type: 'declaration',
 }
 
-module.exports = { json, xml }
+module.exports = { json, xml, code }

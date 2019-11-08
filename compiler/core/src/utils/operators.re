@@ -3,5 +3,3 @@ let (%?) = (x: option('a), y: 'a) =>
   | Some(value) => value
   | None => y
   };
-
-let b = Some(3) %? 4;

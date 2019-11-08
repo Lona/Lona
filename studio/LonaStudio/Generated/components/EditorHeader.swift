@@ -306,3 +306,11 @@ extension EditorHeader {
     }
   }
 }
+
+// LONA: KEEP BELOW
+
+extension EditorHeader {
+    public override var mouseDownCanMoveWindow: Bool {
+        return true
+    }
+}

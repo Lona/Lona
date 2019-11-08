@@ -1,6 +1,8 @@
 const xml = `<?xml version="1.0"?>
 <Declaration.Variable name="x" type="Number" value="123"/>`
 
+const code = 'let x: Number = 123'
+
 const json = {
   data: {
     content: {
@@ -43,4 +45,4 @@ const json = {
   type: 'declaration',
 }
 
-module.exports = { json, xml }
+module.exports = { json, xml, code }

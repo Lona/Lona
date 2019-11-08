@@ -10,6 +10,18 @@ let firstWhere = (f: 'a => bool, items: list('a)): option('a) =>
   | [a, ..._] => Some(a)
   };
 
+let firstIndexWhere = (f: 'a => bool, items: list('a)): option(int) => {
+  let enumerated = items |> List.mapi((i, item) => (i, item));
+  let found = enumerated |> firstWhere(((_, item)) => f(item));
+  switch (found) {
+  | Some((index, _)) => Some(index)
+  | None => None
+  };
+};
+
+let firstIndexMem = (item: 'a, items: list('a)): option(int) =>
+  items |> firstIndexWhere(x => item == x);
+
 let rejectWhere = (f: 'a => bool, items: list('a)) =>
   items |> List.filter(item => !f(item));
 
@@ -19,6 +31,9 @@ let rec compact = (items: list(option('a))): list('a) =>
   | [None, ...xs] => compact(xs)
   | [] => []
   };
+
+let compactMap = (f: 'a => option('b), items: list('a)): list('b) =>
+  items |> List.map(f) |> compact;
 
 let choose = (k: int, items: list('a)): list(list('a)) => {
   let rec inner = (acc, k, items) =>
@@ -93,6 +108,18 @@ let dedupe = (f: ('a, list('a)) => bool, list: list('a)): list('a) =>
 let dedupeMem = (list: list('a)): list('a) =>
   dedupe((item, list) => List.mem(item, list), list);
 
+let intersectBy =
+    (f: ('a, 'a) => bool, list1: list('a), list2: list('a)): list('a) => {
+  let list1Contents =
+    list1 |> List.filter(a => list2 |> List.exists(b => f(a, b)));
+  let list2Contents =
+    list2 |> List.filter(a => list1 |> List.exists(b => f(a, b)));
+  dedupeMem(list1Contents @ list2Contents);
+};
+
+let intersectMem = (list1: list('a), list2: list('a)): list('a) =>
+  intersectBy((a, b) => a == b, list1, list2);
+
 let occurrences = (f: 'a => bool, list: list('a)): int =>
   List.fold_right((item, acc) => f(item) ? acc + 1 : acc, list, 0);
 
@@ -111,3 +138,6 @@ let joinGroups = (sep: 'a, groups: list(list('a))): list('a) => {
     tl |> List.fold_left((acc, nodes) => acc @ [sep] @ nodes, hd)
   };
 };
+
+let replaceAt = (targetIndex: int, newItem: 'a, list: list('a)): list('a) =>
+  list |> List.mapi((index, item) => targetIndex == index ? newItem : item);
