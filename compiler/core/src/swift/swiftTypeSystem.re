@@ -1380,7 +1380,10 @@ module Build = {
       switch (genericType.cases) {
       | [head, ...tail] =>
         switch (head, tail) {
-        | (RecordCase(name, parameters), []) => {
+        | (RecordCase(name, parameters), [])
+            when
+              Js.String.toLowerCase(genericType.name)
+              == Js.String.toLowerCase(name) => {
             name: Some(conversionOptions.swiftOptions.typePrefix ++ name),
             node: record(conversionOptions, name, parameters),
           }
