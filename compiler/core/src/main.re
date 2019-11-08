@@ -360,6 +360,9 @@ let updateContentsPreservingCommentMarkers = (originalPath, newContents) => {
 
 exception FailedToEvaluate(string);
 
+let generateDocumentation = (config: Config.t): TokenTypes.convertedWorkspace => {
+   {flatTokensSchemaVersion: "0.0.1", files: []};
+
 let flattenWorkspace = (config: Config.t): TokenTypes.convertedWorkspace => {
   let program =
     config.logicFiles
@@ -675,8 +678,21 @@ switch (scanResult.command) {
   Config.load(Types.ReasonCompiler, options, workspacePath, "", nodeDirname)
   |> Js.Promise.then_(config =>
        switch (flattenWorkspace(config)) {
-       | flattened =>
-         (flattened |> TokenTypes.Encode.convertedWorkspace)
+       | converted =>
+         (converted |> TokenTypes.Encode.encodeConvertedWorkspace)
+         ->(Js.Json.stringifyWithSpace(2))
+         |> Js.log;
+         Js.Promise.resolve();
+       | exception (FailedToEvaluate(message)) => exit(message)
+       }
+     )
+  |> ignore
+| Documentation(workspacePath) =>
+  Config.load(Types.ReasonCompiler, options, workspacePath, "", nodeDirname)
+  |> Js.Promise.then_(config =>
+       switch (generateDocumentation(config)) {
+       | converted =>
+         (converted |> TokenTypes.Encode.encodeConvertedWorkspace)
          ->(Js.Json.stringifyWithSpace(2))
          |> Js.log;
          Js.Promise.resolve();

@@ -33,12 +33,12 @@ and tokenValue =
   | Shadow(shadowValue)
   | TextStyle(textStyleValue)
 and tokenToken = {
-  qualifiedName: list(string),
+  qualifiedName: Reason.List.t(string),
   value: tokenValue,
 }
 and token = tokenToken
 and convertedFileContents =
-  | FlatTokens(list(token))
+  | FlatTokens(Reason.List.t(token))
 and convertedFileConvertedFile = {
   inputPath: string,
   outputPath: string,
@@ -47,13 +47,13 @@ and convertedFileConvertedFile = {
 }
 and convertedFile = convertedFileConvertedFile
 and convertedWorkspaceConvertedWorkspace = {
-  files: list(convertedFile),
+  files: Reason.List.t(convertedFile),
   flatTokensSchemaVersion: string,
 }
 and convertedWorkspace = convertedWorkspaceConvertedWorkspace;
 
 module Decode = {
-  let rec fontWeight: Js.Json.t => fontWeight =
+  let rec decodeFontWeight: Js.Json.t => fontWeight =
     (json: Js.Json.t) => {
       let rec case = Json.Decode.string(json);
       switch (case) {
@@ -71,11 +71,11 @@ module Decode = {
         raise(Not_found);
       };
     }
-  and colorValue: Js.Json.t => colorValue =
+  and decodeColorValue: Js.Json.t => colorValue =
     (json: Js.Json.t) => {
       css: Json.Decode.field("css", Json.Decode.string, json),
     }
-  and textStyleValue: Js.Json.t => textStyleValue =
+  and decodeTextStyleValue: Js.Json.t => textStyleValue =
     (json: Js.Json.t) => {
       fontName:
         Json.Decode.optional(
@@ -87,7 +87,7 @@ module Decode = {
           Json.Decode.field("fontFamily", Json.Decode.string),
           json,
         ),
-      fontWeight: Json.Decode.field("fontWeight", fontWeight, json),
+      fontWeight: Json.Decode.field("fontWeight", decodeFontWeight, json),
       fontSize:
         Json.Decode.optional(
           Json.Decode.field("fontSize", Json.Decode.float),
@@ -104,69 +104,77 @@ module Decode = {
           json,
         ),
       color:
-        Json.Decode.optional(Json.Decode.field("color", colorValue), json),
+        Json.Decode.optional(
+          Json.Decode.field("color", decodeColorValue),
+          json,
+        ),
     }
-  and shadowValue: Js.Json.t => shadowValue =
+  and decodeShadowValue: Js.Json.t => shadowValue =
     (json: Js.Json.t) => {
       x: Json.Decode.field("x", Json.Decode.float, json),
       y: Json.Decode.field("y", Json.Decode.float, json),
       blur: Json.Decode.field("blur", Json.Decode.float, json),
       radius: Json.Decode.field("radius", Json.Decode.float, json),
-      color: Json.Decode.field("color", colorValue, json),
+      color: Json.Decode.field("color", decodeColorValue, json),
     }
-  and tokenValue: Js.Json.t => tokenValue =
+  and decodeTokenValue: Js.Json.t => tokenValue =
     (json: Js.Json.t) => {
       let rec case = Json.Decode.field("type", Json.Decode.string, json);
       let rec data = Json.Decode.field("value", x => x, json);
       switch (case) {
       | "color" =>
-        let rec decoded = colorValue(data);
+        let rec decoded = decodeColorValue(data);
         Color(decoded);
       | "shadow" =>
-        let rec decoded = shadowValue(data);
+        let rec decoded = decodeShadowValue(data);
         Shadow(decoded);
       | "textStyle" =>
-        let rec decoded = textStyleValue(data);
+        let rec decoded = decodeTextStyleValue(data);
         TextStyle(decoded);
       | _ =>
         Js.log("Error decoding tokenValue");
         raise(Not_found);
       };
     }
-  and token: Js.Json.t => token =
+  and decodeToken: Js.Json.t => token =
     (json: Js.Json.t) => {
       qualifiedName:
         Json.Decode.field(
           "qualifiedName",
-          Json.Decode.list(Json.Decode.string),
+          Reason.List.decode(Json.Decode.string),
           json,
         ),
-      value: Json.Decode.field("value", tokenValue, json),
+      value: Json.Decode.field("value", decodeTokenValue, json),
     }
-  and convertedFileContents: Js.Json.t => convertedFileContents =
+  and decodeConvertedFileContents: Js.Json.t => convertedFileContents =
     (json: Js.Json.t) => {
       let rec case = Json.Decode.field("type", Json.Decode.string, json);
       let rec data = Json.Decode.field("value", x => x, json);
       switch (case) {
       | "flatTokens" =>
-        let rec decoded = Json.Decode.list(token, data);
+        let rec decoded = Reason.List.decode(decodeToken, data);
         FlatTokens(decoded);
       | _ =>
         Js.log("Error decoding convertedFileContents");
         raise(Not_found);
       };
     }
-  and convertedFile: Js.Json.t => convertedFile =
+  and decodeConvertedFile: Js.Json.t => convertedFile =
     (json: Js.Json.t) => {
       inputPath: Json.Decode.field("inputPath", Json.Decode.string, json),
       outputPath: Json.Decode.field("outputPath", Json.Decode.string, json),
       name: Json.Decode.field("name", Json.Decode.string, json),
-      contents: Json.Decode.field("contents", convertedFileContents, json),
+      contents:
+        Json.Decode.field("contents", decodeConvertedFileContents, json),
     }
-  and convertedWorkspace: Js.Json.t => convertedWorkspace =
+  and decodeConvertedWorkspace: Js.Json.t => convertedWorkspace =
     (json: Js.Json.t) => {
       files:
-        Json.Decode.field("files", Json.Decode.list(convertedFile), json),
+        Json.Decode.field(
+          "files",
+          Reason.List.decode(decodeConvertedFile),
+          json,
+        ),
       flatTokensSchemaVersion:
         Json.Decode.field(
           "flatTokensSchemaVersion",
@@ -177,7 +185,7 @@ module Decode = {
 };
 
 module Encode = {
-  let rec fontWeight: fontWeight => Js.Json.t =
+  let rec encodeFontWeight: fontWeight => Js.Json.t =
     (value: fontWeight) =>
       switch (value) {
       | X100 => Json.Encode.string("100")
@@ -190,7 +198,7 @@ module Encode = {
       | X800 => Json.Encode.string("800")
       | X900 => Json.Encode.string("900")
       }
-  and colorValue: colorValue => Js.Json.t =
+  and encodeColorValue: colorValue => Js.Json.t =
     (value: colorValue) =>
       Json.Encode.object_(
         List.filter(
@@ -198,7 +206,7 @@ module Encode = {
           [("css", Json.Encode.string(value.css))],
         ),
       )
-  and textStyleValue: textStyleValue => Js.Json.t =
+  and encodeTextStyleValue: textStyleValue => Js.Json.t =
     (value: textStyleValue) =>
       Json.Encode.object_(
         List.filter(
@@ -212,7 +220,7 @@ module Encode = {
               "fontFamily",
               Json.Encode.nullable(Json.Encode.string, value.fontFamily),
             ),
-            ("fontWeight", fontWeight(value.fontWeight)),
+            ("fontWeight", encodeFontWeight(value.fontWeight)),
             (
               "fontSize",
               Json.Encode.nullable(Json.Encode.float, value.fontSize),
@@ -225,11 +233,11 @@ module Encode = {
               "letterSpacing",
               Json.Encode.nullable(Json.Encode.float, value.letterSpacing),
             ),
-            ("color", Json.Encode.nullable(colorValue, value.color)),
+            ("color", Json.Encode.nullable(encodeColorValue, value.color)),
           ],
         ),
       )
-  and shadowValue: shadowValue => Js.Json.t =
+  and encodeShadowValue: shadowValue => Js.Json.t =
     (value: shadowValue) =>
       Json.Encode.object_(
         List.filter(
@@ -239,27 +247,27 @@ module Encode = {
             ("y", Json.Encode.float(value.y)),
             ("blur", Json.Encode.float(value.blur)),
             ("radius", Json.Encode.float(value.radius)),
-            ("color", colorValue(value.color)),
+            ("color", encodeColorValue(value.color)),
           ],
         ),
       )
-  and tokenValue: tokenValue => Js.Json.t =
+  and encodeTokenValue: tokenValue => Js.Json.t =
     (value: tokenValue) =>
       switch (value) {
       | Color(value0) =>
         let rec case = Json.Encode.string("color");
-        let rec encoded = colorValue(value0);
+        let rec encoded = encodeColorValue(value0);
         Json.Encode.object_([("type", case), ("value", encoded)]);
       | Shadow(value0) =>
         let rec case = Json.Encode.string("shadow");
-        let rec encoded = shadowValue(value0);
+        let rec encoded = encodeShadowValue(value0);
         Json.Encode.object_([("type", case), ("value", encoded)]);
       | TextStyle(value0) =>
         let rec case = Json.Encode.string("textStyle");
-        let rec encoded = textStyleValue(value0);
+        let rec encoded = encodeTextStyleValue(value0);
         Json.Encode.object_([("type", case), ("value", encoded)]);
       }
-  and token: token => Js.Json.t =
+  and encodeToken: token => Js.Json.t =
     (value: token) =>
       Json.Encode.object_(
         List.filter(
@@ -267,21 +275,21 @@ module Encode = {
           [
             (
               "qualifiedName",
-              Json.Encode.list(Json.Encode.string, value.qualifiedName),
+              Reason.List.encode(Json.Encode.string, value.qualifiedName),
             ),
-            ("value", tokenValue(value.value)),
+            ("value", encodeTokenValue(value.value)),
           ],
         ),
       )
-  and convertedFileContents: convertedFileContents => Js.Json.t =
+  and encodeConvertedFileContents: convertedFileContents => Js.Json.t =
     (value: convertedFileContents) =>
       switch (value) {
       | FlatTokens(value0) =>
         let rec case = Json.Encode.string("flatTokens");
-        let rec encoded = Json.Encode.list(token, value0);
+        let rec encoded = Reason.List.encode(encodeToken, value0);
         Json.Encode.object_([("type", case), ("value", encoded)]);
       }
-  and convertedFile: convertedFile => Js.Json.t =
+  and encodeConvertedFile: convertedFile => Js.Json.t =
     (value: convertedFile) =>
       Json.Encode.object_(
         List.filter(
@@ -290,17 +298,17 @@ module Encode = {
             ("inputPath", Json.Encode.string(value.inputPath)),
             ("outputPath", Json.Encode.string(value.outputPath)),
             ("name", Json.Encode.string(value.name)),
-            ("contents", convertedFileContents(value.contents)),
+            ("contents", encodeConvertedFileContents(value.contents)),
           ],
         ),
       )
-  and convertedWorkspace: convertedWorkspace => Js.Json.t =
+  and encodeConvertedWorkspace: convertedWorkspace => Js.Json.t =
     (value: convertedWorkspace) =>
       Json.Encode.object_(
         List.filter(
           ((_, json)) => json != Js.Json.null,
           [
-            ("files", Json.Encode.list(convertedFile, value.files)),
+            ("files", Reason.List.encode(encodeConvertedFile, value.files)),
             (
               "flatTokensSchemaVersion",
               Json.Encode.string(value.flatTokensSchemaVersion),

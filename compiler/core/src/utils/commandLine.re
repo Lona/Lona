@@ -15,7 +15,8 @@ module Command = {
     | Logic(Types.compilerTarget, inputReference, string)
     | Component(Types.compilerTarget, string)
     | Workspace(Types.compilerTarget, string, string)
-    | Flatten(string);
+    | Flatten(string)
+    | Documentation(string);
 
   exception Unknown(string);
 };
@@ -359,6 +360,14 @@ Type `lonac [command]` to see which options are required for that command. The f
             Command.Unknown("Missing workspace directory path (--workspace)"),
           )
         | Some(workspacePath) => Command.Flatten(workspacePath)
+        }
+      | "documentation" =>
+        switch (workspaceRef^) {
+        | None =>
+          raise(
+            Command.Unknown("Missing workspace directory path (--workspace)"),
+          )
+        | Some(workspacePath) => Command.Documentation(workspacePath)
         }
       | name =>
         raise(
