@@ -75,16 +75,22 @@ function parse(src, convertLogic) {
   return normalizedFormat.data
 }
 
+// Convert our internal md format to mdast
+function toMdast(node) {
+  const { type, data } = node
+
+  const { children = [] } = data
+
+  return { type, ...data, children: children.map(toMdast) }
+}
+
+// Print a block in our internal format to a markdown string
+function printNode(mdxBlockNode) {
+  return toMarkdown(toMdast(mdxBlockNode))
+}
+
 function print(normalizedFormat, convertLogic, options = {}) {
-  function toAst(node) {
-    const { type, data } = node
-
-    const { children = [] } = data
-
-    return { type, ...data, children: children.map(toAst) }
-  }
-
-  const ast = { type: 'root', children: normalizedFormat.children.map(toAst) }
+  const ast = { type: 'root', children: normalizedFormat.children.map(toMdast) }
 
   const encodedTokensAst = map(ast, node => {
     if (node.type === 'code' && node.lang === 'tokens') {
@@ -107,4 +113,5 @@ function print(normalizedFormat, convertLogic, options = {}) {
 module.exports = {
   parse,
   print,
+  printNode,
 }

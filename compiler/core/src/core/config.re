@@ -10,6 +10,7 @@ type t = {
   lonaFile: file(LonaFile.t),
   logicFiles: list(file(LogicAst.syntaxNode)),
   logicLibraries: list(file(LogicAst.syntaxNode)),
+  mdxFiles: list(file(MdxTypes.root)),
   colorsFile: file(list(Color.t)),
   textStylesFile: file(TextStyle.file),
   shadowsFile: file(Shadow.file),
@@ -93,6 +94,21 @@ module Workspace = {
          let jsonContents = Serialization.program(data);
          let json = jsonContents |> Js.Json.parseExn;
          let contents = LogicAst.Decode.syntaxNode(json);
+         {path, contents};
+       });
+  };
+
+  let mdxFiles =
+      (workspacePath: string, ~ignore: list(string))
+      : list(file(MdxTypes.root)) => {
+    let searchPath = Path.join([|workspacePath, "**/*.md"|]);
+    let paths = FileSearch.sync(searchPath, ~options={ignore: ignore}, ());
+    paths
+    |> List.map(path => {
+         let data = Node.Fs.readFileSync(path, `utf8);
+         let jsonContents = Serialization.convertDocument(data, "json");
+         let json = jsonContents |> Js.Json.parseExn;
+         let contents = MdxTypes.Decode.decodeRoot(json);
          {path, contents};
        });
   };
@@ -317,6 +333,11 @@ let load =
                  ),
              logicLibraries:
                Workspace.logicFiles(logicLibrariesPath, ~ignore=[]),
+             mdxFiles:
+               Workspace.mdxFiles(
+                 workspacePath,
+                 ~ignore=lonaFile.contents.ignore,
+               ),
              colorsFile:
                Workspace.colorsFile(
                  workspacePath,
