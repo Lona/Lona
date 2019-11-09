@@ -219,4 +219,5 @@ module.exports = {
   encodeDocument,
   extractProgram,
   detectFormat,
+  printMdxNode: mdx.printNode,
 }
