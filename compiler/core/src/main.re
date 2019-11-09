@@ -1,4 +1,6 @@
 open Node;
+open Monad;
+open Operators;
 
 /* We run the compiler as separate JS files during development, than as a bundle in production.
    We can only safely call __dirname in the main JS file, since other files will not be in the same path. */
@@ -361,52 +363,101 @@ let updateContentsPreservingCommentMarkers = (originalPath, newContents) => {
 exception FailedToEvaluate(string);
 
 let generateDocumentation = (config: Config.t): TokenTypes.convertedWorkspace => {
-  flatTokensSchemaVersion: "0.0.1",
-  files: [],
+  let logicFiles: list(Config.file(LogicAst.syntaxNode)) =
+    config.mdxFiles
+    |> List.map((file: Config.file(MdxTypes.root)) => {
+         let blockNodes = file.contents.children;
+         let nodes =
+           blockNodes
+           |> Sequence.compactMap(node =>
+                switch (node) {
+                | MdxTypes.Code({parsed: Some(syntaxNode)}) =>
+                  Some(syntaxNode)
+                | _ => None
+                }
+              );
+         {
+           Config.path: file.path,
+           contents:
+             LogicAst.Program(
+               Program(
+                 nodes
+                 |> Sequence.compactMap(LogicUtils.makeProgram)
+                 |> LogicUtils.joinPrograms,
+               ),
+             ),
+         };
+       });
+
+  let evaluationContext = LogicCompile.evaluateFiles(config, logicFiles);
+
+  switch (evaluationContext) {
+  | None =>
+    Log.warn("Failed to evaluate workspace.");
+    {flatTokensSchemaVersion: "0.0.1", files: []};
+  | Some(evaluationContext) => {
+      flatTokensSchemaVersion: "0.0.1",
+      files:
+        config.mdxFiles
+        |> List.map((file: Config.file(MdxTypes.root)) => {
+             let relativeInputPath =
+               Path.relative(~from=config.workspacePath, ~to_=file.path, ());
+             let basename =
+               Path.basename_ext(
+                 relativeInputPath,
+                 extname(relativeInputPath),
+               );
+             let dirname = Path.dirname(relativeInputPath);
+             let relativeOutputPath = Path.join2(dirname, basename ++ ".mdx");
+             let blockNodes = file.contents.children;
+             let data =
+               blockNodes
+               |> List.map(node =>
+                    switch (node) {
+                    | MdxTypes.Code(value) =>
+                      let token =
+                        value.parsed
+                        >>= (
+                          (syntaxNode: LogicAst.syntaxNode) =>
+                            switch (syntaxNode) {
+                            | TopLevelDeclarations(
+                                TopLevelDeclarations({
+                                  declarations: LogicAst.Next(declaration, _),
+                                }),
+                              ) =>
+                              LogicFlatten.convertDeclaration(
+                                config,
+                                evaluationContext,
+                                declaration,
+                              )
+                            | _ => None
+                            }
+                        )
+                        |> map(TokenHtml.convert);
+                      token %? "";
+                    | _ =>
+                      MdxTypes.Encode.encodeBlockNode(node)
+                      |> Serialization.printMdxNode
+                    }
+                  )
+               |> Format.joinWith("\n\n");
+             {
+               TokenTypes.inputPath: relativeInputPath,
+               outputPath: relativeOutputPath,
+               name: basename,
+               contents: MdxString(data),
+             };
+           }),
+    }
+  };
 };
 
 let flattenWorkspace = (config: Config.t): TokenTypes.convertedWorkspace => {
-  let program =
-    config.logicFiles
-    |> List.map((file: Config.file(LogicAst.syntaxNode)) => file.contents)
-    |> Sequence.compactMap(LogicUtils.makeProgram)
-    |> LogicUtils.joinPrograms;
-  let program =
-    LogicUtils.joinPrograms([LogicUtils.standardImportsProgram, program]);
-  let programNode =
-    LogicAst.Program(
-      Program(LogicUtils.resolveImports(config, program, ())),
-    );
-  let scopeContext = LogicScope.build(programNode, ());
-  let unificationContext =
-    LogicUnificationContext.makeUnificationContext(
-      ~rootNode=programNode,
-      ~scopeContext,
-      (),
-    );
-  let substitution =
-    LogicUnify.unify(~constraints=unificationContext.constraints^, ());
-
-  /* Js.log("-- Namespace --");
-     Js.log(LogicScope.namespaceDescription(scopeContext.namespace));
-
-     Js.log("-- Unification --");
-     Js.log(
-       LogicUnificationContext.description(scopeContext, unificationContext),
-     ); */
-
   let evaluationContext =
-    LogicEvaluate.evaluate(
-      ~currentNode=programNode,
-      ~rootNode=programNode,
-      ~scopeContext,
-      ~unificationContext,
-      ~substitution,
-      (),
-    );
+    LogicCompile.evaluateFiles(config, config.logicFiles);
   switch (evaluationContext) {
   | None =>
-    Js.log("Failed to evaluate workspace.");
+    Log.warn("Failed to evaluate workspace.");
     {flatTokensSchemaVersion: "0.0.1", files: []};
   | Some(evaluationContext) => {
       flatTokensSchemaVersion: "0.0.1",

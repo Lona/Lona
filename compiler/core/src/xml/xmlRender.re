@@ -2,72 +2,76 @@ open Prettier.Doc.Builders;
 
 let quoted = doc => s("\"") <+> doc <+> s("\"");
 
-let rec render = ast: Prettier.Doc.t('a) =>
-  switch (ast) {
-  | XmlAst.Document(o) =>
-    render(o##prolog) <+> hardline <+> render(o##element)
-  | Prolog(o) =>
-    switch (o##xmlDecl) {
-    | Some(node) => render(node)
+let rec renderDocument = (document: XmlAst.document): Prettier.Doc.t('a) =>
+  renderProlog(document.prolog)
+  <+> hardline
+  <+> renderElement(document.element)
+and renderProlog = prolog =>
+  switch (prolog.xmlDecl) {
+  | Some(node) => renderXmlDecl(node)
+  | None => empty
+  }
+and renderXmlDecl = xmlDecl =>
+  s("<?xml ")
+  <+> s("version=")
+  <+> quoted(s(xmlDecl.version))
+  <+> (
+    switch (xmlDecl.encoding) {
+    | Some(encoding) => s(" ") <+> s("encoding=") <+> quoted(s(encoding))
     | None => empty
     }
-  | XMLDecl(o) =>
-    s("<?xml ")
-    <+> s("version=")
-    <+> quoted(s(o##version))
-    <+> (
-      switch (o##encoding) {
-      | Some(encoding) =>
-        s(" ") <+> s("encoding=") <+> quoted(s(encoding))
-      | None => empty
-      }
-    )
-    <+> s("?>")
-  | Element(o) =>
-    let attributes =
-      switch (o##attributes) {
-      | [] => empty
-      | attributes =>
-        indent(line <+> group(join(line, List.map(render, attributes))))
-      };
-    switch (o##content) {
-    | [] => group(s("<") <+> s(o##tag) <+> attributes <+> s(" />"))
-    | children =>
-      group(
-        s("<")
-        <+> s(o##tag)
-        <+> attributes
-        <+> s(">")
-        <+> group(
-              indent(
-                softline <+> join(softline, List.map(render, children)),
-              ),
-            )
-        <+> softline
-        <+> s("</")
-        <+> s(o##tag)
-        <+> s(">"),
+  )
+  <+> s("?>")
+and renderElement = element => {
+  let attributes =
+    switch (element.attributes) {
+    | [] => empty
+    | attributes =>
+      indent(
+        line <+> group(join(line, List.map(renderAttribute, attributes))),
       )
     };
-  | Comment(value) => s("<!-- " ++ value ++ " -->")
-  | Attribute(o) =>
+  switch (element.content) {
+  | [] => group(s("<") <+> s(element.tag) <+> attributes <+> s(" />"))
+  | children =>
     group(
-      s(o##name) <+> s("=") <+> indent(softline <+> quoted(s(o##value))),
+      s("<")
+      <+> s(element.tag)
+      <+> attributes
+      <+> s(">")
+      <+> group(
+            indent(
+              softline <+> join(softline, List.map(renderContent, children)),
+            ),
+          )
+      <+> softline
+      <+> s("</")
+      <+> s(element.tag)
+      <+> s(">"),
     )
-  | CharData(value) => s(value)
-  | Empty => empty
   };
+}
+and renderContent = content =>
+  switch (content) {
+  | Empty => renderEmpty()
+  | Comment(comment) => renderComment(comment)
+  | CharData(charData) => renderCharData(charData)
+  | Element(element) => renderElement(element)
+  }
+and renderAttribute = attribute =>
+  group(
+    s(attribute.name)
+    <+> s("=")
+    <+> indent(softline <+> quoted(s(attribute.value))),
+  )
+and renderComment = comment => s("<!-- " ++ comment ++ " -->")
+/* TODO: Escape */
+and renderCharData = s
+and renderEmpty = () => empty;
 
-let toString = ast =>
-  ast
-  |> render
-  |> (
-    doc => {
-      let printerOptions = {
-        "printWidth": 120,
-        "tabWidth": 2,
-        "useTabs": false,
-      };
-      Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted;
-    }
-  );
+let toString = (formatted: Prettier.Doc.t('a)): string => {
+  let printerOptions = {"printWidth": 120, "tabWidth": 2, "useTabs": false};
+  Prettier.Doc.Printer.printDocToString(formatted, printerOptions)##formatted;
+};
+
+type hi = [ | `A | `B];

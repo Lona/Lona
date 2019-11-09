@@ -1,6 +1,6 @@
 {
   "name": "lonac",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "description": "Lona cross-platform code compiler",
   "main": "build/index.js",
   "bin": "./build/bin.js",
@@ -68,7 +68,7 @@
     "webpack-cli": "^3.2.3"
   },
   "dependencies": {
-    "@lona/serialization": "^0.0.13",
+    "@lona/serialization": "^0.0.14",
     "lodash.lowerfirst": "^4.3.1",
     "lodash.snakecase": "^4.1.1",
     "memfs": "^2.8.0",

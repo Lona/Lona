@@ -282,16 +282,17 @@
   dependencies:
     "@glimmer/util" "^0.30.5"
 
-"@lona/serialization@^0.0.13":
-  version "0.0.13"
-  resolved "https://registry.yarnpkg.com/@lona/serialization/-/serialization-0.0.13.tgz#6111fae5960761cbf4250d028b166427cef062c9"
-  integrity sha512-x4E8bRqqpOeV7GbgPi0QEKXh3I6sUpI+UYOMWqxgYoXU9V5n1GklCJ2InEZh4g8E0lXHDA54wKTtSJjkasKPnQ==
+"@lona/serialization@^0.0.14":
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/@lona/serialization/-/serialization-0.0.14.tgz#6365f473d9a2e70263067e1b47b559c3cc35510f"
+  integrity sha512-4XkiHAzBHNyjrBQm7SvkBKgEFvwlc+1Cvn8+N6xdmOxD0jCZ9GkHDLTy294JrgagKh0P8Yll+z+JYdBkPGt7pA==
   dependencies:
     "@mdx-js/mdx" "^1.5.0"
     json-stable-stringify "^1.0.1"
     mdast-flatten-image-paragraphs "^1.0.0"
     mdast-move-images-to-root "^1.0.0"
     pegjs "^0.10.0"
+    unist-util-flatmap "^1.0.0"
     uuid "^3.3.2"
     xml2js "^0.4.19"
     xmlbuilder "^12.0.0"
@@ -2758,12 +2759,7 @@ lodash.upperfirst@^4.3.1:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/lodash.upperfirst/-/lodash.upperfirst-4.3.1.tgz#1365edf431480481ef0d1c68957a5ed99d49f7ce"
 
-lodash@^4.17.10, lodash@^4.17.11:
-  version "4.17.15"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
-  integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
-
-lodash@^4.17.13:
+lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.13:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
@@ -4676,7 +4672,7 @@ unist-builder@1.0.4, unist-builder@^1.0.1:
   dependencies:
     object-assign "^4.1.0"
 
-unist-util-flatmap@1.0.x:
+unist-util-flatmap@1.0.x, unist-util-flatmap@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/unist-util-flatmap/-/unist-util-flatmap-1.0.0.tgz#f914ed6b36ff040afce938d848f379f88b94b448"
   integrity sha512-IG32jcKJlhARCYT2LsYPJWdoXYkzz3ESAdl1aa2hn9Auh+cgUmU6wgkII4yCc/1GgeWibRdELdCZh/p3QKQ1dQ==

@@ -39,6 +39,7 @@ and tokenToken = {
 and token = tokenToken
 and convertedFileContents =
   | FlatTokens(Reason.List.t(token))
+  | MdxString(string)
 and convertedFileConvertedFile = {
   inputPath: string,
   outputPath: string,
@@ -154,6 +155,9 @@ module Decode = {
       | "flatTokens" =>
         let rec decoded = Reason.List.decode(decodeToken, data);
         FlatTokens(decoded);
+      | "mdxString" =>
+        let rec decoded = Json.Decode.string(data);
+        MdxString(decoded);
       | _ =>
         Js.log("Error decoding convertedFileContents");
         raise(Not_found);
@@ -287,6 +291,10 @@ module Encode = {
       | FlatTokens(value0) =>
         let rec case = Json.Encode.string("flatTokens");
         let rec encoded = Reason.List.encode(encodeToken, value0);
+        Json.Encode.object_([("type", case), ("value", encoded)]);
+      | MdxString(value0) =>
+        let rec case = Json.Encode.string("mdxString");
+        let rec encoded = Json.Encode.string(value0);
         Json.Encode.object_([("type", case), ("value", encoded)]);
       }
   and encodeConvertedFile: convertedFile => Js.Json.t =

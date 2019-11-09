@@ -16,7 +16,8 @@ let formatNativeType = string =>
   | "CGFloat" => Some("float")
   | "String" => Some("string")
   | "Optional" => Some("option")
-  | "Array" => definesCustomListType ? None : Some("list")
+  | "Int" => Some("Reason.Int.t")
+  | "Array" => definesCustomListType ? None : Some("Reason.List.t")
   | _ => None
   };
 
@@ -26,8 +27,9 @@ let formatDecoderIdentifier = string =>
   | "float" => "Json.Decode.float"
   | "string" => "Json.Decode.string"
   | "option" => "Json.Decode.optional"
-  | "list" when !definesCustomListType => "Json.Decode.list"
-  | _ => string
+  | "Reason.Int.t" when !definesCustomListType => "Reason.Int.decode"
+  | "Reason.List.t" when !definesCustomListType => "Reason.List.decode"
+  | _ => "decode" ++ Format.upperFirst(string)
   };
 
 let formatEncoderIdentifier = string =>
@@ -36,8 +38,9 @@ let formatEncoderIdentifier = string =>
   | "float" => "Json.Encode.float"
   | "string" => "Json.Encode.string"
   | "option" => "Json.Encode.nullable"
-  | "list" when !definesCustomListType => "Json.Encode.list"
-  | _ => string
+  | "Reason.Int.t" when !definesCustomListType => "Reason.Int.encode"
+  | "Reason.List.t" when !definesCustomListType => "Reason.List.encode"
+  | _ => "encode" ++ Format.upperFirst(string)
   };
 
 let formatTypeName = string =>
@@ -181,9 +184,10 @@ let renderTypeCaseParameterEntity =
               }),
             arguments:
               genericTypeNames
-              |> List.map(name => formatDecoderIdentifier(name))
               |> List.map(name =>
-                   IdentifierExpression({name: "decoder" ++ name})
+                   IdentifierExpression({
+                     name: formatDecoderIdentifier(name),
+                   })
                  ),
           }),
         encoder:
@@ -194,9 +198,10 @@ let renderTypeCaseParameterEntity =
               }),
             arguments:
               genericTypeNames
-              |> List.map(name => formatEncoderIdentifier(name))
               |> List.map(name =>
-                   IdentifierExpression({name: "encoder" ++ name})
+                   IdentifierExpression({
+                     name: formatEncoderIdentifier(name),
+                   })
                  ),
           }),
       };
@@ -659,13 +664,15 @@ let renderTypeCase =
             parameters: [],
           },
           value:
-            RecordType({
-              entries:
-                renderedParameters
-                |> List.map((parameter: renderedRecordTypeCaseParameter) =>
-                     parameter.entry
-                   ),
-            }),
+            renderedParameters != [] ?
+              RecordType({
+                entries:
+                  renderedParameters
+                  |> List.map((parameter: renderedRecordTypeCaseParameter) =>
+                       parameter.entry
+                     ),
+              }) :
+              AliasType({name: "unit", parameters: []}),
         },
       ],
       decoder: {
@@ -867,7 +874,7 @@ let renderEntity =
           types: types @ [aliasType],
           decoders: [
             {
-              name: typeName,
+              name: typeName |> formatDecoderIdentifier,
               quantifiedAnnotation: Some(decoderAnnotation),
               initializer_:
                 FunctionExpression({
@@ -877,18 +884,22 @@ let renderEntity =
                     Expression(
                       LiteralExpression({
                         literal:
-                          Record(
-                            renderedParameters
-                            |> List.map(
-                                 (parameter: renderedRecordTypeCaseParameter) =>
-                                 (
-                                   {
-                                     key: parameter.entry.key,
-                                     value: parameter.decoder,
-                                   }: recordEntry
-                                 )
-                               ),
-                          ),
+                          renderedParameters != [] ?
+                            Record(
+                              renderedParameters
+                              |> List.map(
+                                   (
+                                     parameter: renderedRecordTypeCaseParameter,
+                                   ) =>
+                                   (
+                                     {
+                                       key: parameter.entry.key,
+                                       value: parameter.decoder,
+                                     }: recordEntry
+                                   )
+                                 ),
+                            ) :
+                            Tuple([]),
                       }),
                     ),
                   ],
@@ -897,7 +908,7 @@ let renderEntity =
           ],
           encoders: [
             {
-              name: typeName,
+              name: typeName |> formatEncoderIdentifier,
               quantifiedAnnotation: Some(encoderAnnotation),
               initializer_:
                 FunctionExpression({
@@ -968,7 +979,7 @@ let renderEntity =
           ],
         decoders: [
           {
-            name: typeName,
+            name: typeName |> formatDecoderIdentifier,
             quantifiedAnnotation: Some(decoderAnnotation),
             initializer_:
               FunctionExpression({
@@ -1001,7 +1012,7 @@ let renderEntity =
         ],
         encoders: [
           {
-            name: typeName,
+            name: typeName |> formatEncoderIdentifier,
             quantifiedAnnotation: Some(encoderAnnotation),
             initializer_:
               FunctionExpression({
@@ -1029,7 +1040,7 @@ let renderEntity =
         types: types @ standardVariantType,
         decoders: [
           {
-            name: typeName,
+            name: typeName |> formatDecoderIdentifier,
             quantifiedAnnotation: Some(decoderAnnotation),
             initializer_:
               FunctionExpression({
@@ -1083,7 +1094,7 @@ let renderEntity =
         types: types @ standardVariantType,
         decoders: [
           {
-            name: typeName,
+            name: typeName |> formatDecoderIdentifier,
             quantifiedAnnotation: Some(decoderAnnotation),
             initializer_:
               FunctionExpression({
@@ -1140,7 +1151,7 @@ let renderEntity =
         ],
         encoders: [
           {
-            name: typeName,
+            name: typeName |> formatEncoderIdentifier,
             quantifiedAnnotation: Some(encoderAnnotation),
             initializer_:
               FunctionExpression({
