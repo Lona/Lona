@@ -31,7 +31,9 @@
     "snapshot": "yarn snapshotSwift && yarn snapshotAppkit && yarn snapshotJsDom && yarn snapshotJsNative && yarn snapshotSketch",
     "snapshot:watch": "nodemon --exec \"yarn snapshot\"",
     "snapshotWebViewer": "yarn snapshotJsDom && cp -R ../../examples/generated/test/react-dom/ ../../examples/LonaViewer/web/src/generated",
-    "snapshotWebViewer:watch": "nodemon --exec \"yarn snapshotWebViewer\""
+    "snapshotWebViewer:watch": "nodemon --exec \"yarn snapshotWebViewer\"",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "keywords": [
     "lona",
@@ -51,6 +53,7 @@
   "devDependencies": {
     "@babel/core": "^7.3.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
+    "@glennsl/bs-jest": "^0.4.9",
     "babel-loader": "^8.0.5",
     "bs-node": "reasonml-community/bs-node",
     "copy-webpack-plugin": "^4.5.1",

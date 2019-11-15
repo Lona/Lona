@@ -7,6 +7,10 @@
     {
       "dir": "src",
       "subdirs": true
+    },
+    {
+      "dir": "__tests__",
+      "type": "dev"
     }
   ],
   "package-specs": {
@@ -14,7 +18,12 @@
     "in-source": true
   },
   "suffix": ".bs.js",
-  "bs-dependencies": ["bs-node", "@glennsl/bs-json", "bs-glob"],
+  "bs-dependencies": [
+    "bs-node",
+    "@glennsl/bs-json",
+    "bs-glob",
+    "@glennsl/bs-jest"
+  ],
   "namespace": true,
   "refmt": 3
 }
