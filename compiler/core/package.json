@@ -54,7 +54,10 @@
     "@babel/core": "^7.3.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
     "@glennsl/bs-jest": "^0.4.9",
+    "@glennsl/bs-json": "^5.0.1",
     "babel-loader": "^8.0.5",
+    "bs-glob": "reasonml-community/bs-glob",
+    "bs-platform": "^5.2.1",
     "bs-node": "reasonml-community/bs-node",
     "copy-webpack-plugin": "^4.5.1",
     "csscolorparser": "^1.0.3",
@@ -68,10 +71,7 @@
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {
-    "@glennsl/bs-json": "^5.0.1",
     "@lona/serialization": "^0.0.14",
-    "bs-glob": "reasonml-community/bs-glob",
-    "bs-platform": "^5.2.1",
     "lodash.lowerfirst": "^4.3.1",
     "lodash.snakecase": "^4.1.1",
     "memfs": "^2.8.0",
