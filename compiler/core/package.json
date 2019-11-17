@@ -31,7 +31,9 @@
     "snapshot": "yarn snapshotSwift && yarn snapshotAppkit && yarn snapshotJsDom && yarn snapshotJsNative && yarn snapshotSketch",
     "snapshot:watch": "nodemon --exec \"yarn snapshot\"",
     "snapshotWebViewer": "yarn snapshotJsDom && cp -R ../../examples/generated/test/react-dom/ ../../examples/LonaViewer/web/src/generated",
-    "snapshotWebViewer:watch": "nodemon --exec \"yarn snapshotWebViewer\""
+    "snapshotWebViewer:watch": "nodemon --exec \"yarn snapshotWebViewer\"",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "keywords": [
     "lona",
@@ -51,21 +53,22 @@
   "devDependencies": {
     "@babel/core": "^7.3.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
-    "@glennsl/bs-json": "^3.0.0",
+    "@glennsl/bs-jest": "^0.4.9",
+    "@glennsl/bs-json": "^5.0.1",
     "babel-loader": "^8.0.5",
     "bs-glob": "reasonml-community/bs-glob",
+    "bs-platform": "^5.2.1",
     "bs-node": "reasonml-community/bs-node",
-    "bs-platform": "^4.0.7",
     "copy-webpack-plugin": "^4.5.1",
     "csscolorparser": "^1.0.3",
     "fs-extra": "^5.0.0",
     "get-stdin": "^5.0.1",
     "lodash.camelcase": "^4.3.0",
     "lodash.upperfirst": "^4.3.1",
-    "nodemon": "^1.18.7",
+    "nodemon": "^1.19.4",
     "prettier": "dabbott/prettier#28eebd6d150746b91f581e18bef8352e2bae5623",
-    "webpack": "^4.29.4",
-    "webpack-cli": "^3.2.3"
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
   },
   "dependencies": {
     "@lona/serialization": "^0.0.14",
