@@ -132,6 +132,7 @@ class FileNavigator: NSBox {
         fileTree.filterFiles = { path in
             return !(path.hasPrefix(".") || URL(fileURLWithPath: path).deletingPathExtension().path.hasSuffix("~"))
         }
+        fileTree.onPressDelete = { [unowned self] path in self.deleteAlertForFile(atPath: path) }
 
         headerView.fileIcon = NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
         headerView.onClick = { [unowned self] in self.onAction?(self.rootPath) }
@@ -139,6 +140,26 @@ class FileNavigator: NSBox {
 
         addSubview(headerView)
         addSubview(fileTree)
+    }
+
+    private func deleteAlertForFile(atPath path: String) {
+        let fileURL = URL(fileURLWithPath: path)
+        let fileName = fileURL.lastPathComponent
+
+        let alert = NSAlert()
+        alert.messageText = "Are you sure you want to delete \(fileName)?"
+        alert.addButton(withTitle: "Delete")
+        alert.addButton(withTitle: "Cancel")
+
+        let response = alert.runModal()
+
+        if response == NSApplication.ModalResponse.alertFirstButtonReturn {
+            do {
+                try FileManager.default.removeItem(at: fileURL)
+            } catch {
+                Swift.print("Failed to delete \(fileURL.path)")
+            }
+        }
     }
 
     private func menuForFile(atPath path: String) -> NSMenu {
@@ -204,7 +225,8 @@ class FileNavigator: NSBox {
                 menu.addItem(NSMenuItem.separator())
             }
 
-            if URL(fileURLWithPath: path).pathExtension == "component" {
+            let fileURL = URL(fileURLWithPath: path)
+            if fileURL.pathExtension == "component" {
                 menu.addItem(NSMenuItem(title: "Duplicate As...", onClick: {
                     let dialog = NSSavePanel()
 
@@ -213,7 +235,7 @@ class FileNavigator: NSBox {
                     dialog.showsHiddenFiles        = false
                     dialog.canCreateDirectories    = true
                     dialog.allowedFileTypes        = ["component"]
-                    dialog.directoryURL = URL(fileURLWithPath: path).deletingLastPathComponent()
+                    dialog.directoryURL = fileURL.deletingLastPathComponent()
 
                     // User canceled the save. Don't swap out the document.
                     if dialog.runModal() != NSApplication.ModalResponse.OK {
@@ -236,22 +258,7 @@ class FileNavigator: NSBox {
             }
 
             menu.addItem(NSMenuItem(title: "Delete", onClick: {
-                let fileName = URL(fileURLWithPath: path).lastPathComponent
-
-                let alert = NSAlert()
-                alert.messageText = "Are you sure you want to delete \(fileName)?"
-                alert.addButton(withTitle: "Delete")
-                alert.addButton(withTitle: "Cancel")
-
-                let response = alert.runModal()
-
-                if response == NSApplication.ModalResponse.alertFirstButtonReturn {
-                    do {
-                        try FileManager.default.removeItem(atPath: path)
-                    } catch {
-                        Swift.print("Failed to delete \(path)")
-                    }
-                }
+                self.deleteAlertForFile(atPath: path)
             }))
         }
 
