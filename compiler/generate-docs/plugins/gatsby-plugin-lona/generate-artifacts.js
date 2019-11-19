@@ -14,6 +14,7 @@ module.exports = ({ cache, artifacts, cwd, reporter }) => {
           try {
             const now = Date.now()
             const generateSketchLibrary = require('@lona/workspace-to-sketch-library')
+              .default
             return generateSketchLibrary(
               cwd,
               path.join(cache.directory, 'library.sketch'),

@@ -20,7 +20,7 @@
     "directory": "compiler/docs"
   },
   "dependencies": {
-    "@lona/workspace-to-sketch-library": "^0.1.12",
+    "@lona/workspace-to-sketch-library": "^0.3.0",
     "@mdx-js/mdx": "^1.0.0",
     "@mdx-js/react": "^1.0.0",
     "babel-plugin-styled-components": "^1.10.0",

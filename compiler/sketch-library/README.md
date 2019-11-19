@@ -11,7 +11,7 @@ npm install @lona/workspace-to-sketch-library lonac
 ## Usage
 
 ```js
-const generateLibrary = require('@lona/workspace-to-sketch-library')
+import generateLibrary from '@lona/workspace-to-sketch-library'
 
 generateLibrary(workspacePath, outputPath, options)
 ```
