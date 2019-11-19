@@ -1,6 +1,8 @@
+import React from 'react'
+
 let id = 0
 const nextId = () => ++id // eslint-disable-line
 
-module.exports = function displayName(Component) {
+export default function displayName(Component: React.ComponentType) {
   return Component.displayName || Component.name || `UnknownSymbol${nextId()}`
 }

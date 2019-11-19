@@ -1,13 +1,32 @@
 /* eslint-disable global-require, import/no-dynamic-require */
-const fs = require('fs')
-const path = require('path')
+import fs from 'fs'
+import path from 'path'
+import parseColor from 'color-parse'
+import { TextStyles } from 'react-sketchapp'
+import { FileFormat1 } from '@sketch-hq/sketch-file-format-ts'
 
-const parseColor = require('color-parse')
-const generateId = require('sketch-file/generateId')
-const { TextStyles } = require('react-sketchapp')
-const createComponentLayerCollection = require('./component-layer-collection')
+import createComponentLayerCollection from './component-layer-collection'
+import { Component } from './measure-component'
+import { Preset } from './device-info'
+import { ColorToken, TextStyleToken, ShadowToken } from './flat-tokens'
 
-function loadComponent(config, componentPath) {
+type Config = {
+  paths: {
+    output: string
+    sketchFile: string
+    workspace: string
+    components: string[]
+  }
+  tokens: {
+    colors: ColorToken[]
+    textStyles: TextStyleToken[]
+    shadows: ShadowToken[]
+  }
+  devicePresetList: Preset[]
+  componentPathFilter: (filePath: string) => boolean
+}
+
+function loadComponent(config: Config, componentPath: string): Component {
   const relativeComponentPath = path
     .relative(config.paths.workspace, componentPath)
     .replace(/\.component$/gi, '')
@@ -16,7 +35,7 @@ function loadComponent(config, componentPath) {
       name: relativeComponentPath,
       compiled: require(path.join(config.paths.output, relativeComponentPath))
         .default,
-      meta: JSON.parse(fs.readFileSync(componentPath)),
+      meta: JSON.parse(fs.readFileSync(componentPath, 'utf8')),
     }
   } catch (err) {
     console.error(`Failed to load ${componentPath}`)
@@ -25,8 +44,13 @@ function loadComponent(config, componentPath) {
   }
 }
 
-function arrangeComponentLayerCollections(collections) {
-  return collections.reduce(
+function arrangeComponentLayerCollections(
+  collections: ReturnType<typeof createComponentLayerCollection>[]
+) {
+  return collections.reduce<{
+    offset: number
+    layers: (FileFormat1.SymbolMaster | FileFormat1.Artboard)[]
+  }>(
     (acc, collection) => {
       const { layers, offset } = acc
       const { artboard, symbols } = collection
@@ -48,7 +72,7 @@ function arrangeComponentLayerCollections(collections) {
   ).layers
 }
 
-module.exports = config => {
+export default (config: Config) => {
   const colors = config.tokens.colors
     .map(color => {
       const parsed = parseColor(color.value.value.css)
@@ -67,24 +91,18 @@ module.exports = config => {
     .filter(x => x)
 
   TextStyles.create(
-    {
-      idMap: config.tokens.textStyles.reduce((prev, k) => {
-        const name = k.qualifiedName.join('/')
-        prev[name] = generateId(name)
-        return prev
-      }, {}),
-    },
     config.tokens.textStyles.reduce((prev, k) => {
       const name = k.qualifiedName.join('/')
-      if (k.value.value.color) {
-        k.value.value.color = k.value.value.color.css
+
+      prev[name] = {
+        ...k.value.value,
+        ...(k.value.value.color ? { color: k.value.value.color.css } : {}),
       }
-      prev[name] = k.value.value
       return prev
     }, {})
   )
 
-  const components = config.paths.components
+  const components: Component[] = config.paths.components
     .filter(componentPath => {
       const relativeComponentPath = path
         .relative(config.paths.workspace, componentPath)

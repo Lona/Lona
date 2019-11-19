@@ -9,8 +9,8 @@
   "author": "Mathieu Dutour",
   "license": "MIT",
   "dependencies": {
-    "@lona/workspace-to-sketch-library": "0.1.10",
-    "lonac": "^0.5.0",
+    "@lona/workspace-to-sketch-library": "0.3.0",
+    "lonac": "^0.6.0",
     "stdio-jsonrpc": "^0.1.3"
   }
 }

@@ -1,14 +1,28 @@
-const { View, renderToJSON } = require('react-sketchapp')
-const React = require('react')
+import { View, renderToJSON } from 'react-sketchapp'
+import React from 'react'
 
-const deviceInfo = require('./device-info')
+import deviceInfo, { Preset, Device } from './device-info'
 
-function measureElement(element) {
+export type Component = {
+  name: string
+  compiled: React.ComponentType
+  meta: {
+    examples: { params: { [name: string]: any }; name: string }[]
+    devices: Device[]
+  }
+}
+
+type Frame = { width: number; height: number; x: number; y: number }
+
+function measureElement(element: React.ReactElement): Frame {
   return renderToJSON(element).frame
 }
 
 /* Measure each combination of example/device */
-function measureComponentElements(component, devicePresetList) {
+function measureComponentElements(
+  component: Component,
+  devicePresetList: Preset[]
+) {
   const {
     compiled,
     meta: { examples, devices },
@@ -28,13 +42,13 @@ function measureComponentElements(component, devicePresetList) {
 }
 
 /* Determines the max height of every element in a row */
-function measureRowHeights(elements) {
+function measureRowHeights(elements: Frame[][]) {
   return elements.map(frames => Math.max(...frames.map(frame => frame.height)))
 }
 
 /* Determines the max width of every element in a column */
-function measureColumnWidths(elements) {
-  const columnWidths = []
+function measureColumnWidths(elements: Frame[][]) {
+  const columnWidths: number[] = []
   const columnCount = Math.max(...elements.map(frames => frames.length))
 
   for (let j = 0; j < elements.length; j += 1) {
@@ -46,7 +60,10 @@ function measureColumnWidths(elements) {
   return columnWidths
 }
 
-module.exports = function measureComponent(component, devicePresetList) {
+export default function measureComponent(
+  component: Component,
+  devicePresetList: Preset[]
+) {
   const elements = measureComponentElements(component, devicePresetList)
   const rowHeights = measureRowHeights(elements)
   const columnWidths = measureColumnWidths(elements)

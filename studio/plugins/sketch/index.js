@@ -1,4 +1,4 @@
-const generateLibrary = require('@lona/workspace-to-sketch-library')
+const generateLibrary = require('@lona/workspace-to-sketch-library').default
 const { sendRequest } = require('stdio-jsonrpc')
 
 const requestUserParameters = require('./lib/request-user-parameters')
