@@ -4,7 +4,9 @@
   "description": "Generate a Sketch library from a Lona workspace",
   "main": "lib/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc -p tsconfig.json",
+    "prepublishOnly": "npm run build"
   },
   "author": "Mathieu Dutour <mathieu@dutour.me>",
   "license": "MIT",
@@ -18,25 +20,28 @@
   },
   "homepage": "https://github.com/airbnb/Lona",
   "dependencies": {
-    "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.2.2",
-    "@babel/preset-env": "^7.3.1",
-    "@babel/preset-react": "^7.0.0",
-    "color-parse": "^1.3.7",
+    "@babel/cli": "^7.7.0",
+    "@babel/core": "^7.7.2",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/preset-react": "^7.7.0",
+    "color-parse": "^1.3.8",
     "mkdirp": "^0.5.1",
-    "nodobjc": "^2.1.0",
-    "react": "^16.8.1",
-    "react-sketchapp": "^3.0.0-beta.8",
-    "react-test-renderer": "^16.8.1",
-    "sketch-file": "^0.2.0"
+    "react": "^16.12.0",
+    "react-sketchapp": "^3.0.1",
+    "react-test-renderer": "^16.12.0",
+    "sketch-file": "^0.3.3"
   },
   "peerDependencies": {
     "lonac": "*"
   },
   "devDependencies": {
-    "jest": "^24.0.0",
-    "lonac": "^0.8.6",
-    "webpack": "^4.29.0"
+    "@sketch-hq/sketch-file-format-ts": "^3.0.0",
+    "@types/mkdirp": "^0.5.2",
+    "@types/node": "^12.12.9",
+    "@types/react": "^16.9.11",
+    "jest": "^24.9.0",
+    "lonac": "^0.8.8",
+    "typescript": "^3.7.2"
   },
   "jest": {
     "testEnvironment": "node"

@@ -1,9 +1,6 @@
-const { Buffer } = require('buffer')
-const {
-  createNewSketchFile,
-  writeSketchFile,
-  generateId,
-} = require('sketch-file')
+import { Buffer } from 'buffer'
+import { createNewSketchFile, writeSketchFile, generateId } from 'sketch-file'
+import renderDocument from './render-document'
 
 function findImages(layers) {
   const images = {}
@@ -32,22 +29,16 @@ function findImages(layers) {
   return images
 }
 
-module.exports = function modifySketchTemplate(
-  { layers, textStyles, colors },
-  output
+export default function modifySketchTemplate(
+  { layers, textStyles, colors }: ReturnType<typeof renderDocument>,
+  output: string
 ) {
-  const sketchDoc = createNewSketchFile(generateId(output))
+  const sketchDoc = createNewSketchFile()
+  sketchDoc.document.do_objectID = generateId(output)
 
   const images = findImages(layers)
 
   sketchDoc.document.layerTextStyles.objects = textStyles
-  sketchDoc.document.assets.colors = colors.map(c => ({
-    _class: 'color',
-    alpha: c.alpha,
-    blue: c.blue,
-    green: c.green,
-    red: c.red,
-  }))
   sketchDoc.document.assets.colorAssets = colors.map(c => ({
     _class: 'MSImmutableColorAsset',
     name: c.name,

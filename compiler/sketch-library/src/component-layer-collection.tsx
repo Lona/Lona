@@ -1,23 +1,18 @@
-const path = require('path')
-const React = require('react')
-const {
-  Artboard,
-  Text,
-  View,
-  StyleSheet,
-  renderToJSON,
-} = require('react-sketchapp')
+import path from 'path'
+import React from 'react'
+import { Artboard, Text, View, StyleSheet, renderToJSON } from 'react-sketchapp'
+import { FileFormat1 } from '@sketch-hq/sketch-file-format-ts'
 
-const measureComponent = require('./measure-component')
-const deviceInfo = require('./device-info')
-const createSymbol = require('./symbol')
+import measureComponent, { Component } from './measure-component'
+import deviceInfo, { Preset } from './device-info'
+import createSymbol from './symbol'
 
-function flatten(arrays) {
+function flatten<T>(arrays: T[][]): T[] {
   return [].concat(...arrays)
 }
 
 /* Calculate the sum of the first n elements in an array, optionally with spacing */
-function prefixSum(array, n, spacing = 0) {
+function prefixSum(array: number[], n: number, spacing = 0) {
   let sum = 0
 
   for (let i = 0; i < n; i += 1) {
@@ -32,7 +27,11 @@ const headerHeight = 133 /* Determined by measuring from within Sketch */
 const symbolVerticalSpacing = 40
 const symbolHorizontalSpacing = 48
 
-function createComponentSymbols(component, measured, devicePresetList) {
+function createComponentSymbols(
+  component: Component,
+  measured: { rowHeights: number[]; columnWidths: number[] },
+  devicePresetList: Preset[]
+) {
   const {
     compiled,
     meta: { examples, devices },
@@ -47,14 +46,12 @@ function createComponentSymbols(component, measured, devicePresetList) {
           devicePresetList
         )
 
-        const symbolElement = createSymbol(
+        const symbol = createSymbol(
           compiled,
           example.params,
           `${example.name}/${deviceName}`,
           { width: deviceWidth }
         )
-
-        const symbol = renderToJSON(symbolElement)
 
         symbol.frame.x =
           marginHorizontal +
@@ -90,7 +87,10 @@ const styles = StyleSheet.create({
   },
 })
 
-function createComponentArtboard(component, measured) {
+function createComponentArtboard(
+  component: Component,
+  measured: { rowHeights: number[]; columnWidths: number[] }
+) {
   const { name } = component
   const { rowHeights, columnWidths } = measured
 
@@ -106,33 +106,27 @@ function createComponentArtboard(component, measured) {
     prefixSum(rowHeights, rowHeights.length, symbolVerticalSpacing)
 
   return renderToJSON(
-    React.createElement(
-      Artboard,
-      {
-        name,
-        style: [styles.artboard, { width: totalWidth, height: totalHeight }],
-      },
-      React.createElement(View, { name: 'Header', style: styles.header }, [
-        componentDirectoryPath
-          ? React.createElement(
-              Text,
-              { name: 'Label', style: styles.componentLabel, key: 'Label' },
-              componentDirectoryPath.replace('/', ' / ').toUpperCase()
-            )
-          : null,
-        React.createElement(
-          Text,
-          { name: 'Title', style: styles.componentTitle, key: 'title' },
-          componentName
-        ),
-      ])
-    )
-  )
+    <Artboard
+      name={name}
+      style={[styles.artboard, { width: totalWidth, height: totalHeight }]}
+    >
+      <View name="Header" style={styles.header}>
+        {componentDirectoryPath ? (
+          <Text name="Label" style={styles.componentLabel}>
+            {componentDirectoryPath.replace('/', ' / ').toUpperCase()}
+          </Text>
+        ) : null}
+        <Text name="Title" style={styles.componentTitle}>
+          {componentName}
+        </Text>
+      </View>
+    </Artboard>
+  ) as FileFormat1.Artboard
 }
 
-module.exports = function createComponentLayerCollection(
-  component,
-  devicePresetList
+export default function createComponentLayerCollection(
+  component: Component,
+  devicePresetList: Preset[]
 ) {
   const measured = measureComponent(component, devicePresetList)
   const artboard = createComponentArtboard(component, measured)

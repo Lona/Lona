@@ -1,4 +1,17 @@
-module.exports = function deviceInfo(device, devicePresetList) {
+export type Preset = { name: string; width: number; height: number }
+export type Device =
+  | {
+      deviceId: string
+      name?: string
+      width?: number
+    }
+  | {
+      deviceId?: string
+      name: string
+      width: number
+    }
+
+export default function deviceInfo(device: Device, devicePresetList: Preset[]) {
   if (device.deviceId) {
     const preset = devicePresetList.find(x => x.name === device.deviceId)
     if (!preset) {

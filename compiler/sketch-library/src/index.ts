@@ -1,10 +1,17 @@
-const fs = require('fs')
-const os = require('os')
-const path = require('path')
-const { exec } = require('child_process')
-const mkdirp = require('mkdirp')
-const renderDocument = require('./render-document')
-const modifySketchTemplate = require('./modify-sketch-template')
+import fs from 'fs'
+import os from 'os'
+import path from 'path'
+import { exec } from 'child_process'
+import mkdirp from 'mkdirp'
+import { Preset } from './device-info'
+import renderDocument from './render-document'
+import modifySketchTemplate from './modify-sketch-template'
+import {
+  ConvertedWorkspace,
+  ColorToken,
+  TextStyleToken,
+  ShadowToken,
+} from './flat-tokens'
 
 // https://gist.github.com/branneman/8048520#gistcomment-1249909
 // Add node_modules to the path, so they're resolved even when loading modules
@@ -23,16 +30,21 @@ require('module').Module._initPaths()
 const compilerOutput = path.join(os.tmpdir(), 'lona-sketch-library-generated')
 const babelOutput = path.join(os.tmpdir(), 'lona-sketch-library-compiled')
 
-module.exports = function generateSketchLibrary(
-  workspace,
-  sketchFilePath,
-  options
+export default function generateSketchLibrary(
+  workspace: string,
+  sketchFilePath: string,
+  options?: {
+    devicePresetList: Preset[]
+    compiler?: string
+    componentPathFilter?: (filePath: string) => boolean
+    logFunction?: (log: string) => void
+  }
 ) {
   // eslint-disable-next-line prefer-const
   let { devicePresetList, compiler, componentPathFilter, logFunction } =
     options || {}
 
-  function log(text) {
+  function log(text: string) {
     if (logFunction) {
       logFunction(text)
     }
@@ -87,13 +99,15 @@ module.exports = function generateSketchLibrary(
   }
 
   return Promise.all([
-    new Promise((resolve, reject) => {
+    new Promise<ConvertedWorkspace>((resolve, reject) => {
       log(`Getting the tokens of the workspace`)
       exec(
         `node "${compiler}" flatten --workspace "${workspace}"`,
         (err, stdout, stderr) => {
           if (err) {
+            // @ts-ignore
             err.stdout = stdout
+            // @ts-ignore
             err.stderr = stderr
             return reject(err)
           }
@@ -102,12 +116,14 @@ module.exports = function generateSketchLibrary(
         }
       )
     }),
-    new Promise((resolve, reject) => {
+    new Promise<{ paths: { components: string[] } }>((resolve, reject) => {
       exec(
         `node "${compiler}" config "${workspace}"`,
         (err, stdout, stderr) => {
           if (err) {
+            // @ts-ignore
             err.stdout = stdout
+            // @ts-ignore
             err.stderr = stderr
             return reject(err)
           }
@@ -125,17 +141,24 @@ module.exports = function generateSketchLibrary(
           workspace,
           components: config.paths.components,
         },
-        tokens: tokens.files.reduce(
+        tokens: tokens.files.reduce<{
+          colors: ColorToken[]
+          textStyles: TextStyleToken[]
+          shadows: ShadowToken[]
+        }>(
           (prev, file) => {
             if (file.contents.type !== 'flatTokens') {
               return prev
             }
             file.contents.value.forEach(token => {
               if (token.value.type === 'color') {
+                // @ts-ignore
                 prev.colors.push(token)
               } else if (token.value.type === 'textStyle') {
+                // @ts-ignore
                 prev.textStyles.push(token)
               } else if (token.value.type === 'shadow') {
+                // @ts-ignore
                 prev.shadows.push(token)
               }
             })
@@ -153,13 +176,15 @@ module.exports = function generateSketchLibrary(
     })
     .then(
       config =>
-        new Promise((resolve, reject) => {
+        new Promise<typeof config>((resolve, reject) => {
           log(`Generating react-sketchapp project at ${compilerOutput}`)
           exec(
             `node "${compiler}" workspace js "${workspace}" "${compilerOutput}" --framework=reactsketchapp`,
             (err, stdout, stderr) => {
               if (err) {
+                // @ts-ignore
                 err.stdout = stdout
+                // @ts-ignore
                 err.stderr = stderr
                 return reject(err)
               }
@@ -172,7 +197,7 @@ module.exports = function generateSketchLibrary(
     )
     .then(
       config =>
-        new Promise((resolve, reject) => {
+        new Promise<typeof config>((resolve, reject) => {
           log(`Compiling react-sketchapp project at ${babelOutput}`)
           exec(
             `node "${require.resolve(
@@ -180,7 +205,9 @@ module.exports = function generateSketchLibrary(
             )}" "${compilerOutput}" --out-dir "${babelOutput}"  --presets=@babel/env,@babel/react`,
             (err, stdout, stderr) => {
               if (err) {
+                // @ts-ignore
                 err.stdout = stdout
+                // @ts-ignore
                 err.stderr = stderr
                 return reject(err)
               }
