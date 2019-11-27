@@ -1,5 +1,9 @@
 const mdx = require('@mdx-js/mdx')
 
+const unified = require('unified')
+const rehypeParse = require('rehype-parse')
+const htmlParser = unified().use(rehypeParse, { fragment: true })
+
 const flattenImageParagraphs = require('mdast-flatten-image-paragraphs')()
 // const moveImagesToRoot = require('mdast-move-images-to-root')()
 
@@ -41,6 +45,43 @@ function map(node, f) {
   })
 }
 
+function removeExtras(ast) {
+  return map(ast, node => {
+    delete node.position
+    return node
+  })
+}
+
+function parseNested(ast) {
+  return map(ast, node => {
+    if (node.type === 'code' && node.lang === 'tokens') {
+      node.parsed = JSON.parse(convertLogic(node.value, 'json'))
+    }
+
+    if (node.type === 'jsx') {
+      const {
+        type,
+        tagName,
+        properties: { className, href },
+      } = htmlParser.parse(node.value).children[0]
+
+      if (
+        type === 'element' &&
+        tagName === 'a' &&
+        Array.isArray(className) &&
+        className.includes('page')
+      ) {
+        return {
+          type: 'page',
+          value: href,
+        }
+      }
+    }
+
+    return node
+  })
+}
+
 function parse(src, convertLogic) {
   const mdast = getOutputs(src).mdast
 
@@ -49,24 +90,14 @@ function parse(src, convertLogic) {
     flattenParagraphs('blockquote'),
     moveToRoot('image'),
     moveToRoot('blockquote'),
+    removeExtras,
+    parseNested,
+    moveToRoot('page'),
   ]
 
-  const flattened = transforms.reduce((result, f) => f(result), mdast)
+  const transformed = transforms.reduce((result, f) => f(result), mdast)
 
-  const withoutExtras = map(flattened, node => {
-    delete node.position
-    return node
-  })
-
-  const parsed = map(withoutExtras, node => {
-    if (node.type === 'code' && node.lang === 'tokens') {
-      node.parsed = JSON.parse(convertLogic(node.value, 'json'))
-    }
-
-    return node
-  })
-
-  const normalizedFormat = map(parsed, node => {
+  const normalizedFormat = map(transformed, node => {
     const { type, ...rest } = node
 
     return { type, data: rest }
