@@ -1,6 +1,6 @@
 type lGCSyntaxNode = LogicAst.syntaxNode;
 
-let encodeLGCSyntaxNode = lGCSyntaxNode: Js.Json.t =>
+let encodeLGCSyntaxNode = (lGCSyntaxNode): Js.Json.t =>
   Js.Json.string("problem encoding LGCSyntaxNode");
 
 let decodeLGCSyntaxNode = LogicAst.Decode.syntaxNode;
