@@ -8,52 +8,86 @@ let decodeLGCSyntaxNode = LogicAst.Decode.syntaxNode;
 /* LONA: KEEP ABOVE */
 
 type textText = {value: string}
+
 and text = textText
+
 and imageImage = {
   alt: option(string),
   url: string,
 }
+
 and image = imageImage
+
 and strongStrong = {children: Reason.List.t(inlineNode)}
+
 and strong = strongStrong
+
 and emphasisEmphasis = {children: Reason.List.t(inlineNode)}
+
 and emphasis = emphasisEmphasis
+
 and inlineCodeInlineCode = {value: string}
+
 and inlineCode = inlineCodeInlineCode
+
 and breakBreak = unit
+
 and break = breakBreak
+
 and linkLink = {
   children: Reason.List.t(inlineNode),
   url: string,
 }
+
 and link = linkLink
+
 and paragraphParagraph = {children: Reason.List.t(inlineNode)}
+
 and paragraph = paragraphParagraph
+
 and headingHeading = {
   depth: Reason.Int.t,
   children: Reason.List.t(inlineNode),
 }
+
 and heading = headingHeading
+
 and blockquoteBlockquote = {children: Reason.List.t(inlineNode)}
+
 and blockquote = blockquoteBlockquote
+
 and codeCode = {
   lang: option(string),
   value: string,
   parsed: option(lGCSyntaxNode),
 }
+
 and code = codeCode
+
 and thematicBreakThematicBreak = unit
+
 and thematicBreak = thematicBreakThematicBreak
+
 and listList = {
   ordered: bool,
   children: Reason.List.t(listItemNode),
 }
+
 and list = listList
+
 and listItemListItemNode = {children: Reason.List.t(blockNode)}
+
 and listItemNode =
   | ListItem(listItemListItemNode)
+
+and pagePage = {value: string}
+
+and page = pagePage
+
 and rootRoot = {children: Reason.List.t(blockNode)}
+
 and root = rootRoot
+
 and blockNode =
   | Image(image)
   | Paragraph(paragraph)
@@ -62,6 +96,8 @@ and blockNode =
   | ThematicBreak(thematicBreak)
   | Blockquote(blockquote)
   | List(list)
+  | Page(page)
+
 and inlineNode =
   | Text(text)
   | Strong(strong)
@@ -73,104 +109,140 @@ and inlineNode =
 module Decode = {
   let rec decodeText: Js.Json.t => text =
     (json: Js.Json.t) => {
-      value: Json.Decode.field("value", Json.Decode.string, json),
+      {value: Json.Decode.field("value", Json.Decode.string, json)};
     }
+
   and decodeImage: Js.Json.t => image =
     (json: Js.Json.t) => {
-      alt:
-        Json.Decode.optional(
-          Json.Decode.field("alt", Json.Decode.string),
-          json,
-        ),
-      url: Json.Decode.field("url", Json.Decode.string, json),
+      {
+        alt:
+          Json.Decode.optional(
+            Json.Decode.field("alt", Json.Decode.string),
+            json,
+          ),
+        url: Json.Decode.field("url", Json.Decode.string, json),
+      };
     }
+
   and decodeStrong: Js.Json.t => strong =
     (json: Js.Json.t) => {
-      children:
-        Json.Decode.field(
-          "children",
-          Reason.List.decode(decodeInlineNode),
-          json,
-        ),
+      {
+        children:
+          Json.Decode.field(
+            "children",
+            Reason.List.decode(decodeInlineNode),
+            json,
+          ),
+      };
     }
+
   and decodeEmphasis: Js.Json.t => emphasis =
     (json: Js.Json.t) => {
-      children:
-        Json.Decode.field(
-          "children",
-          Reason.List.decode(decodeInlineNode),
-          json,
-        ),
+      {
+        children:
+          Json.Decode.field(
+            "children",
+            Reason.List.decode(decodeInlineNode),
+            json,
+          ),
+      };
     }
+
   and decodeInlineCode: Js.Json.t => inlineCode =
     (json: Js.Json.t) => {
-      value: Json.Decode.field("value", Json.Decode.string, json),
+      {value: Json.Decode.field("value", Json.Decode.string, json)};
     }
-  and decodeBreak: Js.Json.t => break = (json: Js.Json.t) => ()
+
+  and decodeBreak: Js.Json.t => break =
+    (json: Js.Json.t) => {
+      ();
+    }
+
   and decodeLink: Js.Json.t => link =
     (json: Js.Json.t) => {
-      children:
-        Json.Decode.field(
-          "children",
-          Reason.List.decode(decodeInlineNode),
-          json,
-        ),
-      url: Json.Decode.field("url", Json.Decode.string, json),
+      {
+        children:
+          Json.Decode.field(
+            "children",
+            Reason.List.decode(decodeInlineNode),
+            json,
+          ),
+        url: Json.Decode.field("url", Json.Decode.string, json),
+      };
     }
+
   and decodeParagraph: Js.Json.t => paragraph =
     (json: Js.Json.t) => {
-      children:
-        Json.Decode.field(
-          "children",
-          Reason.List.decode(decodeInlineNode),
-          json,
-        ),
+      {
+        children:
+          Json.Decode.field(
+            "children",
+            Reason.List.decode(decodeInlineNode),
+            json,
+          ),
+      };
     }
+
   and decodeHeading: Js.Json.t => heading =
     (json: Js.Json.t) => {
-      depth: Json.Decode.field("depth", Reason.Int.decode, json),
-      children:
-        Json.Decode.field(
-          "children",
-          Reason.List.decode(decodeInlineNode),
-          json,
-        ),
+      {
+        depth: Json.Decode.field("depth", Reason.Int.decode, json),
+        children:
+          Json.Decode.field(
+            "children",
+            Reason.List.decode(decodeInlineNode),
+            json,
+          ),
+      };
     }
+
   and decodeBlockquote: Js.Json.t => blockquote =
     (json: Js.Json.t) => {
-      children:
-        Json.Decode.field(
-          "children",
-          Reason.List.decode(decodeInlineNode),
-          json,
-        ),
+      {
+        children:
+          Json.Decode.field(
+            "children",
+            Reason.List.decode(decodeInlineNode),
+            json,
+          ),
+      };
     }
+
   and decodeCode: Js.Json.t => code =
     (json: Js.Json.t) => {
-      lang:
-        Json.Decode.optional(
-          Json.Decode.field("lang", Json.Decode.string),
-          json,
-        ),
-      value: Json.Decode.field("value", Json.Decode.string, json),
-      parsed:
-        Json.Decode.optional(
-          Json.Decode.field("parsed", decodeLGCSyntaxNode),
-          json,
-        ),
+      {
+        lang:
+          Json.Decode.optional(
+            Json.Decode.field("lang", Json.Decode.string),
+            json,
+          ),
+        value: Json.Decode.field("value", Json.Decode.string, json),
+        parsed:
+          Json.Decode.optional(
+            Json.Decode.field("parsed", decodeLGCSyntaxNode),
+            json,
+          ),
+      };
     }
+
   and decodeThematicBreak: Js.Json.t => thematicBreak =
-    (json: Js.Json.t) => ()
+    (json: Js.Json.t) => {
+      ();
+    }
+
   and decodeList: Js.Json.t => list =
     (json: Js.Json.t) => {
-      ordered: Json.Decode.field("ordered", Json.Decode.bool, json),
-      children:
-        Json.Decode.field(
-          "children",
-          Reason.List.decode(decodeListItemNode),
-          json,
-        ),
+      {
+        ordered: Json.Decode.field("ordered", Json.Decode.bool, json),
+        children:
+          Json.Decode.field(
+            "children",
+            Reason.List.decode(decodeListItemNode),
+            json,
+          ),
+      };
     }
+
   and decodeListItemNode: Js.Json.t => listItemNode =
     (json: Js.Json.t) => {
       let rec case = Json.Decode.field("type", Json.Decode.string, json);
@@ -190,15 +262,24 @@ module Decode = {
         raise(Not_found);
       };
     }
+
+  and decodePage: Js.Json.t => page =
+    (json: Js.Json.t) => {
+      {value: Json.Decode.field("value", Json.Decode.string, json)};
+    }
+
   and decodeRoot: Js.Json.t => root =
     (json: Js.Json.t) => {
-      children:
-        Json.Decode.field(
-          "children",
-          Reason.List.decode(decodeBlockNode),
-          json,
-        ),
+      {
+        children:
+          Json.Decode.field(
+            "children",
+            Reason.List.decode(decodeBlockNode),
+            json,
+          ),
+      };
     }
+
   and decodeBlockNode: Js.Json.t => blockNode =
     (json: Js.Json.t) => {
       let rec case = Json.Decode.field("type", Json.Decode.string, json);
@@ -225,11 +306,15 @@ module Decode = {
       | "list" =>
         let rec decoded = decodeList(data);
         List(decoded);
+      | "page" =>
+        let rec decoded = decodePage(data);
+        Page(decoded);
       | _ =>
         Js.log("Error decoding blockNode");
         raise(Not_found);
       };
     }
+
   and decodeInlineNode: Js.Json.t => inlineNode =
     (json: Js.Json.t) => {
       let rec case = Json.Decode.field("type", Json.Decode.string, json);
@@ -262,15 +347,17 @@ module Decode = {
 
 module Encode = {
   let rec encodeText: text => Js.Json.t =
-    (value: text) =>
+    (value: text) => {
       Json.Encode.object_(
         List.filter(
           ((_, json)) => json != Js.Json.null,
           [("value", Json.Encode.string(value.value))],
         ),
-      )
+      );
+    }
+
   and encodeImage: image => Js.Json.t =
-    (value: image) =>
+    (value: image) => {
       Json.Encode.object_(
         List.filter(
           ((_, json)) => json != Js.Json.null,
@@ -279,9 +366,11 @@ module Encode = {
             ("url", Json.Encode.string(value.url)),
           ],
         ),
-      )
+      );
+    }
+
   and encodeStrong: strong => Js.Json.t =
-    (value: strong) =>
+    (value: strong) => {
       Json.Encode.object_(
         List.filter(
           ((_, json)) => json != Js.Json.null,
@@ -292,9 +381,11 @@ module Encode = {
             ),
           ],
         ),
-      )
+      );
+    }
+
   and encodeEmphasis: emphasis => Js.Json.t =
-    (value: emphasis) =>
+    (value: emphasis) => {
       Json.Encode.object_(
         List.filter(
           ((_, json)) => json != Js.Json.null,
@@ -305,22 +396,28 @@ module Encode = {
             ),
           ],
         ),
-      )
+      );
+    }
+
   and encodeInlineCode: inlineCode => Js.Json.t =
-    (value: inlineCode) =>
+    (value: inlineCode) => {
       Json.Encode.object_(
         List.filter(
           ((_, json)) => json != Js.Json.null,
           [("value", Json.Encode.string(value.value))],
         ),
-      )
+      );
+    }
+
   and encodeBreak: break => Js.Json.t =
-    (value: break) =>
+    (value: break) => {
       Json.Encode.object_(
         List.filter(((_, json)) => json != Js.Json.null, []),
-      )
+      );
+    }
+
   and encodeLink: link => Js.Json.t =
-    (value: link) =>
+    (value: link) => {
       Json.Encode.object_(
         List.filter(
           ((_, json)) => json != Js.Json.null,
@@ -332,9 +429,11 @@ module Encode = {
             ("url", Json.Encode.string(value.url)),
           ],
         ),
-      )
+      );
+    }
+
   and encodeParagraph: paragraph => Js.Json.t =
-    (value: paragraph) =>
+    (value: paragraph) => {
       Json.Encode.object_(
         List.filter(
           ((_, json)) => json != Js.Json.null,
@@ -345,9 +444,11 @@ module Encode = {
             ),
           ],
         ),
-      )
+      );
+    }
+
   and encodeHeading: heading => Js.Json.t =
-    (value: heading) =>
+    (value: heading) => {
       Json.Encode.object_(
         List.filter(
           ((_, json)) => json != Js.Json.null,
@@ -359,9 +460,11 @@ module Encode = {
             ),
           ],
         ),
-      )
+      );
+    }
+
   and encodeBlockquote: blockquote => Js.Json.t =
-    (value: blockquote) =>
+    (value: blockquote) => {
       Json.Encode.object_(
         List.filter(
           ((_, json)) => json != Js.Json.null,
@@ -372,9 +475,11 @@ module Encode = {
             ),
           ],
         ),
-      )
+      );
+    }
+
   and encodeCode: code => Js.Json.t =
-    (value: code) =>
+    (value: code) => {
       Json.Encode.object_(
         List.filter(
           ((_, json)) => json != Js.Json.null,
@@ -387,14 +492,18 @@ module Encode = {
             ),
           ],
         ),
-      )
+      );
+    }
+
   and encodeThematicBreak: thematicBreak => Js.Json.t =
-    (value: thematicBreak) =>
+    (value: thematicBreak) => {
       Json.Encode.object_(
         List.filter(((_, json)) => json != Js.Json.null, []),
-      )
+      );
+    }
+
   and encodeList: list => Js.Json.t =
-    (value: list) =>
+    (value: list) => {
       Json.Encode.object_(
         List.filter(
           ((_, json)) => json != Js.Json.null,
@@ -406,9 +515,11 @@ module Encode = {
             ),
           ],
         ),
-      )
+      );
+    }
+
   and encodeListItemNode: listItemNode => Js.Json.t =
-    (value: listItemNode) =>
+    (value: listItemNode) => {
       switch (value) {
       | ListItem(value0) =>
         let rec case = Json.Encode.string("listItem");
@@ -425,9 +536,21 @@ module Encode = {
             ),
           );
         Json.Encode.object_([("type", case), ("data", data)]);
-      }
+      };
+    }
+
+  and encodePage: page => Js.Json.t =
+    (value: page) => {
+      Json.Encode.object_(
+        List.filter(
+          ((_, json)) => json != Js.Json.null,
+          [("value", Json.Encode.string(value.value))],
+        ),
+      );
+    }
+
   and encodeRoot: root => Js.Json.t =
-    (value: root) =>
+    (value: root) => {
       Json.Encode.object_(
         List.filter(
           ((_, json)) => json != Js.Json.null,
@@ -435,9 +558,11 @@ module Encode = {
             ("children", Reason.List.encode(encodeBlockNode, value.children)),
           ],
         ),
-      )
+      );
+    }
+
   and encodeBlockNode: blockNode => Js.Json.t =
-    (value: blockNode) =>
+    (value: blockNode) => {
       switch (value) {
       | Image(value0) =>
         let rec case = Json.Encode.string("image");
@@ -467,9 +592,15 @@ module Encode = {
         let rec case = Json.Encode.string("list");
         let rec encoded = encodeList(value0);
         Json.Encode.object_([("type", case), ("data", encoded)]);
-      }
+      | Page(value0) =>
+        let rec case = Json.Encode.string("page");
+        let rec encoded = encodePage(value0);
+        Json.Encode.object_([("type", case), ("data", encoded)]);
+      };
+    }
+
   and encodeInlineNode: inlineNode => Js.Json.t =
-    (value: inlineNode) =>
+    (value: inlineNode) => {
       switch (value) {
       | Text(value0) =>
         let rec case = Json.Encode.string("text");
@@ -496,4 +627,5 @@ module Encode = {
         let rec encoded = encodeBreak(value0);
         Json.Encode.object_([("type", case), ("data", encoded)]);
       };
+    };
 };
