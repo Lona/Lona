@@ -14,9 +14,9 @@ private let designTokensReadmeContents = """
 
 Our design system contains the following token definitions:
 
-Colors
-Text Styles
-Shadows
+- Colors
+- Text Styles
+- Shadows
 """
 
 private let componentLibraryReadmeContents = """
@@ -37,34 +37,69 @@ private let colorsDocumentContents = """
 These are the core colors in our design system.
 
 ```tokens
-enum Colors {
-  static let red: Color = #color(css: "#F03E3E")
-  static let pink: Color = #color(css: "#D6336C")
-  static let grape: Color = #color(css: "#AE3EC9")
-  static let violet: Color = #color(css: "#7048E8")
-  static let indigo: Color = #color(css: "#4263EB")
-  static let blue: Color = #color(css: "#1C7ED6")
-  static let cyan: Color = #color(css: "#1098AD")
-  static let teal: Color = #color(css: "#0CA678")
-  static let green: Color = #color(css: "#37B24D")
-  static let lime: Color = #color(css: "#74B816")
-  static let yellow: Color = #color(css: "#F59F00")
-  static let orange: Color = #color(css: "#F76707")
-}
+let red: Color = #color(css: "#F03E3E")
+```
+
+```tokens
+let pink: Color = #color(css: "#D6336C")
+```
+
+```tokens
+let grape: Color = #color(css: "#AE3EC9")
+```
+
+```tokens
+let violet: Color = #color(css: "#7048E8")
+```
+
+```tokens
+let indigo: Color = #color(css: "#4263EB")
+```
+
+```tokens
+let blue: Color = #color(css: "#1C7ED6")
+```
+
+```tokens
+let cyan: Color = #color(css: "#1098AD")
+```
+
+```tokens
+let teal: Color = #color(css: "#0CA678")
+```
+
+```tokens
+let green: Color = #color(css: "#37B24D")
+```
+
+```tokens
+let lime: Color = #color(css: "#74B816")
+```
+
+```tokens
+let yellow: Color = #color(css: "#F59F00")
+```
+
+```tokens
+let orange: Color = #color(css: "#F76707")
 ```
 """
 
 private let textStylesDocumentContents = """
 # TextStyles
 
-These are the core colors in our design system.
+These are the core text styles in our design system.
 
 ```tokens
-enum TextStyles {
-  static let display: TextStyle = TextStyle(fontSize: Optional.value(28), color: Optional.value(#color(css: "black")))
-  static let heading: TextStyle = TextStyle(fontSize: Optional.value(17), color: Optional.value(#color(css: "black")))
-  static let body: TextStyle = TextStyle(fontSize: Optional.value(15), color: Optional.value(#color(css: "black")))
-}
+let display: TextStyle = TextStyle(fontSize: Optional.value(28), color: Optional.value(#color(css: "black")))
+```
+
+```tokens
+let heading: TextStyle = TextStyle(fontSize: Optional.value(17), color: Optional.value(#color(css: "black")))
+```
+
+```tokens
+let body: TextStyle = TextStyle(fontSize: Optional.value(15), color: Optional.value(#color(css: "black")))
 ```
 """
 
@@ -74,11 +109,15 @@ private let shadowsDocumentContents = """
 These are the core shadows in our design system.
 
 ```tokens
-enum Shadows {
-  static let small: Shadow = Shadow(y: 1, blur: 2, color: #color(css: "rgba(0,0,0,0.4)"))
-  static let medium: Shadow = Shadow(y: 2, blur: 4, color: #color(css: "rgba(0,0,0,0.4)"))
-  static let large: Shadow = Shadow(y: 3, blur: 6, color: #color(css: "rgba(0,0,0,0.4)"))
-}
+let small: Shadow = Shadow(y: 1, blur: 2, color: #color(css: "rgba(0,0,0,0.4)"))
+```
+
+```tokens
+let medium: Shadow = Shadow(y: 2, blur: 4, color: #color(css: "rgba(0,0,0,0.4)"))
+```
+
+```tokens
+let large: Shadow = Shadow(y: 3, blur: 6, color: #color(css: "rgba(0,0,0,0.4)"))
 ```
 """
 
