@@ -647,6 +647,7 @@ let renderTypeCase =
       },
     };
   | RecordCase(name, parameters) =>
+    // The encoder is currently hardcoded to handle only a record case parameter correctly
     let renderedParameters =
       parameters
       |> List.map(renderRecordTypeCaseParameter(options, entity, "data"));
@@ -664,15 +665,15 @@ let renderTypeCase =
             parameters: [],
           },
           value:
-            renderedParameters != [] ?
-              RecordType({
-                entries:
-                  renderedParameters
-                  |> List.map((parameter: renderedRecordTypeCaseParameter) =>
-                       parameter.entry
-                     ),
-              }) :
-              AliasType({name: "unit", parameters: []}),
+            renderedParameters != []
+              ? RecordType({
+                  entries:
+                    renderedParameters
+                    |> List.map((parameter: renderedRecordTypeCaseParameter) =>
+                         parameter.entry
+                       ),
+                })
+              : AliasType({name: "unit", parameters: []}),
         },
       ],
       decoder: {
@@ -703,26 +704,100 @@ let renderTypeCase =
         ],
       },
       encoder: {
-        pattern: LiteralExpression({literal: String(name)}),
-        body: [
-          Expression(
+        pattern:
+          if (parameters == []) {
+            IdentifierExpression({name: formatCaseName(name)});
+          } else {
             FunctionCallExpression({
               expression: IdentifierExpression({name: formatCaseName(name)}),
+              arguments:
+                parameters
+                |> List.mapi((index, _) =>
+                     IdentifierExpression({name: formatTypeName("value")})
+                   ),
+            });
+          },
+        body: [
+          Variable([
+            {
+              name: "case",
+              quantifiedAnnotation: None,
+              initializer_:
+                FunctionCallExpression({
+                  expression:
+                    IdentifierExpression({name: "Json.Encode.string"}),
+                  arguments: [LiteralExpression({literal: String(name)})],
+                }),
+            },
+          ]),
+          Variable([
+            {
+              name: "data",
+              quantifiedAnnotation: None,
+              initializer_:
+                FunctionCallExpression({
+                  expression:
+                    IdentifierExpression({name: "Json.Encode.object_"}),
+                  arguments: [
+                    FunctionCallExpression({
+                      expression: IdentifierExpression({name: "List.filter"}),
+                      arguments: [
+                        IdentifierExpression({
+                          name: "((_, json)) => json != Js.Json.null",
+                        }),
+                        LiteralExpression({
+                          literal:
+                            Array(
+                              renderedParameters
+                              |> List.map(
+                                   (
+                                     parameter: renderedRecordTypeCaseParameter,
+                                   ) =>
+                                   LiteralExpression({
+                                     literal:
+                                       Tuple([
+                                         LiteralExpression({
+                                           literal:
+                                             String(parameter.entry.key),
+                                         }),
+                                         parameter.encoder,
+                                       ]),
+                                   })
+                                 ),
+                            ),
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+            },
+          ]),
+          Expression(
+            FunctionCallExpression({
+              expression: IdentifierExpression({name: "Json.Encode.object_"}),
               arguments: [
                 LiteralExpression({
                   literal:
-                    Record(
-                      renderedParameters
-                      |> List.map(
-                           (parameter: renderedRecordTypeCaseParameter) =>
-                           (
-                             {
-                               key: parameter.entry.key,
-                               value: parameter.encoder,
-                             }: recordEntry
-                           )
-                         ),
-                    ),
+                    Array([
+                      LiteralExpression({
+                        literal:
+                          Tuple([
+                            LiteralExpression({
+                              literal: String(options.discriminant),
+                            }),
+                            IdentifierExpression({name: "case"}),
+                          ]),
+                      }),
+                      LiteralExpression({
+                        literal:
+                          Tuple([
+                            LiteralExpression({
+                              literal: String(options.dataWrapper),
+                            }),
+                            IdentifierExpression({name: "data"}),
+                          ]),
+                      }),
+                    ]),
                 }),
               ],
             }),
@@ -884,22 +959,22 @@ let renderEntity =
                     Expression(
                       LiteralExpression({
                         literal:
-                          renderedParameters != [] ?
-                            Record(
-                              renderedParameters
-                              |> List.map(
-                                   (
-                                     parameter: renderedRecordTypeCaseParameter,
-                                   ) =>
-                                   (
-                                     {
-                                       key: parameter.entry.key,
-                                       value: parameter.decoder,
-                                     }: recordEntry
-                                   )
-                                 ),
-                            ) :
-                            Tuple([]),
+                          renderedParameters != []
+                            ? Record(
+                                renderedParameters
+                                |> List.map(
+                                     (
+                                       parameter: renderedRecordTypeCaseParameter,
+                                     ) =>
+                                     (
+                                       {
+                                         key: parameter.entry.key,
+                                         value: parameter.decoder,
+                                       }: recordEntry
+                                     )
+                                   ),
+                              )
+                            : Tuple([]),
                       }),
                     ),
                   ],

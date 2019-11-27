@@ -521,7 +521,7 @@ module Encode = {
   and encodeListItemNode: listItemNode => Js.Json.t =
     (value: listItemNode) => {
       switch (value) {
-      | ListItem(value0) =>
+      | ListItem(value) =>
         let rec case = Json.Encode.string("listItem");
         let rec data =
           Json.Encode.object_(
@@ -530,7 +530,7 @@ module Encode = {
               [
                 (
                   "children",
-                  Reason.List.encode(encodeBlockNode, value0.children),
+                  Reason.List.encode(encodeBlockNode, value.children),
                 ),
               ],
             ),
