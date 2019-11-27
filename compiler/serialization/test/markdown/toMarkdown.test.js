@@ -307,4 +307,15 @@ describe('convert mdast to markdown', () => {
 
     expect(mdx).toBe('1. a\n2. b')
   })
+
+  test('page', () => {
+    const json = {
+      type: 'page',
+      value: 'child',
+    }
+
+    const mdx = toMarkdown(json)
+
+    expect(mdx).toBe(`<a class="page" href="child" />`)
+  })
 })
