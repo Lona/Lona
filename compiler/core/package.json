@@ -1,6 +1,6 @@
 {
   "name": "lonac",
-  "version": "0.8.8",
+  "version": "0.8.9",
   "description": "Lona cross-platform code compiler",
   "main": "build/index.js",
   "types": "types/index.d.ts",
