@@ -710,11 +710,9 @@ let renderTypeCase =
           } else {
             FunctionCallExpression({
               expression: IdentifierExpression({name: formatCaseName(name)}),
-              arguments:
-                parameters
-                |> List.mapi((index, _) =>
-                     IdentifierExpression({name: formatTypeName("value")})
-                   ),
+              arguments: [
+                IdentifierExpression({name: formatTypeName("value")}),
+              ],
             });
           },
         body: [

@@ -47,9 +47,14 @@ and tokenToken = {
 
 and token = tokenToken
 
+and documentationPageConvertedFileContents = {
+  mdxString: string,
+  children: Reason.List.t(string),
+}
+
 and convertedFileContents =
   | FlatTokens(Reason.List.t(token))
-  | MdxString(string)
+  | DocumentationPage(documentationPageConvertedFileContents)
 
 and convertedFileConvertedFile = {
   inputPath: string,
@@ -181,9 +186,16 @@ module Decode = {
       | "flatTokens" =>
         let rec decoded = Reason.List.decode(decodeToken, data);
         FlatTokens(decoded);
-      | "mdxString" =>
-        let rec decoded = Json.Decode.string(data);
-        MdxString(decoded);
+      | "documentationPage" =>
+        DocumentationPage({
+          mdxString: Json.Decode.field("mdxString", Json.Decode.string, data),
+          children:
+            Json.Decode.field(
+              "children",
+              Reason.List.decode(Json.Decode.string),
+              data,
+            ),
+        })
       | _ =>
         Js.log("Error decoding convertedFileContents");
         raise(Not_found);
@@ -336,10 +348,22 @@ module Encode = {
         let rec case = Json.Encode.string("flatTokens");
         let rec encoded = Reason.List.encode(encodeToken, value0);
         Json.Encode.object_([("type", case), ("value", encoded)]);
-      | MdxString(value0) =>
-        let rec case = Json.Encode.string("mdxString");
-        let rec encoded = Json.Encode.string(value0);
-        Json.Encode.object_([("type", case), ("value", encoded)]);
+      | DocumentationPage(value) =>
+        let rec case = Json.Encode.string("documentationPage");
+        let rec data =
+          Json.Encode.object_(
+            List.filter(
+              ((_, json)) => json != Js.Json.null,
+              [
+                ("mdxString", Json.Encode.string(value.mdxString)),
+                (
+                  "children",
+                  Reason.List.encode(Json.Encode.string, value.children),
+                ),
+              ],
+            ),
+          );
+        Json.Encode.object_([("type", case), ("value", data)]);
       };
     }
 

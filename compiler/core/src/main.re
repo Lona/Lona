@@ -447,7 +447,15 @@ let generateDocumentation = (config: Config.t): TokenTypes.convertedWorkspace =>
                TokenTypes.inputPath: relativeInputPath,
                outputPath: relativeOutputPath,
                name: basename,
-               contents: MdxString(data),
+               contents:
+                 DocumentationPage({
+                   children:
+                     MdxUtils.findChildPages(file.contents)
+                     |> List.map(name =>
+                          Path.join2(Path.dirname(relativeInputPath), name)
+                        ),
+                   mdxString: data,
+                 }),
              };
            }),
     }
