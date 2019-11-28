@@ -80,7 +80,10 @@ and listItemListItemNode = {children: Reason.List.t(blockNode)}
 and listItemNode =
   | ListItem(listItemListItemNode)
 
-and pagePage = {value: string}
+and pagePage = {
+  value: string,
+  url: string,
+}
 
 and page = pagePage
 
@@ -265,7 +268,10 @@ module Decode = {
 
   and decodePage: Js.Json.t => page =
     (json: Js.Json.t) => {
-      {value: Json.Decode.field("value", Json.Decode.string, json)};
+      {
+        value: Json.Decode.field("value", Json.Decode.string, json),
+        url: Json.Decode.field("url", Json.Decode.string, json),
+      };
     }
 
   and decodeRoot: Js.Json.t => root =
@@ -544,7 +550,10 @@ module Encode = {
       Json.Encode.object_(
         List.filter(
           ((_, json)) => json != Js.Json.null,
-          [("value", Json.Encode.string(value.value))],
+          [
+            ("value", Json.Encode.string(value.value)),
+            ("url", Json.Encode.string(value.url)),
+          ],
         ),
       );
     }

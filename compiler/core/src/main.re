@@ -451,8 +451,8 @@ let generateDocumentation = (config: Config.t): TokenTypes.convertedWorkspace =>
                  DocumentationPage({
                    children:
                      MdxUtils.findChildPages(file.contents)
-                     |> List.map(name =>
-                          Path.join2(Path.dirname(relativeInputPath), name)
+                     |> List.map(url =>
+                          Path.join2(Path.dirname(relativeInputPath), url)
                         ),
                    mdxString: data,
                  }),

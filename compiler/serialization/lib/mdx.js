@@ -64,6 +64,7 @@ function parseNested(convertLogic) {
           type,
           tagName,
           properties: { className, href },
+          children = [],
         } = htmlParser.parse(node.value).children[0]
 
         if (
@@ -74,7 +75,8 @@ function parseNested(convertLogic) {
         ) {
           return {
             type: 'page',
-            value: href,
+            url: href,
+            value: (children[0] && children[0].value) || href,
           }
         }
       }
