@@ -57,8 +57,8 @@
     "@glennsl/bs-json": "^5.0.1",
     "babel-loader": "^8.0.5",
     "bs-glob": "reasonml-community/bs-glob",
-    "bs-platform": "^5.2.1",
     "bs-node": "reasonml-community/bs-node",
+    "bs-platform": "^5.2.1",
     "copy-webpack-plugin": "^4.5.1",
     "csscolorparser": "^1.0.3",
     "fs-extra": "^5.0.0",
@@ -71,7 +71,7 @@
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {
-    "@lona/serialization": "^0.0.14",
+    "@lona/serialization": "^0.0.16",
     "lodash.lowerfirst": "^4.3.1",
     "lodash.snakecase": "^4.1.1",
     "memfs": "^2.8.0",

@@ -52,34 +52,35 @@ function removeExtras(ast) {
   })
 }
 
-function parseNested(ast) {
-  return map(ast, node => {
-    if (node.type === 'code' && node.lang === 'tokens') {
-      node.parsed = JSON.parse(convertLogic(node.value, 'json'))
-    }
+function parseNested(convertLogic) {
+  return ast =>
+    map(ast, node => {
+      if (node.type === 'code' && node.lang === 'tokens') {
+        node.parsed = JSON.parse(convertLogic(node.value, 'json'))
+      }
 
-    if (node.type === 'jsx') {
-      const {
-        type,
-        tagName,
-        properties: { className, href },
-      } = htmlParser.parse(node.value).children[0]
+      if (node.type === 'jsx') {
+        const {
+          type,
+          tagName,
+          properties: { className, href },
+        } = htmlParser.parse(node.value).children[0]
 
-      if (
-        type === 'element' &&
-        tagName === 'a' &&
-        Array.isArray(className) &&
-        className.includes('page')
-      ) {
-        return {
-          type: 'page',
-          value: href,
+        if (
+          type === 'element' &&
+          tagName === 'a' &&
+          Array.isArray(className) &&
+          className.includes('page')
+        ) {
+          return {
+            type: 'page',
+            value: href,
+          }
         }
       }
-    }
 
-    return node
-  })
+      return node
+    })
 }
 
 function parse(src, convertLogic) {
@@ -91,7 +92,7 @@ function parse(src, convertLogic) {
     moveToRoot('image'),
     moveToRoot('blockquote'),
     removeExtras,
-    parseNested,
+    parseNested(convertLogic),
     moveToRoot('page'),
   ]
 
