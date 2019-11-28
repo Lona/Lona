@@ -90,8 +90,8 @@ ${node.value}
     }
     // Custom
     case 'page': {
-      const { value } = node
-      return `<a class="page" href="${value}" />`
+      const { url, value } = node
+      return `<a class="page" href="${url}">${value}</a>`
     }
     default:
       throw new Error(`Unknown mdx node ${type}`)
