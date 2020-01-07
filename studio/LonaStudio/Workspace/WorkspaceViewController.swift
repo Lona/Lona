@@ -363,7 +363,9 @@ class WorkspaceViewController: NSSplitViewController {
 
         fileNavigator.onDeleteFile = { path, options in
             NSDocumentController.shared.documents.forEach { document in
-                if document.fileURL == URL(fileURLWithPath: path) {
+                let url = URL(fileURLWithPath: path)
+                // TODO: If deleting a directory, close all files that are descendants
+                if let fileURL = document.fileURL, fileURL == url || fileURL == url.appendingPathComponent("README.md") {
                     self.close(document: document, discardingUnsavedChanges: true)
                 }
             }

@@ -190,13 +190,18 @@ class FileNavigator: NSBox {
                     messageText: "Enter a new folder name",
                     placeholderText: "Folder name") else { return }
 
-                let newFilePath = URL(fileURLWithPath: path).appendingPathComponent(newFileName).path
+                let parentURL = URL(fileURLWithPath: path)
+
+                let newDirectory = VirtualDirectory(name: newFileName) {
+                    [
+                        VirtualFile(name: "README.md") {
+                            "# \(newFileName)".data(using: .utf8)!
+                        }
+                    ]
+                }
 
                 do {
-                    try FileManager.default.createDirectory(
-                        atPath: newFilePath,
-                        withIntermediateDirectories: true,
-                        attributes: nil)
+                    try VirtualFileSystem.write(node: newDirectory, relativeTo: parentURL)
 
                     self.fileTree.reloadData()
                 } catch {
