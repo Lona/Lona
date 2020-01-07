@@ -527,11 +527,16 @@ class WorkspaceViewController: NSSplitViewController {
             self.updateCompanionHeader(parameters: parameters)
         }
 
-        let titleText = document.fileURL?.lastPathComponent ?? "Untitled"
+        var titleText = document.fileURL?.lastPathComponent ?? "Untitled"
         let subtitleText = document.isDocumentEdited == true ? " — Edited" : ""
         let fileIcon: NSImage?
         if let fileURL = document.fileURL {
             fileIcon = NSWorkspace.shared.icon(forFile: fileURL.path)
+
+            // When editing a README, display the name of the directory as the title
+            if fileURL.lastPathComponent == "README.md" {
+                titleText = fileURL.deletingLastPathComponent().lastPathComponent
+            }
         } else {
             fileIcon = NSImage()
         }
