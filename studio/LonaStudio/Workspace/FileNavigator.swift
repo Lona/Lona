@@ -41,8 +41,8 @@ class FileNavigator: NSBox {
 
         update()
 
-        subscriptions.append(LonaPlugins.current.register(eventType: .onReloadWorkspace) {
-            self.headerView.fileIcon = NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
+        subscriptions.append(LonaPlugins.current.register(eventType: .onReloadWorkspace) { [unowned self] in
+            self.fileTree.reloadData()
         })
     }
 
@@ -63,11 +63,6 @@ class FileNavigator: NSBox {
     }
 
     public var rootPath: String
-
-    public var titleText: String {
-        get { return headerView.titleText }
-        set { headerView.titleText = newValue }
-    }
 
     public var onAction: ((FileTree.Path) -> Void)? {
         get { return fileTree.onAction }
@@ -102,8 +97,6 @@ class FileNavigator: NSBox {
 
     // MARK: - Private
 
-    private var headerView = FileNavigatorHeaderWithMenu()
-
     private lazy var fileTree: FileTree = {
         return FileTree(rootPath: rootPath)
     }()
@@ -115,7 +108,8 @@ class FileNavigator: NSBox {
 
         fillColor = Colors.headerBackground
 
-        fileTree.showRootFile = false
+        fileTree.showRootFile = true
+        fileTree.rowHeightForFile = { [unowned self] path in self.rowHeightForFile(atPath: path) }
         fileTree.rowViewForFile = { [unowned self] path, _ in self.rowViewForFile(atPath: path) }
         fileTree.imageForFile = { [unowned self] path, size in self.imageForFile(atPath: path, size: size) }
         fileTree.displayNameForFile = { [unowned self] path in self.displayNameForFile(atPath: path) }
@@ -130,11 +124,6 @@ class FileNavigator: NSBox {
         }
         fileTree.onPressDelete = { [unowned self] path in self.deleteAlertForFile(atPath: path) }
 
-        headerView.fileIcon = NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
-        headerView.onClick = { [unowned self] in self.onAction?(self.rootPath) }
-        headerView.menuForHeader = { [unowned self] in self.menuForFile(atPath: self.rootPath) }
-
-        addSubview(headerView)
         addSubview(fileTree)
     }
 
@@ -263,15 +252,9 @@ class FileNavigator: NSBox {
 
     private func setUpConstraints() {
         translatesAutoresizingMaskIntoConstraints = false
-        headerView.translatesAutoresizingMaskIntoConstraints = false
         fileTree.translatesAutoresizingMaskIntoConstraints = false
 
-        headerView.topAnchor.constraint(equalTo: topAnchor, constant: 24).isActive = true
-        headerView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        headerView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-
-        headerView.bottomAnchor.constraint(equalTo: fileTree.topAnchor).isActive = true
-
+        fileTree.topAnchor.constraint(equalTo: topAnchor, constant: 24).isActive = true
         fileTree.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
         fileTree.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         fileTree.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
@@ -340,6 +323,10 @@ class FileNavigator: NSBox {
     }
 
     private func displayNameForFile(atPath path: String) -> String {
+        if path == rootPath {
+            return CSWorkspacePreferences.workspaceName
+        }
+        
         let url = URL(fileURLWithPath: path)
         switch url.pathExtension {
         case "component", "logic", "tokens", "md":
@@ -349,6 +336,10 @@ class FileNavigator: NSBox {
         }
     }
 
+    private func rowHeightForFile(atPath path: String) -> CGFloat {
+        return path == rootPath ? 38 : fileTree.defaultRowHeight
+    }
+    
     private func rowViewForFile(atPath path: String) -> NSView {
         let thumbnailSize = fileTree.defaultThumbnailSize
         let thumbnailMargin = fileTree.defaultThumbnailMargin
@@ -360,7 +351,15 @@ class FileNavigator: NSBox {
         let iconView: NSView
 
         if FileManager.default.isDirectory(path: path) {
-            iconView = FolderIcon()
+            if path == rootPath {
+                let image = NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
+                image.size = .init(width: 20, height: 20)
+                let imageView = NSImageView(image: image)
+                imageView.imageScaling = .scaleProportionallyUpOrDown
+                iconView = imageView
+            } else {
+                iconView = FolderIcon()
+            }
         } else if path.hasSuffix("lona.json") {
             iconView = LonaFileIcon()
         } else if path.hasSuffix("colors.json") {
@@ -386,7 +385,9 @@ class FileNavigator: NSBox {
         textView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: thumbnailMargin * 2 + thumbnailSize.width).isActive = true
         textView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         textView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        textView.font = NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))
+        textView.font = path == rootPath
+            ? NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .regular))
+            : NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))
         textView.maximumNumberOfLines = 1
         textView.lineBreakMode = .byTruncatingMiddle
 

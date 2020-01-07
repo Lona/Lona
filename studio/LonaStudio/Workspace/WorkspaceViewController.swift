@@ -121,10 +121,9 @@ class WorkspaceViewController: NSSplitViewController {
     private var inspectedContent: InspectorView.Content?
 
     private lazy var fileNavigator: FileNavigator = {
-        let navigator = FileNavigator(rootPath: LonaModule.current.url.path)
-        navigator.titleText = CSWorkspacePreferences.workspaceName
-        return navigator
+        return FileNavigator(rootPath: LonaModule.current.url.path)
     }()
+    
     private lazy var fileNavigatorViewController: NSViewController = {
         return NSViewController(view: fileNavigator)
     }()
@@ -924,10 +923,6 @@ class WorkspaceViewController: NSSplitViewController {
                 })
 
             self.update()
-        })
-
-        subscriptions.append(LonaPlugins.current.register(eventType: .onReloadWorkspace) { [unowned self] in
-            self.fileNavigator.titleText = CSWorkspacePreferences.workspaceName
         })
     }
 
