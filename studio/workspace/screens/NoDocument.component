@@ -1,0 +1,141 @@
+{
+  "devices" : [
+    {
+      "height" : 300,
+      "heightMode" : "Exactly",
+      "name" : "",
+      "width" : 400
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+        "buttonTitleText" : "Button title",
+        "titleText" : "Title"
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Button",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClick"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Title",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "titleText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Button",
+        "titleText"
+      ],
+      "content" : [
+        "parameters",
+        "buttonTitleText"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "onClick",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "titleText",
+      "type" : "String"
+    },
+    {
+      "name" : "buttonTitleText",
+      "type" : "String"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Spacer1",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "flex" : 1
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "Title",
+            "params" : {
+              "alignSelf" : "stretch",
+              "marginBottom" : 12,
+              "text" : "This folder has no index page (README.md)",
+              "textAlign" : "center"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "Button",
+            "params" : {
+              "titleText" : "Create index page"
+            },
+            "type" : "Button"
+          }
+        ],
+        "id" : "VContainer",
+        "params" : {
+          "alignItems" : "center",
+          "backgroundColor" : "contentBackground",
+          "borderColor" : "dividerSubtle",
+          "borderRadius" : 4,
+          "borderWidth" : 1,
+          "paddingBottom" : 12,
+          "paddingLeft" : 12,
+          "paddingRight" : 12,
+          "paddingTop" : 12
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Spacer2",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "flex" : 1
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignItems" : "center",
+      "alignSelf" : "stretch",
+      "backgroundColor" : "contentBackground",
+      "flex" : 1,
+      "flexDirection" : "row",
+      "paddingBottom" : 60,
+      "paddingLeft" : 60,
+      "paddingRight" : 60,
+      "paddingTop" : 60
+    },
+    "type" : "Lona:View"
+  }
+}

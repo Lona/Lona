@@ -63,6 +63,10 @@ class WorkspaceWindowController: NSWindowController {
         if let document = document {
             document.addWindowController(windowController)
             workspaceViewController.document = document
+
+            // We call update here, since sometimes updating the document doesn't call the
+            // didSet handler. Calling update is sometimes redundant though.
+            workspaceViewController.update()
         }
 
         return windowController

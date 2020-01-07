@@ -84,10 +84,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         switch FileUtils.fileExists(atPath: filename) {
         case .directory:
-            guard let document = try? DirectoryDocument(contentsOf: url, ofType: "Directory Document") else {
+            guard let document = try? NSDocumentController.shared.makeDocument(withContentsOf: url, ofType: "DirectoryDocument") else {
                 Swift.print("Failed to open", url)
                 return false
             }
+
             NSDocumentController.shared.addDocument(document)
 
             showComponentBrowser(document)
@@ -133,7 +134,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    func showComponentBrowser(_ document: DirectoryDocument?) {
+    func showComponentBrowser(_ document: NSDocument?) {
         let windowController = WorkspaceWindowController.create(andAttachTo: document)
 
         // Throws an exception related to _NSDetectedLayoutRecursion without async here.
@@ -307,10 +308,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return dialog.url
     }
 
-    private func openWorkspaceDocument() -> DirectoryDocument? {
+    private func openWorkspaceDocument() -> NSDocument? {
         let url = LonaModule.current.url
 
-        guard let newDocument = try? DirectoryDocument(contentsOf: url, ofType: "Directory Document") else {
+        guard let newDocument = try? NSDocumentController.shared.makeDocument(withContentsOf: url, ofType: "DirectoryDocument") else {
             Swift.print("Failed to open", url)
             return nil
         }

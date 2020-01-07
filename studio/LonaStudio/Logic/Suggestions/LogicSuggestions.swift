@@ -57,7 +57,7 @@ extension String {
     static func expressionSuggestions(node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
         let customSuggestion = LogicSuggestionItem(
             title: "String: \"\(query)\"",
-            category: "Strings".uppercased(),
+            category: LGCLiteral.Suggestion.categoryTitle,
             node: .expression(query.expressionNode)
         )
 
