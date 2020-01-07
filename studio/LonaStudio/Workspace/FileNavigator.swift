@@ -331,7 +331,7 @@ class FileNavigator: NSBox {
         if path == rootPath {
             return CSWorkspacePreferences.workspaceName
         }
-        
+
         let url = URL(fileURLWithPath: path)
         switch url.pathExtension {
         case "component", "logic", "tokens", "md":
@@ -344,7 +344,7 @@ class FileNavigator: NSBox {
     private func rowHeightForFile(atPath path: String) -> CGFloat {
         return path == rootPath ? 38 : fileTree.defaultRowHeight
     }
-    
+
     private func rowViewForFile(atPath path: String) -> NSView {
         let thumbnailSize = fileTree.defaultThumbnailSize
         let thumbnailMargin = fileTree.defaultThumbnailMargin

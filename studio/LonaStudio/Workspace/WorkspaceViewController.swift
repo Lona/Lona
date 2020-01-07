@@ -123,7 +123,7 @@ class WorkspaceViewController: NSSplitViewController {
     private lazy var fileNavigator: FileNavigator = {
         return FileNavigator(rootPath: LonaModule.current.url.path)
     }()
-    
+
     private lazy var fileNavigatorViewController: NSViewController = {
         return NSViewController(view: fileNavigator)
     }()
