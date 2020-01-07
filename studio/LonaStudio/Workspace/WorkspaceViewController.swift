@@ -743,7 +743,7 @@ class WorkspaceViewController: NSSplitViewController {
             let url = URL(fileURLWithPath: path)
 
             if FileUtils.fileExists(atPath: path) == .directory {
-                guard let newDocument = try? DirectoryDocument(contentsOf: url, ofType: "Directory Document") else {
+                guard let newDocument = try? NSDocumentController.shared.makeDocument(withContentsOf: url, ofType: "DirectoryDocument") else {
                     Swift.print("Failed to open", url)
                     return
                 }
@@ -845,7 +845,7 @@ class WorkspaceViewController: NSSplitViewController {
         let url = URL(fileURLWithPath: path)
 
         if FileUtils.fileExists(atPath: path) == .directory {
-            guard let newDocument = try? DirectoryDocument(contentsOf: url, ofType: "Directory Document") else {
+            guard let newDocument = try? NSDocumentController.shared.makeDocument(withContentsOf: url, ofType: "DirectoryDocument") else {
                 Swift.print("Failed to open", url)
                 NSDocumentController.shared.removeDocument(previousDocument)
                 let windowController = previousDocument.windowControllers[0]

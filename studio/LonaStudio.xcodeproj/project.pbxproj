@@ -171,6 +171,7 @@
 		6B1086F7217955120024AE56 /* SVG.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1086F6217955120024AE56 /* SVG.swift */; };
 		6B1086FB217A34340024AE56 /* Data+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1086FA217A34340024AE56 /* Data+String.swift */; };
 		6B1086FD217A38110024AE56 /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1086FC217A38110024AE56 /* LRUCache.swift */; };
+		6B14C7BD23C4011B00EF85FA /* FileManager+Directory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B14C7BC23C4011B00EF85FA /* FileManager+Directory.swift */; };
 		6B1DE3E622D7B1C100FC565E /* LogicCompilerConfigurationInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1DE3E522D7B1C000FC565E /* LogicCompilerConfigurationInput.swift */; };
 		6B1DE3E822D7BA0300FC565E /* CompilerConfiguration.logic in Resources */ = {isa = PBXBuildFile; fileRef = 6B1DE3E722D7BA0300FC565E /* CompilerConfiguration.logic */; };
 		6B1DE3EA22D7BA1F00FC565E /* LogicLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1DE3E922D7BA1F00FC565E /* LogicLoader.swift */; };
@@ -525,6 +526,7 @@
 		6B1086F6217955120024AE56 /* SVG.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVG.swift; sourceTree = "<group>"; };
 		6B1086FA217A34340024AE56 /* Data+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+String.swift"; sourceTree = "<group>"; };
 		6B1086FC217A38110024AE56 /* LRUCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRUCache.swift; sourceTree = "<group>"; };
+		6B14C7BC23C4011B00EF85FA /* FileManager+Directory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Directory.swift"; sourceTree = "<group>"; };
 		6B1DE3E522D7B1C000FC565E /* LogicCompilerConfigurationInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicCompilerConfigurationInput.swift; sourceTree = "<group>"; };
 		6B1DE3E722D7BA0300FC565E /* CompilerConfiguration.logic */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CompilerConfiguration.logic; sourceTree = "<group>"; };
 		6B1DE3E922D7BA1F00FC565E /* LogicLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicLoader.swift; sourceTree = "<group>"; };
@@ -905,8 +907,10 @@
 			children = (
 				3094DFE21F68D19C00E5C7F0 /* CALayerExtensions.swift */,
 				6B0F5B89213877E1007DBBB2 /* Color+Conversions.swift */,
+				6BCE162622D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift */,
 				6B1086FA217A34340024AE56 /* Data+String.swift */,
 				30F4FD541F76B9DB0048691C /* DictionaryExtensions.swift */,
+				6B14C7BC23C4011B00EF85FA /* FileManager+Directory.swift */,
 				6B56ECB021BC55D9005F43C5 /* NSAttributedString+Measure.swift */,
 				30A3F13D1F300294004C7631 /* NSColorExtensions.swift */,
 				306D2FEF1F847DCB00907B4E /* NSImageExtensions.swift */,
@@ -924,7 +928,6 @@
 				30516B481F43C46200940B3B /* SequenceExtensions.swift */,
 				30EFC9551EF1AA0B0087711D /* StringExtensions.swift */,
 				30335A061F5A2878006E507B /* URLExtensions.swift */,
-				6BCE162622D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1850,6 +1853,7 @@
 				307718F41F366AEA003A597B /* CSValueField.swift in Sources */,
 				BA48549A1FEF6EC800AB7923 /* PickerListView.swift in Sources */,
 				6BC2D43D226162C4003A9F63 /* LabeledLogicInput.swift in Sources */,
+				6B14C7BD23C4011B00EF85FA /* FileManager+Directory.swift in Sources */,
 				6BF7795B22D51A4D009A4119 /* ToolbarStatusBar.swift in Sources */,
 				303C3FF720A4EFC6008E1541 /* ComponentPreviewCard.swift in Sources */,
 				6B3414B0225CF83B00CC65D1 /* LogicEditor+TypesView.swift in Sources */,

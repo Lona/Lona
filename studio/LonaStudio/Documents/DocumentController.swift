@@ -23,6 +23,14 @@ class DocumentController: NSDocumentController {
         }
     }
 
+    override func makeDocument(withContentsOf url: URL, ofType typeName: String) throws -> NSDocument {
+        if FileManager.default.isDirectory(path: url.path) {
+            return try super.makeDocument(withContentsOf: url.appendingPathComponent("README.md"), ofType: "Markdown")
+        }
+
+        return try super.makeDocument(withContentsOf: url, ofType: typeName)
+    }
+
     override public func reopenDocument(
         for urlOrNil: URL?,
         withContentsOf contentsURL: URL,
@@ -30,7 +38,7 @@ class DocumentController: NSDocumentController {
         completionHandler: @escaping (NSDocument?, Bool, Error?) -> Void) {
 
         if FileUtils.fileExists(atPath: contentsURL.path) == .directory {
-            guard let newDocument = try? DirectoryDocument(contentsOf: contentsURL, ofType: "Directory Document") else {
+            guard let newDocument = try? NSDocumentController.shared.makeDocument(withContentsOf: contentsURL, ofType: "DirectoryDocument") else {
                 completionHandler(nil, false, NSError(domain: NSCocoaErrorDomain, code: 256, userInfo: [
                     NSLocalizedDescriptionKey: "\(contentsURL) could not be handled because LonaStudio cannot open files of this type.",
                     NSLocalizedFailureReasonErrorKey: "LonaStudio cannot open files of this type."]))

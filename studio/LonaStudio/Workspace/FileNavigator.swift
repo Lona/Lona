@@ -19,15 +19,6 @@ private class FileTreeCellView: NSTableCellView {
     }
 }
 
-private func isDirectory(path: String) -> Bool {
-    var isDir: ObjCBool = false
-    if FileManager.default.fileExists(atPath: path, isDirectory: &isDir) {
-        return isDir.boolValue
-    } else {
-        return false
-    }
-}
-
 class FileNavigatorHeaderWithMenu: FileNavigatorHeader {
     public var menuForHeader: (() -> NSMenu)?
 
@@ -130,7 +121,12 @@ class FileNavigator: NSBox {
         fileTree.displayNameForFile = { [unowned self] path in self.displayNameForFile(atPath: path) }
         fileTree.menuForFile = { [unowned self] path in self.menuForFile(atPath: path) }
         fileTree.filterFiles = { path in
-            return !(path.hasPrefix(".") || URL(fileURLWithPath: path).deletingPathExtension().path.hasSuffix("~"))
+            return !(
+                path.hasPrefix(".") ||
+                path.hasSuffix("lona.json") ||
+                path.hasSuffix("README.md") ||
+                URL(fileURLWithPath: path).deletingPathExtension().path.hasSuffix("~")
+            )
         }
         fileTree.onPressDelete = { [unowned self] path in self.deleteAlertForFile(atPath: path) }
 
@@ -170,7 +166,7 @@ class FileNavigator: NSBox {
             NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: parentPath)
         }))
 
-        if isDirectory(path: path) {
+        if FileManager.default.isDirectory(path: path) {
             if !menu.items.isEmpty {
                 menu.addItem(NSMenuItem.separator())
             }
@@ -363,7 +359,7 @@ class FileNavigator: NSBox {
         let textView = NSTextField(labelWithString: name)
         let iconView: NSView
 
-        if isDirectory(path: path) {
+        if FileManager.default.isDirectory(path: path) {
             iconView = FolderIcon()
         } else if path.hasSuffix("lona.json") {
             iconView = LonaFileIcon()
