@@ -352,6 +352,38 @@ class WorkspaceViewController: NSSplitViewController {
         windowController = nil
     }
 
+    func performCreateFile(path: String, document: NSDocument, ofType documentType: String) -> Bool {
+        if let document = self.document {
+            guard self.close(document: document, discardingUnsavedChanges: false) else { return false }
+        }
+
+        guard let windowController = self.view.window?.windowController else { return false }
+
+        let url = URL(fileURLWithPath: path)
+        let newDocument = document
+        newDocument.fileURL = url
+        newDocument.save(
+            to: url,
+            ofType: documentType,
+            for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
+                if let error = error {
+                    Swift.print("Failed to save \(url): \(error)")
+                }
+        })
+
+        NSDocumentController.shared.addDocument(newDocument)
+        newDocument.addWindowController(windowController)
+        windowController.document = newDocument
+
+        self.document = newDocument
+
+        // Set this after updating the document (which calls update)
+        // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
+        self.inspectedContent = nil
+
+        return true
+    }
+
     private func setUpViews() {
         splitView.dividerStyle = .thin
         splitView.autosaveName = splitViewResorationIdentifier
@@ -393,38 +425,6 @@ class WorkspaceViewController: NSSplitViewController {
             }
         }
 
-        func performCreateFile(path: String, document: NSDocument, ofType documentType: String) -> Bool {
-            if let document = self.document {
-                guard self.close(document: document, discardingUnsavedChanges: false) else { return false }
-            }
-
-            guard let windowController = self.view.window?.windowController else { return false }
-
-            let url = URL(fileURLWithPath: path)
-            let newDocument = document
-            newDocument.fileURL = url
-            newDocument.save(
-                to: url,
-                ofType: documentType,
-                for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
-                    if let error = error {
-                        Swift.print("Failed to save \(url): \(error)")
-                    }
-            })
-
-            NSDocumentController.shared.addDocument(newDocument)
-            newDocument.addWindowController(windowController)
-            windowController.document = newDocument
-
-            self.document = newDocument
-
-            // Set this after updating the document (which calls update)
-            // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
-            self.inspectedContent = nil
-
-            return true
-        }
-
         fileNavigator.performCreateLogicFile = { path in
             let document = LogicDocument()
 
@@ -447,17 +447,17 @@ class WorkspaceViewController: NSSplitViewController {
                 )
             )
 
-            return performCreateFile(path: path, document: document, ofType: "Logic")
+            return self.performCreateFile(path: path, document: document, ofType: "Logic")
         }
 
         fileNavigator.performCreateComponent = { path in
             let document = ComponentDocument()
             document.component = CSComponent.makeDefaultComponent()
-            return performCreateFile(path: path, document: document, ofType: "DocumentType")
+            return self.performCreateFile(path: path, document: document, ofType: "DocumentType")
         }
 
         fileNavigator.performCreateMarkdownFile = { path in
-            return performCreateFile(path: path, document: MarkdownDocument(), ofType: "Markdown")
+            return self.performCreateFile(path: path, document: MarkdownDocument(), ofType: "Markdown")
         }
 
         fileNavigator.onAction = self.openDocument
@@ -498,14 +498,37 @@ class WorkspaceViewController: NSSplitViewController {
         addSplitViewItem(sidebarItem)
     }
 
-    private func update() {
+    func update() {
         inspectorView.content = inspectedContent
 
         companionViewController.contentView = codeEditorViewController.contentView
         codeEditorViewController.document = document
 
         guard let document = document else {
-            editorViewController.contentView = nil
+            if let path = lastOpenedDocumentPath, FileManager.default.isDirectory(path: path) {
+                let contentView = NoDocument(
+                    titleText: "This folder has no index page (README.md)",
+                    buttonTitleText: "Create index page"
+                )
+
+                contentView.onClick = {
+                    _ = self.performCreateFile(
+                        path: URL(fileURLWithPath: path).appendingPathComponent("README.md").path,
+                        document: MarkdownDocument(),
+                        ofType: "Markdown"
+                    )
+                }
+
+                editorViewController.contentView = contentView
+            } else {
+                let contentView = NSBox()
+                contentView.boxType = .custom
+                contentView.borderType = .noBorder
+                contentView.fillColor = Colors.contentBackground
+
+                editorViewController.contentView = contentView
+            }
+
             inspectorViewVisible = false
 
             let titleText = "No document"
@@ -740,7 +763,14 @@ class WorkspaceViewController: NSSplitViewController {
         }
     }
 
+    // We keep track of the last opened document path so that if it fails to open,
+    // we can show the correct placeholder content. However, there are probably other
+    // ways a document can be presented, so this is not perfect.
+    private var lastOpenedDocumentPath: String?
+
     func openDocument(_ path: String) {
+        lastOpenedDocumentPath = path
+
         guard let previousDocument = self.document else {
             if FileUtils.fileExists(atPath: path) == .none {
                 return
