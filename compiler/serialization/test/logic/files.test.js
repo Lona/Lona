@@ -1,5 +1,9 @@
-const { convertLogic } = require('../../lib/index')
-const { parse: parseSwift, print: printSwift } = require('../../lib/swift')
+/* eslint-disable import/no-unresolved */
+import { convertLogic } from '../../src/index'
+import {
+  parse as parseSwift,
+  print as printSwift,
+} from '../../src/convert/swift/tokens'
 
 jest.mock('uuid/v4', () => () => `0`)
 

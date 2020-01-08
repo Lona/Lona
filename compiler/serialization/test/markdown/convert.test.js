@@ -1,4 +1,5 @@
-const { convertDocument, SERIALIZATION_FORMAT } = require('../../lib/index')
+/* eslint-disable import/no-unresolved */
+import { convertDocument, SERIALIZATION_FORMAT } from '../../src/index'
 
 describe('mdx <-> json', () => {
   describe('root', () => {
@@ -17,7 +18,6 @@ a`
                 type: 'text',
                 data: {
                   value: 'heading',
-                  children: [],
                 },
               },
             ],
@@ -31,7 +31,6 @@ a`
                 type: 'text',
                 data: {
                   value: 'a',
-                  children: [],
                 },
               },
             ],
@@ -67,7 +66,6 @@ a`
             alt: 'alt',
             url: 'url',
             title: null,
-            children: [],
           },
         },
       ],

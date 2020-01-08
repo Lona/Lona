@@ -1,4 +1,5 @@
-const toMarkdown = require('../../lib/mdastUtilToMarkdown')
+/* eslint-disable import/no-unresolved */
+import toMarkdown from '../../src/mdast-transforms/toMarkdown'
 
 const aParagraph = {
   type: 'paragraph',
@@ -306,5 +307,18 @@ describe('convert mdast to markdown', () => {
     const mdx = toMarkdown(json)
 
     expect(mdx).toBe('1. a\n2. b')
+  })
+
+  test('page', () => {
+    const json = {
+      type: 'link',
+      url: 'child.md',
+      children: [{ type: 'text', value: 'child' }],
+      page: true,
+    }
+
+    const mdx = toMarkdown(json)
+
+    expect(mdx).toBe(`<a class="page" href="child.md">child</a>`)
   })
 })

@@ -2,7 +2,7 @@ import { indentBlockWithFirstLinePrefix } from '../formatting'
 import { MDAST } from 'mdx-ast'
 
 function assertNever(x: never): never {
-  throw new Error('Unknown mdx node: ' + x)
+  throw new Error('Unknown mdx node: ' + x['type'])
 }
 
 function childrenValue(node: MDAST.Parent, joinWith = ''): string {
@@ -110,6 +110,9 @@ ${node.value}
       return `![${node.alt}](${node.url})`
     }
     case 'link': {
+      if (node.page) {
+        return `<a class="page" href="${node.url}">${childrenValue(node)}</a>`
+      }
       return `[${childrenValue(node)}](${node.url})`
     }
     case 'strong': {

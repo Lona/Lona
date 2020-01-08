@@ -1,9 +1,11 @@
 import mdx from '@mdx-js/mdx'
 
 import FlattenImageParagraphs from 'mdast-flatten-image-paragraphs'
-import flattenParagraphs from './mdast/flattenParagraphs'
-import moveToRoot from './mdast/moveToRoot'
-import toMarkdown from './mdast/toMarkdown'
+import flattenParagraphs from './mdast-transforms/flattenParagraphs'
+import moveToRoot from './mdast-transforms/moveToRoot'
+import toMarkdown from './mdast-transforms/toMarkdown'
+import parsePage from './mdast-transforms/parsePage'
+import parseTokens from './mdast-transforms/parseTokens'
 
 import { SERIALIZATION_FORMAT } from './lona-format'
 
@@ -45,6 +47,13 @@ function map<U>(node: any, f: (node: any) => any): U {
   return f(node)
 }
 
+function removeExtras(ast: MDAST.Root) {
+  return map(ast, node => {
+    delete node.position
+    return node
+  })
+}
+
 export function parse(
   src: string,
   convertTokens: (
@@ -59,33 +68,18 @@ export function parse(
     flattenParagraphs('blockquote'),
     moveToRoot('image'),
     moveToRoot('blockquote'),
+    removeExtras,
+    parsePage(),
+    parseTokens(convertTokens),
+    moveToRoot('page'),
   ]
 
-  const flattened: MDAST.Root = transforms.reduce(
+  const transformed: MDAST.Root = transforms.reduce(
     (result, f) => f(result),
     mdast
   )
 
-  const withoutExtras = map(flattened, node => {
-    delete node.position
-    return node
-  })
-
-  const parsed = map(withoutExtras, node => {
-    if (
-      node.type === 'code' &&
-      node.lang === 'tokens' &&
-      typeof node.value == 'string'
-    ) {
-      node.parsed = JSON.parse(
-        convertTokens(node.value, SERIALIZATION_FORMAT.JSON)
-      )
-    }
-
-    return node
-  })
-
-  const normalizedFormat: AST.Root = map(parsed, node => {
+  const normalizedFormat: AST.Root = map(transformed, node => {
     const { type, ...rest } = node
 
     return { type, data: rest }
@@ -97,6 +91,20 @@ export function parse(
 // Convert our internal md format to mdast
 function toMdast(node: AST.Content): MDAST.Content {
   const { type, data } = node
+
+  if (node.type === 'page') {
+    return {
+      type: 'link',
+      url: node.data.url,
+      children: [
+        {
+          type: 'text',
+          value: node.data.value,
+        },
+      ],
+      page: true,
+    }
+  }
 
   if (data['children'] && Array.isArray(data['children'])) {
     // @ts-ignore

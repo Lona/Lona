@@ -2,7 +2,7 @@ import flatMap from 'unist-util-flatmap'
 
 import { MDAST } from 'mdx-ast'
 
-export default function moveToRoot(targetType: MDAST.Content['type']) {
+export default function moveToRoot(targetType: MDAST.Content['type'] | 'page') {
   return (ast: MDAST.Root) => {
     return flatMap(ast, (node: MDAST.Root | MDAST.Content) => {
       if (node.type === 'root') return [node]

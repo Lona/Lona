@@ -1,4 +1,5 @@
-const { printMdxNode } = require('../../lib/index')
+/* eslint-disable import/no-unresolved */
+import { printMdxNode } from '../../src/index'
 
 test('prints a markdown block', () => {
   const json = {

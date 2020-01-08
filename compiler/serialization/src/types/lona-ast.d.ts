@@ -231,6 +231,14 @@ declare module 'lona-ast' {
       type: 'jsx'
     }
 
+    interface Page extends Literal {
+      type: 'page'
+      data: {
+        url: string
+        value: string
+      }
+    }
+
     type JSX = JSXImport | JSXExport | JSXValue
 
     /**
@@ -266,6 +274,7 @@ declare module 'lona-ast' {
       | HTML
       | Code
       | JSX
+      | Page
 
     /**
       Frontmatter content represent out-of-band information about the document.
