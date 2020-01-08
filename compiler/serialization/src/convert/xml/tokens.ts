@@ -1,14 +1,15 @@
-const uuid = require('uuid/v4')
+import uuid from 'uuid/v4'
+import { parseXML, buildXML } from './utils'
 
 function createUUID() {
   return uuid().toUpperCase()
 }
 
-const literalToTypeMapping = {
-  boolean: 'Boolean',
-  number: 'Number',
-  string: 'String',
-  color: 'Color',
+enum literalToTypeMapping {
+  boolean = 'Boolean',
+  number = 'Number',
+  string = 'String',
+  color = 'Color',
 }
 const typeToLiteralMapping = Object.entries(literalToTypeMapping).reduce(
   (result, [key, value]) => {
@@ -18,56 +19,58 @@ const typeToLiteralMapping = Object.entries(literalToTypeMapping).reduce(
   {}
 )
 
-const singleChildMapping = {
-  declaration: 'content',
-  variable: 'initializer',
-  literalExpression: 'literal',
-  argument: 'expression',
-  memberExpression: 'expression',
+enum singleChildMapping {
+  declaration = 'content',
+  variable = 'initializer',
+  literalExpression = 'literal',
+  argument = 'expression',
+  memberExpression = 'expression',
 }
 
-const multipleChildMapping = {
-  program: 'block',
-  namespace: 'declarations',
-  topLevelDeclarations: 'declarations',
-  record: 'declarations',
-  functionCallExpression: 'arguments',
+enum multipleChildMapping {
+  program = 'block',
+  namespace = 'declarations',
+  topLevelDeclarations = 'declarations',
+  record = 'declarations',
+  functionCallExpression = 'arguments',
 }
 
-const implicitPlaceholderMapping = {
-  program: 'block',
-  namespace: 'declarations',
-  topLevelDeclarations: 'declarations',
-  record: 'declarations',
-  functionCallExpression: 'arguments',
+enum implicitPlaceholderMapping {
+  program = 'block',
+  namespace = 'declarations',
+  topLevelDeclarations = 'declarations',
+  record = 'declarations',
+  functionCallExpression = 'arguments',
 }
 
-const nodeRenaming = {
-  topLevelDeclarations: 'Declarations',
+enum nodeRenaming {
+  topLevelDeclarations = 'Declarations',
 }
 
-const reverseNodeRenaming = {
-  Declarations: 'topLevelDeclarations',
+enum reverseNodeRenaming {
+  Declarations = 'topLevelDeclarations',
 }
 
-const patternNodeMapping = {
-  importDeclaration: 'name',
-  variable: 'name',
-  namespace: 'name',
+enum patternNodeMapping {
+  importDeclaration = 'name',
+  variable = 'name',
+  namespace = 'name',
 }
 
-const identifierNodeMapping = {
-  memberExpression: 'memberName',
+enum identifierNodeMapping {
+  memberExpression = 'memberName',
 }
 
-const annotationNodeMapping = {
-  variable: 'annotation',
+enum annotationNodeMapping {
+  variable = 'annotation',
 }
 
-const upperFirst = string => string.slice(0, 1).toUpperCase() + string.slice(1)
-const lowerFirst = string => string.slice(0, 1).toLowerCase() + string.slice(1)
+const upperFirst = (string: string) =>
+  string.slice(0, 1).toUpperCase() + string.slice(1)
+const lowerFirst = (string: string) =>
+  string.slice(0, 1).toLowerCase() + string.slice(1)
 
-function convertLogicJsonToXml(logicJson) {
+export function print(logicJson) {
   function isPlaceholder(item, index, list) {
     if (index === list.length - 1 && item.type === 'placeholder') {
       return false
@@ -128,7 +131,12 @@ function convertLogicJsonToXml(logicJson) {
 
     const nodeName = nodeRenaming[type] || upperFirst(type)
 
-    const attributes = {}
+    const attributes: {
+      name?: string
+      type?: string
+      label?: string
+      value?: any
+    } = {}
 
     if (patternNodeMapping[type]) {
       attributes.name = data[patternNodeMapping[type]].name
@@ -234,10 +242,10 @@ function convertLogicJsonToXml(logicJson) {
     }
   }
 
-  return processStandardNode(logicJson)
+  return buildXML(processStandardNode(logicJson))
 }
 
-function convertLogicXmlToJson(root) {
+export function parse(root) {
   function makePlaceholder() {
     return {
       data: { id: createUUID() },
@@ -263,7 +271,7 @@ function convertLogicXmlToJson(root) {
   }
 
   // TODO: Handle nested generics
-  function deserializeAnnotation(string) {
+  function deserializeAnnotation(string: string) {
     const startParens = string.indexOf('(')
     const endParens = string.lastIndexOf(')')
 
@@ -538,7 +546,5 @@ function convertLogicXmlToJson(root) {
     }
   }
 
-  return processStandardNode(root)
+  return processStandardNode(parseXML(root))
 }
-
-module.exports = { convertLogicJsonToXml, convertLogicXmlToJson }

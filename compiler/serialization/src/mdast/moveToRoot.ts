@@ -1,10 +1,12 @@
-const flatMap = require('unist-util-flatmap')
+import flatMap from 'unist-util-flatmap'
 
-function moveToRoot(targetType) {
-  return ast => {
-    return flatMap(ast, node => {
+import { MDAST } from 'mdx-ast'
+
+export default function moveToRoot(targetType: MDAST.Content['type']) {
+  return (ast: MDAST.Root) => {
+    return flatMap(ast, (node: MDAST.Root | MDAST.Content) => {
       if (node.type === 'root') return [node]
-      if (!node.children) return [node]
+      if (!node.children || !Array.isArray(node.children)) return [node]
       if (node.children.every(child => child.type !== targetType)) return [node]
       const out = []
       let latestContiguous = Object.assign({}, node, { children: [] })
@@ -26,5 +28,3 @@ function moveToRoot(targetType) {
     })
   }
 }
-
-module.exports = moveToRoot
