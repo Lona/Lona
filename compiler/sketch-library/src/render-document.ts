@@ -4,11 +4,11 @@ import path from 'path'
 import parseColor from 'color-parse'
 import { TextStyles } from 'react-sketchapp'
 import { FileFormat1 } from '@sketch-hq/sketch-file-format-ts'
+import { ColorToken, TextStyleToken, ShadowToken } from 'lonac/types'
 
 import createComponentLayerCollection from './component-layer-collection'
 import { Component } from './measure-component'
 import { Preset } from './device-info'
-import { ColorToken, TextStyleToken, ShadowToken } from './flat-tokens'
 
 type Config = {
   paths: {

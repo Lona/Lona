@@ -3,15 +3,16 @@ import os from 'os'
 import path from 'path'
 import { exec } from 'child_process'
 import mkdirp from 'mkdirp'
-import { Preset } from './device-info'
-import renderDocument from './render-document'
-import modifySketchTemplate from './modify-sketch-template'
 import {
   ConvertedWorkspace,
   ColorToken,
   TextStyleToken,
   ShadowToken,
-} from './flat-tokens'
+} from 'lonac/types'
+
+import { Preset } from './device-info'
+import renderDocument from './render-document'
+import modifySketchTemplate from './modify-sketch-template'
 
 // https://gist.github.com/branneman/8048520#gistcomment-1249909
 // Add node_modules to the path, so they're resolved even when loading modules
