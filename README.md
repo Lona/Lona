@@ -71,10 +71,11 @@ If you're looking for a sample of the generated code, check out [the test cases]
 ## Core Team
 
 - Created by [@dvnabbott](https://twitter.com/dvnabbott)
-- Lona Compiler development by [@outdooricon](https://github.com/outdooricon)
+- Design tool integrations and infrastructure by [@mathieudutour](https://twitter.com/mathieudutour)
 
 ### Contributors
 
+- Lona Compiler development by [@outdooricon](https://github.com/outdooricon)
 - Design & development help by [@ryngonzalez](https://twitter.com/ryngonzalez)
 - Gorgeous logo by [@pablocar0](https://twitter.com/pablocar0)
 - Lona Studio development by [Nghia Tran](https://github.com/NghiaTranUIT)
