@@ -1,7 +1,6 @@
 ## What
 
-I added a new button / fixed this bug / added this endpoint. It looks like this
-<screenshot / endpoint url / whatever>
+I added a new button / fixed this bug / added this endpoint. It looks like this <screenshot / endpoint url / whatever>
 
 ## Why
 
@@ -9,8 +8,8 @@ I did this change in order to...
 
 ## Major Changes
 
-* I added the modules for this change…
-* And this other thing too!
+- I added the modules for this change…
+- And this other thing too!
 
 ## Requirements for Merging
 
@@ -27,9 +26,10 @@ I did this change in order to...
 
 I'm looking for feedback on:
 
-* <this important decision>
-* <this design>
-* <this code style>
+- <this important decision>
+- <this design>
+- <this code style>
 
 <!-- Tag relevant people for example -->
-cc: @dabbott, @ryngonzalez
+
+cc: @dabbott, @mathieudutour
