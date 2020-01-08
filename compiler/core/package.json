@@ -7,6 +7,7 @@
   "bin": "./build/bin.js",
   "files": [
     "build",
+    "types",
     "README.md"
   ],
   "scripts": {
