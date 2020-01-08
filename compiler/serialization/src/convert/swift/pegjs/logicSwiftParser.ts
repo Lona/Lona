@@ -1,6 +1,6 @@
-const pegjs = require('pegjs')
-const fs = require('fs')
-const path = require('path')
+import pegjs from 'pegjs'
+import fs from 'fs'
+import path from 'path'
 
 const grammar = fs.readFileSync(
   path.resolve(__dirname, 'logic.swift.pegjs'),
@@ -16,4 +16,4 @@ const parser = pegjs.generate(grammar, {
   ],
 })
 
-module.exports = parser
+export default parser

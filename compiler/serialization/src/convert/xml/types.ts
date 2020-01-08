@@ -1,5 +1,7 @@
-function convertTypesJsonToXml(typesJson) {
-  return typesJson.types
+import { parseXML, buildXML } from './utils'
+
+export function print(typesJson) {
+  const types = typesJson.types
     .map(type => {
       const {
         case: kind,
@@ -103,10 +105,12 @@ function convertTypesJsonToXml(typesJson) {
       }
     })
     .filter(x => !!x)
+
+  return buildXML({ name: 'root', children: types })
 }
 
-function convertTypesXmlToJson(typesDefinition) {
-  const { children: definitions } = typesDefinition
+export function parse(typesDefinition) {
+  const { children: definitions } = parseXML(typesDefinition)
 
   return {
     types: definitions.map(definition => {
@@ -215,5 +219,3 @@ function convertTypesXmlToJson(typesDefinition) {
     }),
   }
 }
-
-module.exports = { convertTypesJsonToXml, convertTypesXmlToJson }

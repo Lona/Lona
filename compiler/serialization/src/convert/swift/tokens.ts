@@ -1,15 +1,15 @@
-const { indentBlock } = require('./formatting')
-const parser = require('./pegjs/logicSwiftParser')
+import { indentBlock } from '../../formatting'
+import parser from './pegjs/logicSwiftParser'
 
-function parse(code, options) {
+export function parse(code: string, options?: {}) {
   return parser.parse(code, options)
 }
 
-function printWithOptions(node, options = {}) {
+export function print(node, options: { indent?: number } = {}) {
   const { indent = 2 } = options
 
-  function print(node) {
-    const { type, data } = node
+  function printNode(node) {
+    const { data } = node
 
     switch (node.type) {
       case 'program': {
@@ -17,7 +17,7 @@ function printWithOptions(node, options = {}) {
 
         return block
           .filter(node => node.type !== 'placeholder')
-          .map(print)
+          .map(printNode)
           .join('\n\n')
       }
       case 'topLevelDeclarations': {
@@ -25,14 +25,14 @@ function printWithOptions(node, options = {}) {
 
         return declarations
           .filter(node => node.type !== 'placeholder')
-          .map(print)
+          .map(printNode)
           .join('\n\n')
       }
       // Declaration statement
       case 'declaration': {
         const { content } = data
 
-        return print(content)
+        return printNode(content)
       }
       case 'importDeclaration': {
         const {
@@ -56,7 +56,7 @@ function printWithOptions(node, options = {}) {
 
         const printedDeclarations = normalizedDeclarations
           .filter(declaration => declaration.type !== 'placeholder')
-          .map(x => print(x))
+          .map(x => printNode(x))
           .map(x => indentBlock(x, indent))
           .join('\n')
 
@@ -72,7 +72,7 @@ ${printedDeclarations}
 
         const printedDeclarations = declarations
           .filter(declaration => declaration.type !== 'placeholder')
-          .map(x => print(x))
+          .map(x => printNode(x))
           .map(x => indentBlock(x, indent))
           .join('\n')
 
@@ -92,9 +92,9 @@ ${printedDeclarations}
           ? declarationModifier + ' '
           : ''
 
-        return `${printedDeclarationModifier}let ${name}: ${print(
+        return `${printedDeclarationModifier}let ${name}: ${printNode(
           annotation
-        )} = ${print(initializer)}`
+        )} = ${printNode(initializer)}`
       }
       case 'typeIdentifier': {
         const {
@@ -103,7 +103,7 @@ ${printedDeclarations}
         } = data
 
         return genericArguments.length > 0
-          ? `${string}<${genericArguments.map(print).join(', ')}>`
+          ? `${string}<${genericArguments.map(printNode).join(', ')}>`
           : string
       }
       case 'functionCallExpression': {
@@ -111,15 +111,17 @@ ${printedDeclarations}
 
         const printedArguments = data.arguments
           .filter(node => node.type !== 'placeholder')
-          .map(print)
+          .map(printNode)
           .join(', ')
 
-        return `${print(expression)}(${printedArguments})`
+        return `${printNode(expression)}(${printedArguments})`
       }
       case 'argument': {
         const { expression, label } = data
 
-        return label ? `${label}: ${print(expression)}` : print(expression)
+        return label
+          ? `${label}: ${printNode(expression)}`
+          : printNode(expression)
       }
       case 'memberExpression': {
         const {
@@ -127,7 +129,7 @@ ${printedDeclarations}
           memberName: { string },
         } = data
 
-        return print(expression) + '.' + string
+        return printNode(expression) + '.' + string
       }
       case 'identifierExpression': {
         const {
@@ -139,7 +141,7 @@ ${printedDeclarations}
       case 'literalExpression': {
         const { literal } = data
 
-        return print(literal)
+        return printNode(literal)
       }
       case 'boolean':
       case 'number': {
@@ -162,7 +164,7 @@ ${printedDeclarations}
 
         const printedExpressions = value
           .filter(node => node.type !== 'placeholder')
-          .map(print)
+          .map(printNode)
           .map(x => indentBlock(x, indent))
           .join('\n\n')
 
@@ -173,10 +175,5 @@ ${printedExpressions}
     }
   }
 
-  return print(node)
-}
-
-module.exports = {
-  parse,
-  print: printWithOptions,
+  return printNode(node)
 }

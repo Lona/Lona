@@ -1,7 +1,7 @@
-const xmlbuilder = require('xmlbuilder')
-const { parseString } = require('xml2js')
+import xmlbuilder from 'xmlbuilder'
+import { parseString } from 'xml2js'
 
-function build(root) {
+export function buildXML(root): string {
   function processChildren(builder, children) {
     // eslint-disable-next-line no-use-before-define
     return children.reduce(process, builder).up()
@@ -34,9 +34,9 @@ function build(root) {
   return xmlString
 }
 
-function parse(xmlString) {
-  let parsed
-  let error
+export function parseXML(xmlString: string) {
+  let parsed: any
+  let error: Error
 
   parseString(
     xmlString,
@@ -48,7 +48,7 @@ function parse(xmlString) {
   )
 
   if (error) {
-    throw new Error(error)
+    throw error
   }
 
   function unwrap(xmlNodeDescription) {
@@ -64,9 +64,4 @@ function parse(xmlString) {
   const root = Object.values(parsed)[0]
 
   return unwrap(root)
-}
-
-module.exports = {
-  build,
-  parse,
 }

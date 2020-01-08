@@ -3,13 +3,13 @@ const webpack = require('webpack')
 
 const paths = {
   dist: resolve(__dirname, 'dist'),
-  src: resolve(__dirname, 'lib'),
+  src: resolve(__dirname, 'src'),
 }
 
 module.exports = [
   {
     mode: 'production',
-    entry: join(paths.src, 'index.js'),
+    entry: join(paths.src, 'index.ts'),
     target: 'web',
     output: {
       path: paths.dist,
@@ -30,10 +30,11 @@ module.exports = [
       fs: 'empty',
     },
     resolve: {
+      extensions: ['.ts', '.js', '.json'],
       alias: {
         './pegjs/logicSwiftParser': resolve(
-          __dirname,
-          'lib/pegjs/logic.swift.pegjs'
+          paths.src,
+          'convert/swift/pegjs/logic.swift.pegjs'
         ),
       },
     },
@@ -46,7 +47,7 @@ module.exports = [
           },
         },
         {
-          test: /\.m?js$/,
+          test: /\.ts$/,
           exclude: /(node_modules)/,
           use: {
             loader: 'babel-loader',
