@@ -1,6 +1,6 @@
 {
   "name": "@lona/serialization",
-  "version": "0.0.14",
+  "version": "0.0.17",
   "description": "Convert Lona files between serialization formats",
   "main": "build/index.js",
   "bin": "./bin.js",
@@ -40,6 +40,7 @@
     "mdast-flatten-image-paragraphs": "^1.0.0",
     "mdast-move-images-to-root": "^1.0.0",
     "pegjs": "^0.10.0",
+    "rehype": "^9.0.1",
     "unist-util-flatmap": "^1.0.0",
     "uuid": "^3.3.2",
     "xml2js": "^0.4.19",
@@ -55,6 +56,7 @@
     "esm": "^3.2.22",
     "jest": "^24.8.0",
     "pegjs-loader": "^0.5.5",
+    "prettier": "^1.19.1",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3"
   },

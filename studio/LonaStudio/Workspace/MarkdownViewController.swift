@@ -70,6 +70,11 @@ class MarkdownViewController: NSViewController {
         set { contentView.onChangeBlocks = newValue }
     }
 
+    public var onNavigateToPage: ((String) -> Bool)? {
+        get { return contentView.onClickPageLink }
+        set { contentView.onClickPageLink = newValue }
+    }
+
     // MARK: Private
 
     override func loadView() {
@@ -92,6 +97,12 @@ class MarkdownViewController: NSViewController {
         containerView.addSubview(contentView)
 
         contentView.fillColor = .clear
+
+        contentView.onClickLink = { link in
+            guard let url = URL(string: link) else { return true }
+            NSWorkspace.shared.open(url)
+            return true
+        }
 
         view = contentView
     }

@@ -737,6 +737,11 @@ class WorkspaceViewController: NSSplitViewController {
 
             editorViewController.contentView = markdownViewController.view
 
+            markdownViewController.onNavigateToPage = { [unowned self] page in
+                guard let fileURL = document.fileURL else { return false }
+                self.openDocument(fileURL.deletingLastPathComponent().appendingPathComponent(page).path)
+                return true
+            }
             markdownViewController.content = document.content
             markdownViewController.onChange = { [unowned self] value in
                 let value = value.isEmpty ? [BlockEditor.Block.makeDefaultEmptyBlock()] : value

@@ -88,6 +88,11 @@ ${node.value}
     case 'break': {
       return '  \n'
     }
+    // Custom
+    case 'page': {
+      const { url, value } = node
+      return `<a class="page" href="${url}">${value}</a>`
+    }
     default:
       throw new Error(`Unknown mdx node ${type}`)
   }
