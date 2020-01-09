@@ -95,7 +95,7 @@ let convert = (token: TokenTypes.token): string => {
               [
                 {
                   XmlAst.name: "class",
-                  value: "lona-token-preview lona-token-preview-color",
+                  value: "lona-token-preview lona-token-preview-shadow",
                 },
               ]
               @ (
@@ -153,7 +153,7 @@ let convert = (token: TokenTypes.token): string => {
               [
                 {
                   XmlAst.name: "class",
-                  value: "lona-token-preview lona-token-preview-color",
+                  value: "lona-token-preview lona-token-preview-textStyle",
                 },
               ]
               @ (
