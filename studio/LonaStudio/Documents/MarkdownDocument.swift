@@ -51,7 +51,11 @@ class MarkdownDocument: NSDocument {
         guard let content = MarkdownFile.makeBlocks(data) else {
             throw NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotOpenFile, userInfo: nil)
         }
-        self.content = content
+
+        // Ensure that a document has at least one editable block when we load it
+        self.content = (content.last == nil || content.last?.isEmpty == false)
+            ? content + [BlockEditor.Block.makeDefaultEmptyBlock()]
+            : content
 
         if let url = fileURL {
             LogicModule.invalidateCaches(url: url, newValue: program)

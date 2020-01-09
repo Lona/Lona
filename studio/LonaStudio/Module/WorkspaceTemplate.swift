@@ -14,9 +14,11 @@ private let designTokensReadmeContents = """
 
 Our design system contains the following token definitions:
 
-- Colors
-- Text Styles
-- Shadows
+<a class="page" href="Colors.md">Colors</a>
+
+<a class="page" href="TextStyles.md">Text Styles</a>
+
+<a class="page" href="Shadows.md">Shadows</a>
 """
 
 private let componentLibraryReadmeContents = """

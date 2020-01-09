@@ -75,6 +75,11 @@ class MarkdownViewController: NSViewController {
         set { contentView.onClickPageLink = newValue }
     }
 
+    public var onRequestCreatePage: ((Int, Bool) -> Void)? {
+        get { return contentView.onRequestCreatePage }
+        set { contentView.onRequestCreatePage = newValue }
+    }
+
     // MARK: Private
 
     override func loadView() {

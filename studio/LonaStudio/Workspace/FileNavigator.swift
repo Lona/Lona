@@ -131,14 +131,12 @@ class FileNavigator: NSBox {
         let fileURL = URL(fileURLWithPath: path)
         let fileName = fileURL.lastPathComponent
 
-        let alert = NSAlert()
-        alert.messageText = "Are you sure you want to delete \(fileName)?"
-        alert.addButton(withTitle: "Delete")
-        alert.addButton(withTitle: "Cancel")
+        let response = Alert(
+            items: ["Cancel", "Delete"],
+            messageText: "Are you sure you want to delete \(fileName)?"
+        ).run()
 
-        let response = alert.runModal()
-
-        if response == NSApplication.ModalResponse.alertFirstButtonReturn {
+        if response == "Delete" {
             do {
                 try FileManager.default.removeItem(at: fileURL)
             } catch {
@@ -169,7 +167,7 @@ class FileNavigator: NSBox {
 
             if CSUserPreferences.useExperimentalFeatures {
                 menu.addItem(NSMenuItem(title: "New Component", onClick: { [unowned self] in
-                    guard let newFileName = self.promptForName(
+                    guard let newFileName = Alert.runTextInputAlert(
                         messageText: "Enter a new component name",
                         placeholderText: "Component name") else { return }
 
@@ -178,7 +176,7 @@ class FileNavigator: NSBox {
             }
 
             menu.addItem(NSMenuItem(title: "New Document", onClick: { [unowned self] in
-                guard let newFileName = self.promptForName(
+                guard let newFileName = Alert.runTextInputAlert(
                     messageText: "Enter a new document name",
                     placeholderText: "File name") else { return }
 
@@ -186,7 +184,7 @@ class FileNavigator: NSBox {
             }))
 
             menu.addItem(NSMenuItem(title: "New Folder", onClick: { [unowned self] in
-                guard let newFileName = self.promptForName(
+                guard let newFileName = Alert.runTextInputAlert(
                     messageText: "Enter a new folder name",
                     placeholderText: "Folder name") else { return }
 
@@ -236,10 +234,7 @@ class FileNavigator: NSBox {
                     do {
                         try FileManager.default.copyItem(atPath: path, toPath: url.path)
                     } catch {
-                        let alert = NSAlert()
-                        alert.messageText = "Couldn't copy component to \(url.path)"
-                        alert.addButton(withTitle: "OK")
-                        alert.runModal()
+                        Alert(items: ["OK"], messageText: "Couldn't copy component to \(url.path)").run()
                         return
                     }
 
@@ -266,28 +261,6 @@ class FileNavigator: NSBox {
     }
 
     private func update() {}
-
-    private func promptForName(messageText: String, placeholderText: String) -> String? {
-        let alert = NSAlert()
-        alert.messageText = messageText
-        alert.addButton(withTitle: "OK")
-        alert.addButton(withTitle: "Cancel")
-        let textView = NSTextField(frame: NSRect(x: 0, y: 0, width: 300, height: 20))
-        textView.stringValue = ""
-        textView.placeholderString = placeholderText
-        alert.accessoryView = textView
-        alert.window.initialFirstResponder = textView
-
-        alert.layout()
-
-        let response = alert.runModal()
-
-        if response == NSApplication.ModalResponse.alertFirstButtonReturn {
-            return textView.stringValue
-        } else {
-            return nil
-        }
-    }
 
     private func imageForFile(atPath path: String, size: NSSize) -> NSImage {
         let url = URL(fileURLWithPath: path)

@@ -10,6 +10,7 @@ import AppKit
 import FileTree
 import Foundation
 import Logic
+import Differ
 
 private func getDirectory() -> URL? {
     let dialog = NSOpenPanel()
@@ -737,22 +738,160 @@ class WorkspaceViewController: NSSplitViewController {
 
             editorViewController.contentView = markdownViewController.view
 
-            markdownViewController.onNavigateToPage = { [unowned self] page in
+            let handleChange: ([BlockEditor.Block]) -> Bool = { [unowned self] value in
                 guard let fileURL = document.fileURL else { return false }
-                self.openDocument(fileURL.deletingLastPathComponent().appendingPathComponent(page).path)
-                return true
-            }
-            markdownViewController.content = document.content
-            markdownViewController.onChange = { [unowned self] value in
+
+                func pages(blocks: [BlockEditor.Block]) -> [String] {
+                    blocks.compactMap {
+                        switch $0.content {
+                        case .page(title: _, target: let target):
+                            return target
+                        default:
+                            return nil
+                        }
+                    }
+                }
+
+                let oldPages = pages(blocks: document.content)
+                let newPages = pages(blocks: value)
+
+                let diff = oldPages.diff(newPages)
+                let deleted: [String] = diff.compactMap {
+                    switch $0 {
+                    case .delete(at: let index):
+                        return oldPages[index]
+                    case .insert:
+                        return nil
+                    }
+                }
+
+                if !deleted.isEmpty {
+                    let pageNoun = "page\(deleted.count > 1 ? "s" : "")"
+                    if Alert.runConfirmationAlert(
+                        confirmationText: "Delete \(pageNoun)",
+                        messageText: "This will delete the \(pageNoun) \(deleted.map { "'\($0)'" }.joined(separator: ", ")) and can't be undone. Continue?"
+                    ) {
+                        deleted.forEach { pageName in
+                            let pageURL = fileURL.deletingLastPathComponent().appendingPathComponent(pageName)
+                            try? FileManager.default.removeItem(at: pageURL)
+                        }
+                    } else {
+                        return false
+                    }
+                }
+
                 let value = value.isEmpty ? [BlockEditor.Block.makeDefaultEmptyBlock()] : value
 
                 document.content = value
                 self.markdownViewController.content = value
 
                 document.updateChangeCount(.changeDone)
-                self.editorViewController.subtitleText = " — Edited"
+
+                if deleted.isEmpty {
+                    self.editorViewController.subtitleText = " — Edited"
+                } else {
+                    document.save(withDelegate: nil, didSave: nil, contextInfo: nil)
+                }
+
                 return true
             }
+
+            markdownViewController.onNavigateToPage = { [unowned self] page in
+                guard let fileURL = document.fileURL else { return false }
+                self.openDocument(fileURL.deletingLastPathComponent().appendingPathComponent(page).path)
+                return true
+            }
+            markdownViewController.content = document.content
+            markdownViewController.onRequestCreatePage = { [unowned self] index, shouldReplace in
+                func createChildPage(withinIndexPage indexPageURL: URL, pageName: String) {
+                    var pageURL = indexPageURL.deletingLastPathComponent().appendingPathComponent(pageName)
+                    if pageURL.pathExtension != "md" {
+                        pageURL = pageURL.appendingPathExtension("md")
+                    }
+
+                    let title = pageURL.deletingPathExtension().lastPathComponent
+                    let newBlock = BlockEditor.Block(.page(title: title, target: pageURL.lastPathComponent), .none)
+
+                    var blocks = document.content
+                    if shouldReplace {
+                        blocks[index] = newBlock
+                    } else {
+                        blocks.insert(newBlock, at: index)
+                    }
+
+                    // Insert a link to the new markdown page
+                    _ = handleChange(blocks)
+
+                    // Save the index page containing the link to the new page
+                    document.save(to: indexPageURL, ofType: "Markdown", for: .saveOperation, completionHandler: { error in
+                        if let newDocument = try? NSDocumentController.shared.makeUntitledDocument(ofType: "Markdown") as? MarkdownDocument {
+                            newDocument.content = [
+                                .init(.text(.init(string: title), .h1), .none),
+                                .makeDefaultEmptyBlock()
+                            ]
+
+                            // Create the new markdown page
+                            _ = self.performCreateFile(path: pageURL.path, document: newDocument, ofType: "Markdown")
+                        }
+                    })
+                }
+
+                // Convert Page.md to Page/README.md
+                // - Make the Page directory
+                // - Change the URL of the current document to Page/README.md and save it
+                // - Delete the old Page.md
+                func convertReadmeToDirectory(readmeURL fileURL: URL, completionHandler: @escaping ((Result<URL, Error>) -> Void)) {
+                    let currentPageName = fileURL.deletingPathExtension().lastPathComponent
+                    let directoryURL = fileURL.deletingLastPathComponent().appendingPathComponent(currentPageName).deletingPathExtension()
+
+                    do {
+                        try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: false, attributes: [:])
+                    } catch let error {
+                        Swift.print("Error creating directory \(directoryURL)", error)
+                        completionHandler(.failure(error))
+                        return
+                    }
+
+                    let readmeURL = directoryURL.appendingPathComponent("README.md")
+
+                    document.save(to: readmeURL, ofType: "Markdown", for: .saveAsOperation, completionHandler: { error in
+                        if let error = error {
+                            Swift.print("Error saving README file \(readmeURL)", error)
+                            completionHandler(.failure(error))
+                            return
+                        }
+
+                        do {
+                            try FileManager.default.removeItem(at: fileURL)
+                        } catch let error {
+                            completionHandler(.failure(error))
+                            return
+                        }
+
+                        completionHandler(.success(readmeURL))
+                    })
+                }
+
+                guard let fileURL = document.fileURL else { return }
+                guard let pageName = Alert.runTextInputAlert(
+                    messageText: "Enter the name of your new page",
+                    placeholderText: "Page name")
+                    else { return }
+
+                if fileURL.lastPathComponent == "README.md" {
+                    createChildPage(withinIndexPage: fileURL, pageName: pageName)
+                } else {
+                    convertReadmeToDirectory(readmeURL: fileURL, completionHandler: { result in
+                        switch result {
+                        case .success(let readmeURL):
+                            createChildPage(withinIndexPage: readmeURL, pageName: pageName)
+                        case .failure(let error):
+                            Swift.print("Failed to convert readme to directory", error)
+                        }
+                    })
+                }
+            }
+            markdownViewController.onChange = handleChange
         } else if let document = document as? DirectoryDocument {
             inspectorViewVisible = false
             if let content = document.content {
