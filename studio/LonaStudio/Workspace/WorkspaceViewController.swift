@@ -966,6 +966,7 @@ class WorkspaceViewController: NSSplitViewController {
 
                 if documentWasAlreadyOpen {
                     newDocument.showWindows()
+                    self.document = newDocument
                     return
                 }
 

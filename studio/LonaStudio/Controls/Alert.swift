@@ -67,6 +67,19 @@ class Alert<Item: RawRepresentable> where Item.RawValue == String {
 }
 
 extension Alert where Item == String {
+    static func runInformationalAlert(
+        messageText: String? = nil,
+        informativeText: String? = nil
+    ) {
+        let alert = Alert<String>(
+            items: ["OK"],
+            messageText: messageText,
+            informativeText: informativeText
+        )
+
+        alert.run()
+    }
+
     static func runConfirmationAlert(
         confirmationText: String,
         messageText: String? = nil,
@@ -74,7 +87,8 @@ extension Alert where Item == String {
     ) -> Bool {
         let alert = Alert<String>(
             items: ["Cancel", confirmationText],
-            messageText: messageText
+            messageText: messageText,
+            informativeText: informativeText
         )
 
         switch alert.run() {

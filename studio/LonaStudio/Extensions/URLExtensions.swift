@@ -27,4 +27,9 @@ extension URL {
 
         return URL(string: resolved) ?? self
     }
+
+    func isLonaWorkspace() -> Bool {
+        let configURL = self.appendingPathComponent("lona.json")
+        return FileManager.default.fileExists(atPath: configURL.path)
+    }
 }

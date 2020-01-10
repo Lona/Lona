@@ -17,4 +17,13 @@ extension FileManager {
             return false
         }
     }
+
+    public func fileExists(atPath path: String) -> Bool {
+        var isDir: ObjCBool = false
+        if FileManager.default.fileExists(atPath: path, isDirectory: &isDir) {
+            return true
+        } else {
+            return false
+        }
+    }
 }

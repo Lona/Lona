@@ -47,67 +47,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func application(_ sender: NSApplication, openFile filename: String) -> Bool {
-        let url = URL(fileURLWithPath: filename)
+        let fileURL = URL(fileURLWithPath: filename)
 
-        // Only allow opening files if we can find a workspace
-        guard let workspaceUrl = LonaModule.findNearestWorkspace(containing: url) else {
-            let alert = Alert(
-                items: ["OK"],
-                messageText: "Could not find workspace",
-                informativeText: "The file '\(url.path)' is not a descendant of a workspace directory. A workspace directory contains a 'lona.json' file.")
+        DocumentController.shared.openDocument(withContentsOf: fileURL, display: true, completionHandler: { document, _, error in
+            Swift.print(document, error)
+        })
 
-            _ = alert.run()
-
-            return false
-        }
-
-        if LonaModule.current.url != workspaceUrl {
-            // If the application has already launched, prompt the user before switching workspaces.
-            // Otherwise, switch workspaces automatically (e.g. double clicking a .component file in Finder)
-            if applicationDidLaunch && url != workspaceUrl {
-                let alert = Alert(
-                    items: ["Cancel", "Yes"],
-                    messageText: "Switch workspaces?",
-                    informativeText: "The file '\(url.path)' is in a different workspace and can only be opened if we first switch workspaces. Do you want to switch workspaces and open the file?")
-
-                let result = alert.run()
-
-                if result != "Yes" {
-                    return false
-                }
-            }
-
-            if !setWorkspace(url: workspaceUrl) {
-                return false
-            }
-        }
-
-        switch FileUtils.fileExists(atPath: filename) {
-        case .directory:
-            guard let document = try? NSDocumentController.shared.makeDocument(withContentsOf: url, ofType: "DirectoryDocument") else {
-                Swift.print("Failed to open", url)
-                return false
-            }
-
-            NSDocumentController.shared.addDocument(document)
-
-            showComponentBrowser(document)
-
-            return true
-        case .file:
-            NSDocumentController.shared.openDocument(
-                withContentsOf: url,
-                display: true,
-                completionHandler: { _, _, _ in })
-            return true
-        case .none:
-            return false
-        }
+        return true
     }
 
-    var preferencesWindow: MASPreferencesWindowController?
+    private static var preferencesWindow: MASPreferencesWindowController?
 
-    private func reloadPreferencesWindow() {
+    public static func reloadPreferencesWindow() {
         preferencesWindow?.viewControllers.forEach { viewController in
             if let workspacePreferences = viewController as? WorkspacePreferencesViewController {
                 workspacePreferences.render()
@@ -116,16 +67,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @IBAction func showPreferences(_ sender: AnyObject) {
-        if preferencesWindow == nil {
+        if AppDelegate.preferencesWindow == nil {
             let workspace = WorkspacePreferencesViewController()
             workspace.viewDidLoad()
 
-            preferencesWindow = MASPreferencesWindowController(viewControllers: [workspace], title: "Preferences")
+            AppDelegate.preferencesWindow = MASPreferencesWindowController(viewControllers: [workspace], title: "Preferences")
         }
 
-        reloadPreferencesWindow()
+        AppDelegate.reloadPreferencesWindow()
 
-        preferencesWindow?.showWindow(sender)
+        AppDelegate.preferencesWindow?.showWindow(sender)
     }
 
     @IBAction func showWorkspaceWindow(_ sender: AnyObject) {
@@ -153,7 +104,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             screen: nil)
 
         let visualEffectView = NSVisualEffectView()
-//        visualEffectView.translatesAutoresizingMaskIntoConstraints = true
         visualEffectView.material = .ultraDark
         visualEffectView.appearance = NSAppearance(named: NSAppearance.Name.vibrantDark)
 
@@ -202,27 +152,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             welcome.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
 
             welcome.onCreateProject = {
-                func finished(template: WorkspaceTemplate) {
-                    guard let url = self.createWorkspaceDialog() else { return }
-
-                    let ok = self.createWorkspace(url: url, workspaceTemplate: template)
-                    if !ok {
-                        Swift.print("Failed to create workspace")
-                        return
-                    }
-
-                    if self.setWorkspace(url: url), let document = self.openWorkspaceDocument() {
-                        window.close()
-                        self.showComponentBrowser(document)
-                    }
-                }
-
                 let sheetWindow = AppDelegate.createSheetWindow(size: .init(width: 924, height: 635))
                 let templateBrowser = TemplateBrowser()
                 sheetWindow.contentView = templateBrowser
 
                 templateBrowser.onClickDone = {
-                    finished(template: .designTokens)
+                    guard let url = self.createWorkspaceDialog() else { return }
+
+                    if !DocumentController.shared.createWorkspace(url: url, workspaceTemplate: .designTokens) {
+                        Swift.print("Failed to create workspace")
+                        return
+                    }
+
+                    DocumentController.shared.openDocument(withContentsOf: url, display: true, completionHandler: { document, _, _ in
+                        if let _ = document {
+                            window.close()
+                        }
+                    })
                 }
 
                 templateBrowser.onClickCancel = {
@@ -235,10 +181,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             welcome.onOpenProject = {
                 guard let url = self.openWorkspaceDialog() else { return }
 
-                if self.setWorkspace(url: url), let document = self.openWorkspaceDocument() {
-                    window.close()
-                    self.showComponentBrowser(document)
-                }
+                DocumentController.shared.openDocument(withContentsOf: url, display: true, completionHandler: { document, _, _ in
+                    if let _ = document {
+                        window.close()
+                    }
+                })
             }
 
             welcome.onOpenExample = {
@@ -321,37 +268,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return newDocument
     }
 
-    private func setWorkspace(url: URL) -> Bool {
-        if !CSWorkspacePreferences.validateProposedWorkspace(url: url) {
-            return false
-        }
 
-        CSUserPreferences.workspaceURL = url
-
-        NSDocumentController.shared.noteNewRecentDocumentURL(url)
-
-        CSWorkspacePreferences.reloadAllConfigurationFiles(closeDocuments: true)
-
-        reloadPreferencesWindow()
-
-        return true
-    }
 
     // MARK: - Creating Workspaces
-
-    @IBAction func newWorkspace(_ sender: AnyObject) {
-        guard let url = self.createWorkspaceDialog() else { return }
-
-        let ok = self.createWorkspace(url: url, workspaceTemplate: .componentLibrary)
-        if !ok {
-            Swift.print("Failed to create workspace")
-            return
-        }
-
-        if setWorkspace(url: url), let document = openWorkspaceDocument() {
-            self.showComponentBrowser(document)
-        }
-    }
 
     private func createWorkspaceDialog() -> URL? {
         let dialog = NSSavePanel()
@@ -367,19 +286,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             // User clicked on "Cancel"
             return nil
         }
-    }
-
-    private func createWorkspace(url: URL, workspaceTemplate: WorkspaceTemplate) -> Bool {
-        do {
-            try LonaModule.createWorkspace(at: url, using: workspaceTemplate)
-        } catch {
-            let alert = NSAlert()
-            alert.messageText = "Failed to create workspace \(url.lastPathComponent) in \(url.deletingLastPathComponent().lastPathComponent)"
-            alert.runModal()
-            return false
-        }
-
-        return true
     }
 
     // MARK: - Reloading
