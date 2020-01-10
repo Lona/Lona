@@ -42,7 +42,13 @@ class LogicDocument: NSDocument {
     }
 
     override func makeWindowControllers() {
-        WorkspaceWindowController.create(andAttachTo: self)
+        DocumentController.shared.createOrFindWorkspaceWindowController(for: self)
+    }
+
+    override func showWindows() {
+        DocumentController.shared.createOrFindWorkspaceWindowController(for: self)
+
+        super.showWindows()
     }
 
     public static func encode(_ content: LGCSyntaxNode) throws -> Data {

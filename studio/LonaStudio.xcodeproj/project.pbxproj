@@ -17,7 +17,6 @@
 		036A4EA021E1FCD200948DBD /* CSTextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E9F21E1FCD100948DBD /* CSTextStyle.swift */; };
 		036A4EA221E1FD3B00948DBD /* KeyHandlingCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA121E1FD3B00948DBD /* KeyHandlingCollectionView.swift */; };
 		036A4EA421E21DA500948DBD /* AddTextStyleSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA321E21DA400948DBD /* AddTextStyleSheet.swift */; };
-		036A4EA721E23F9100948DBD /* DirectoryDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA621E23F9100948DBD /* DirectoryDocument.swift */; };
 		036A4EA921E2469D00948DBD /* DirectoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA821E2469D00948DBD /* DirectoryViewController.swift */; };
 		039952C721E50D31008310DB /* MarkdownEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039952C621E50D31008310DB /* MarkdownEditor.swift */; };
 		300302741EDC7FA90085E140 /* CSStatementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300302731EDC7FA90085E140 /* CSStatementView.swift */; };
@@ -227,6 +226,7 @@
 		6B5D4DA1213F05AF004F8AC3 /* CodeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5D4DA0213F05AF004F8AC3 /* CodeEditor.swift */; };
 		6B6017D01EBF9EFA001E02C1 /* LayerListOutlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6017CF1EBF9EFA001E02C1 /* LayerListOutlineView.swift */; };
 		6B64358221FA3BD700CB1CB1 /* AccessibilityOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B64358121FA3BD700CB1CB1 /* AccessibilityOverlay.swift */; };
+		6B68CA8123C918B70045D009 /* WelcomeWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B68CA8023C918B70045D009 /* WelcomeWindow.swift */; };
 		6B6D441D218B6BBE0016262C /* LNATextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D441C218B6BBE0016262C /* LNATextField.swift */; };
 		6B6D4427218F55B50016262C /* CGSize+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4426218F55B50016262C /* CGSize+Resizing.swift */; };
 		6B6D4434218F6B070016262C /* NSImage+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4432218F6B070016262C /* NSImage+Resizing.swift */; };
@@ -370,7 +370,6 @@
 		036A4E9F21E1FCD100948DBD /* CSTextStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSTextStyle.swift; sourceTree = "<group>"; };
 		036A4EA121E1FD3B00948DBD /* KeyHandlingCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyHandlingCollectionView.swift; sourceTree = "<group>"; };
 		036A4EA321E21DA400948DBD /* AddTextStyleSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddTextStyleSheet.swift; sourceTree = "<group>"; };
-		036A4EA621E23F9100948DBD /* DirectoryDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectoryDocument.swift; sourceTree = "<group>"; };
 		036A4EA821E2469D00948DBD /* DirectoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectoryViewController.swift; sourceTree = "<group>"; };
 		039952C621E50D31008310DB /* MarkdownEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownEditor.swift; sourceTree = "<group>"; };
 		300302731EDC7FA90085E140 /* CSStatementView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSStatementView.swift; sourceTree = "<group>"; };
@@ -580,6 +579,7 @@
 		6B5D4DA0213F05AF004F8AC3 /* CodeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeEditor.swift; sourceTree = "<group>"; };
 		6B6017CF1EBF9EFA001E02C1 /* LayerListOutlineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayerListOutlineView.swift; sourceTree = "<group>"; };
 		6B64358121FA3BD700CB1CB1 /* AccessibilityOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityOverlay.swift; sourceTree = "<group>"; };
+		6B68CA8023C918B70045D009 /* WelcomeWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeWindow.swift; sourceTree = "<group>"; };
 		6B6D441C218B6BBE0016262C /* LNATextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNATextField.swift; sourceTree = "<group>"; };
 		6B6D4426218F55B50016262C /* CGSize+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Resizing.swift"; sourceTree = "<group>"; };
 		6B6D4432218F6B070016262C /* NSImage+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSImage+Resizing.swift"; sourceTree = "<group>"; };
@@ -704,7 +704,6 @@
 			isa = PBXGroup;
 			children = (
 				6B0AEFBB1EBF74D800F35BBF /* ComponentDocument.swift */,
-				036A4EA621E23F9100948DBD /* DirectoryDocument.swift */,
 				6B23A84621E6CC080001009E /* DocumentController.swift */,
 				6B25041621E5510900AE7F97 /* ImageDocument.swift */,
 				6B25041721E5510900AE7F97 /* JSONDocument.swift */,
@@ -774,11 +773,12 @@
 				6BA5BBDE2176D93D00F086A7 /* TextStyleEditorViewController.swift */,
 				30C203DE20BF5955007C3FE0 /* TextStylePreviewCollection.swift */,
 				6B39E6F2212DB3AD0012DA4C /* UtilitiesView.swift */,
+				6B68CA8023C918B70045D009 /* WelcomeWindow.swift */,
 				6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */,
 				6B39E6F4212DEF120012DA4C /* WorkspaceViewController.swift */,
+				6BF4EF44235A695F00548F61 /* WorkspaceWindow.swift */,
 				6BA6E89821307D65009CD33C /* WorkspaceWindowController.swift */,
 				BAC24A8E203576730005B16F /* InspectorView */,
-				6BF4EF44235A695F00548F61 /* WorkspaceWindow.swift */,
 			);
 			path = Workspace;
 			sourceTree = "<group>";
@@ -1663,7 +1663,6 @@
 				6B59893F21B86B27004DD3B1 /* RenderableElement.swift in Sources */,
 				6BC2D43F226245F9003A9F63 /* LogicInput.swift in Sources */,
 				6BD9664D217E8FCF0012F173 /* FileIcon.swift in Sources */,
-				036A4EA721E23F9100948DBD /* DirectoryDocument.swift in Sources */,
 				30F870D720865859007ADA5B /* Welcome.swift in Sources */,
 				30990AB01FA4043600BC0CCE /* CSUserTypes.swift in Sources */,
 				3043A0CC1F46653B00EF31EF /* Label.swift in Sources */,
@@ -1739,6 +1738,7 @@
 				036A4E8E21E0EF0100948DBD /* ImageViewController.swift in Sources */,
 				6B56ECB321BC5B6D005F43C5 /* FlippedView.swift in Sources */,
 				307D4422209B75C0004B57F5 /* LonaWebView.swift in Sources */,
+				6B68CA8123C918B70045D009 /* WelcomeWindow.swift in Sources */,
 				6B56ECB521BC6645005F43C5 /* ConfiguredLayer.swift in Sources */,
 				6B9733CE2236E602005967E8 /* LonaJS.swift in Sources */,
 				6B5D4D2D213E1CB0004F8AC3 /* EditorHeader.swift in Sources */,

@@ -19,26 +19,13 @@ class DocumentController: NSDocumentController {
     }
 
     override func noteNewRecentDocumentURL(_ url: URL) {
-        if FileUtils.fileExists(atPath: url.path) == FileUtils.FileExistsType.directory {
-            do {
-                _ = try Data(contentsOf: url.appendingPathComponent("lona.json"))
-                super.noteNewRecentDocumentURL(url)
-            } catch {
-                return
-            }
+        if url.isLonaWorkspace() {
+            super.noteNewRecentDocumentURL(url)
         }
     }
 
-    override func makeDocument(for urlOrNil: URL?, withContentsOf contentsURL: URL, ofType typeName: String) throws -> NSDocument {
-        try super.makeDocument(for: urlOrNil, withContentsOf: contentsURL, ofType: typeName)
-    }
-
-    override func makeDocument(withContentsOf url: URL, ofType typeName: String) throws -> NSDocument {
-        if FileManager.default.isDirectory(path: url.path) {
-            return try super.makeDocument(withContentsOf: url.appendingPathComponent("README.md"), ofType: "Markdown")
-        }
-
-        return try super.makeDocument(withContentsOf: url, ofType: typeName)
+    public func openDocument(withContentsOf url: URL, display displayDocument: Bool) {
+        openDocument(withContentsOf: url, display: displayDocument, completionHandler: { _, _, _ in })
     }
 
     override func openDocument(
@@ -48,22 +35,47 @@ class DocumentController: NSDocumentController {
     ) {
         if !ensureValidWorkspaceForOpeningFile(url: url) { return }
 
-        super.openDocument(withContentsOf: url, display: displayDocument, completionHandler: completionHandler)
+        let realURL = FileManager.default.isDirectory(path: url.path) ? url.appendingPathComponent("README.md") : url
+
+        super.openDocument(withContentsOf: realURL, display: displayDocument, completionHandler: completionHandler)
     }
 
-    public func openDocument(withContentsOf url: URL, display displayDocument: Bool) {
-        openDocument(withContentsOf: url, display: displayDocument, completionHandler: { _, _, _ in })
-    }
-
+    // For simplicity of document handling, always show Welcome window for now
     override public func reopenDocument(
         for urlOrNil: URL?,
         withContentsOf contentsURL: URL,
         display displayDocument: Bool,
         completionHandler: @escaping (NSDocument?, Bool, Error?) -> Void) {
+        return
+    }
 
-        if !ensureValidWorkspaceForOpeningFile(url: contentsURL) { return }
+    public func createOrFindWorkspaceWindowController(for document: NSDocument) {
+        let workspaceWindowController = workspaceWindowControllers.first ?? WorkspaceWindowController.create()
+        let workspaceViewController = workspaceWindowController.workspaceViewController
 
-        super.reopenDocument(for: urlOrNil, withContentsOf: contentsURL, display: displayDocument, completionHandler: completionHandler)
+        // If this document already has a controller, we don't need to do anything
+        if let currentDocument = workspaceWindowController.document, currentDocument === document {
+            workspaceViewController.update()
+            return
+        }
+
+        document.windowControllers.forEach { document.removeWindowController($0) }
+        document.addWindowController(workspaceWindowController)
+
+        workspaceViewController.inspectedContent = nil
+        workspaceViewController.document = document
+
+        // We call update here, since sometimes updating the document doesn't call the
+        // didSet handler. Calling update is sometimes redundant though.
+        workspaceViewController.update()
+    }
+
+    public var workspaceWindowControllers: [WorkspaceWindowController] {
+        let allWindowControllers = Array(documents.compactMap { document in
+            document.windowControllers.compactMap({ $0 as? WorkspaceWindowController })
+        }.joined())
+        let uniqueWindowControllers = Array(Set(allWindowControllers))
+        return uniqueWindowControllers
     }
 }
 

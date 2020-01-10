@@ -84,18 +84,6 @@
 			<key>NSDocumentClass</key>
 			<string>$(PRODUCT_MODULE_NAME).MarkdownDocument</string>
 		</dict>
-		<dict>
-			<key>CFBundleTypeName</key>
-			<string>DirectoryDocument</string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>public.folder</string>
-			</array>
-			<key>NSDocumentClass</key>
-			<string>MarkdownDocument</string>
-		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>

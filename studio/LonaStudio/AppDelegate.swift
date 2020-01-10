@@ -12,8 +12,8 @@ import MASPreferences
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
-    var applicationDidLaunch = false
 
+    // This is necessary to have our subclass be the shared NSDocumentController
     let documentController = DocumentController()
 
     func applicationWillFinishLaunching(_ notification: Notification) {
@@ -27,11 +27,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        if !documentController.didOpenADocument {
-            showWelcomeWindow(self)
-        }
-
-        applicationDidLaunch = true
+        showWelcomeWindow(self)
     }
 
     func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> Bool {
@@ -49,9 +45,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func application(_ sender: NSApplication, openFile filename: String) -> Bool {
         let fileURL = URL(fileURLWithPath: filename)
 
-        DocumentController.shared.openDocument(withContentsOf: fileURL, display: true, completionHandler: { document, _, error in
-            Swift.print(document, error)
-        })
+        DocumentController.shared.openDocument(withContentsOf: fileURL, display: true, completionHandler: { _, _, _ in })
 
         return true
     }
@@ -80,128 +74,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @IBAction func showWorkspaceWindow(_ sender: AnyObject) {
-        if let document = openWorkspaceDocument() {
-            showComponentBrowser(document)
-        }
-    }
-
-    func showComponentBrowser(_ document: NSDocument?) {
-        let windowController = WorkspaceWindowController.create(andAttachTo: document)
-
-        // Throws an exception related to _NSDetectedLayoutRecursion without async here.
-        // With async, it becomes a warning.
-        DispatchQueue.main.async {
-            windowController.showWindow(self)
-        }
-    }
-
-    private static func createSheetWindow(size: NSSize) -> NSWindow {
-        let sheetWindow = NSWindow(
-            contentRect: NSRect(origin: .zero, size: size),
-            styleMask: [.titled],
-            backing: .buffered,
-            defer: false,
-            screen: nil)
-
-        let visualEffectView = NSVisualEffectView()
-        visualEffectView.material = .ultraDark
-        visualEffectView.appearance = NSAppearance(named: NSAppearance.Name.vibrantDark)
-
-        sheetWindow.contentView = visualEffectView
-
-        return sheetWindow
+        DocumentController.shared.documents.first?.showWindows()
     }
 
     var welcomeWindow: NSWindow?
 
     @IBAction func showWelcomeWindow(_ sender: AnyObject) {
-        if welcomeWindow == nil {
-            let size = NSSize(width: 720, height: 460)
-            let initialRect = NSRect(origin: .zero, size: size)
-            let window = NSWindow(contentRect: initialRect, styleMask: [.closable, .titled, .fullSizeContentView], backing: .buffered, defer: false)
-            window.center()
-            window.title = "Welcome"
-            window.isReleasedWhenClosed = false
-            window.minSize = size
-            window.isMovableByWindowBackground = true
-            window.hasShadow = true
-            window.titlebarAppearsTransparent = true
-            window.titleVisibility = .hidden
-            window.backgroundColor = NSColor.white
-            window.standardWindowButton(.miniaturizeButton)?.isHidden = true
-            window.standardWindowButton(.zoomButton)?.isHidden = true
-            window.standardWindowButton(.closeButton)?.backgroundFill = CGColor.clear
-
-            let view = NSBox()
-            view.boxType = .custom
-            view.borderType = .noBorder
-            view.contentViewMargins = .zero
-            view.translatesAutoresizingMaskIntoConstraints = false
-
-            window.contentView = view
-
-            // Set up welcome screen
-
-            let welcome = Welcome()
-
-            view.addSubview(welcome)
-
-            welcome.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-            welcome.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-            welcome.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-            welcome.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-
-            welcome.onCreateProject = {
-                let sheetWindow = AppDelegate.createSheetWindow(size: .init(width: 924, height: 635))
-                let templateBrowser = TemplateBrowser()
-                sheetWindow.contentView = templateBrowser
-
-                templateBrowser.onClickDone = {
-                    guard let url = self.createWorkspaceDialog() else { return }
-
-                    if !DocumentController.shared.createWorkspace(url: url, workspaceTemplate: .designTokens) {
-                        Swift.print("Failed to create workspace")
-                        return
-                    }
-
-                    DocumentController.shared.openDocument(withContentsOf: url, display: true, completionHandler: { document, _, _ in
-                        if let _ = document {
-                            window.close()
-                        }
-                    })
-                }
-
-                templateBrowser.onClickCancel = {
-                    self.welcomeWindow?.endSheet(sheetWindow)
-                }
-
-                self.welcomeWindow?.beginSheet(sheetWindow)
-            }
-
-            welcome.onOpenProject = {
-                guard let url = self.openWorkspaceDialog() else { return }
-
-                DocumentController.shared.openDocument(withContentsOf: url, display: true, completionHandler: { document, _, _ in
-                    if let _ = document {
-                        window.close()
-                    }
-                })
-            }
-
-            welcome.onOpenExample = {
-                guard let url = URL(string: "https://github.com/airbnb/Lona/tree/master/examples/material-design") else { return }
-                NSWorkspace.shared.open(url)
-            }
-
-            welcome.onOpenDocumentation = {
-                guard let url = URL(string: "https://github.com/airbnb/Lona/blob/master/README.md") else { return }
-                NSWorkspace.shared.open(url)
-            }
-
-            welcomeWindow = window
-        }
-
-        welcomeWindow?.makeKeyAndOrderFront(nil)
+        WelcomeWindow.shared.makeKeyAndOrderFront(nil)
     }
 
     /*  Create a new component by duplicating the contents of an existing component
@@ -235,57 +114,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             Swift.print("Failed to duplicate template", url)
         }
 
-    }
-
-    // MARK: - Opening Workspaces
-
-    private func openWorkspaceDialog() -> URL? {
-        let dialog = NSOpenPanel()
-
-        dialog.title                   = "Choose a workspace"
-        dialog.showsResizeIndicator    = true
-        dialog.showsHiddenFiles        = false
-        dialog.canChooseFiles          = false
-        dialog.canChooseDirectories    = true
-        dialog.canCreateDirectories    = false
-        dialog.allowsMultipleSelection = false
-
-        guard dialog.runModal() == NSApplication.ModalResponse.OK else { return nil }
-
-        return dialog.url
-    }
-
-    private func openWorkspaceDocument() -> NSDocument? {
-        let url = LonaModule.current.url
-
-        guard let newDocument = try? NSDocumentController.shared.makeDocument(withContentsOf: url, ofType: "DirectoryDocument") else {
-            Swift.print("Failed to open", url)
-            return nil
-        }
-
-        NSDocumentController.shared.addDocument(newDocument)
-
-        return newDocument
-    }
-
-
-
-    // MARK: - Creating Workspaces
-
-    private func createWorkspaceDialog() -> URL? {
-        let dialog = NSSavePanel()
-
-        dialog.title                   = "Create a workspace directory"
-        dialog.showsResizeIndicator    = true
-        dialog.showsHiddenFiles        = false
-        dialog.canCreateDirectories    = true
-
-        if dialog.runModal() == NSApplication.ModalResponse.OK {
-            return dialog.url
-        } else {
-            // User clicked on "Cancel"
-            return nil
-        }
     }
 
     // MARK: - Reloading

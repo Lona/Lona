@@ -54,7 +54,13 @@ class ComponentDocument: NSDocument {
             component = CSComponent.makeDefaultComponent()
         }
 
-        WorkspaceWindowController.create(andAttachTo: self)
+        DocumentController.shared.createOrFindWorkspaceWindowController(for: self)
+    }
+
+    override func showWindows() {
+        DocumentController.shared.createOrFindWorkspaceWindowController(for: self)
+
+        super.showWindows()
     }
 
     override func duplicate() throws -> NSDocument {

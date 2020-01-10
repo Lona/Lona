@@ -27,7 +27,7 @@ class ImageDocument: NSDocument {
     var content: NSImage?
 
     override func makeWindowControllers() {
-        WorkspaceWindowController.create(andAttachTo: self)
+        DocumentController.shared.createOrFindWorkspaceWindowController(for: self)
     }
 
     override func data(ofType typeName: String) throws -> Data {

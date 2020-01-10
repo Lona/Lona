@@ -119,7 +119,7 @@ class WorkspaceViewController: NSSplitViewController {
         return (document as? ComponentDocument)?.component
     }
 
-    private var inspectedContent: InspectorView.Content?
+    var inspectedContent: InspectorView.Content?
 
     private lazy var fileNavigator: FileNavigator = {
         return FileNavigator(rootPath: LonaModule.current.url.path)
@@ -907,200 +907,20 @@ class WorkspaceViewController: NSSplitViewController {
                 }
             }
             markdownViewController.onChange = handleChange
-        } else if let document = document as? DirectoryDocument {
-            inspectorViewVisible = false
-            if let content = document.content {
-                editorViewController.contentView = directoryViewController.view
-
-                directoryViewController.componentNames = content.componentNames
-                directoryViewController.logicFileNames = content.logicFileNames
-                directoryViewController.readme = content.readme
-                directoryViewController.folderName = content.folderName
-            } else {
-                editorViewController.contentView = nil
-            }
         }
     }
 
     // We keep track of the last opened document path so that if it fails to open,
     // we can show the correct placeholder content. However, there are probably other
     // ways a document can be presented, so this is not perfect.
-    private var lastOpenedDocumentPath: String?
+    var lastOpenedDocumentPath: String?
 
     func openDocument(_ path: String) {
         lastOpenedDocumentPath = path
 
-        guard let previousDocument = self.document else {
-            if FileUtils.fileExists(atPath: path) == .none {
-                return
-            }
+        let fileURL = URL(fileURLWithPath: path)
 
-            let url = URL(fileURLWithPath: path)
-
-            if FileUtils.fileExists(atPath: path) == .directory {
-                guard let newDocument = try? NSDocumentController.shared.makeDocument(withContentsOf: url, ofType: "DirectoryDocument") else {
-                    Swift.print("Failed to open", url)
-                    return
-                }
-
-                NSDocumentController.shared.addDocument(newDocument)
-
-                guard let windowController = self.view.window?.windowController else { return }
-
-                newDocument.addWindowController(windowController)
-                windowController.document = newDocument
-                self.document = newDocument
-
-                // Set this after updating the document (which calls update)
-                // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
-                self.inspectedContent = nil
-                return
-            }
-
-            NSDocumentController.shared.openDocument(withContentsOf: url, display: false, completionHandler: { newDocument, documentWasAlreadyOpen, error in
-
-                guard let newDocument = newDocument else {
-                    Swift.print("Failed to open", url, error as Any)
-                    return
-                }
-
-                if documentWasAlreadyOpen {
-                    newDocument.showWindows()
-                    self.document = newDocument
-                    return
-                }
-
-                guard let windowController = self.view.window?.windowController else { return }
-
-                newDocument.addWindowController(windowController)
-                windowController.document = newDocument
-                self.document = newDocument
-
-                // Set this after updating the document (which calls update)
-                // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
-                self.inspectedContent = nil
-            })
-
-            return
-        }
-
-        if previousDocument.fileURL?.path == path { return }
-
-        if previousDocument.isDocumentEdited {
-            let name = previousDocument.fileURL?.lastPathComponent ?? "Untitled"
-            guard let result = Alert(
-                items: [
-                    DocumentAction.cancel,
-                    DocumentAction.discardChanges,
-                    DocumentAction.saveChanges],
-                messageText: "Save changes to \(name)",
-                informativeText: "The document \(name) has unsaved changes. Save them now?").run()
-                else { return }
-            switch result {
-            case .saveChanges:
-                var saveURL: URL
-
-                if let url = previousDocument.fileURL {
-                    saveURL = url
-                } else {
-                    let dialog = NSSavePanel()
-
-                    dialog.title                   = "Save .component file"
-                    dialog.showsResizeIndicator    = true
-                    dialog.showsHiddenFiles        = false
-                    dialog.canCreateDirectories    = true
-                    dialog.allowedFileTypes        = ["component"]
-
-                    // User canceled the save. Don't swap out the document.
-                    if dialog.runModal() != NSApplication.ModalResponse.OK {
-                        return
-                    }
-
-                    guard let url = dialog.url else { return }
-
-                    saveURL = url
-                }
-
-                previousDocument.save(to: saveURL, ofType: previousDocument.fileType ?? "DocumentType", for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
-                    // TODO: We should not close the document if it fails to save
-                    Swift.print("Failed to save", saveURL, error as Any)
-                })
-
-                LonaPlugins.current.trigger(eventType: .onSaveComponent)
-            case .cancel:
-                return
-            case .discardChanges:
-                break
-            }
-        }
-
-        if FileUtils.fileExists(atPath: path) == .none {
-            return
-        }
-
-        let url = URL(fileURLWithPath: path)
-
-        if FileUtils.fileExists(atPath: path) == .directory {
-            guard let newDocument = try? NSDocumentController.shared.makeDocument(withContentsOf: url, ofType: "DirectoryDocument") else {
-                Swift.print("Failed to open", url)
-                NSDocumentController.shared.removeDocument(previousDocument)
-                let windowController = previousDocument.windowControllers[0]
-                windowController.document = nil
-                previousDocument.removeWindowController(windowController)
-                self.document = nil
-                self.lastOpenedDocumentPath = nil
-                self.inspectedContent = nil
-                return
-            }
-
-            NSDocumentController.shared.addDocument(newDocument)
-
-            guard let windowController = self.view.window?.windowController else { return }
-
-            newDocument.addWindowController(windowController)
-            windowController.document = newDocument
-            self.document = newDocument
-
-            // Set this after updating the document (which calls update)
-            // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
-            self.inspectedContent = nil
-            return
-        }
-
-        NSDocumentController.shared.openDocument(withContentsOf: url, display: false, completionHandler: { newDocument, documentWasAlreadyOpen, error in
-
-            guard let newDocument = newDocument else {
-                Swift.print("Failed to open", url, error as Any)
-                NSDocumentController.shared.removeDocument(previousDocument)
-                let windowController = previousDocument.windowControllers[0]
-                windowController.document = nil
-                previousDocument.removeWindowController(windowController)
-                self.document = nil
-                self.lastOpenedDocumentPath = nil
-                self.inspectedContent = nil
-
-                return
-            }
-
-            // TODO: This improves the UX of opening files (particularly components), since we can preserve the
-            // window state of a document when switching between files. However, it causes some files to be unopenable
-            // after double clicking in the directory view, so we've disabled it for now.
-//            if documentWasAlreadyOpen && previousDocument.className == newDocument.className {
-//                newDocument.showWindows()
-//                return
-//            }
-
-            NSDocumentController.shared.removeDocument(previousDocument)
-
-            let windowController = previousDocument.windowControllers[0]
-            newDocument.addWindowController(windowController)
-            windowController.document = newDocument
-            self.document = newDocument
-
-            // Set this after updating the document (which calls update)
-            // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
-            self.inspectedContent = nil
-        })
+        DocumentController.shared.openDocument(withContentsOf: fileURL, display: true)
     }
 
     // Subscriptions
