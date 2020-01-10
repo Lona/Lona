@@ -353,38 +353,6 @@ class WorkspaceViewController: NSSplitViewController {
         windowController = nil
     }
 
-    func performCreateFile(path: String, document: NSDocument, ofType documentType: String) -> Bool {
-        if let document = self.document {
-            guard self.close(document: document, discardingUnsavedChanges: false) else { return false }
-        }
-
-        guard let windowController = self.view.window?.windowController else { return false }
-
-        let url = URL(fileURLWithPath: path)
-        let newDocument = document
-        newDocument.fileURL = url
-        newDocument.save(
-            to: url,
-            ofType: documentType,
-            for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
-                if let error = error {
-                    Swift.print("Failed to save \(url): \(error)")
-                }
-        })
-
-        NSDocumentController.shared.addDocument(newDocument)
-        newDocument.addWindowController(windowController)
-        windowController.document = newDocument
-
-        self.document = newDocument
-
-        // Set this after updating the document (which calls update)
-        // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
-        self.inspectedContent = nil
-
-        return true
-    }
-
     private func setUpViews() {
         splitView.dividerStyle = .thin
         splitView.autosaveName = splitViewResorationIdentifier
@@ -448,17 +416,26 @@ class WorkspaceViewController: NSSplitViewController {
                 )
             )
 
-            return self.performCreateFile(path: path, document: document, ofType: "Logic")
+//            return self.performCreateFile(path: path, document: document, ofType: "Logic")
+
+            return true
         }
 
         fileNavigator.performCreateComponent = { path in
             let document = ComponentDocument()
             document.component = CSComponent.makeDefaultComponent()
-            return self.performCreateFile(path: path, document: document, ofType: "DocumentType")
+//            return self.performCreateFile(path: path, document: document, ofType: "DocumentType")
+
+            return true
         }
 
         fileNavigator.performCreateMarkdownFile = { path in
-            return self.performCreateFile(path: path, document: MarkdownDocument(), ofType: "Markdown")
+            let fileURL = URL(fileURLWithPath: path)
+            let title = URL(fileURLWithPath: path).deletingPathExtension().lastPathComponent
+
+            DocumentController.shared.makeAndOpenMarkdownDocument(withTitle: title, savedTo: fileURL, completionHandler: { _ in })
+
+            return true
         }
 
         fileNavigator.onSelect = { [unowned self] path in
@@ -518,11 +495,11 @@ class WorkspaceViewController: NSSplitViewController {
                 )
 
                 contentView.onClick = {
-                    _ = self.performCreateFile(
-                        path: URL(fileURLWithPath: path).appendingPathComponent("README.md").path,
-                        document: MarkdownDocument(),
-                        ofType: "Markdown"
-                    )
+//                    _ = self.performCreateFile(
+//                        path: URL(fileURLWithPath: path).appendingPathComponent("README.md").path,
+//                        document: MarkdownDocument(),
+//                        ofType: "Markdown"
+//                    )
                 }
 
                 editorViewController.contentView = contentView
@@ -780,19 +757,11 @@ class WorkspaceViewController: NSSplitViewController {
                     }
                 }
 
-                if !deleted.isEmpty {
-                    let pageNoun = "page\(deleted.count > 1 ? "s" : "")"
-                    if Alert.runConfirmationAlert(
-                        confirmationText: "Delete \(pageNoun)",
-                        messageText: "This will delete the \(pageNoun) \(deleted.map { "'\($0)'" }.joined(separator: ", ")) and can't be undone. Continue?"
-                    ) {
-                        deleted.forEach { pageName in
-                            let pageURL = fileURL.deletingLastPathComponent().appendingPathComponent(pageName)
-                            try? FileManager.default.removeItem(at: pageURL)
-                        }
-                    } else {
-                        return false
-                    }
+                do {
+                    try document.deleteChildPageFiles(deleted)
+                } catch let error {
+                    Swift.print("Failed to delete files \(deleted)", error)
+                    return false
                 }
 
                 let value = value.isEmpty ? [BlockEditor.Block.makeDefaultEmptyBlock()] : value
@@ -837,54 +806,23 @@ class WorkspaceViewController: NSSplitViewController {
                     // Insert a link to the new markdown page
                     _ = handleChange(blocks)
 
-                    // Save the index page containing the link to the new page
-                    document.save(to: indexPageURL, ofType: "Markdown", for: .saveOperation, completionHandler: { error in
-                        if let newDocument = try? NSDocumentController.shared.makeUntitledDocument(ofType: "Markdown") as? MarkdownDocument {
-                            newDocument.content = [
-                                .init(.text(.init(string: title), .h1), .none),
-                                .makeDefaultEmptyBlock()
-                            ]
-
-                            // Create the new markdown page
-                            _ = self.performCreateFile(path: pageURL.path, document: newDocument, ofType: "Markdown")
+                    document.save(to: indexPageURL, for: .saveOperation) { saveResult in
+                        switch saveResult {
+                        case .success:
+                            DocumentController.shared.makeAndOpenMarkdownDocument(withTitle: title, savedTo: pageURL) { documentResult in
+                                switch documentResult {
+                                case .success:
+                                    break
+                                case .failure(let error):
+                                    Swift.print("Failed to create", error)
+                                    Alert.runInformationalAlert(messageText: "Failed to create page \(title).")
+                                }
+                            }
+                        case .failure(let error):
+                            Swift.print("Failed to save", error)
+                            Alert.runInformationalAlert(messageText: "Failed to save \(indexPageURL.path).")
                         }
-                    })
-                }
-
-                // Convert Page.md to Page/README.md
-                // - Make the Page directory
-                // - Change the URL of the current document to Page/README.md and save it
-                // - Delete the old Page.md
-                func convertReadmeToDirectory(readmeURL fileURL: URL, completionHandler: @escaping ((Result<URL, Error>) -> Void)) {
-                    let currentPageName = fileURL.deletingPathExtension().lastPathComponent
-                    let directoryURL = fileURL.deletingLastPathComponent().appendingPathComponent(currentPageName).deletingPathExtension()
-
-                    do {
-                        try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: false, attributes: [:])
-                    } catch let error {
-                        Swift.print("Error creating directory \(directoryURL)", error)
-                        completionHandler(.failure(error))
-                        return
                     }
-
-                    let readmeURL = directoryURL.appendingPathComponent("README.md")
-
-                    document.save(to: readmeURL, ofType: "Markdown", for: .saveAsOperation, completionHandler: { error in
-                        if let error = error {
-                            Swift.print("Error saving README file \(readmeURL)", error)
-                            completionHandler(.failure(error))
-                            return
-                        }
-
-                        do {
-                            try FileManager.default.removeItem(at: fileURL)
-                        } catch let error {
-                            completionHandler(.failure(error))
-                            return
-                        }
-
-                        completionHandler(.success(readmeURL))
-                    })
                 }
 
                 guard let fileURL = document.fileURL else { return }
@@ -896,7 +834,7 @@ class WorkspaceViewController: NSSplitViewController {
                 if fileURL.lastPathComponent == "README.md" {
                     createChildPage(withinIndexPage: fileURL, pageName: pageName)
                 } else {
-                    convertReadmeToDirectory(readmeURL: fileURL, completionHandler: { result in
+                    document.convertToDirectory(completionHandler: { result in
                         switch result {
                         case .success(let readmeURL):
                             createChildPage(withinIndexPage: readmeURL, pageName: pageName)
@@ -909,6 +847,46 @@ class WorkspaceViewController: NSSplitViewController {
             markdownViewController.onChange = handleChange
         }
     }
+
+//    func createChildPage(of document: MarkdownDocument, pageName: String) {
+//        guard let indexPageURL = document.fileURL else { return }
+//
+//        var pageURL = indexPageURL.deletingLastPathComponent().appendingPathComponent(pageName)
+//        if pageURL.pathExtension != "md" {
+//            pageURL = pageURL.appendingPathExtension("md")
+//        }
+//
+//        let title = pageURL.deletingPathExtension().lastPathComponent
+//        let newBlock = BlockEditor.Block(.page(title: title, target: pageURL.lastPathComponent), .none)
+//
+//        var blocks = document.content
+//        if shouldReplace {
+//            blocks[index] = newBlock
+//        } else {
+//            blocks.insert(newBlock, at: index)
+//        }
+//
+//        // Insert a link to the new markdown page
+//        _ = handleChange(blocks)
+//
+//        document.save(to: indexPageURL, for: .saveOperation) { saveResult in
+//            switch saveResult {
+//            case .success:
+//                DocumentController.shared.makeAndOpenMarkdownDocument(withTitle: title, savedTo: pageURL) { documentResult in
+//                    switch documentResult {
+//                    case .success:
+//                        break
+//                    case .failure(let error):
+//                        Swift.print("Failed to create", error)
+//                        Alert.runInformationalAlert(messageText: "Failed to create page \(title).")
+//                    }
+//                }
+//            case .failure(let error):
+//                Swift.print("Failed to save", error)
+//                Alert.runInformationalAlert(messageText: "Failed to save \(indexPageURL.path).")
+//            }
+//        }
+//    }
 
     // We keep track of the last opened document path so that if it fails to open,
     // we can show the correct placeholder content. However, there are probably other

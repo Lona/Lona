@@ -12,7 +12,6 @@ import Foundation
 // MARK: - DocumentController
 
 class DocumentController: NSDocumentController {
-    public var didOpenADocument = false
 
     override public static var shared: DocumentController {
         return NSDocumentController.shared as! DocumentController
@@ -48,7 +47,49 @@ class DocumentController: NSDocumentController {
         completionHandler: @escaping (NSDocument?, Bool, Error?) -> Void) {
         return
     }
+}
 
+// MARK: - File helpers
+
+extension DocumentController {
+    public func makeAndOpenMarkdownDocument(
+        withTitle title: String,
+        savedTo url: URL,
+        completionHandler: @escaping (Result<MarkdownDocument, Error>) -> Void
+    ) {
+        let document: MarkdownDocument
+
+        do {
+            document = try makeUntitledDocument(ofType: "Markdown") as! MarkdownDocument
+        } catch let error {
+            completionHandler(.failure(error))
+            return
+        }
+
+        document.content = [
+            .init(.text(.init(string: title), .h1), .none),
+            .makeDefaultEmptyBlock()
+        ]
+
+        document.save(to: url, ofType: "Markdown", for: .saveOperation) { [unowned self] error in
+            if let error = error {
+                completionHandler(.failure(error))
+            } else {
+                self.openDocument(withContentsOf: url, display: true, completionHandler: { document, alreadyOpen, error in
+                    if let error = error {
+                        completionHandler(.failure(error))
+                    } else {
+                        completionHandler(.success(document as! MarkdownDocument))
+                    }
+                })
+            }
+        }
+    }
+}
+
+// MARK: - Window Controllers
+
+extension DocumentController {
     public func createOrFindWorkspaceWindowController(for document: NSDocument) {
         let workspaceWindowController = workspaceWindowControllers.first ?? WorkspaceWindowController.create()
         let workspaceViewController = workspaceWindowController.workspaceViewController

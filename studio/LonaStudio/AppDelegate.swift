@@ -74,10 +74,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @IBAction func showWorkspaceWindow(_ sender: AnyObject) {
-        DocumentController.shared.documents.first?.showWindows()
+        DocumentController.shared.workspaceWindowControllers.first?.showWindow(nil)
     }
-
-    var welcomeWindow: NSWindow?
 
     @IBAction func showWelcomeWindow(_ sender: AnyObject) {
         WelcomeWindow.shared.makeKeyAndOrderFront(nil)
