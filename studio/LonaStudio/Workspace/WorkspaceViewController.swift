@@ -461,7 +461,8 @@ class WorkspaceViewController: NSSplitViewController {
             return self.performCreateFile(path: path, document: MarkdownDocument(), ofType: "Markdown")
         }
 
-        fileNavigator.onAction = self.openDocument
+        fileNavigator.onSelect = self.openDocument
+
         directoryViewController.onSelectComponent = self.openDocument
     }
 
@@ -521,6 +522,8 @@ class WorkspaceViewController: NSSplitViewController {
                 }
 
                 editorViewController.contentView = contentView
+
+                fileNavigator.selectedFile = path
             } else {
                 let contentView = NSBox()
                 contentView.boxType = .custom
@@ -528,6 +531,8 @@ class WorkspaceViewController: NSSplitViewController {
                 contentView.fillColor = Colors.contentBackground
 
                 editorViewController.contentView = contentView
+
+                fileNavigator.selectedFile = nil
             }
 
             inspectorViewVisible = false
@@ -550,6 +555,12 @@ class WorkspaceViewController: NSSplitViewController {
         codeEditorViewController.updateEditorHeader = { [weak self] parameters in
             guard let self = self else { return }
             self.updateCompanionHeader(parameters: parameters)
+        }
+
+        if let fileURL = document.fileURL {
+            fileNavigator.selectedFile = fileURL.lastPathComponent == "README.md"
+                ? fileURL.deletingLastPathComponent().path
+                : fileURL.path
         }
 
         var titleText = document.fileURL?.lastPathComponent ?? "Untitled"

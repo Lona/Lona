@@ -69,6 +69,11 @@ class FileNavigator: NSBox {
         set { fileTree.onAction = newValue }
     }
 
+    public var onSelect: ((FileTree.Path) -> Void)? {
+        get { return fileTree.onSelect }
+        set { fileTree.onSelect = newValue }
+    }
+
     public var onCreateFile: ((FileTree.Path, FileTree.FileEventOptions) -> Void)? {
         get { return fileTree.onCreateFile }
         set { fileTree.onCreateFile = newValue}
@@ -87,6 +92,11 @@ class FileNavigator: NSBox {
     public var performMoveFile: ((FileTree.Path, FileTree.Path) -> Bool)? {
         get { return fileTree.performMoveFile }
         set { fileTree.performMoveFile = newValue }
+    }
+
+    public var selectedFile: FileTree.Path? {
+        get { return fileTree.selectedPath }
+        set { fileTree.selectedPath = newValue }
     }
 
     public var performCreateComponent: ((FileTree.Path) -> Bool)?
