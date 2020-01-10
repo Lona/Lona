@@ -1,6 +1,6 @@
 github "dabbott/ColorPicker" "cd6807195212157f6e70f63cf65a91b611f254fc"
 github "dabbott/ControlledComponents" "262f562cec208a96a6627857400205363429d6e0"
-github "dabbott/FileTree" "99f55fe07146ed1cabcb204952f74fb49ecf78f1"
+github "dabbott/FileTree" "4388d3dec3772e3da8c3519b8d8e2be497a0760f"
 github "dabbott/Logic" "900a79738341874517e374e7ae2e9899e11cde41"
 github "davecom/SwiftGraph" "3.0.0"
 github "dylan/colors" "0.9.10"

@@ -461,7 +461,11 @@ class WorkspaceViewController: NSSplitViewController {
             return self.performCreateFile(path: path, document: MarkdownDocument(), ofType: "Markdown")
         }
 
-        fileNavigator.onSelect = self.openDocument
+        fileNavigator.onSelect = { [unowned self] path in
+            if let path = path {
+                self.openDocument(path)
+            }
+        }
 
         directoryViewController.onSelectComponent = self.openDocument
     }
@@ -1043,6 +1047,7 @@ class WorkspaceViewController: NSSplitViewController {
                 windowController.document = nil
                 previousDocument.removeWindowController(windowController)
                 self.document = nil
+                self.lastOpenedDocumentPath = nil
                 self.inspectedContent = nil
                 return
             }
@@ -1070,6 +1075,7 @@ class WorkspaceViewController: NSSplitViewController {
                 windowController.document = nil
                 previousDocument.removeWindowController(windowController)
                 self.document = nil
+                self.lastOpenedDocumentPath = nil
                 self.inspectedContent = nil
 
                 return
@@ -1213,6 +1219,7 @@ class WorkspaceViewController: NSSplitViewController {
         }
 
         self.document = nil
+        self.lastOpenedDocumentPath = nil
 
         // Set this after updating the document (which calls update)
         // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
