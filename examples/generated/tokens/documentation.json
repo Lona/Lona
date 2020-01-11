@@ -1,0 +1,57 @@
+{
+  "files": [
+    {
+      "inputPath": "Colors.md",
+      "outputPath": "Colors.mdx",
+      "name": "Colors",
+      "contents": {
+        "type": "documentationPage",
+        "value": {
+          "mdxString": "# Colors\n\n<div\n  class=\"lona-token lona-token-color\">\n  <div class=\"lona-token-preview lona-token-preview-color\" data-color=\"#45CBFF\" />\n  <div\n    class=\"lona-token-details lona-token-details-color\">\n    <span class=\"lona-token-name lona-token-name-color\">primary</span>\n    <span class=\"lona-token-value lona-token-value-color\">#45CBFF</span>\n  </div>\n</div>\n\n<div\n  class=\"lona-token lona-token-color\">\n  <div class=\"lona-token-preview lona-token-preview-color\" data-color=\"#45CBFF\" />\n  <div\n    class=\"lona-token-details lona-token-details-color\">\n    <span class=\"lona-token-name lona-token-name-color\">accent</span>\n    <span class=\"lona-token-value lona-token-value-color\">#45CBFF</span>\n  </div>\n</div>",
+          "children": []
+        }
+      }
+    },
+    {
+      "inputPath": "README.md",
+      "outputPath": "README.mdx",
+      "name": "README",
+      "contents": {
+        "type": "documentationPage",
+        "value": {
+          "mdxString": "# Flat Tokens\n\nThis is an example workspace for testing token generation.\n\n### Pages\n\n<a class=\"page\" href=\"Colors.md\">Colors</a>\n\n<a class=\"page\" href=\"TextStyles.md\">TextStyles</a>\n\n<a class=\"page\" href=\"Shadows.md\">Shadows</a>",
+          "children": [
+            "Colors.md",
+            "TextStyles.md",
+            "Shadows.md"
+          ]
+        }
+      }
+    },
+    {
+      "inputPath": "Shadows.md",
+      "outputPath": "Shadows.mdx",
+      "name": "Shadows",
+      "contents": {
+        "type": "documentationPage",
+        "value": {
+          "mdxString": "<div\n  class=\"lona-token lona-token-color\">\n  <div\n    class=\"lona-token-preview lona-token-preview-shadow\"\n    data-x=\"0\"\n    data-y=\"2\"\n    data-blur=\"2\"\n    data-radius=\"0\"\n    data-color=\"black\" />\n  <div\n    class=\"lona-token-details lona-token-details-color\">\n    <span class=\"lona-token-name lona-token-name-color\">small</span>\n    <span class=\"lona-token-value lona-token-value-color\">0px 2px 2px 0px black</span>\n  </div>\n</div>",
+          "children": []
+        }
+      }
+    },
+    {
+      "inputPath": "TextStyles.md",
+      "outputPath": "TextStyles.mdx",
+      "name": "TextStyles",
+      "contents": {
+        "type": "documentationPage",
+        "value": {
+          "mdxString": "<div\n  class=\"lona-token lona-token-textStyle\">\n  <div\n    class=\"lona-token-preview lona-token-preview-textStyle\"\n    data-fontFamily=\"Helvetica\"\n    data-fontWeight=\"700\"\n    data-fontSize=\"28\"\n    data-color=\"teal\" />\n  <div\n    class=\"lona-token-details lona-token-details-textStyle\">\n    <span class=\"lona-token-name lona-token-name-textStyle\">heading1</span>\n    <span class=\"lona-token-value lona-token-value-textStyle\">heading1</span>\n  </div>\n</div>",
+          "children": []
+        }
+      }
+    }
+  ],
+  "flatTokensSchemaVersion": "0.0.1"
+}
