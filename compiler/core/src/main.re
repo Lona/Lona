@@ -166,7 +166,10 @@ let convertLogic =
       | AppKit => "import AppKit\n\n"
       | UIKit => "import UIKit\n\n"
       };
-    let code = node |> LogicSwift.convert(config) |> SwiftRender.toString;
+    let code =
+      node
+      |> LogicSwift.convert(config, resolvedProgramNode)
+      |> SwiftRender.toString;
 
     importStatement ++ code;
   };

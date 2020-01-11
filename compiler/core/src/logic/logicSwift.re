@@ -1,6 +1,7 @@
 open LogicUtils;
 
-let convertNativeType = (context: context, typeName: string): string =>
+let convertNativeType =
+    (context: LogicGenerationContext.t, typeName: string): string =>
   switch (typeName) {
   | "Boolean" => "Bool"
   | "Number" => "CGFloat"
@@ -12,13 +13,42 @@ let convertNativeType = (context: context, typeName: string): string =>
   | _ => typeName
   };
 
-let rec convert = (config: Config.t, node: LogicAst.syntaxNode): SwiftAst.node => {
-  let context = {
+let rec convert =
+        (
+          config: Config.t,
+          resolvedProgramNode: LogicAst.syntaxNode,
+          node: LogicAst.syntaxNode,
+        )
+        : SwiftAst.node => {
+  let scopeContext = LogicScope.build(resolvedProgramNode, ());
+  let unificationContext =
+    LogicUnificationContext.makeUnificationContext(
+      ~rootNode=resolvedProgramNode,
+      ~scopeContext,
+      (),
+    );
+  let substitution =
+    LogicUnify.unify(~constraints=unificationContext.constraints^, ());
+  let evaluationContext =
+    LogicEvaluate.evaluate(
+      ~currentNode=resolvedProgramNode,
+      ~rootNode=node,
+      ~scopeContext,
+      ~unificationContext,
+      ~substitution,
+      (),
+    );
+
+  let context: LogicGenerationContext.t = {
     config,
     isStatic: false,
     isTopLevel: true,
     rootNode: node,
-    resolvedRootNode: node, /* TODO: resolve */
+    resolvedRootNode: resolvedProgramNode,
+    scopeContext,
+    unificationContext,
+    substitution,
+    evaluationContext,
   };
   switch (node) {
   | LogicAst.Program(Program(contents)) => program(context, contents)
@@ -29,7 +59,9 @@ let rec convert = (config: Config.t, node: LogicAst.syntaxNode): SwiftAst.node =
     Empty;
   };
 }
-and program = (context: context, node: LogicAst.programProgram): SwiftAst.node =>
+and program =
+    (context: LogicGenerationContext.t, node: LogicAst.programProgram)
+    : SwiftAst.node =>
   SwiftAst.topLevelDeclaration({
     "statements":
       node.block
@@ -39,7 +71,7 @@ and program = (context: context, node: LogicAst.programProgram): SwiftAst.node =
   })
 and topLevelDeclarations =
     (
-      context: context,
+      context: LogicGenerationContext.t,
       node: LogicAst.topLevelDeclarationsTopLevelDeclarations,
     )
     : SwiftAst.node =>
@@ -50,7 +82,9 @@ and topLevelDeclarations =
       |> Sequence.rejectWhere(isPlaceholderDeclaration)
       |> List.map(declaration(context)),
   })
-and statement = (context: context, node: LogicAst.statement): SwiftAst.node =>
+and statement =
+    (context: LogicGenerationContext.t, node: LogicAst.statement)
+    : SwiftAst.node =>
   switch (node) {
   | Declaration({content}) => declaration(context, content)
   | Placeholder(_) => Empty
@@ -59,7 +93,8 @@ and statement = (context: context, node: LogicAst.statement): SwiftAst.node =>
     Empty;
   }
 and declaration =
-    (context: context, node: LogicAst.declaration): SwiftAst.node =>
+    (context: LogicGenerationContext.t, node: LogicAst.declaration)
+    : SwiftAst.node =>
   switch (node) {
   | ImportDeclaration(_) => Empty
   | Namespace({name: LogicAst.Pattern({name}), declarations}) =>
@@ -222,7 +257,9 @@ and declaration =
     Js.log("Unhandled declaration type");
     Empty;
   }
-and expression = (context: context, node: LogicAst.expression): SwiftAst.node =>
+and expression =
+    (context: LogicGenerationContext.t, node: LogicAst.expression)
+    : SwiftAst.node =>
   switch (node) {
   | IdentifierExpression({
       identifier: Identifier({string: name, isPlaceholder: _}),
@@ -260,7 +297,8 @@ and expression = (context: context, node: LogicAst.expression): SwiftAst.node =>
     Js.log("Unhandled expression type");
     Empty;
   }
-and literal = (context: context, node: LogicAst.literal): SwiftAst.node =>
+and literal =
+    (context: LogicGenerationContext.t, node: LogicAst.literal): SwiftAst.node =>
   switch (node) {
   | None(_) => SwiftAst.LiteralExpression(Nil)
   | Boolean({value}) => SwiftAst.LiteralExpression(Boolean(value))
@@ -273,7 +311,8 @@ and literal = (context: context, node: LogicAst.literal): SwiftAst.node =>
     )
   }
 and typeAnnotation =
-    (context: context, node: LogicAst.typeAnnotation): SwiftAst.typeAnnotation =>
+    (context: LogicGenerationContext.t, node: LogicAst.typeAnnotation)
+    : SwiftAst.typeAnnotation =>
   switch (node) {
   | TypeIdentifier({
       identifier: Identifier({string: name, isPlaceholder: _}),
@@ -288,7 +327,7 @@ and typeAnnotation =
     TypeName("_");
   }
 and genericParameter =
-    (context: context, node: LogicAst.genericParameter)
+    (context: LogicGenerationContext.t, node: LogicAst.genericParameter)
     : SwiftAst.typeAnnotation =>
   switch (node) {
   | Parameter({name: LogicAst.Pattern({name})}) =>

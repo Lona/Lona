@@ -2,7 +2,8 @@ open LogicProtocol;
 open LogicUtils;
 open Monad;
 
-let convertNativeType = (context: context, typeName: string): string =>
+let convertNativeType =
+    (context: LogicGenerationContext.t, typeName: string): string =>
   switch (typeName) {
   | "Boolean" => "Bool"
   | "Number" => "CGFloat"

@@ -1,3 +1,4 @@
+open LogicProtocol;
 open LogicUtils;
 open Operators;
 open Monad;
@@ -60,12 +61,35 @@ let rec convert =
         : JavaScriptAst.node =>
   switch (LogicUtils.makeProgram(node)) {
   | Some(programContents) =>
-    let context = {
+    let scopeContext = LogicScope.build(resolvedProgramNode, ());
+    let unificationContext =
+      LogicUnificationContext.makeUnificationContext(
+        ~rootNode=resolvedProgramNode,
+        ~scopeContext,
+        (),
+      );
+    let substitution =
+      LogicUnify.unify(~constraints=unificationContext.constraints^, ());
+    let evaluationContext =
+      LogicEvaluate.evaluate(
+        ~currentNode=resolvedProgramNode,
+        ~rootNode=LogicAst.Program(Program(programContents)),
+        ~scopeContext,
+        ~unificationContext,
+        ~substitution,
+        (),
+      );
+
+    let context: LogicGenerationContext.t = {
       config,
       isStatic: false,
       isTopLevel: true,
       rootNode: node,
       resolvedRootNode: resolvedProgramNode,
+      scopeContext,
+      unificationContext,
+      substitution,
+      evaluationContext,
     };
     /* Js.log(LogicProtocol.nodeHierarchyDescription(node, ())); */
     program(context, programContents);
@@ -74,7 +98,8 @@ let rec convert =
     Empty;
   }
 and program =
-    (context: context, node: LogicAst.programProgram): JavaScriptAst.node =>
+    (context: LogicGenerationContext.t, node: LogicAst.programProgram)
+    : JavaScriptAst.node =>
   JavaScriptAst.Program(
     node.block
     |> unfoldPairs
@@ -83,7 +108,7 @@ and program =
   )
 and topLevelDeclarations =
     (
-      context: context,
+      context: LogicGenerationContext.t,
       node: LogicAst.topLevelDeclarationsTopLevelDeclarations,
     )
     : JavaScriptAst.node =>
@@ -94,7 +119,8 @@ and topLevelDeclarations =
     |> List.map(declaration(context)),
   )
 and statement =
-    (context: context, node: LogicAst.statement): JavaScriptAst.node =>
+    (context: LogicGenerationContext.t, node: LogicAst.statement)
+    : JavaScriptAst.node =>
   switch (node) {
   | Declaration({content}) => declaration(context, content)
   | Placeholder(_) => Empty
@@ -103,7 +129,8 @@ and statement =
     Empty;
   }
 and declaration =
-    (context: context, node: LogicAst.declaration): JavaScriptAst.node =>
+    (context: LogicGenerationContext.t, node: LogicAst.declaration)
+    : JavaScriptAst.node =>
   switch (node) {
   | ImportDeclaration(_) => Empty
   | Namespace({name: LogicAst.Pattern({name}), declarations}) =>
@@ -208,179 +235,225 @@ and declaration =
     Empty;
   }
 and expression =
-    (context: context, node: LogicAst.expression): JavaScriptAst.node =>
-  switch (node) {
-  | IdentifierExpression({
-      identifier: Identifier({id, string: name, isPlaceholder: _}),
-    }) =>
-    let standard: JavaScriptAst.node = Identifier([Format.lowerFirst(name)]);
-    let scope = LogicScope.build(context.resolvedRootNode, ());
-    let patternId = (scope.identifierToPattern)#get(id);
-    switch (patternId) {
-    | Some(patternId) =>
-      let pattern = LogicProtocol.find(context.rootNode, patternId);
-      switch (pattern) {
-      | Some(Pattern(Pattern({id: patternId}))) =>
-        let identifierPath =
-          LogicProtocol.declarationPathTo(context.rootNode, patternId)
-          |> List.map(Format.lowerFirst);
-        Identifier(identifierPath);
-      | _ => standard
-      };
-    | None => standard
-    };
-
-  | LiteralExpression({literal: value}) => literal(context, value)
-  | MemberExpression({
-      memberName: Identifier({string}),
-      expression: innerExpression,
-    }) =>
-    MemberExpression({
-      memberName: Format.lowerFirst(string),
-      expression: expression(context, innerExpression),
-    })
-  | FunctionCallExpression({arguments, expression: innerExpression}) =>
-    let validArguments =
-      arguments |> unfoldPairs |> Sequence.rejectWhere(isPlaceholderArgument);
-
-    let standard =
-      JavaScriptAst.CallExpression({
-        callee: expression(context, innerExpression),
-        arguments:
-          validArguments
-          |> List.map((arg: LogicAst.functionCallArgument) => {
-               let LogicAst.Argument({expression: innerExpression}) = arg;
-               expression(context, innerExpression);
-             }),
-      });
-
-    switch (LogicUtils.lastIdentifier(innerExpression)) {
-    | None => standard
-    | Some(Identifier({id})) =>
+    (context: LogicGenerationContext.t, node: LogicAst.expression)
+    : JavaScriptAst.node => {
+  // Evaluate a FontWeight constant
+  // TODO: Generalize this for other values that need transformation
+  let evaluatedValue =
+    (context.unificationContext.nodes)#get(uuid(Expression(node)))
+    >>= (type_ => Some(LogicUnify.substitute(context.substitution, type_)))
+    >>= (
+      resolvedType => {
+        switch (context.evaluationContext, resolvedType) {
+        | (Some(evaluationContext), LogicUnify.Cons("FontWeight", _)) =>
+          let logicValue =
+            evaluationContext#evaluate(uuid(Expression(node)));
+          switch (logicValue) {
+          | Some({memory: Enum(tag, _)}) =>
+            Some(
+              switch (tag) {
+              | "ultraLight" => JavaScriptAst.Literal(LonaValue.number(100.))
+              | "thin" => Literal(LonaValue.number(200.))
+              | "light" => Literal(LonaValue.number(300.))
+              | "regular" => Literal(LonaValue.number(400.))
+              | "medium" => Literal(LonaValue.number(500.))
+              | "semibold" => Literal(LonaValue.number(600.))
+              | "bold" => Literal(LonaValue.number(700.))
+              | "heavy" => Literal(LonaValue.number(800.))
+              | "black" => Literal(LonaValue.number(900.))
+              | _ => JavaScriptAst.StringLiteral("inherit")
+              },
+            )
+          | _ => None
+          };
+        | _ => None
+        };
+      }
+    );
+  evaluatedValue
+  %? (
+    switch (node) {
+    | IdentifierExpression({
+        identifier: Identifier({id, string: name, isPlaceholder: _}),
+      }) =>
+      let standard: JavaScriptAst.node =
+        Identifier([Format.lowerFirst(name)]);
       let scope = LogicScope.build(context.resolvedRootNode, ());
-      /* Does the identifier point to a defined pattern? */
-      let identifierPatternId = (scope.identifierToPattern)#get(id);
-      /* Does the expression point to a defined pattern? (used for member expressions) */
-      let expressionPatternId =
-        (scope.identifierToPattern)#get(
-          LogicProtocol.uuid(Expression(innerExpression)),
-        );
-
-      let patternId =
-        switch (identifierPatternId, expressionPatternId) {
-        | (Some(_), _) => identifierPatternId
-        | (None, Some(_)) => expressionPatternId
-        | (None, None) => None
+      let patternId = (scope.identifierToPattern)#get(id);
+      switch (patternId) {
+      | Some(patternId) =>
+        let pattern = LogicProtocol.find(context.rootNode, patternId);
+        switch (pattern) {
+        | Some(Pattern(Pattern({id: patternId}))) =>
+          let identifierPath =
+            LogicProtocol.declarationPathTo(context.rootNode, patternId)
+            |> List.map(Format.lowerFirst);
+          Identifier(identifierPath);
+        | _ => standard
         };
-
-      let recordDefinition: option(list(recordParameter)) =
-        switch (patternId) {
-        | Some(patternId) =>
-          let pattern =
-            LogicProtocol.parentOf(context.resolvedRootNode, patternId);
-          switch (pattern) {
-          | Some(Declaration(Record({declarations}))) =>
-            let parameters =
-              declarations
-              |> unfoldPairs
-              |> List.map((declaration: LogicAst.declaration) =>
-                   switch (declaration) {
-                   | Variable({
-                       name: Pattern({name}),
-                       initializer_: Some(defaultValue),
-                     }) =>
-                     Some({name, defaultValue})
-                   | _ => None
-                   }
-                 )
-              |> Sequence.compact;
-            Some(parameters);
-          | _ => None
-          };
-        | None => None
-        };
-
-      let enumDefinition: option(enumerationParameter) =
-        switch (patternId) {
-        | Some(patternId) =>
-          let enumerationCase =
-            LogicProtocol.parentOf(context.resolvedRootNode, patternId);
-          let enumeration =
-            enumerationCase
-            >>= (
-              node =>
-                LogicProtocol.parentOf(
-                  context.resolvedRootNode,
-                  LogicProtocol.uuid(node),
-                )
-            );
-
-          switch (enumerationCase, enumeration) {
-          | (
-              Some(
-                EnumerationCase(
-                  EnumerationCase({name: Pattern({name: caseName})}),
-                ),
-              ),
-              Some(
-                Declaration(
-                  Enumeration({name: Pattern({name: enumerationName})}),
-                ),
-              ),
-            ) =>
-            Some({caseName, enumerationName})
-          | _ => None
-          };
-        | None => None
-        };
-      switch (recordDefinition, enumDefinition) {
-      | (Some(parameters), _) =>
-        ObjectLiteral(
-          parameters
-          |> List.map((parameter: recordParameter) => {
-               let found =
-                 validArguments
-                 |> Sequence.firstWhere((arg: LogicAst.functionCallArgument) =>
-                      switch (arg) {
-                      | Argument({label: Some(label)})
-                          when label == parameter.name =>
-                        true
-                      | Argument(_) => false
-                      | Placeholder(_) => false
-                      }
-                    );
-               switch (found) {
-               | Some(Argument({expression: value})) =>
-                 JavaScriptAst.Property({
-                   key: Identifier([parameter.name]),
-                   value: Some(expression(context, value)),
-                 })
-               | Some(Placeholder(_))
-               | None =>
-                 JavaScriptAst.Property({
-                   key: Identifier([parameter.name]),
-                   value: Some(expression(context, parameter.defaultValue)),
-                 })
-               };
-             }),
-        )
-      | (_, Some({enumerationName: "Optional", caseName: "none"})) =>
-        JavaScriptAst.Identifier(["null"])
-      | (_, Some({enumerationName: "Optional", caseName: "value"})) =>
-        let LogicAst.Argument(argument) = validArguments |> List.hd;
-        expression(context, argument.expression);
-      | (_, Some({caseName})) => JavaScriptAst.StringLiteral(caseName)
-      | (None, None) => standard
+      | None => standard
       };
-    };
-  | Placeholder(_) =>
-    Js.log("Placeholder expression remaining");
-    Empty;
-  | _ =>
-    Js.log("Unhandled expression type");
-    Empty;
-  }
-and literal = (context: context, node: LogicAst.literal): JavaScriptAst.node =>
+
+    | LiteralExpression({literal: value}) => literal(context, value)
+    | MemberExpression({
+        memberName: Identifier({string}),
+        expression: innerExpression,
+      }) =>
+      evaluatedValue
+      %? MemberExpression({
+           memberName: Format.lowerFirst(string),
+           expression: expression(context, innerExpression),
+         })
+    | FunctionCallExpression({arguments, expression: innerExpression}) =>
+      let validArguments =
+        arguments
+        |> unfoldPairs
+        |> Sequence.rejectWhere(isPlaceholderArgument);
+
+      let standard =
+        JavaScriptAst.CallExpression({
+          callee: expression(context, innerExpression),
+          arguments:
+            validArguments
+            |> List.map((arg: LogicAst.functionCallArgument) => {
+                 let LogicAst.Argument({expression: innerExpression}) = arg;
+                 expression(context, innerExpression);
+               }),
+        });
+
+      switch (LogicUtils.lastIdentifier(innerExpression)) {
+      | None => standard
+      | Some(Identifier({id})) =>
+        let scope = LogicScope.build(context.resolvedRootNode, ());
+        /* Does the identifier point to a defined pattern? */
+        let identifierPatternId = (scope.identifierToPattern)#get(id);
+        /* Does the expression point to a defined pattern? (used for member expressions) */
+        let expressionPatternId =
+          (scope.identifierToPattern)#get(
+            LogicProtocol.uuid(Expression(innerExpression)),
+          );
+
+        let patternId =
+          switch (identifierPatternId, expressionPatternId) {
+          | (Some(_), _) => identifierPatternId
+          | (None, Some(_)) => expressionPatternId
+          | (None, None) => None
+          };
+
+        let recordDefinition: option(list(recordParameter)) =
+          switch (patternId) {
+          | Some(patternId) =>
+            let pattern =
+              LogicProtocol.parentOf(context.resolvedRootNode, patternId);
+            switch (pattern) {
+            | Some(Declaration(Record({declarations}))) =>
+              let parameters =
+                declarations
+                |> unfoldPairs
+                |> List.map((declaration: LogicAst.declaration) =>
+                     switch (declaration) {
+                     | Variable({
+                         name: Pattern({name}),
+                         initializer_: Some(defaultValue),
+                       }) =>
+                       Some({name, defaultValue})
+                     | _ => None
+                     }
+                   )
+                |> Sequence.compact;
+              Some(parameters);
+            | _ => None
+            };
+          | None => None
+          };
+
+        let enumDefinition: option(enumerationParameter) =
+          switch (patternId) {
+          | Some(patternId) =>
+            let enumerationCase =
+              LogicProtocol.parentOf(context.resolvedRootNode, patternId);
+            let enumeration =
+              enumerationCase
+              >>= (
+                node =>
+                  LogicProtocol.parentOf(
+                    context.resolvedRootNode,
+                    LogicProtocol.uuid(node),
+                  )
+              );
+
+            switch (enumerationCase, enumeration) {
+            | (
+                Some(
+                  EnumerationCase(
+                    EnumerationCase({name: Pattern({name: caseName})}),
+                  ),
+                ),
+                Some(
+                  Declaration(
+                    Enumeration({name: Pattern({name: enumerationName})}),
+                  ),
+                ),
+              ) =>
+              Some({caseName, enumerationName})
+            | _ => None
+            };
+          | None => None
+          };
+        switch (recordDefinition, enumDefinition) {
+        | (Some(parameters), _) =>
+          ObjectLiteral(
+            parameters
+            |> List.map((parameter: recordParameter) => {
+                 let found =
+                   validArguments
+                   |> Sequence.firstWhere(
+                        (arg: LogicAst.functionCallArgument) =>
+                        switch (arg) {
+                        | Argument({label: Some(label)})
+                            when label == parameter.name =>
+                          true
+                        | Argument(_) => false
+                        | Placeholder(_) => false
+                        }
+                      );
+                 switch (found) {
+                 | Some(Argument({expression: value})) =>
+                   JavaScriptAst.Property({
+                     key: Identifier([parameter.name]),
+                     value: Some(expression(context, value)),
+                   })
+                 | Some(Placeholder(_))
+                 | None =>
+                   JavaScriptAst.Property({
+                     key: Identifier([parameter.name]),
+                     value:
+                       Some(expression(context, parameter.defaultValue)),
+                   })
+                 };
+               }),
+          )
+        | (_, Some({enumerationName: "Optional", caseName: "none"})) =>
+          JavaScriptAst.Identifier(["null"])
+        | (_, Some({enumerationName: "Optional", caseName: "value"})) =>
+          let LogicAst.Argument(argument) = validArguments |> List.hd;
+          expression(context, argument.expression);
+        | (_, Some({caseName})) => JavaScriptAst.StringLiteral(caseName)
+        | (None, None) => standard
+        };
+      };
+    | Placeholder(_) =>
+      Js.log("Placeholder expression remaining");
+      Empty;
+    | _ =>
+      Js.log("Unhandled expression type");
+      Empty;
+    }
+  );
+}
+and literal =
+    (context: LogicGenerationContext.t, node: LogicAst.literal)
+    : JavaScriptAst.node =>
   switch (node) {
   | None(_) => Identifier(["null"])
   | Boolean({value}) => Literal(LonaValue.boolean(value))
