@@ -3,7 +3,6 @@ open Operators;
 
 module Path = Node.Path;
 module Fs = Node.Fs;
-module Process = Node.Process;
 
 /* We run the compiler as separate JS files during development, than as a bundle in production.
    We can only safely call __dirname in the main JS file, since other files will not be in the same path. */
@@ -12,16 +11,10 @@ let packageJson: Js.Json.t = [%bs.raw {| require("../package.json") |}];
 let packageVersion =
   packageJson |> Json.Decode.at(["version"], Json.Decode.string);
 
-let exit = message => {
-  Js.log(message);
-  %bs.raw
-  {|process.exit(1)|};
-};
-
 let scanResult =
   switch (CommandLine.Arguments.scan(Process.argv |> Array.to_list)) {
   | scanResult => scanResult
-  | exception (CommandLine.Command.Unknown(message)) => exit(message)
+  | exception (CommandLine.Command.Unknown(message)) => Process.exit(message)
   };
 let options = scanResult.options;
 
@@ -98,7 +91,7 @@ let renderColors = (target, config: Config.t) =>
   | Types.Swift => Swift.Color.render(config)
   | JavaScript => JavaScript.Color.render(config.colorsFile.contents)
   | Xml => Xml.Color.render(config.colorsFile.contents)
-  | Reason => exit("Reason not supported")
+  | Reason => Process.exit("Reason not supported")
   };
 
 let renderTextStyles = (target, config: Config.t) =>
@@ -150,23 +143,26 @@ let convertTypes = (target, contents) => {
   | Types.Reason =>
     let types = json |> TypeSystem.Decode.typesFile;
     ReasonTypeSystem.renderToString(options, types);
-  | _ => exit("Can't generate types for target")
+  | _ => Process.exit("Can't generate types for target")
   };
 };
 
-let convertLogic = (target, config: Config.t, contents) =>
+let convertLogic =
+    (target, config: Config.t, resolvedProgramNode: LogicAst.syntaxNode, node) =>
   switch (target) {
   | Types.Xml => "Can't convert Logic to XML"
   | Types.Reason => "Converting Logic to Reason isn't supported yet"
   | Types.JavaScript =>
-    contents |> LogicJavaScript.convert(config) |> JavaScriptRender.toString
+    node
+    |> LogicJavaScript.convert(config, resolvedProgramNode)
+    |> JavaScriptRender.toString
   | Types.Swift =>
     let importStatement =
       switch (options.swift.framework) {
       | AppKit => "import AppKit\n\n"
       | UIKit => "import UIKit\n\n"
       };
-    let code = contents |> LogicSwift.convert(config) |> SwiftRender.toString;
+    let code = node |> LogicSwift.convert(config) |> SwiftRender.toString;
 
     importStatement ++ code;
   };
@@ -241,7 +237,7 @@ let convertComponent = (config: Config.t, target, filename: string) => {
     let result =
       Swift.Component.generate(config, options, options.swift, name, parsed);
     result |> Swift.Render.toString;
-  | _ => exit("Unrecognized target")
+  | _ => Process.exit("Unrecognized target")
   };
 };
 
@@ -365,6 +361,10 @@ let updateContentsPreservingCommentMarkers = (originalPath, newContents) => {
 exception FailedToEvaluate(string);
 
 let generateDocumentation = (config: Config.t): TokenTypes.convertedWorkspace => {
+  // While we do separately have the programs extracted from mdxFiles in documentFiles,
+  // we (probably) convert from mdxFiles to logic files here to preserve node ids.
+  // Otherwise, when generating code we won't be able to match up the the ids.
+  // TODO: Revisit how this works
   let logicFiles: list(Config.file(LogicAst.syntaxNode)) =
     config.mdxFiles
     |> List.map((file: Config.file(MdxTypes.root)) => {
@@ -391,7 +391,8 @@ let generateDocumentation = (config: Config.t): TokenTypes.convertedWorkspace =>
          };
        });
 
-  let evaluationContext = LogicCompile.evaluateFiles(config, logicFiles);
+  let evaluationContext =
+    LogicCompile.evaluate(config.logicLibraries, logicFiles);
 
   switch (evaluationContext) {
   | None =>
@@ -464,7 +465,7 @@ let generateDocumentation = (config: Config.t): TokenTypes.convertedWorkspace =>
 
 let flattenWorkspace = (config: Config.t): TokenTypes.convertedWorkspace => {
   let evaluationContext =
-    LogicCompile.evaluateFiles(config, config.logicFiles);
+    LogicCompile.evaluate(config.logicLibraries, config.logicFiles);
   switch (evaluationContext) {
   | None =>
     Log.warn("Failed to evaluate workspace.");
@@ -510,6 +511,12 @@ let convertWorkspace = (target, workspace, output) => {
   )
   |> Js.Promise.then_((config: Config.t) => {
        ensureDirSync(toDirectory);
+
+       let resolvedProgramNode =
+         LogicCompile.makeResolvedProgramNode(
+           config.logicLibraries,
+           config.logicFiles,
+         );
 
        let userTypes = config.userTypesFile.contents;
 
@@ -609,7 +616,7 @@ let convertWorkspace = (target, workspace, output) => {
             });
        };
 
-       if (target == Types.Swift) {
+       if (target == Types.Swift || target == Types.JavaScript) {
          config.logicFiles
          |> List.iter((file: Config.file(LogicAst.syntaxNode)) => {
               let filename =
@@ -630,7 +637,13 @@ let convertWorkspace = (target, workspace, output) => {
               | TopLevelDeclarations(
                   TopLevelDeclarations({declarations: Next(_)}),
                 ) =>
-                let converted = convertLogic(target, config, file.contents);
+                let converted =
+                  convertLogic(
+                    target,
+                    config,
+                    resolvedProgramNode,
+                    file.contents,
+                  );
                 writeAnnotatedFile(outputPath, converted);
               | _ => ()
               };
@@ -643,7 +656,7 @@ let convertWorkspace = (target, workspace, output) => {
          config.componentPaths
          |> List.filter(file =>
               switch (options.filterComponents) {
-              | Some(value) => Js.Re.test(file, Js.Re.fromString(value))
+              | Some(value) => Js.Re.test_(Js.Re.fromString(value), file)
               | None => true
               }
             )
@@ -746,7 +759,7 @@ switch (scanResult.command) {
          ->(Js.Json.stringifyWithSpace(2))
          |> Js.log;
          Js.Promise.resolve();
-       | exception (FailedToEvaluate(message)) => exit(message)
+       | exception (FailedToEvaluate(message)) => Process.exit(message)
        }
      )
   |> ignore
@@ -759,7 +772,7 @@ switch (scanResult.command) {
          ->(Js.Json.stringifyWithSpace(2))
          |> Js.log;
          Js.Promise.resolve();
-       | exception (FailedToEvaluate(message)) => exit(message)
+       | exception (FailedToEvaluate(message)) => Process.exit(message)
        }
      )
   |> ignore
@@ -858,44 +871,6 @@ switch (scanResult.command) {
     |> ensureDirAndWriteFile(path)
   | None => convertedContents |> Js.log
   };
-| Logic(target, input, initialWorkspaceSearchPath) =>
-  let decode = (contents): LogicAst.syntaxNode => {
-    let jsonContents = Serialization.convert(contents, "logic", "json");
-    let json = jsonContents |> Js.Json.parseExn;
-    LogicAst.Decode.syntaxNode(json);
-  };
-
-  Config.load(
-    platformId(target),
-    options,
-    initialWorkspaceSearchPath,
-    "",
-    nodeDirname,
-  )
-  |> Js.Promise.then_((config: Config.t) =>
-       switch (input) {
-       | File(inputPath) =>
-         let contents = Fs.readFileSync(inputPath, `utf8);
-         decode(contents) |> convertLogic(target, config) |> Js.log;
-         Js.Promise.resolve();
-       | Stdin =>
-         getStdin()
-         |> Js.Promise.then_(contents => {
-              let program = decode(contents);
-              let config = {
-                ...config,
-                logicFiles: [
-                  {path: "__stdin__", contents: program},
-                  ...config.logicFiles,
-                ],
-              };
-              program |> convertLogic(target, config) |> Js.log;
-
-              Js.Promise.resolve();
-            })
-       }
-     )
-  |> ignore;
 | TextStyles(target, input) =>
   let initialWorkspaceSearchPath =
     switch (input) {

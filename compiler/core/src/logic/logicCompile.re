@@ -1,6 +1,9 @@
-let evaluateFiles =
-    (config: Config.t, logicFiles: list(Config.file(LogicAst.syntaxNode)))
-    : option(LogicEvaluate.Context.t) => {
+let makeResolvedProgramNode =
+    (
+      libraryFiles: list(Config.file(LogicAst.syntaxNode)),
+      logicFiles: list(Config.file(LogicAst.syntaxNode)),
+    )
+    : LogicAst.syntaxNode => {
   let program =
     logicFiles
     |> List.map((file: Config.file(LogicAst.syntaxNode)) => file.contents)
@@ -8,10 +11,19 @@ let evaluateFiles =
     |> LogicUtils.joinPrograms;
   let program =
     LogicUtils.joinPrograms([LogicUtils.standardImportsProgram, program]);
-  let programNode =
-    LogicAst.Program(
-      Program(LogicUtils.resolveImports(config, program, ())),
-    );
+
+  LogicAst.Program(
+    Program(LogicUtils.resolveImports(libraryFiles, program, ())),
+  );
+};
+
+let evaluate =
+    (
+      libraryFiles: list(Config.file(LogicAst.syntaxNode)),
+      logicFiles: list(Config.file(LogicAst.syntaxNode)),
+    )
+    : option(LogicEvaluate.Context.t) => {
+  let programNode = makeResolvedProgramNode(libraryFiles, logicFiles);
   let scopeContext = LogicScope.build(programNode, ());
   let unificationContext =
     LogicUnificationContext.makeUnificationContext(

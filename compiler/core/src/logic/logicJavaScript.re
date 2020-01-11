@@ -52,11 +52,14 @@ let sharedPrefix =
 };
 
 let rec convert =
-        (config: Config.t, node: LogicAst.syntaxNode): JavaScriptAst.node =>
+        (
+          config: Config.t,
+          resolvedProgramNode: LogicAst.syntaxNode,
+          node: LogicAst.syntaxNode,
+        )
+        : JavaScriptAst.node =>
   switch (LogicUtils.makeProgram(node)) {
-  | Some(programNode) =>
-    let resolvedProgramNode =
-      LogicAst.Program(Program(resolveImports(config, programNode, ())));
+  | Some(programContents) =>
     let context = {
       config,
       isStatic: false,
@@ -65,14 +68,7 @@ let rec convert =
       resolvedRootNode: resolvedProgramNode,
     };
     /* Js.log(LogicProtocol.nodeHierarchyDescription(node, ())); */
-    switch (node) {
-    | LogicAst.Program(Program(contents)) => program(context, contents)
-    | LogicAst.TopLevelDeclarations(TopLevelDeclarations(contents)) =>
-      topLevelDeclarations(context, contents)
-    | _ =>
-      Js.log("Unhandled syntaxNode type");
-      Empty;
-    };
+    program(context, programContents);
   | None =>
     Js.log("Failed to make program node from logic file");
     Empty;

@@ -12,7 +12,6 @@ module Command = {
     | TextStyles(Types.compilerTarget, inputReference)
     | Shadows(Types.compilerTarget, inputReference)
     | Types(Types.compilerTarget, string, option(string))
-    | Logic(Types.compilerTarget, inputReference, string)
     | Component(Types.compilerTarget, string)
     | Workspace(Types.compilerTarget, string, string)
     | Flatten(string)
@@ -322,15 +321,6 @@ Type `lonac [command]` to see which options are required for that command. The f
           raise(Command.Unknown("Missing input path (--input)"))
         | (Some(target), Some(path), output) =>
           Command.Types(target, path, output)
-        }
-      | "logic" =>
-        switch (targetRef^, inputRef^) {
-        | (None, _) =>
-          raise(Command.Unknown("Missing output target (--target)"))
-        | (Some(target), None) =>
-          Command.Logic(target, Stdin, workspaceRef^ %? Node.Process.cwd())
-        | (Some(target), Some(path)) =>
-          Command.Logic(target, File(path), workspaceRef^ %? path)
         }
       | "component" =>
         switch (targetRef^, inputRef^) {
