@@ -77,6 +77,12 @@ module Arguments = {
       "[pattern] Only generate components matching this string (converted to a regular expression)",
     );
 
+    let noGenerateBannerMessage = (container: ref(bool)) => (
+      "--noGenerateBannerMessage",
+      Arg.Set(container),
+      " Don't add the compiler version in a comment at the top of each generated file",
+    );
+
     /* Target options */
 
     let framework = (container: ref(option(string))) => (
@@ -196,6 +202,7 @@ Type `lonac [command]` to see which options are required for that command. The f
     let outputRef: ref(option(string)) = ref(None);
     let inputRef: ref(option(string)) = ref(None);
     let filterComponentsRef: ref(option(string)) = ref(None);
+    let noGenerateBannerMessageRef: ref(bool) = ref(false);
 
     /* Target options */
     let frameworkRef: ref(option(string)) = ref(None);
@@ -220,6 +227,7 @@ Type `lonac [command]` to see which options are required for that command. The f
         Spec.output(outputRef),
         Spec.input(inputRef),
         Spec.filterComponents(filterComponentsRef),
+        Spec.noGenerateBannerMessage(noGenerateBannerMessageRef),
         /* Target options */
         Spec.framework(frameworkRef),
         /* Swift options */
@@ -375,6 +383,7 @@ Type `lonac [command]` to see which options are required for that command. The f
       options: {
         preset: Options.Standard,
         filterComponents: filterComponentsRef^,
+        generateBannerMessage: ! noGenerateBannerMessageRef^,
         discriminant:
           switch (discriminantRef^) {
           | Some(value) => value
