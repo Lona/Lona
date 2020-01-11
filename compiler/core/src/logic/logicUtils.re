@@ -1,11 +1,3 @@
-type context = {
-  config: Config.t,
-  isStatic: bool,
-  isTopLevel: bool,
-  rootNode: LogicAst.syntaxNode,
-  resolvedRootNode: LogicAst.syntaxNode,
-};
-
 let isPlaceholderDeclaration = (declaration: LogicAst.declaration) =>
   switch (declaration) {
   | Placeholder(_) => true
@@ -112,7 +104,7 @@ let rec makeProgram =
 let standardImportsProgram: LogicAst.programProgram = {
   let libraryImports: list(LogicAst.statement) =
     ["Prelude", "Color", "Shadow", "TextStyle"]
-    |> List.map(libraryName =>
+    |> List.map((libraryName) =>
          (
            Declaration({
              id: Uuid.next(),
@@ -129,7 +121,7 @@ let standardImportsProgram: LogicAst.programProgram = {
 
 let rec resolveImports =
         (
-          config: Config.t,
+          libraries: list(Config.file(LogicAst.syntaxNode)),
           program: LogicAst.programProgram,
           ~existingImports: ref(list(string))=ref([]),
           (),
@@ -148,7 +140,7 @@ let rec resolveImports =
            }) =>
            let alreadyFound = List.mem(libraryName, existingImports^);
            let library =
-             config.logicLibraries
+             libraries
              |> Sequence.firstWhere((file: Config.file(LogicAst.syntaxNode)) =>
                   Node.Path.basename_ext(file.path, ".logic") == libraryName
                 );
@@ -159,7 +151,7 @@ let rec resolveImports =
              switch (libraryProgram) {
              | Some(program) =>
                let resolvedProgram =
-                 resolveImports(config, program, ~existingImports, ());
+                 resolveImports(libraries, program, ~existingImports, ());
                let statements = resolvedProgram.block |> unfoldPairs;
                [statement, ...statements];
              | None => [statement]

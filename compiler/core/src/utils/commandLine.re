@@ -12,7 +12,6 @@ module Command = {
     | TextStyles(Types.compilerTarget, inputReference)
     | Shadows(Types.compilerTarget, inputReference)
     | Types(Types.compilerTarget, string, option(string))
-    | Logic(Types.compilerTarget, inputReference, string)
     | Component(Types.compilerTarget, string)
     | Workspace(Types.compilerTarget, string, string)
     | Flatten(string)
@@ -76,6 +75,18 @@ module Arguments = {
       "--filterComponents",
       Arg.String(setOptionalString(container)),
       "[pattern] Only generate components matching this string (converted to a regular expression)",
+    );
+
+    let noGenerateBannerMessage = (container: ref(bool)) => (
+      "--noGenerateBannerMessage",
+      Arg.Set(container),
+      " Don't add the compiler version in a comment at the top of each generated file",
+    );
+
+    let legacyTokens = (container: ref(bool)) => (
+      "--legacyTokens",
+      Arg.Set(container),
+      " Generate legacy token files (e.g. colors.json => colors.js)",
     );
 
     /* Target options */
@@ -197,6 +208,8 @@ Type `lonac [command]` to see which options are required for that command. The f
     let outputRef: ref(option(string)) = ref(None);
     let inputRef: ref(option(string)) = ref(None);
     let filterComponentsRef: ref(option(string)) = ref(None);
+    let noGenerateBannerMessageRef: ref(bool) = ref(false);
+    let legacyTokensRef: ref(bool) = ref(false);
 
     /* Target options */
     let frameworkRef: ref(option(string)) = ref(None);
@@ -221,6 +234,8 @@ Type `lonac [command]` to see which options are required for that command. The f
         Spec.output(outputRef),
         Spec.input(inputRef),
         Spec.filterComponents(filterComponentsRef),
+        Spec.noGenerateBannerMessage(noGenerateBannerMessageRef),
+        Spec.legacyTokens(legacyTokensRef),
         /* Target options */
         Spec.framework(frameworkRef),
         /* Swift options */
@@ -323,15 +338,6 @@ Type `lonac [command]` to see which options are required for that command. The f
         | (Some(target), Some(path), output) =>
           Command.Types(target, path, output)
         }
-      | "logic" =>
-        switch (targetRef^, inputRef^) {
-        | (None, _) =>
-          raise(Command.Unknown("Missing output target (--target)"))
-        | (Some(target), None) =>
-          Command.Logic(target, Stdin, workspaceRef^ %? Node.Process.cwd())
-        | (Some(target), Some(path)) =>
-          Command.Logic(target, File(path), workspaceRef^ %? path)
-        }
       | "component" =>
         switch (targetRef^, inputRef^) {
         | (None, _) =>
@@ -385,6 +391,8 @@ Type `lonac [command]` to see which options are required for that command. The f
       options: {
         preset: Options.Standard,
         filterComponents: filterComponentsRef^,
+        generateBannerMessage: ! noGenerateBannerMessageRef^,
+        generateLegacyTokens: legacyTokensRef^,
         discriminant:
           switch (discriminantRef^) {
           | Some(value) => value

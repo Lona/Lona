@@ -35,9 +35,9 @@ module Workspace = {
   /* Detect workspace by finding nearest lona.json in the file hierarchy */
   let rec find = path => {
     let exists = Fs.existsSync(Path.join([|path, "lona.json"|]));
-    exists ?
-      Some(path) :
-      (
+    exists
+      ? Some(path)
+      : (
         switch (Path.dirname(path)) {
         | "/" => None
         | parent => find(parent)
@@ -203,8 +203,8 @@ module Workspace = {
 
   let relativePath = (config: t, path: string): string => {
     let path =
-      Js.String.startsWith("file://", path) ?
-        Js.String.replace("file://", "", path) : path;
+      Js.String.startsWith("file://", path)
+        ? Js.String.replace("file://", "", path) : path;
     Node.Path.join2(config.workspacePath, path);
   };
 

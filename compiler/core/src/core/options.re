@@ -11,4 +11,6 @@ type options = {
   javaScript: JavaScriptOptions.options,
   discriminant: string,
   dataWrapper: string,
+  generateBannerMessage: bool,
+  generateLegacyTokens: bool,
 };
