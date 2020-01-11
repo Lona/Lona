@@ -83,6 +83,12 @@ module Arguments = {
       " Don't add the compiler version in a comment at the top of each generated file",
     );
 
+    let legacyTokens = (container: ref(bool)) => (
+      "--legacyTokens",
+      Arg.Set(container),
+      " Generate legacy token files (e.g. colors.json => colors.js)",
+    );
+
     /* Target options */
 
     let framework = (container: ref(option(string))) => (
@@ -203,6 +209,7 @@ Type `lonac [command]` to see which options are required for that command. The f
     let inputRef: ref(option(string)) = ref(None);
     let filterComponentsRef: ref(option(string)) = ref(None);
     let noGenerateBannerMessageRef: ref(bool) = ref(false);
+    let legacyTokensRef: ref(bool) = ref(false);
 
     /* Target options */
     let frameworkRef: ref(option(string)) = ref(None);
@@ -228,6 +235,7 @@ Type `lonac [command]` to see which options are required for that command. The f
         Spec.input(inputRef),
         Spec.filterComponents(filterComponentsRef),
         Spec.noGenerateBannerMessage(noGenerateBannerMessageRef),
+        Spec.legacyTokens(legacyTokensRef),
         /* Target options */
         Spec.framework(frameworkRef),
         /* Swift options */
@@ -384,6 +392,7 @@ Type `lonac [command]` to see which options are required for that command. The f
         preset: Options.Standard,
         filterComponents: filterComponentsRef^,
         generateBannerMessage: ! noGenerateBannerMessageRef^,
+        generateLegacyTokens: legacyTokensRef^,
         discriminant:
           switch (discriminantRef^) {
           | Some(value) => value
