@@ -77,8 +77,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         DocumentController.shared.workspaceWindowControllers.first?.showWindow(nil)
     }
 
+    private lazy var welcomeWindow = WelcomeWindow()
+
     @IBAction func showWelcomeWindow(_ sender: AnyObject) {
-        WelcomeWindow.shared.makeKeyAndOrderFront(nil)
+        welcomeWindow.makeKeyAndOrderFront(nil)
     }
 
     /*  Create a new component by duplicating the contents of an existing component

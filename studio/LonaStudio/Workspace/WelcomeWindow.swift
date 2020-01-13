@@ -11,8 +11,6 @@ import AppKit
 // MARK: - WelcomeWindow
 
 public class WelcomeWindow: NSWindow {
-    public static var shared = WelcomeWindow()
-
     public override init(contentRect: NSRect, styleMask style: NSWindow.StyleMask, backing backingStoreType: NSWindow.BackingStoreType, defer flag: Bool) {
 
         let size = NSSize(width: 720, height: 460)
