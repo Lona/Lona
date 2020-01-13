@@ -103,7 +103,25 @@ class WorkspaceViewController: NSSplitViewController {
 
     public var onChangeActivePanes: (([WorkspacePane]) -> Void)?
 
-    public var document: NSDocument? { didSet { update() } }
+    public var removeDocumentChangeListener: (() -> Void)?
+
+    public var document: NSDocument? {
+        didSet {
+            update()
+
+            if document !== oldValue {
+                if let document = document as? MarkdownDocument {
+                    let key = document.addChangeListener { _ in self.update() }
+
+                    removeDocumentChangeListener = {
+                        document.removeChangeListener(forKey: key)
+                    }
+                } else {
+                    removeDocumentChangeListener?()
+                }
+            }
+        }
+    }
 
     // Called from the ComponentMenu
     public func addLayer(_ layer: CSLayer) {
@@ -728,165 +746,28 @@ class WorkspaceViewController: NSSplitViewController {
         } else if let document = document as? MarkdownDocument {
             inspectorViewVisible = false
 
+            markdownViewController.content = document.content
+
             editorViewController.contentView = markdownViewController.view
 
-            let handleChange: ([BlockEditor.Block]) -> Bool = { [unowned self] value in
-                guard let fileURL = document.fileURL else { return false }
-
-                func pages(blocks: [BlockEditor.Block]) -> [String] {
-                    blocks.compactMap {
-                        switch $0.content {
-                        case .page(title: _, target: let target):
-                            return target
-                        default:
-                            return nil
-                        }
-                    }
-                }
-
-                let oldPages = pages(blocks: document.content)
-                let newPages = pages(blocks: value)
-
-                let diff = oldPages.diff(newPages)
-                let deleted: [String] = diff.compactMap {
-                    switch $0 {
-                    case .delete(at: let index):
-                        return oldPages[index]
-                    case .insert:
-                        return nil
-                    }
-                }
-
-                do {
-                    try document.deleteChildPageFiles(deleted)
-                } catch let error {
-                    Swift.print("Failed to delete files \(deleted)", error)
-                    return false
-                }
-
-                let value = value.isEmpty ? [BlockEditor.Block.makeDefaultEmptyBlock()] : value
-
-                document.content = value
-                self.markdownViewController.content = value
-
-                document.updateChangeCount(.changeDone)
-
-                if deleted.isEmpty {
-                    self.editorViewController.subtitleText = " — Edited"
-                } else {
-                    document.save(withDelegate: nil, didSave: nil, contextInfo: nil)
-                }
-
-                return true
-            }
-
-            markdownViewController.onNavigateToPage = { [unowned self] page in
+            markdownViewController.onNavigateToPage = { [unowned self, unowned document] page in
                 guard let fileURL = document.fileURL else { return false }
                 self.openDocument(fileURL.deletingLastPathComponent().appendingPathComponent(page).path)
                 return true
             }
-            markdownViewController.content = document.content
-            markdownViewController.onRequestCreatePage = { [unowned self] index, shouldReplace in
-                func createChildPage(withinIndexPage indexPageURL: URL, pageName: String) {
-                    var pageURL = indexPageURL.deletingLastPathComponent().appendingPathComponent(pageName)
-                    if pageURL.pathExtension != "md" {
-                        pageURL = pageURL.appendingPathExtension("md")
-                    }
-
-                    let title = pageURL.deletingPathExtension().lastPathComponent
-                    let newBlock = BlockEditor.Block(.page(title: title, target: pageURL.lastPathComponent), .none)
-
-                    var blocks = document.content
-                    if shouldReplace {
-                        blocks[index] = newBlock
-                    } else {
-                        blocks.insert(newBlock, at: index)
-                    }
-
-                    // Insert a link to the new markdown page
-                    _ = handleChange(blocks)
-
-                    document.save(to: indexPageURL, for: .saveOperation) { saveResult in
-                        switch saveResult {
-                        case .success:
-                            DocumentController.shared.makeAndOpenMarkdownDocument(withTitle: title, savedTo: pageURL) { documentResult in
-                                switch documentResult {
-                                case .success:
-                                    break
-                                case .failure(let error):
-                                    Swift.print("Failed to create", error)
-                                    Alert.runInformationalAlert(messageText: "Failed to create page \(title).")
-                                }
-                            }
-                        case .failure(let error):
-                            Swift.print("Failed to save", error)
-                            Alert.runInformationalAlert(messageText: "Failed to save \(indexPageURL.path).")
-                        }
-                    }
-                }
-
-                guard let fileURL = document.fileURL else { return }
+            markdownViewController.onRequestCreatePage = { [unowned document] index, shouldReplace in
                 guard let pageName = Alert.runTextInputAlert(
                     messageText: "Enter the name of your new page",
                     placeholderText: "Page name")
                     else { return }
-
-                if fileURL.lastPathComponent == "README.md" {
-                    createChildPage(withinIndexPage: fileURL, pageName: pageName)
-                } else {
-                    document.convertToDirectory(completionHandler: { result in
-                        switch result {
-                        case .success(let readmeURL):
-                            createChildPage(withinIndexPage: readmeURL, pageName: pageName)
-                        case .failure(let error):
-                            Swift.print("Failed to convert readme to directory", error)
-                        }
-                    })
-                }
+                document.makeAndOpenChildPage(pageName: pageName, blockIndex: index, shouldReplaceBlock: shouldReplace)
             }
-            markdownViewController.onChange = handleChange
+            markdownViewController.onChange = { [unowned document] blocks in
+                document.setContent(blocks)
+                return true
+            }
         }
     }
-
-//    func createChildPage(of document: MarkdownDocument, pageName: String) {
-//        guard let indexPageURL = document.fileURL else { return }
-//
-//        var pageURL = indexPageURL.deletingLastPathComponent().appendingPathComponent(pageName)
-//        if pageURL.pathExtension != "md" {
-//            pageURL = pageURL.appendingPathExtension("md")
-//        }
-//
-//        let title = pageURL.deletingPathExtension().lastPathComponent
-//        let newBlock = BlockEditor.Block(.page(title: title, target: pageURL.lastPathComponent), .none)
-//
-//        var blocks = document.content
-//        if shouldReplace {
-//            blocks[index] = newBlock
-//        } else {
-//            blocks.insert(newBlock, at: index)
-//        }
-//
-//        // Insert a link to the new markdown page
-//        _ = handleChange(blocks)
-//
-//        document.save(to: indexPageURL, for: .saveOperation) { saveResult in
-//            switch saveResult {
-//            case .success:
-//                DocumentController.shared.makeAndOpenMarkdownDocument(withTitle: title, savedTo: pageURL) { documentResult in
-//                    switch documentResult {
-//                    case .success:
-//                        break
-//                    case .failure(let error):
-//                        Swift.print("Failed to create", error)
-//                        Alert.runInformationalAlert(messageText: "Failed to create page \(title).")
-//                    }
-//                }
-//            case .failure(let error):
-//                Swift.print("Failed to save", error)
-//                Alert.runInformationalAlert(messageText: "Failed to save \(indexPageURL.path).")
-//            }
-//        }
-//    }
 
     // We keep track of the last opened document path so that if it fails to open,
     // we can show the correct placeholder content. However, there are probably other

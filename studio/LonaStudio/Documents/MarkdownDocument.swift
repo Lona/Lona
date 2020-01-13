@@ -10,6 +10,9 @@ import AppKit
 import Logic
 
 class MarkdownDocument: NSDocument {
+
+    public static let INDEX_PAGE_NAME = "README.md"
+
     override init() {
         super.init()
 
@@ -34,6 +37,20 @@ class MarkdownDocument: NSDocument {
 
     var program: LGCProgram {
         return MarkdownFile.makeMarkdownRoot(content).program()
+    }
+
+    private var changeEmitter: Emitter<[BlockEditor.Block]> = .init()
+
+    public var isIndexPage: Bool {
+        return fileURL?.lastPathComponent == MarkdownDocument.INDEX_PAGE_NAME
+    }
+
+    public func addChangeListener(_ listener: @escaping ([BlockEditor.Block]) -> Void) -> Int {
+        return changeEmitter.addListener(listener)
+    }
+
+    public func removeChangeListener(forKey key: Int) {
+        changeEmitter.removeListener(forKey: key)
     }
 
     override func makeWindowControllers() {
@@ -87,6 +104,107 @@ class MarkdownDocument: NSDocument {
 
 extension MarkdownDocument {
 
+    func pages(blocks: [BlockEditor.Block]) -> [String] {
+        blocks.compactMap {
+            switch $0.content {
+            case .page(title: _, target: let target):
+                return target
+            default:
+                return nil
+            }
+        }
+    }
+
+    func setContent(_ value: [BlockEditor.Block]) {
+        let oldPages = pages(blocks: content)
+        let newPages = pages(blocks: value)
+
+        let diff = oldPages.diff(newPages)
+        let deleted: [String] = diff.compactMap {
+            switch $0 {
+            case .delete(at: let index):
+                return oldPages[index]
+            case .insert:
+                return nil
+            }
+        }
+
+        do {
+            try deleteChildPageFiles(deleted)
+        } catch let error {
+            Swift.print("Failed to delete files \(deleted)", error)
+            return
+        }
+
+        let value = value.isEmpty ? [BlockEditor.Block.makeDefaultEmptyBlock()] : value
+
+        content = value
+
+        updateChangeCount(.changeDone)
+
+        // If we deleted child pages, we automatically save
+        if !deleted.isEmpty {
+            save(withDelegate: nil, didSave: nil, contextInfo: nil)
+        }
+
+        changeEmitter.emit(content)
+    }
+
+    func makeAndOpenChildPage(pageName: String, blockIndex index: Int, shouldReplaceBlock shouldReplace: Bool) {
+        guard let fileURL = fileURL else { return }
+
+        // Ensure that this is a directory before creating a child page
+        if !isIndexPage {
+            convertToDirectory(completionHandler: { result in
+                switch result {
+                case .success:
+                    self.makeAndOpenChildPage(pageName: pageName, blockIndex: index, shouldReplaceBlock: shouldReplace)
+                case .failure(let error):
+                    Swift.print("Failed to convert readme to directory", error)
+                }
+            })
+
+            return
+        }
+
+        var pageURL = fileURL.deletingLastPathComponent().appendingPathComponent(pageName)
+
+        if pageURL.pathExtension != "md" {
+            pageURL = pageURL.appendingPathExtension("md")
+        }
+
+        let title = pageURL.deletingPathExtension().lastPathComponent
+        let newBlock = BlockEditor.Block(.page(title: title, target: pageURL.lastPathComponent), .none)
+
+        var blocks = content
+        if shouldReplace {
+            blocks[index] = newBlock
+        } else {
+            blocks.insert(newBlock, at: index)
+        }
+
+        setContent(blocks)
+
+        save(to: fileURL, for: .saveOperation) { saveResult in
+            switch saveResult {
+            case .success:
+                DocumentController.shared.makeAndOpenMarkdownDocument(withTitle: title, savedTo: pageURL) { documentResult in
+                    switch documentResult {
+                    case .success:
+                        break
+                    case .failure(let error):
+                        Swift.print("Failed to create", error)
+                        Alert.runInformationalAlert(messageText: "Failed to create page \(title).")
+                    }
+                }
+            case .failure(let error):
+                Swift.print("Failed to save", error)
+                Alert.runInformationalAlert(messageText: "Failed to save \(fileURL.path).")
+            }
+        }
+    }
+
+
     func deleteChildPageFiles(_ deleted: [String]) throws {
         guard let fileURL = fileURL else { return }
 
@@ -116,6 +234,7 @@ extension MarkdownDocument {
     // - Make the Page directory
     // - Change the URL of the current document to Page/README.md and save it
     // - Delete the old Page.md
+    // - TODO: Fix parent URL to point to Page/README.md
     func convertToDirectory(completionHandler: @escaping ((Result<URL, Error>) -> Void)) {
         guard let originalFileURL = fileURL else { return }
 
@@ -132,7 +251,7 @@ extension MarkdownDocument {
             return
         }
 
-        let readmeURL = directoryURL.appendingPathComponent("README.md")
+        let readmeURL = directoryURL.appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)
 
         save(to: readmeURL, ofType: "Markdown", for: .saveAsOperation, completionHandler: { [unowned self] error in
             if let error = error {
@@ -147,8 +266,6 @@ extension MarkdownDocument {
                 completionHandler(.failure(error))
                 return
             }
-
-            Swift.print("Saved \(originalFileURL) as \(self.fileURL)")
 
             completionHandler(.success(readmeURL))
         })

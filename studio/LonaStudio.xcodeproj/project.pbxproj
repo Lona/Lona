@@ -293,6 +293,7 @@
 		6BD96653217FB0DB0012F173 /* default-workspace-thumbnail@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6BD96651217FB0DB0012F173 /* default-workspace-thumbnail@2x.png */; };
 		6BDF4D2E20A67272006E99C4 /* BrowserToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDF4D2D20A67272006E99C4 /* BrowserToolbar.swift */; };
 		6BE89BBC21B7452800F35AC3 /* LonaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE89BBB21B7452800F35AC3 /* LonaViewModel.swift */; };
+		6BE99D7423CD1F6800E35E35 /* Emitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE99D7323CD1F6800E35E35 /* Emitter.swift */; };
 		6BEA1A76233AE8E00008FF7E /* SubtleSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEA1A75233AE8E00008FF7E /* SubtleSplitView.swift */; };
 		6BF4EF45235A695F00548F61 /* WorkspaceWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF4EF44235A695F00548F61 /* WorkspaceWindow.swift */; };
 		6BF4EF5D235CF8DD00548F61 /* ShadowSuggestionEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF4EF5C235CF8DC00548F61 /* ShadowSuggestionEditor.swift */; };
@@ -642,6 +643,7 @@
 		6BD96651217FB0DB0012F173 /* default-workspace-thumbnail@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default-workspace-thumbnail@2x.png"; sourceTree = "<group>"; };
 		6BDF4D2D20A67272006E99C4 /* BrowserToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserToolbar.swift; sourceTree = "<group>"; };
 		6BE89BBB21B7452800F35AC3 /* LonaViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaViewModel.swift; sourceTree = "<group>"; };
+		6BE99D7323CD1F6800E35E35 /* Emitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emitter.swift; sourceTree = "<group>"; };
 		6BEA1A75233AE8E00008FF7E /* SubtleSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtleSplitView.swift; sourceTree = "<group>"; };
 		6BF4EF44235A695F00548F61 /* WorkspaceWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceWindow.swift; sourceTree = "<group>"; };
 		6BF4EF5C235CF8DC00548F61 /* ShadowSuggestionEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShadowSuggestionEditor.swift; sourceTree = "<group>"; };
@@ -809,6 +811,7 @@
 				30F4FD521F76ADC70048691C /* AnimationUtils.swift */,
 				3056275D1FBA0C0700026796 /* CSConstraint.swift */,
 				305BDA201F648F6400AD2AA3 /* CSPDFDocument.swift */,
+				6BE99D7323CD1F6800E35E35 /* Emitter.swift */,
 				30F870EA20869644007ADA5B /* Fetch.swift */,
 				6B558A3F222B1FD1000C22FE /* FileSearch.swift */,
 				6B4DFCEC20A77C650048BB43 /* FileUtils.swift */,
@@ -1800,6 +1803,7 @@
 				6B7DBF5E22A877F50062031E /* LogicDocument.swift in Sources */,
 				301C262420C1C3B500F18F73 /* TextStyle.swift in Sources */,
 				306DA4F61F34E42F002772DC /* DimensionSizingRule.swift in Sources */,
+				6BE99D7423CD1F6800E35E35 /* Emitter.swift in Sources */,
 				6B7DBF6022A87B050062031E /* LogicViewController.swift in Sources */,
 				30516B491F43C46200940B3B /* SequenceExtensions.swift in Sources */,
 				6B5A6AC822FB860A00CA004E /* LogicPreviewCard.swift in Sources */,
