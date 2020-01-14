@@ -54,16 +54,14 @@ class DocumentController: NSDocumentController {
 extension DocumentController {
     public func makeAndOpenMarkdownDocument(
         withTitle title: String,
-        savedTo url: URL,
-        completionHandler: @escaping (Result<MarkdownDocument, Error>) -> Void
-    ) {
+        savedTo url: URL
+    ) -> Promise<MarkdownDocument, NSError> {
         let document: MarkdownDocument
 
         do {
             document = try makeUntitledDocument(ofType: "Markdown") as! MarkdownDocument
         } catch let error {
-            completionHandler(.failure(error))
-            return
+            return .failure(error as NSError)
         }
 
         document.content = [
@@ -71,19 +69,17 @@ extension DocumentController {
             .makeDefaultEmptyBlock()
         ]
 
-        document.save(to: url, ofType: "Markdown", for: .saveOperation) { [unowned self] error in
-            if let error = error {
-                completionHandler(.failure(error))
-            } else {
+        return document.save(to: url, for: .saveOperation).onSuccess({
+            return .result { complete in
                 self.openDocument(withContentsOf: url, display: true, completionHandler: { document, alreadyOpen, error in
                     if let error = error {
-                        completionHandler(.failure(error))
+                        complete(.failure(error as NSError))
                     } else {
-                        completionHandler(.success(document as! MarkdownDocument))
+                        complete(.success(document as! MarkdownDocument))
                     }
                 })
             }
-        }
+        })
     }
 }
 

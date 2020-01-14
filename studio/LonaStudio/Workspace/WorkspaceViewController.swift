@@ -451,7 +451,7 @@ class WorkspaceViewController: NSSplitViewController {
             let fileURL = URL(fileURLWithPath: path)
             let title = URL(fileURLWithPath: path).deletingPathExtension().lastPathComponent
 
-            DocumentController.shared.makeAndOpenMarkdownDocument(withTitle: title, savedTo: fileURL, completionHandler: { _ in })
+            _ = DocumentController.shared.makeAndOpenMarkdownDocument(withTitle: title, savedTo: fileURL)
 
             return true
         }

@@ -10,9 +10,9 @@ import Foundation
 
 public class Promise<Success, Failure: Swift.Error> {
 
-    // MARK: Private
-
     public typealias PromiseResult = Result<Success, Failure>
+
+    // MARK: Private
 
     private enum State {
         case pending
@@ -55,16 +55,24 @@ public class Promise<Success, Failure: Swift.Error> {
 
     // MARK: Public
 
-    public static func success<F>(_ value: Success) -> Promise<Success, F> {
-        let promise = Promise<Success, F>()
-        promise.resolve(value)
+    public static func result<S, F>(_ result: Result<S, F>) -> Promise<S, F> {
+        let promise = Promise<S, F>()
+        promise.complete(result)
         return promise
     }
 
-    public static func failure<S>(_ error: Failure) -> Promise<S, Failure> {
-        let promise = Promise<S, Failure>()
-        promise.reject(error)
+    public static func result<S, F>(_ resultCreator: (@escaping (Result<S, F>) -> Void) -> Void) -> Promise<S, F> {
+        let promise = Promise<S, F>()
+        resultCreator({ result in promise.complete(result) })
         return promise
+    }
+
+    public static func success<F>(_ value: Success) -> Promise<Success, F> {
+        return .result(.success(value))
+    }
+
+    public static func failure<S>(_ error: Failure) -> Promise<S, Failure> {
+        return .result(.failure(error))
     }
 
     @discardableResult public func onResult<S, F>(
@@ -77,6 +85,14 @@ public class Promise<Success, Failure: Swift.Error> {
         }
 
         return wrapper
+    }
+
+    public func finalResult(
+        _ completionHandler: @escaping (PromiseResult) -> Void
+    ) {
+        addResultListener { result in
+            completionHandler(result)
+        }
     }
 
     @discardableResult public func onSuccess<S>(
@@ -92,6 +108,19 @@ public class Promise<Success, Failure: Swift.Error> {
         }
     }
 
+    public func finalSuccess(
+        _ successHandler: @escaping (Success) -> Void
+    ) {
+        addResultListener { result in
+            switch result {
+            case .success(let value):
+                successHandler(value)
+            case .failure:
+                break
+            }
+        }
+    }
+
     @discardableResult public func onFailure<F>(
         _ failureHandler: @escaping (Failure) -> Promise<Success, F>
     ) -> Promise<Success, F> {
@@ -103,5 +132,24 @@ public class Promise<Success, Failure: Swift.Error> {
                 return failureHandler(error)
             }
         }
+    }
+
+    public func finalFailure(_ failureHandler: @escaping (Failure) -> Void) {
+        addResultListener { result in
+            switch result {
+            case .success:
+                break
+            case .failure(let error):
+                failureHandler(error)
+            }
+        }
+    }
+}
+
+extension Promise where Success == Void {
+    public static func success<F>() -> Promise<Success, F> {
+        let promise = Promise<Success, F>()
+        promise.resolve(())
+        return promise
     }
 }

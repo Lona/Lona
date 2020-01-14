@@ -91,18 +91,24 @@ class MarkdownDocument: NSDocument {
         LogicModule.invalidateCaches(url: url, newValue: program)
     }
 
-    func save(to url: URL, for saveOperation: NSDocument.SaveOperationType, completionHandler: @escaping (Result<Void, Error>) -> Void) {
-        save(to: url, ofType: "Markdown", for: saveOperation, completionHandler: { error in
-            if let error = error {
-                completionHandler(.failure(error))
-            } else {
-                completionHandler(.success(()))
-            }
-        })
+    func save(to url: URL, for saveOperation: NSDocument.SaveOperationType) -> Promise<Void, NSError> {
+        return Promise<Void, NSError>.result { completed in
+            save(to: url, ofType: "Markdown", for: saveOperation, completionHandler: { error in
+                if let error = error {
+                    return completed(.failure(error as NSError))
+                } else {
+                    return completed(.success(()))
+                }
+            })
+        }
     }
 }
 
 extension MarkdownDocument {
+
+    enum MarkdownError: Error {
+        case failedToDeleteFile
+    }
 
     func pages(blocks: [BlockEditor.Block]) -> [String] {
         blocks.compactMap {
@@ -129,25 +135,22 @@ extension MarkdownDocument {
             }
         }
 
-        do {
-            try deleteChildPageFiles(deleted)
-        } catch let error {
-            Swift.print("Failed to delete files \(deleted)", error)
-            return
+        deleteChildPageFiles(deleted).finalSuccess { [weak self] in
+            guard let self = self else { return }
+
+            let value = value.isEmpty ? [BlockEditor.Block.makeDefaultEmptyBlock()] : value
+
+            self.content = value
+
+            self.updateChangeCount(.changeDone)
+
+            // If we deleted child pages, we automatically save
+            if !deleted.isEmpty {
+                self.save(withDelegate: nil, didSave: nil, contextInfo: nil)
+            }
+
+            self.changeEmitter.emit(self.content)
         }
-
-        let value = value.isEmpty ? [BlockEditor.Block.makeDefaultEmptyBlock()] : value
-
-        content = value
-
-        updateChangeCount(.changeDone)
-
-        // If we deleted child pages, we automatically save
-        if !deleted.isEmpty {
-            save(withDelegate: nil, didSave: nil, contextInfo: nil)
-        }
-
-        changeEmitter.emit(content)
     }
 
     func makeAndOpenChildPage(pageName: String, blockIndex index: Int, shouldReplaceBlock shouldReplace: Bool) {
@@ -155,15 +158,14 @@ extension MarkdownDocument {
 
         // Ensure that this is a directory before creating a child page
         if !isIndexPage {
-            convertToDirectory(completionHandler: { result in
+            convertToDirectory().finalResult { result in
                 switch result {
                 case .success:
                     self.makeAndOpenChildPage(pageName: pageName, blockIndex: index, shouldReplaceBlock: shouldReplace)
                 case .failure(let error):
                     Swift.print("Failed to convert readme to directory", error)
                 }
-            })
-
+            }
             return
         }
 
@@ -185,30 +187,20 @@ extension MarkdownDocument {
 
         setContent(blocks)
 
-        save(to: fileURL, for: .saveOperation) { saveResult in
-            switch saveResult {
-            case .success:
-                DocumentController.shared.makeAndOpenMarkdownDocument(withTitle: title, savedTo: pageURL) { documentResult in
-                    switch documentResult {
-                    case .success:
-                        break
-                    case .failure(let error):
-                        Swift.print("Failed to create", error)
-                        Alert.runInformationalAlert(messageText: "Failed to create page \(title).")
-                    }
-                }
-            case .failure(let error):
-                Swift.print("Failed to save", error)
-                Alert.runInformationalAlert(messageText: "Failed to save \(fileURL.path).")
-            }
+        save(to: fileURL, for: .saveOperation).onSuccess { _ in
+            return DocumentController.shared.makeAndOpenMarkdownDocument(withTitle: title, savedTo: pageURL)
+        }
+        .finalFailure { error in
+            Swift.print("Failed to save", error)
+            Alert.runInformationalAlert(messageText: "Failed to save \(fileURL.path).")
         }
     }
 
 
-    func deleteChildPageFiles(_ deleted: [String]) throws {
-        guard let fileURL = fileURL else { return }
+    func deleteChildPageFiles(_ deleted: [String]) -> Promise<Void, MarkdownError> {
+        guard let fileURL = fileURL else { return .success() }
 
-        if deleted.isEmpty { return }
+        if deleted.isEmpty { return .success() }
 
         let pageNoun = "page\(deleted.count > 1 ? "s" : "")"
 
@@ -216,18 +208,21 @@ extension MarkdownDocument {
             confirmationText: "Delete \(pageNoun)",
             messageText: "This will delete the \(pageNoun) \(deleted.map { "'\($0)'" }.joined(separator: ", ")) and can't be undone. Continue?"
         ) {
-            try deleted.forEach { pageName in
+            for pageName in deleted {
                 let pageURL = fileURL.deletingLastPathComponent().appendingPathComponent(pageName)
 
                 do {
                     try FileManager.default.removeItem(at: pageURL)
                 } catch CocoaError.fileNoSuchFile {
                     // Continue if the file didn't exist
-                } catch let error {
-                    throw error
+                } catch {
+                    Swift.print("Failed to delete markdown page \(pageName)")
+                    return .failure(.failedToDeleteFile)
                 }
             }
         }
+
+        return .success()
     }
 
     // Convert Page.md to Page/README.md
@@ -235,10 +230,10 @@ extension MarkdownDocument {
     // - Change the URL of the current document to Page/README.md and save it
     // - Delete the old Page.md
     // - TODO: Fix parent URL to point to Page/README.md
-    func convertToDirectory(completionHandler: @escaping ((Result<URL, Error>) -> Void)) {
-        guard let originalFileURL = fileURL else { return }
+    func convertToDirectory() -> Promise<URL, NSError> {
+        guard let originalFileURL = fileURL else { return .failure(.init()) }
 
-        if FileManager.default.isDirectory(path: originalFileURL.path) { return }
+        if FileManager.default.isDirectory(path: originalFileURL.path) { return .failure(.init()) }
 
         let pageName = originalFileURL.deletingPathExtension().lastPathComponent
         let directoryURL = originalFileURL.deletingLastPathComponent().appendingPathComponent(pageName).deletingPathExtension()
@@ -247,27 +242,19 @@ extension MarkdownDocument {
             try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: false, attributes: [:])
         } catch let error {
             Swift.print("Error creating directory \(directoryURL)", error)
-            completionHandler(.failure(error))
-            return
+            return .failure(error as NSError)
         }
 
         let readmeURL = directoryURL.appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)
 
-        save(to: readmeURL, ofType: "Markdown", for: .saveAsOperation, completionHandler: { error in
-            if let error = error {
-                Swift.print("Error saving README file \(readmeURL)", error)
-                completionHandler(.failure(error))
-                return
-            }
-
+        return save(to: readmeURL, for: .saveAsOperation).onSuccess {
             do {
                 try FileManager.default.removeItem(at: originalFileURL)
             } catch let error {
-                completionHandler(.failure(error))
-                return
+                return .failure(error as NSError)
             }
 
-            completionHandler(.success(readmeURL))
-        })
+            return .success(readmeURL)
+        }
     }
 }
