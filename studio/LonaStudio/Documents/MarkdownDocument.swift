@@ -253,7 +253,7 @@ extension MarkdownDocument {
 
         let readmeURL = directoryURL.appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)
 
-        save(to: readmeURL, ofType: "Markdown", for: .saveAsOperation, completionHandler: { [unowned self] error in
+        save(to: readmeURL, ofType: "Markdown", for: .saveAsOperation, completionHandler: { error in
             if let error = error {
                 Swift.print("Error saving README file \(readmeURL)", error)
                 completionHandler(.failure(error))

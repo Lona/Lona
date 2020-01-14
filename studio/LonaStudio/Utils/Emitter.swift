@@ -22,7 +22,7 @@ public struct Emitter<Context> {
 
     public init() {}
 
-    public mutating func addListener(_ listener: @escaping Listener) -> Int {
+    @discardableResult public mutating func addListener(_ listener: @escaping Listener) -> Int {
         key = key + 1
 
         listeners[key] = listener
@@ -32,6 +32,10 @@ public struct Emitter<Context> {
 
     public mutating func removeListener(forKey key: Int) {
         listeners.removeValue(forKey: key)
+    }
+
+    public mutating func removeAllListeners() {
+        listeners.removeAll()
     }
 
     public func emit(_ context: Context) {
