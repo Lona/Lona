@@ -27,13 +27,15 @@ class MarkdownDocument: NSDocument {
         return windowControllers[0].contentViewController as? WorkspaceViewController
     }
 
-    var content: [BlockEditor.Block] = [] {
-       didSet {
-           if let url = fileURL {
-               LogicModule.invalidateCaches(url: url, newValue: program)
-           }
-       }
+    var _content: [BlockEditor.Block] = [] {
+        didSet {
+            if let url = fileURL {
+                LogicModule.invalidateCaches(url: url, newValue: program)
+            }
+        }
     }
+
+    var content: [BlockEditor.Block] { return _content }
 
     var program: LGCProgram {
         return MarkdownFile.makeMarkdownRoot(content).program()
@@ -54,7 +56,7 @@ class MarkdownDocument: NSDocument {
     }
 
     override func makeWindowControllers() {
-        DocumentController.shared.createOrFindWorkspaceWindowController(for: self)
+        // We manage window controllers in `showWindows`
     }
 
     override func showWindows() {
@@ -76,7 +78,7 @@ class MarkdownDocument: NSDocument {
         }
 
         // Ensure that a document has at least one editable block when we load it
-        self.content = (content.last == nil || content.last?.isEmpty == false)
+        self._content = (content.last == nil || content.last?.isEmpty == false)
             ? content + [BlockEditor.Block.makeDefaultEmptyBlock()]
             : content
 
@@ -108,6 +110,7 @@ extension MarkdownDocument {
 
     enum MarkdownError: Error {
         case failedToDeleteFile
+        case directoryNotEmpty
     }
 
     func pages(blocks: [BlockEditor.Block]) -> [String] {
@@ -121,35 +124,60 @@ extension MarkdownDocument {
         }
     }
 
-    func setContent(_ value: [BlockEditor.Block]) {
+    func replacePageLink(blocks: [BlockEditor.Block], oldTarget: String, newTarget: String) -> [BlockEditor.Block] {
+        return blocks.map { block in
+            switch block.content {
+            case .page(title: let title, target: oldTarget):
+                return .init(.page(title: title, target: newTarget), block.listDepth)
+            default:
+                return block
+            }
+        }
+    }
+
+    func setContent(_ value: [BlockEditor.Block], userInitiated: Bool) {
         let oldPages = pages(blocks: content)
         let newPages = pages(blocks: value)
 
-        let diff = oldPages.diff(newPages)
+        let diff = oldPages.extendedDiff(newPages)
         let deleted: [String] = diff.compactMap {
             switch $0 {
             case .delete(at: let index):
                 return oldPages[index]
-            case .insert:
+            case .insert, .move:
                 return nil
             }
         }
 
-        deleteChildPageFiles(deleted).finalSuccess { [weak self] in
-            guard let self = self else { return }
+        _ = deleteChildPageFiles(deleted, userInitiated: userInitiated)
 
-            let value = value.isEmpty ? [BlockEditor.Block.makeDefaultEmptyBlock()] : value
+        let value = value.isEmpty ? [BlockEditor.Block.makeDefaultEmptyBlock()] : value
 
-            self.content = value
+        self._content = value
 
-            self.updateChangeCount(.changeDone)
+        self.updateChangeCount(.changeDone)
+
+        if deleted.isEmpty {
+            self.changeEmitter.emit(self.content)
+        } else {
+            guard let fileURL = fileURL else { return }
+
+            Swift.print("Will delete", deleted)
 
             // If we deleted child pages, we automatically save
-            if !deleted.isEmpty {
-                self.save(withDelegate: nil, didSave: nil, contextInfo: nil)
-            }
+            save(to: fileURL, for: .saveOperation).finalSuccess {
+                Swift.print("Saved after delete", fileURL)
 
-            self.changeEmitter.emit(self.content)
+                if self.shouldConvertToFile() {
+                    self.convertToFile().finalResult { _ in
+                        Swift.print("Finished converting")
+
+                        self.changeEmitter.emit(self.content)
+                    }
+                } else {
+                    self.changeEmitter.emit(self.content)
+                }
+            }
         }
     }
 
@@ -185,7 +213,7 @@ extension MarkdownDocument {
             blocks.insert(newBlock, at: index)
         }
 
-        setContent(blocks)
+        setContent(blocks, userInitiated: true)
 
         save(to: fileURL, for: .saveOperation).onSuccess { _ in
             return DocumentController.shared.makeAndOpenMarkdownDocument(withTitle: title, savedTo: pageURL)
@@ -196,15 +224,14 @@ extension MarkdownDocument {
         }
     }
 
+    func deleteChildPageFiles(_ deleted: [String], userInitiated: Bool) -> Result<Void, MarkdownError> {
+        guard let fileURL = fileURL else { return .success(()) }
 
-    func deleteChildPageFiles(_ deleted: [String]) -> Promise<Void, MarkdownError> {
-        guard let fileURL = fileURL else { return .success() }
-
-        if deleted.isEmpty { return .success() }
+        if deleted.isEmpty { return .success(()) }
 
         let pageNoun = "page\(deleted.count > 1 ? "s" : "")"
 
-        if Alert.runConfirmationAlert(
+        if !userInitiated || Alert.runConfirmationAlert(
             confirmationText: "Delete \(pageNoun)",
             messageText: "This will delete the \(pageNoun) \(deleted.map { "'\($0)'" }.joined(separator: ", ")) and can't be undone. Continue?"
         ) {
@@ -222,14 +249,13 @@ extension MarkdownDocument {
             }
         }
 
-        return .success()
+        return .success(())
     }
 
     // Convert Page.md to Page/README.md
     // - Make the Page directory
-    // - Change the URL of the current document to Page/README.md and save it
     // - Delete the old Page.md
-    // - TODO: Fix parent URL to point to Page/README.md
+    // - Fix parent URL to point to Page/README.md
     func convertToDirectory() -> Promise<URL, NSError> {
         guard let originalFileURL = fileURL else { return .failure(.init()) }
 
@@ -247,7 +273,7 @@ extension MarkdownDocument {
 
         let readmeURL = directoryURL.appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)
 
-        return save(to: readmeURL, for: .saveAsOperation).onSuccess {
+        let saved: Promise<URL, NSError> = save(to: readmeURL, for: .saveAsOperation).onSuccess {
             do {
                 try FileManager.default.removeItem(at: originalFileURL)
             } catch let error {
@@ -256,5 +282,95 @@ extension MarkdownDocument {
 
             return .success(readmeURL)
         }
+
+        // Fix the parent URL. If it fails, still consider the whole operation a success
+        saved.finalSuccess { _ in
+            let parentReadmeURL = directoryURL.deletingLastPathComponent().appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)
+
+            DocumentController.shared.openDocument(withContentsOf: parentReadmeURL, display: false).finalSuccess { parentDocument in
+                if let parentDocument = parentDocument as? MarkdownDocument {
+                    let updated = self.replacePageLink(
+                        blocks: parentDocument.content,
+                        oldTarget: originalFileURL.lastPathComponent,
+                        newTarget: directoryURL.lastPathComponent
+                    )
+                    parentDocument.setContent(updated, userInitiated: false)
+                    _ = parentDocument.save(to: parentDocument.fileURL!, for: .saveOperation)
+                }
+            }
+        }
+
+        return saved
+    }
+
+    // If a markdown document is a README.md alone in its directory, then we should represent it
+    // as a named .md file in the parent directory instead.
+    func shouldConvertToFile() -> Bool {
+        guard let originalFileURL = fileURL else { return false }
+
+        if originalFileURL.lastPathComponent != MarkdownDocument.INDEX_PAGE_NAME { return false }
+
+        let files: [String]
+
+        do {
+            files = try FileManager.default.contentsOfDirectory(atPath: originalFileURL.deletingLastPathComponent().path)
+        } catch {
+            Swift.print("Failed to read directory \(originalFileURL.path)", error)
+            return false
+        }
+
+        let remainingFiles = files.filter { $0 != "README.md" && $0 != ".DS_Store" }
+
+        Swift.print(originalFileURL.deletingLastPathComponent().path, "remaining files", remainingFiles)
+
+        return remainingFiles.isEmpty
+    }
+
+    // Convert Page/README.md to Page.md
+    // - Double check that it's safe to delete the directory
+    // - Make the Page.md file
+    // - Delete the old Page directory
+    // - Fix parent URL to point to Page.md
+    func convertToFile() -> Promise<URL, NSError> {
+        guard let originalFileURL = fileURL else { return .failure(.init()) }
+
+        if !shouldConvertToFile() { return .failure(MarkdownError.directoryNotEmpty as NSError) }
+
+        Swift.print("Convert to file")
+
+        let pageName = originalFileURL.deletingLastPathComponent().lastPathComponent
+        let directoryURL = originalFileURL.deletingLastPathComponent()
+        let pageURL = directoryURL.deletingLastPathComponent().appendingPathComponent(pageName + ".md")
+
+        Swift.print("Saving", originalFileURL.path, "as", pageURL.path)
+
+        let saved: Promise<URL, NSError> = save(to: pageURL, for: .saveAsOperation).onSuccess {
+            do {
+                try FileManager.default.removeItem(at: originalFileURL)
+            } catch let error {
+                return .failure(error as NSError)
+            }
+
+            return .success(pageURL)
+        }
+
+        // Fix the parent URL. If it fails, still consider the whole operation a success
+        saved.finalSuccess { _ in
+            let parentReadmeURL = directoryURL.deletingLastPathComponent().appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)
+
+            DocumentController.shared.openDocument(withContentsOf: parentReadmeURL, display: false).finalSuccess { parentDocument in
+                if let parentDocument = parentDocument as? MarkdownDocument {
+                    let updated = self.replacePageLink(
+                        blocks: parentDocument.content,
+                        oldTarget: directoryURL.lastPathComponent,
+                        newTarget: pageURL.lastPathComponent
+                    )
+                    parentDocument.setContent(updated, userInitiated: false)
+                    _ = parentDocument.save(to: parentDocument.fileURL!, for: .saveOperation)
+                }
+            }
+        }
+
+        return .success(originalFileURL)
     }
 }

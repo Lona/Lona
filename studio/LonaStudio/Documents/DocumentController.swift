@@ -23,9 +23,6 @@ class DocumentController: NSDocumentController {
         }
     }
 
-    public func openDocument(withContentsOf url: URL, display displayDocument: Bool) {
-        openDocument(withContentsOf: url, display: displayDocument, completionHandler: { _, _, _ in })
-    }
 
     override func openDocument(
         withContentsOf url: URL,
@@ -45,7 +42,12 @@ class DocumentController: NSDocumentController {
         withContentsOf contentsURL: URL,
         display displayDocument: Bool,
         completionHandler: @escaping (NSDocument?, Bool, Error?) -> Void) {
-        return
+
+        if !ensureValidWorkspaceForOpeningFile(url: contentsURL) { return }
+
+        let realURL = FileManager.default.isDirectory(path: contentsURL.path) ? contentsURL.appendingPathComponent("README.md") : contentsURL
+
+        super.reopenDocument(for: urlOrNil, withContentsOf: realURL, display: displayDocument, completionHandler: completionHandler)
     }
 }
 
@@ -56,30 +58,16 @@ extension DocumentController {
         withTitle title: String,
         savedTo url: URL
     ) -> Promise<MarkdownDocument, NSError> {
-        let document: MarkdownDocument
+        let document = MarkdownDocument()
 
-        do {
-            document = try makeUntitledDocument(ofType: "Markdown") as! MarkdownDocument
-        } catch let error {
-            return .failure(error as NSError)
-        }
-
-        document.content = [
+        document.setContent([
             .init(.text(.init(string: title), .h1), .none),
             .makeDefaultEmptyBlock()
-        ]
+        ], userInitiated: false)
 
-        return document.save(to: url, for: .saveOperation).onSuccess({
-            return .result { complete in
-                self.openDocument(withContentsOf: url, display: true, completionHandler: { document, alreadyOpen, error in
-                    if let error = error {
-                        complete(.failure(error as NSError))
-                    } else {
-                        complete(.success(document as! MarkdownDocument))
-                    }
-                })
-            }
-        })
+        return document.save(to: url, for: .saveOperation).onSuccess({ _ in
+            return self.openDocument(withContentsOf: url, display: true)
+        }).onSuccess { document in .success(document as! MarkdownDocument) }
     }
 }
 

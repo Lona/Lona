@@ -107,11 +107,13 @@ class WorkspaceViewController: NSSplitViewController {
 
     public var document: NSDocument? {
         didSet {
-            update()
-
             if document !== oldValue {
+                update()
+
                 if let document = document as? MarkdownDocument {
-                    let key = document.addChangeListener { _ in self.update() }
+                    let key = document.addChangeListener { _ in
+                        self.update()
+                    }
 
                     removeDocumentChangeListener = {
                         document.removeChangeListener(forKey: key)
@@ -763,7 +765,7 @@ class WorkspaceViewController: NSSplitViewController {
                 document.makeAndOpenChildPage(pageName: pageName, blockIndex: index, shouldReplaceBlock: shouldReplace)
             }
             markdownViewController.onChange = { [unowned document] blocks in
-                document.setContent(blocks)
+                document.setContent(blocks, userInitiated: true)
                 return true
             }
         }
