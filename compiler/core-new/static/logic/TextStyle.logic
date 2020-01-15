@@ -1,0 +1,1425 @@
+{
+  "data" : {
+    "declarations" : [
+      {
+        "data" : {
+          "id" : "5D468032-E290-49B6-9537-C3931ADF293C",
+          "name" : {
+            "id" : "816A50EB-6988-4415-B02F-357C2A5446F2",
+            "name" : "Prelude"
+          }
+        },
+        "type" : "importDeclaration"
+      },
+      {
+        "data" : {
+          "id" : "652C3BF9-1820-42BF-88BF-96D6506910F1",
+          "name" : {
+            "id" : "E50718D5-9314-431F-9DB8-E8087718C2DF",
+            "name" : "Color"
+          }
+        },
+        "type" : "importDeclaration"
+      },
+      {
+        "data" : {
+          "cases" : [
+            {
+              "data" : {
+                "associatedValueTypes" : [
+                  {
+                    "data" : {
+                      "id" : "518CF11E-83BE-4E26-8606-7799BE7C3A69"
+                    },
+                    "type" : "placeholder"
+                  }
+                ],
+                "comment" : {
+                  "id" : "24358041-D1F1-40C7-BBE1-AAFCC9F2BF68",
+                  "string" : "# Ultra Light\n\nThe lightest font weight, representing **100**."
+                },
+                "id" : "95F45B54-0A71-456B-80CB-478E721E56D4",
+                "name" : {
+                  "id" : "82F551B1-177D-4F00-9AE7-30C3813E5E88",
+                  "name" : "ultraLight"
+                }
+              },
+              "type" : "enumerationCase"
+            },
+            {
+              "data" : {
+                "associatedValueTypes" : [
+                  {
+                    "data" : {
+                      "id" : "106C825D-8C69-42B5-AF5C-F0176C67763C"
+                    },
+                    "type" : "placeholder"
+                  }
+                ],
+                "comment" : {
+                  "id" : "2271FC57-1B22-4275-B8A6-A9FDFA6CFFEF",
+                  "string" : "# Thin\n\nA font weight, representing **200**."
+                },
+                "id" : "05A3515B-09FE-4C18-B7D0-CDBBF55B7A5F",
+                "name" : {
+                  "id" : "30D5F29C-D4CB-4B93-A2FA-6395A040FE8B",
+                  "name" : "thin"
+                }
+              },
+              "type" : "enumerationCase"
+            },
+            {
+              "data" : {
+                "associatedValueTypes" : [
+                  {
+                    "data" : {
+                      "id" : "A7C15D03-15F2-4128-B1F6-06C36BC9D10A"
+                    },
+                    "type" : "placeholder"
+                  }
+                ],
+                "comment" : {
+                  "id" : "CA294ABE-723D-4576-A6D6-23A5EEE468FD",
+                  "string" : "# Light\n\nA font weight, representing **300**."
+                },
+                "id" : "73F6E1DE-669A-478F-A273-389AD3E4D5D8",
+                "name" : {
+                  "id" : "33035859-E4AB-4B46-96AE-32DCA8E33284",
+                  "name" : "light"
+                }
+              },
+              "type" : "enumerationCase"
+            },
+            {
+              "data" : {
+                "associatedValueTypes" : [
+                  {
+                    "data" : {
+                      "id" : "82E529EC-2C01-4DB6-8D47-04A2B11052FF"
+                    },
+                    "type" : "placeholder"
+                  }
+                ],
+                "comment" : {
+                  "id" : "1CB14DDB-7503-4D46-95A4-79CD193A0F0A",
+                  "string" : "# Regular\n\nA font weight, representing **400**."
+                },
+                "id" : "91976718-9974-45FC-A1DB-9FC5B15CB697",
+                "name" : {
+                  "id" : "E18F59B3-E119-4DFD-ABFA-90288DC30689",
+                  "name" : "regular"
+                }
+              },
+              "type" : "enumerationCase"
+            },
+            {
+              "data" : {
+                "associatedValueTypes" : [
+                  {
+                    "data" : {
+                      "id" : "4E5D33BB-50F3-4E61-9613-5B696E6AA443"
+                    },
+                    "type" : "placeholder"
+                  }
+                ],
+                "comment" : {
+                  "id" : "EDB6E15C-6B2D-482F-956B-671393B58DF8",
+                  "string" : "# Medium\n\nA font weight, representing **500**."
+                },
+                "id" : "D3E0D71D-AA70-4AED-81E1-BF5AA59A76E9",
+                "name" : {
+                  "id" : "7A352572-A150-457C-8952-C67DA7E499B3",
+                  "name" : "medium"
+                }
+              },
+              "type" : "enumerationCase"
+            },
+            {
+              "data" : {
+                "associatedValueTypes" : [
+                  {
+                    "data" : {
+                      "id" : "718E27B1-FF4D-4A5B-865B-6D570D345949"
+                    },
+                    "type" : "placeholder"
+                  }
+                ],
+                "comment" : {
+                  "id" : "14F97505-4D73-4C2C-9395-9F8EA64DD9FC",
+                  "string" : "# Semibold\n\nA font weight, representing **600**."
+                },
+                "id" : "09B5E227-F544-4A2B-B0A3-398127F43A6A",
+                "name" : {
+                  "id" : "02978926-F04F-4B53-8635-CF4591AE61F3",
+                  "name" : "semibold"
+                }
+              },
+              "type" : "enumerationCase"
+            },
+            {
+              "data" : {
+                "associatedValueTypes" : [
+                  {
+                    "data" : {
+                      "id" : "2CDE25E2-2B28-4ADB-83C6-726D828C6C29"
+                    },
+                    "type" : "placeholder"
+                  }
+                ],
+                "comment" : {
+                  "id" : "ED8D6869-9575-4217-B260-022C66A288BF",
+                  "string" : "# Bold\n\nA font weight, representing **700**."
+                },
+                "id" : "E2B10B90-AD66-4837-ADAD-4ADFD5476460",
+                "name" : {
+                  "id" : "036B0C39-60D7-4D8E-888E-215A2F9B64F9",
+                  "name" : "bold"
+                }
+              },
+              "type" : "enumerationCase"
+            },
+            {
+              "data" : {
+                "associatedValueTypes" : [
+                  {
+                    "data" : {
+                      "id" : "22C8BCC4-E57E-47BD-97BB-4A62E5E058F7"
+                    },
+                    "type" : "placeholder"
+                  }
+                ],
+                "comment" : {
+                  "id" : "998B4019-39E6-4D4A-9099-07AEB127F96E",
+                  "string" : "# Heavy\n\nA font weight, representing **800**."
+                },
+                "id" : "4700A647-C21E-4AEF-B1CC-C1A086502857",
+                "name" : {
+                  "id" : "A379F1A3-A3DD-4B15-A006-B383B1EC0484",
+                  "name" : "heavy"
+                }
+              },
+              "type" : "enumerationCase"
+            },
+            {
+              "data" : {
+                "associatedValueTypes" : [
+                  {
+                    "data" : {
+                      "id" : "DDEFB387-B671-435D-82A8-33ED5608E564"
+                    },
+                    "type" : "placeholder"
+                  }
+                ],
+                "comment" : {
+                  "id" : "EA531A46-776D-46BA-A58B-A0CA55939B7D",
+                  "string" : "# Black\n\nThe heaviest font weight, representing **900**."
+                },
+                "id" : "FEDD1AEC-7A70-47CB-A5B6-9307FC86922F",
+                "name" : {
+                  "id" : "3610A2ED-1B55-4C29-9EBC-9FDC6302E1DD",
+                  "name" : "black"
+                }
+              },
+              "type" : "enumerationCase"
+            },
+            {
+              "data" : {
+                "id" : "863BB294-987C-46ED-A8D0-3136C2E048E2"
+              },
+              "type" : "placeholder"
+            }
+          ],
+          "comment" : {
+            "id" : "1A84DD18-2FBE-4E4E-96AB-78FFA0CAE8D6",
+            "string" : "# Font Weight\n\nFont thickness.\n\nAn individual font may support multiple weights. However, specifying a weight that isn't supported will generally result in the **regular (400)** weight being displayed."
+          },
+          "genericParameters" : [
+
+          ],
+          "id" : "061676B4-867E-48FC-B416-E5F11D832785",
+          "name" : {
+            "id" : "662E4521-1317-4D7B-95CC-AA4289723E6A",
+            "name" : "FontWeight"
+          }
+        },
+        "type" : "enumeration"
+      },
+      {
+        "data" : {
+          "declarations" : [
+            {
+              "data" : {
+                "annotation" : {
+                  "data" : {
+                    "genericArguments" : [
+
+                    ],
+                    "id" : "C9B20AD4-54CF-4830-9BCB-2B62BFBD611D",
+                    "identifier" : {
+                      "id" : "068BA713-B62F-4860-8636-71BDD75365C4",
+                      "isPlaceholder" : false,
+                      "string" : "FontWeight"
+                    }
+                  },
+                  "type" : "typeIdentifier"
+                },
+                "id" : "820A4AF8-1793-4AEA-AD28-42C5671150C6",
+                "initializer" : {
+                  "data" : {
+                    "arguments" : [
+                      {
+                        "data" : {
+                          "id" : "E41A3B84-8A55-4C0F-9B97-469619B43C00"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "expression" : {
+                      "data" : {
+                        "expression" : {
+                          "data" : {
+                            "id" : "F07F6291-38CA-4F3F-9C6C-18E4F71AF214",
+                            "identifier" : {
+                              "id" : "B225D3A6-0564-49F3-A3D1-88798BE7F601",
+                              "isPlaceholder" : false,
+                              "string" : "FontWeight"
+                            }
+                          },
+                          "type" : "identifierExpression"
+                        },
+                        "id" : "2C3FF253-36BE-47CF-95DC-AA8F9B31A439",
+                        "memberName" : {
+                          "id" : "B90AF2C7-4D21-4A12-A645-5703F9A7A758",
+                          "isPlaceholder" : false,
+                          "string" : "ultraLight"
+                        }
+                      },
+                      "type" : "memberExpression"
+                    },
+                    "id" : "D04E7623-CBDA-4DDF-8796-FF0FBA2CE7B9"
+                  },
+                  "type" : "functionCallExpression"
+                },
+                "name" : {
+                  "id" : "53C0E3FE-3034-4144-8C0C-744762864DE5",
+                  "name" : "w100"
+                }
+              },
+              "type" : "variable"
+            },
+            {
+              "data" : {
+                "annotation" : {
+                  "data" : {
+                    "genericArguments" : [
+
+                    ],
+                    "id" : "F93CBB53-AFD8-424F-9DCE-F67E95237A13",
+                    "identifier" : {
+                      "id" : "0B79715F-1300-4A3F-9F42-A8406E9A8DD3",
+                      "isPlaceholder" : false,
+                      "string" : "FontWeight"
+                    }
+                  },
+                  "type" : "typeIdentifier"
+                },
+                "id" : "F35EBCDF-BEC6-4BDE-B0DD-03A099E46109",
+                "initializer" : {
+                  "data" : {
+                    "arguments" : [
+                      {
+                        "data" : {
+                          "id" : "BBF0D459-DDE2-48AB-89A1-D3F34ACCF2A0"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "expression" : {
+                      "data" : {
+                        "expression" : {
+                          "data" : {
+                            "id" : "91CDEEA6-A05D-4CB9-A7BF-F0F3E4B3CFA0",
+                            "identifier" : {
+                              "id" : "05B52C65-5F7F-4395-BFCC-AF6B9F9A6E66",
+                              "isPlaceholder" : false,
+                              "string" : "FontWeight"
+                            }
+                          },
+                          "type" : "identifierExpression"
+                        },
+                        "id" : "6DDC40A9-C33C-4FC3-AC09-EB5C101BCB38",
+                        "memberName" : {
+                          "id" : "7AF31A91-2ED0-468B-8B15-C62E76C15994",
+                          "isPlaceholder" : false,
+                          "string" : "thin"
+                        }
+                      },
+                      "type" : "memberExpression"
+                    },
+                    "id" : "6EA8A245-73A8-453D-8E91-550208A52318"
+                  },
+                  "type" : "functionCallExpression"
+                },
+                "name" : {
+                  "id" : "3FD54CFA-992F-4FC1-8685-92B1964EEA0D",
+                  "name" : "w200"
+                }
+              },
+              "type" : "variable"
+            },
+            {
+              "data" : {
+                "annotation" : {
+                  "data" : {
+                    "genericArguments" : [
+
+                    ],
+                    "id" : "A442498D-2F50-4AA7-ABC7-48CE29C379C1",
+                    "identifier" : {
+                      "id" : "0C26E9CB-B55E-4DDE-AC7D-F0788D31EE17",
+                      "isPlaceholder" : false,
+                      "string" : "FontWeight"
+                    }
+                  },
+                  "type" : "typeIdentifier"
+                },
+                "id" : "61684E1E-C4BA-4A4E-95F4-B3583CFE88AE",
+                "initializer" : {
+                  "data" : {
+                    "arguments" : [
+                      {
+                        "data" : {
+                          "id" : "AAA2BF0A-3A99-4CB3-A0AC-CE586B7C3E74"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "expression" : {
+                      "data" : {
+                        "expression" : {
+                          "data" : {
+                            "id" : "2907F1F0-F54E-48AA-88FD-DF8A5C02E1FA",
+                            "identifier" : {
+                              "id" : "F334B9EE-5BA6-4F6D-A0BB-99E963B09361",
+                              "isPlaceholder" : false,
+                              "string" : "FontWeight"
+                            }
+                          },
+                          "type" : "identifierExpression"
+                        },
+                        "id" : "8B196D21-1E31-46E7-A9EF-7B66B2EE5901",
+                        "memberName" : {
+                          "id" : "17AE39BC-98DC-41D8-BB0C-1F4263C87878",
+                          "isPlaceholder" : false,
+                          "string" : "light"
+                        }
+                      },
+                      "type" : "memberExpression"
+                    },
+                    "id" : "FBF30594-5093-4BD3-AF5C-1666B33B63C3"
+                  },
+                  "type" : "functionCallExpression"
+                },
+                "name" : {
+                  "id" : "3BA7DADD-7DB5-4845-9353-6E544591D2A0",
+                  "name" : "w300"
+                }
+              },
+              "type" : "variable"
+            },
+            {
+              "data" : {
+                "annotation" : {
+                  "data" : {
+                    "genericArguments" : [
+
+                    ],
+                    "id" : "B0787CA7-4C19-4D94-92F3-89D6A47265BE",
+                    "identifier" : {
+                      "id" : "68C51F51-507F-4B3A-BE64-F0C424A2A94A",
+                      "isPlaceholder" : false,
+                      "string" : "FontWeight"
+                    }
+                  },
+                  "type" : "typeIdentifier"
+                },
+                "id" : "4DED8E31-6EAA-4F61-BAC3-00EE08CF3DFB",
+                "initializer" : {
+                  "data" : {
+                    "arguments" : [
+                      {
+                        "data" : {
+                          "id" : "1FA3E8AE-9A28-461E-8B9B-E7EEFA0D0CD0"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "expression" : {
+                      "data" : {
+                        "expression" : {
+                          "data" : {
+                            "id" : "479A280D-2ECA-4D75-BC2D-204123B40C35",
+                            "identifier" : {
+                              "id" : "748CD370-7F59-4704-8E08-02756874E5FE",
+                              "isPlaceholder" : false,
+                              "string" : "FontWeight"
+                            }
+                          },
+                          "type" : "identifierExpression"
+                        },
+                        "id" : "BA001AC7-684D-48E5-AB0B-D33F74545DA4",
+                        "memberName" : {
+                          "id" : "18A2799F-313F-434E-8431-EBC8078A4E21",
+                          "isPlaceholder" : false,
+                          "string" : "regular"
+                        }
+                      },
+                      "type" : "memberExpression"
+                    },
+                    "id" : "3AD32826-8FD3-432E-AF22-FD7101F09D1C"
+                  },
+                  "type" : "functionCallExpression"
+                },
+                "name" : {
+                  "id" : "4401B865-FE7E-4F52-8E42-36BCD1A27C3F",
+                  "name" : "w400"
+                }
+              },
+              "type" : "variable"
+            },
+            {
+              "data" : {
+                "annotation" : {
+                  "data" : {
+                    "genericArguments" : [
+
+                    ],
+                    "id" : "BC730317-E22B-4F1A-B23E-6A78D0145A8A",
+                    "identifier" : {
+                      "id" : "EBC93187-2BF0-433D-9453-7539811477DC",
+                      "isPlaceholder" : false,
+                      "string" : "FontWeight"
+                    }
+                  },
+                  "type" : "typeIdentifier"
+                },
+                "id" : "70F39B79-58DA-405D-8CB9-70FEFB553AC8",
+                "initializer" : {
+                  "data" : {
+                    "arguments" : [
+                      {
+                        "data" : {
+                          "id" : "17E9556D-7709-43E3-9CCA-D2411096451E"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "expression" : {
+                      "data" : {
+                        "expression" : {
+                          "data" : {
+                            "id" : "FE61EE84-EC60-4111-BE23-DBB9DB3DABD0",
+                            "identifier" : {
+                              "id" : "1A3EC807-9A60-4C39-93A6-EC0A879D623F",
+                              "isPlaceholder" : false,
+                              "string" : "FontWeight"
+                            }
+                          },
+                          "type" : "identifierExpression"
+                        },
+                        "id" : "C4A1116A-585E-4A9C-8838-E1166A69993B",
+                        "memberName" : {
+                          "id" : "F915E4CC-62BD-41DD-B610-EAA5BDCA77B2",
+                          "isPlaceholder" : false,
+                          "string" : "medium"
+                        }
+                      },
+                      "type" : "memberExpression"
+                    },
+                    "id" : "16EB982D-2497-46D1-8C99-293226486E1B"
+                  },
+                  "type" : "functionCallExpression"
+                },
+                "name" : {
+                  "id" : "AC01B905-DC04-4E6A-B6F8-96CBF1D6C24E",
+                  "name" : "w500"
+                }
+              },
+              "type" : "variable"
+            },
+            {
+              "data" : {
+                "annotation" : {
+                  "data" : {
+                    "genericArguments" : [
+
+                    ],
+                    "id" : "9234019D-FACD-4CFE-854C-1F2FF879FAF8",
+                    "identifier" : {
+                      "id" : "E8A58671-DEB2-49BA-A390-1A6695B93682",
+                      "isPlaceholder" : false,
+                      "string" : "FontWeight"
+                    }
+                  },
+                  "type" : "typeIdentifier"
+                },
+                "id" : "DFA05EFC-B5AF-4A50-95AE-A7988821B783",
+                "initializer" : {
+                  "data" : {
+                    "arguments" : [
+                      {
+                        "data" : {
+                          "id" : "F86B7D8F-64F8-4A0F-AE91-71C66B3CD809"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "expression" : {
+                      "data" : {
+                        "expression" : {
+                          "data" : {
+                            "id" : "FBF3FEA3-43A4-4830-A4B8-729F2ECFF61C",
+                            "identifier" : {
+                              "id" : "46942332-13A4-47F1-8ACB-F8E6E5E9DDF4",
+                              "isPlaceholder" : false,
+                              "string" : "FontWeight"
+                            }
+                          },
+                          "type" : "identifierExpression"
+                        },
+                        "id" : "422AB7BB-4DA6-46B9-A4E4-9245D42C38D8",
+                        "memberName" : {
+                          "id" : "FB6D4C98-FEA8-4417-AB2E-DE270CFE1E65",
+                          "isPlaceholder" : false,
+                          "string" : "semibold"
+                        }
+                      },
+                      "type" : "memberExpression"
+                    },
+                    "id" : "DC3E9003-6958-4B26-8879-475A03E66E5E"
+                  },
+                  "type" : "functionCallExpression"
+                },
+                "name" : {
+                  "id" : "3A0E23DA-146D-4FB6-8C89-14061A844115",
+                  "name" : "w600"
+                }
+              },
+              "type" : "variable"
+            },
+            {
+              "data" : {
+                "annotation" : {
+                  "data" : {
+                    "genericArguments" : [
+
+                    ],
+                    "id" : "DD8ABB26-8BC4-4F07-A859-AB619CC7C7E0",
+                    "identifier" : {
+                      "id" : "F4052A83-881D-4190-A61D-A7FC23FF4C08",
+                      "isPlaceholder" : false,
+                      "string" : "FontWeight"
+                    }
+                  },
+                  "type" : "typeIdentifier"
+                },
+                "id" : "BC5E3143-3D1E-49F2-B156-FBD3A281237B",
+                "initializer" : {
+                  "data" : {
+                    "arguments" : [
+                      {
+                        "data" : {
+                          "id" : "720C0182-9FCF-4FA4-8273-7D2CEDE954D3"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "expression" : {
+                      "data" : {
+                        "expression" : {
+                          "data" : {
+                            "id" : "3051DB55-49F3-40CC-80AC-FE12D3BEC0F0",
+                            "identifier" : {
+                              "id" : "CF049A20-D9EA-46C5-AE40-FA7F336205B0",
+                              "isPlaceholder" : false,
+                              "string" : "FontWeight"
+                            }
+                          },
+                          "type" : "identifierExpression"
+                        },
+                        "id" : "BD6BACDC-00B1-4E62-8B78-2B5C57C77892",
+                        "memberName" : {
+                          "id" : "99A54152-A633-4771-A714-100401054C8C",
+                          "isPlaceholder" : false,
+                          "string" : "bold"
+                        }
+                      },
+                      "type" : "memberExpression"
+                    },
+                    "id" : "30749162-E60C-4499-B119-32E2A79A1B12"
+                  },
+                  "type" : "functionCallExpression"
+                },
+                "name" : {
+                  "id" : "B2B45929-F0FE-4023-A891-607D4707A519",
+                  "name" : "w700"
+                }
+              },
+              "type" : "variable"
+            },
+            {
+              "data" : {
+                "annotation" : {
+                  "data" : {
+                    "genericArguments" : [
+
+                    ],
+                    "id" : "31F05F6A-7D91-49DE-B4C9-C729B15C03D3",
+                    "identifier" : {
+                      "id" : "539DC629-CC57-41C7-A8E4-5A41049DB7F8",
+                      "isPlaceholder" : false,
+                      "string" : "FontWeight"
+                    }
+                  },
+                  "type" : "typeIdentifier"
+                },
+                "id" : "4EFF43B0-73EB-456B-B61D-A57443003A29",
+                "initializer" : {
+                  "data" : {
+                    "arguments" : [
+                      {
+                        "data" : {
+                          "id" : "57BB9605-1385-424F-9BC5-975EC331A3E0"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "expression" : {
+                      "data" : {
+                        "expression" : {
+                          "data" : {
+                            "id" : "B7F163C1-90AB-49C8-80A1-0D58029A2549",
+                            "identifier" : {
+                              "id" : "4AD3A80D-E922-4EF8-B516-B738F7572645",
+                              "isPlaceholder" : false,
+                              "string" : "FontWeight"
+                            }
+                          },
+                          "type" : "identifierExpression"
+                        },
+                        "id" : "0AFDDE5F-904E-460B-8EC7-511D61FC2E1C",
+                        "memberName" : {
+                          "id" : "3BDDA295-04AE-4A39-8D39-DC0BD80B90C9",
+                          "isPlaceholder" : false,
+                          "string" : "heavy"
+                        }
+                      },
+                      "type" : "memberExpression"
+                    },
+                    "id" : "AAB9A3F6-5E16-4109-BCFE-86098552AB7A"
+                  },
+                  "type" : "functionCallExpression"
+                },
+                "name" : {
+                  "id" : "91B0C1E1-D9B3-4C1E-8B91-29EA06632AFF",
+                  "name" : "w800"
+                }
+              },
+              "type" : "variable"
+            },
+            {
+              "data" : {
+                "annotation" : {
+                  "data" : {
+                    "genericArguments" : [
+
+                    ],
+                    "id" : "295ABD88-F87D-41F1-9AD9-7E9BD3ADDF8A",
+                    "identifier" : {
+                      "id" : "EAEA70B0-549F-4546-9D3E-A36D4268868D",
+                      "isPlaceholder" : false,
+                      "string" : "FontWeight"
+                    }
+                  },
+                  "type" : "typeIdentifier"
+                },
+                "id" : "7CFC8A7D-37D9-4245-8952-89717BB357AA",
+                "initializer" : {
+                  "data" : {
+                    "arguments" : [
+                      {
+                        "data" : {
+                          "id" : "F8EEB3DA-1053-463D-8481-B3257E588173"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "expression" : {
+                      "data" : {
+                        "expression" : {
+                          "data" : {
+                            "id" : "58E0E059-1A65-4009-B804-FB16CBABB626",
+                            "identifier" : {
+                              "id" : "A51B5493-872F-487D-AE12-2D499BE40357",
+                              "isPlaceholder" : false,
+                              "string" : "FontWeight"
+                            }
+                          },
+                          "type" : "identifierExpression"
+                        },
+                        "id" : "47819424-FEBF-4FE3-8739-8F6B32EB558E",
+                        "memberName" : {
+                          "id" : "65B17A3A-5E75-4C72-8C3C-05FA3419E7E8",
+                          "isPlaceholder" : false,
+                          "string" : "black"
+                        }
+                      },
+                      "type" : "memberExpression"
+                    },
+                    "id" : "9C52964A-2C36-4D73-B154-BAD8B98E4E68"
+                  },
+                  "type" : "functionCallExpression"
+                },
+                "name" : {
+                  "id" : "09237491-B803-4DA8-90A3-A707728C9CAB",
+                  "name" : "w900"
+                }
+              },
+              "type" : "variable"
+            },
+            {
+              "data" : {
+                "id" : "5D8CC983-214B-4A16-B337-84745B1F358D"
+              },
+              "type" : "placeholder"
+            }
+          ],
+          "id" : "66829629-F42C-471E-82ED-B5EB7DD0E7C0",
+          "name" : {
+            "id" : "75378EA1-DBA7-4087-9867-FF604E5358F8",
+            "name" : "FontWeight"
+          }
+        },
+        "type" : "namespace"
+      },
+      {
+        "data" : {
+          "comment" : {
+            "id" : "554AF04B-6696-454D-98B3-60CA1737EDC6",
+            "string" : "# Text Style\n\nThis represents a specific configuration of text parameters such as font and color."
+          },
+          "declarations" : [
+            {
+              "data" : {
+                "annotation" : {
+                  "data" : {
+                    "genericArguments" : [
+                      {
+                        "data" : {
+                          "genericArguments" : [
+
+                          ],
+                          "id" : "22CC7CFF-8438-4BDE-AADD-D1BED1029821",
+                          "identifier" : {
+                            "id" : "CE831262-D20B-4CA8-8D91-9A265CCCA9EC",
+                            "isPlaceholder" : false,
+                            "string" : "String"
+                          }
+                        },
+                        "type" : "typeIdentifier"
+                      }
+                    ],
+                    "id" : "48E00D88-79CC-477C-BA41-27CFF5A44962",
+                    "identifier" : {
+                      "id" : "E54FC90D-8817-4C73-8834-78E23A8FD4A1",
+                      "isPlaceholder" : false,
+                      "string" : "Optional"
+                    }
+                  },
+                  "type" : "typeIdentifier"
+                },
+                "comment" : {
+                  "id" : "96B10802-7856-4899-8EDB-6E8C05EC0E4E",
+                  "string" : "W> This parameter is not supported on the web.\n\n# Font Name\n\nThe exact name of a font file, e.g. \"Helvetica-Oblique\". Generally, you should use the `fontFamily` parameter where possible instead."
+                },
+                "id" : "2F154CBE-BBFC-4FCD-9496-C907F8C2C852",
+                "initializer" : {
+                  "data" : {
+                    "arguments" : [
+                      {
+                        "data" : {
+                          "id" : "46A83F7A-EC42-4A13-9DD4-2EA80B039834"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "expression" : {
+                      "data" : {
+                        "expression" : {
+                          "data" : {
+                            "id" : "C832F6D5-C2A2-4818-8A15-79FFA58A0B64",
+                            "identifier" : {
+                              "id" : "DEABFCD4-A0CB-4174-A876-58D2A3FD68B5",
+                              "isPlaceholder" : false,
+                              "string" : "Optional"
+                            }
+                          },
+                          "type" : "identifierExpression"
+                        },
+                        "id" : "BB86AA8B-2374-4F20-8C71-46E7CA976D2D",
+                        "memberName" : {
+                          "id" : "DDEAC25E-A9E1-4E72-9F8D-62C2FF1F9672",
+                          "isPlaceholder" : false,
+                          "string" : "none"
+                        }
+                      },
+                      "type" : "memberExpression"
+                    },
+                    "id" : "2B531E57-F1C5-4E08-9B8E-4B910C72D79C"
+                  },
+                  "type" : "functionCallExpression"
+                },
+                "name" : {
+                  "id" : "D18B96B3-6F50-438D-9E63-0C7723259232",
+                  "name" : "fontName"
+                }
+              },
+              "type" : "variable"
+            },
+            {
+              "data" : {
+                "annotation" : {
+                  "data" : {
+                    "genericArguments" : [
+                      {
+                        "data" : {
+                          "genericArguments" : [
+
+                          ],
+                          "id" : "268822AF-E742-4178-8466-8DEAC4E67675",
+                          "identifier" : {
+                            "id" : "E5EE42E2-DA2D-4D95-914A-878E928CB5B8",
+                            "isPlaceholder" : false,
+                            "string" : "String"
+                          }
+                        },
+                        "type" : "typeIdentifier"
+                      }
+                    ],
+                    "id" : "3545773A-3EEC-4204-A903-2B08FEF1919A",
+                    "identifier" : {
+                      "id" : "47B77B79-8A44-42EC-82EC-BCA8EC32E97D",
+                      "isPlaceholder" : false,
+                      "string" : "Optional"
+                    }
+                  },
+                  "type" : "typeIdentifier"
+                },
+                "comment" : {
+                  "id" : "7A1BAD51-17AE-44AD-AD87-7A18F3DA9AB4",
+                  "string" : "# Font Family\n\nThe family name of the font - for example, \"Times\" or \"Helvetica.\""
+                },
+                "id" : "1DE155EA-C7FD-4CDC-96F0-320257ACDDB0",
+                "initializer" : {
+                  "data" : {
+                    "arguments" : [
+                      {
+                        "data" : {
+                          "id" : "5831BF09-47E6-4148-9DF3-782006BA4010"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "expression" : {
+                      "data" : {
+                        "expression" : {
+                          "data" : {
+                            "id" : "AF0038CE-9BC0-4B5E-934B-7460853D56C9",
+                            "identifier" : {
+                              "id" : "ED7D5DD3-4089-4F23-8144-857C281B440F",
+                              "isPlaceholder" : false,
+                              "string" : "Optional"
+                            }
+                          },
+                          "type" : "identifierExpression"
+                        },
+                        "id" : "2C7F12A6-F1AD-40F4-9CE1-67D8924C7629",
+                        "memberName" : {
+                          "id" : "0E73ABAE-14C5-4744-BCA5-E46D6624C450",
+                          "isPlaceholder" : false,
+                          "string" : "none"
+                        }
+                      },
+                      "type" : "memberExpression"
+                    },
+                    "id" : "7F494C1E-B1C9-4D93-8725-E38620913441"
+                  },
+                  "type" : "functionCallExpression"
+                },
+                "name" : {
+                  "id" : "1E4FCB12-03CB-4CBA-828F-6D74A0D021D0",
+                  "name" : "fontFamily"
+                }
+              },
+              "type" : "variable"
+            },
+            {
+              "data" : {
+                "annotation" : {
+                  "data" : {
+                    "genericArguments" : [
+
+                    ],
+                    "id" : "27660CB0-6407-4DA2-8E74-AB9AB2953774",
+                    "identifier" : {
+                      "id" : "CD5B1FA3-1E85-4AA9-A84A-1167DF269B88",
+                      "isPlaceholder" : false,
+                      "string" : "FontWeight"
+                    }
+                  },
+                  "type" : "typeIdentifier"
+                },
+                "comment" : {
+                  "id" : "79F28882-0547-4DCB-B01A-9922494367AF",
+                  "string" : "# Font Weight\n\nThe thickness of a font, ranging from `black` to `ultraLight`. The default value is `regular`."
+                },
+                "id" : "610C5E38-7BF2-4518-B7CE-11F788B8532C",
+                "initializer" : {
+                  "data" : {
+                    "arguments" : [
+                      {
+                        "data" : {
+                          "id" : "D38D0742-6B73-431B-95B7-85F05E407FFF"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "expression" : {
+                      "data" : {
+                        "expression" : {
+                          "data" : {
+                            "id" : "43ECA01D-8CC3-4963-AC83-E35EB45B6343",
+                            "identifier" : {
+                              "id" : "23D75E4B-0627-49B2-B02B-EB7E2F5DA8EB",
+                              "isPlaceholder" : false,
+                              "string" : "FontWeight"
+                            }
+                          },
+                          "type" : "identifierExpression"
+                        },
+                        "id" : "886AFDDC-B7DA-4D43-A18E-F13E4AE3B975",
+                        "memberName" : {
+                          "id" : "E8143F0B-FF25-4838-9B17-B3502063A4CF",
+                          "isPlaceholder" : false,
+                          "string" : "regular"
+                        }
+                      },
+                      "type" : "memberExpression"
+                    },
+                    "id" : "35D78450-FF97-410D-8D49-3CA2CD02BA10"
+                  },
+                  "type" : "functionCallExpression"
+                },
+                "name" : {
+                  "id" : "7B02F9B5-595B-4176-B961-C89E672CED2D",
+                  "name" : "fontWeight"
+                }
+              },
+              "type" : "variable"
+            },
+            {
+              "data" : {
+                "annotation" : {
+                  "data" : {
+                    "genericArguments" : [
+                      {
+                        "data" : {
+                          "genericArguments" : [
+
+                          ],
+                          "id" : "4CBC1562-1857-4E22-A257-810AC45186BC",
+                          "identifier" : {
+                            "id" : "2E1A3CC6-0B58-4562-9A2B-4F4FBA04EF18",
+                            "isPlaceholder" : false,
+                            "string" : "Number"
+                          }
+                        },
+                        "type" : "typeIdentifier"
+                      }
+                    ],
+                    "id" : "AE4AFF08-91B3-4132-8EAB-11DBEA6F3A82",
+                    "identifier" : {
+                      "id" : "03E093C8-8682-4DEA-B3AC-44C1B9031432",
+                      "isPlaceholder" : false,
+                      "string" : "Optional"
+                    }
+                  },
+                  "type" : "typeIdentifier"
+                },
+                "comment" : {
+                  "id" : "439B7D70-ECDF-4657-A5DB-ECD0F3280520",
+                  "string" : "# Font Size\n\nThe size of the font, measured in pixels."
+                },
+                "id" : "96036D43-4E90-44D5-95B7-DF908F4A6B92",
+                "initializer" : {
+                  "data" : {
+                    "arguments" : [
+                      {
+                        "data" : {
+                          "id" : "19ECC9A3-6E07-4BEE-8510-BF1D16031B4D"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "expression" : {
+                      "data" : {
+                        "expression" : {
+                          "data" : {
+                            "id" : "C35CDFAC-3F67-49AD-BDC0-48BF267F66C0",
+                            "identifier" : {
+                              "id" : "F6356723-5DD3-4E73-859E-B6D8B1AB1F27",
+                              "isPlaceholder" : false,
+                              "string" : "Optional"
+                            }
+                          },
+                          "type" : "identifierExpression"
+                        },
+                        "id" : "FCFEF3B1-1613-486B-9458-53CE7D901DE3",
+                        "memberName" : {
+                          "id" : "D29C48F4-5D91-4450-AFBC-542627FB132A",
+                          "isPlaceholder" : false,
+                          "string" : "none"
+                        }
+                      },
+                      "type" : "memberExpression"
+                    },
+                    "id" : "4345507B-0464-4BAE-A224-9BAA31A4D6F4"
+                  },
+                  "type" : "functionCallExpression"
+                },
+                "name" : {
+                  "id" : "428AF9A0-DB77-4508-B5E1-ABE16880B3DC",
+                  "name" : "fontSize"
+                }
+              },
+              "type" : "variable"
+            },
+            {
+              "data" : {
+                "annotation" : {
+                  "data" : {
+                    "genericArguments" : [
+                      {
+                        "data" : {
+                          "genericArguments" : [
+
+                          ],
+                          "id" : "E95BEF3C-A54C-4CE9-B871-CF36FF089BEA",
+                          "identifier" : {
+                            "id" : "39452AB5-2D49-4E1E-9967-0D836E2B673A",
+                            "isPlaceholder" : false,
+                            "string" : "Number"
+                          }
+                        },
+                        "type" : "typeIdentifier"
+                      }
+                    ],
+                    "id" : "E11E635B-5A7D-4BD3-9C15-EDF0511FA0CC",
+                    "identifier" : {
+                      "id" : "9F23A7DD-D1A9-4A0E-8D8F-3DE2A3AE6831",
+                      "isPlaceholder" : false,
+                      "string" : "Optional"
+                    }
+                  },
+                  "type" : "typeIdentifier"
+                },
+                "comment" : {
+                  "id" : "A50FCBB8-BB7F-4C13-9D21-F64B75CA18A0",
+                  "string" : "# Line Height\n\nThe line height, measured in pixels. The default is `none`, in which case the text style will default to the system-calculated line height."
+                },
+                "id" : "40BCA4F6-5DCD-4EC6-A835-647D5D0F8B02",
+                "initializer" : {
+                  "data" : {
+                    "arguments" : [
+                      {
+                        "data" : {
+                          "id" : "4464004D-6A80-4026-9C7F-C92B82122099"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "expression" : {
+                      "data" : {
+                        "expression" : {
+                          "data" : {
+                            "id" : "33A14E68-C1D4-47A7-A22F-53533D91A217",
+                            "identifier" : {
+                              "id" : "718216A1-7360-497F-8455-868BF9C0E7A1",
+                              "isPlaceholder" : false,
+                              "string" : "Optional"
+                            }
+                          },
+                          "type" : "identifierExpression"
+                        },
+                        "id" : "C7290EAD-19A8-41EA-8445-4E66BC8B94A5",
+                        "memberName" : {
+                          "id" : "E1B7DE6F-CF19-4D3B-952E-B80196A22891",
+                          "isPlaceholder" : false,
+                          "string" : "none"
+                        }
+                      },
+                      "type" : "memberExpression"
+                    },
+                    "id" : "885931EB-3844-46F3-8E49-EB6C1D08ABA8"
+                  },
+                  "type" : "functionCallExpression"
+                },
+                "name" : {
+                  "id" : "90994BAF-CA20-4C20-AAA1-9A8B8865BE3A",
+                  "name" : "lineHeight"
+                }
+              },
+              "type" : "variable"
+            },
+            {
+              "data" : {
+                "annotation" : {
+                  "data" : {
+                    "genericArguments" : [
+                      {
+                        "data" : {
+                          "genericArguments" : [
+
+                          ],
+                          "id" : "C3F1EFAA-3442-42ED-B58E-49E4595F4B70",
+                          "identifier" : {
+                            "id" : "4F637163-0E84-47FD-A8BF-3CEDBA9C61BD",
+                            "isPlaceholder" : false,
+                            "string" : "Number"
+                          }
+                        },
+                        "type" : "typeIdentifier"
+                      }
+                    ],
+                    "id" : "A423F2F5-0E7F-47C9-9287-8B8AB32C9D55",
+                    "identifier" : {
+                      "id" : "C181EF5F-2FBE-43EC-8C27-D71BCA2910B8",
+                      "isPlaceholder" : false,
+                      "string" : "Optional"
+                    }
+                  },
+                  "type" : "typeIdentifier"
+                },
+                "comment" : {
+                  "id" : "9DD2A83A-BC19-4318-8A41-816BCFE8F6BF",
+                  "string" : "# Letter Spacing\n\nIncrease or decrease the kerning (spacing between characters). The default is `none`, which uses the font's built-in kerning."
+                },
+                "id" : "8481A985-A368-40C5-A520-39112468177A",
+                "initializer" : {
+                  "data" : {
+                    "arguments" : [
+                      {
+                        "data" : {
+                          "id" : "1E3D1C80-AA87-4948-BB0D-4515A01A5F68"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "expression" : {
+                      "data" : {
+                        "expression" : {
+                          "data" : {
+                            "id" : "C0AB0FC5-FE72-4813-A411-BC77D6AB47F1",
+                            "identifier" : {
+                              "id" : "6C1BEC40-1907-4C12-89A9-2D01336E6CA6",
+                              "isPlaceholder" : false,
+                              "string" : "Optional"
+                            }
+                          },
+                          "type" : "identifierExpression"
+                        },
+                        "id" : "11CB91AC-ABE2-4396-A96A-8696F75B20EA",
+                        "memberName" : {
+                          "id" : "2FD17267-2CDF-4407-9157-910A2BE72294",
+                          "isPlaceholder" : false,
+                          "string" : "none"
+                        }
+                      },
+                      "type" : "memberExpression"
+                    },
+                    "id" : "3A4D91CE-AB31-4D91-BCA2-C8B05D59FD1A"
+                  },
+                  "type" : "functionCallExpression"
+                },
+                "name" : {
+                  "id" : "AD3C4F8F-0971-467B-9309-6F22C46C8E5C",
+                  "name" : "letterSpacing"
+                }
+              },
+              "type" : "variable"
+            },
+            {
+              "data" : {
+                "annotation" : {
+                  "data" : {
+                    "genericArguments" : [
+                      {
+                        "data" : {
+                          "genericArguments" : [
+
+                          ],
+                          "id" : "BB058E86-F2ED-4F5B-B63C-23B107F7FFAA",
+                          "identifier" : {
+                            "id" : "F92DD69D-212C-451D-8893-24669C400995",
+                            "isPlaceholder" : false,
+                            "string" : "Color"
+                          }
+                        },
+                        "type" : "typeIdentifier"
+                      }
+                    ],
+                    "id" : "5D6ACA70-F45C-4F9C-AA42-96BF0539D368",
+                    "identifier" : {
+                      "id" : "2F306940-82B8-4600-8D3F-725C05F62CC3",
+                      "isPlaceholder" : false,
+                      "string" : "Optional"
+                    }
+                  },
+                  "type" : "typeIdentifier"
+                },
+                "comment" : {
+                  "id" : "7872F63A-4F0F-49A9-8763-EC198538EC06",
+                  "string" : "# Color\n\nThe color of the text."
+                },
+                "id" : "EEDAC37E-DF22-48D0-B98E-55481598B54B",
+                "initializer" : {
+                  "data" : {
+                    "arguments" : [
+                      {
+                        "data" : {
+                          "id" : "9C7CAF79-BDC6-4358-8A96-6953B3A3B8BA"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "expression" : {
+                      "data" : {
+                        "expression" : {
+                          "data" : {
+                            "id" : "9AB3D07B-8381-4A4A-966F-50B6249CE227",
+                            "identifier" : {
+                              "id" : "18A840AB-DD57-4C0C-B695-2AFA9364CDE8",
+                              "isPlaceholder" : false,
+                              "string" : "Optional"
+                            }
+                          },
+                          "type" : "identifierExpression"
+                        },
+                        "id" : "85FAEACC-A134-42E5-84A6-60999EC52428",
+                        "memberName" : {
+                          "id" : "2D3E851F-50E4-4E57-B861-290F82F18188",
+                          "isPlaceholder" : false,
+                          "string" : "none"
+                        }
+                      },
+                      "type" : "memberExpression"
+                    },
+                    "id" : "60078A09-BFCE-4D64-8BB1-66D17779E408"
+                  },
+                  "type" : "functionCallExpression"
+                },
+                "name" : {
+                  "id" : "36136E43-F2B5-444A-BE5B-8CC179FD6816",
+                  "name" : "color"
+                }
+              },
+              "type" : "variable"
+            },
+            {
+              "data" : {
+                "id" : "C8D05EE8-27F7-46CF-9A8A-350D4F949770"
+              },
+              "type" : "placeholder"
+            }
+          ],
+          "genericParameters" : [
+
+          ],
+          "id" : "A2F9E797-C199-4BB4-A1B4-80212AB53264",
+          "name" : {
+            "id" : "1AB18B10-59EE-4B3D-BB6D-DE2015827410",
+            "name" : "TextStyle"
+          }
+        },
+        "type" : "record"
+      },
+      {
+        "data" : {
+          "declarations" : [
+            {
+              "data" : {
+                "annotation" : {
+                  "data" : {
+                    "genericArguments" : [
+
+                    ],
+                    "id" : "27A3B432-962A-42CE-A66C-F59E0F346831",
+                    "identifier" : {
+                      "id" : "8743118C-E135-425F-A15C-63BDDACE9297",
+                      "isPlaceholder" : false,
+                      "string" : "Color"
+                    }
+                  },
+                  "type" : "typeIdentifier"
+                },
+                "comment" : {
+                  "id" : "B29B5DD8-67F4-443F-A12D-4373182F67E9",
+                  "string" : "# System Color\n\nThe default font color of the target platform. \n\n## Example\n\nFor example, on macOS, this will take the operating system theme (e.g. light vs. dark) into account."
+                },
+                "id" : "CB97BF82-8E16-4046-95AE-14B202C3AD58",
+                "initializer" : {
+                  "data" : {
+                    "id" : "ABD0C33D-76B8-40DA-B283-ABAC3A26D33C",
+                    "literal" : {
+                      "data" : {
+                        "id" : "ED7E0B6C-6555-46E6-A15A-1DA2DB49428C",
+                        "value" : "black"
+                      },
+                      "type" : "color"
+                    }
+                  },
+                  "type" : "literalExpression"
+                },
+                "name" : {
+                  "id" : "019DFA78-3973-4A96-94C4-BB489BDEEC0C",
+                  "name" : "systemTextColor"
+                }
+              },
+              "type" : "variable"
+            },
+            {
+              "data" : {
+                "id" : "9E0B2FA8-AD58-4A6F-8B26-73C6DFC51B97"
+              },
+              "type" : "placeholder"
+            }
+          ],
+          "id" : "F0126EAA-3B35-4477-A601-98D2AE2B0F98",
+          "name" : {
+            "id" : "84B48160-B3A5-4A0E-B932-5D4C83256FAC",
+            "name" : "TextStyle"
+          }
+        },
+        "type" : "namespace"
+      },
+      {
+        "data" : {
+          "id" : "F71C2A0B-7D0E-47CE-A320-B94FA37C3699"
+        },
+        "type" : "placeholder"
+      }
+    ],
+    "id" : "1E8D0BA5-C581-4C60-8C00-128542A528B6"
+  },
+  "type" : "topLevelDeclarations"
+}

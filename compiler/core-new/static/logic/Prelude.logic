@@ -1,0 +1,594 @@
+{
+  "data" : {
+    "block" : [
+      {
+        "data" : {
+          "content" : {
+            "data" : {
+              "comment" : {
+                "id" : "FE9CCC06-F5CC-4C01-92F8-52153D49D5A2",
+                "string" : "# Boolean\n\nA type that represents `true` and `false` values.\n\nBooleans are frequently used to represent things that can be in only 2 states: **on\/off**, **enabled\/disabled**, **yes\/no**, etc."
+              },
+              "declarations" : [
+                {
+                  "data" : {
+                    "id" : "032456CB-D3D0-4070-9F1E-859EFD5C8441"
+                  },
+                  "type" : "placeholder"
+                }
+              ],
+              "genericParameters" : [
+
+              ],
+              "id" : "264AE71E-3104-4A8B-B780-D77BA52A1544",
+              "name" : {
+                "id" : "257C8E17-0ADB-4269-99DC-9DECF6612E90",
+                "name" : "Boolean"
+              }
+            },
+            "type" : "record"
+          },
+          "id" : "D3FE3275-A87D-4E05-86DC-D9943AF83FC3"
+        },
+        "type" : "declaration"
+      },
+      {
+        "data" : {
+          "content" : {
+            "data" : {
+              "declarations" : [
+                {
+                  "data" : {
+                    "block" : [
+                      {
+                        "data" : {
+                          "id" : "5C7340C6-52F4-410A-8A86-2C2450B602F1"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "genericParameters" : [
+
+                    ],
+                    "id" : "704C73B2-FC3B-46DC-B14D-77A016B1B136",
+                    "name" : {
+                      "id" : "0C852CE8-B1DD-49A8-B822-BE814620AB9B",
+                      "name" : "or"
+                    },
+                    "parameters" : [
+                      {
+                        "data" : {
+                          "annotation" : {
+                            "data" : {
+                              "genericArguments" : [
+
+                              ],
+                              "id" : "B5A51D75-E1A7-484F-85D3-62407ADDCAF9",
+                              "identifier" : {
+                                "id" : "555CD0B7-21D2-42C8-A383-0915DFE42E84",
+                                "isPlaceholder" : false,
+                                "string" : "Boolean"
+                              }
+                            },
+                            "type" : "typeIdentifier"
+                          },
+                          "defaultValue" : {
+                            "data" : {
+                              "id" : "30B7ACB9-5805-46D3-B778-885AE70FBDF7"
+                            },
+                            "type" : "none"
+                          },
+                          "id" : "8746BC43-EADB-4A2A-8498-E724EB4D0235",
+                          "localName" : {
+                            "id" : "638FE62E-8FF1-4D04-BAF7-53287C99F0CD",
+                            "name" : "a"
+                          }
+                        },
+                        "type" : "parameter"
+                      },
+                      {
+                        "data" : {
+                          "annotation" : {
+                            "data" : {
+                              "genericArguments" : [
+
+                              ],
+                              "id" : "155FB7B2-6556-4B84-8542-1853C84F060A",
+                              "identifier" : {
+                                "id" : "01A14701-11F3-4044-9164-21E889C6F1C4",
+                                "isPlaceholder" : false,
+                                "string" : "Boolean"
+                              }
+                            },
+                            "type" : "typeIdentifier"
+                          },
+                          "defaultValue" : {
+                            "data" : {
+                              "id" : "59798761-DCB7-4F09-8821-0DA47731F139"
+                            },
+                            "type" : "none"
+                          },
+                          "id" : "8BB665FC-A526-4002-9865-6853AAC21280",
+                          "localName" : {
+                            "id" : "1D1919C7-4B05-40EA-A523-6A909E6D468C",
+                            "name" : "b"
+                          }
+                        },
+                        "type" : "parameter"
+                      },
+                      {
+                        "data" : {
+                          "id" : "D2D27B5E-0375-4C02-980A-B18236301609"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "returnType" : {
+                      "data" : {
+                        "genericArguments" : [
+
+                        ],
+                        "id" : "D5456457-2F77-4B22-975A-B375AC5115FE",
+                        "identifier" : {
+                          "id" : "0010A855-E9C0-4BF0-B03C-7D70B21BD13E",
+                          "isPlaceholder" : false,
+                          "string" : "Boolean"
+                        }
+                      },
+                      "type" : "typeIdentifier"
+                    }
+                  },
+                  "type" : "function"
+                },
+                {
+                  "data" : {
+                    "block" : [
+                      {
+                        "data" : {
+                          "id" : "E3A68B1C-38C2-4228-828D-A3BA49461AEB"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "genericParameters" : [
+
+                    ],
+                    "id" : "3DBF48D2-019B-4527-AB18-F05A2BC5062B",
+                    "name" : {
+                      "id" : "CECEBD4F-B762-43B2-9DB3-DE8D2D4BF2E7",
+                      "name" : "and"
+                    },
+                    "parameters" : [
+                      {
+                        "data" : {
+                          "annotation" : {
+                            "data" : {
+                              "genericArguments" : [
+
+                              ],
+                              "id" : "7A159A94-56B0-4CB9-A9E2-9116AB7CB8F8",
+                              "identifier" : {
+                                "id" : "5D8DA190-3FC3-49D3-B24B-6608EF7C3667",
+                                "isPlaceholder" : false,
+                                "string" : "Boolean"
+                              }
+                            },
+                            "type" : "typeIdentifier"
+                          },
+                          "defaultValue" : {
+                            "data" : {
+                              "id" : "D1280D67-F9F3-4CC6-AF35-3DFE05EC295A"
+                            },
+                            "type" : "none"
+                          },
+                          "id" : "FC0EF8BE-961F-4ABA-8551-8D4E19959D2D",
+                          "localName" : {
+                            "id" : "27DBCA8F-0245-4DAD-A371-F7B1F9772453",
+                            "name" : "a"
+                          }
+                        },
+                        "type" : "parameter"
+                      },
+                      {
+                        "data" : {
+                          "annotation" : {
+                            "data" : {
+                              "genericArguments" : [
+
+                              ],
+                              "id" : "20919B79-0C6E-4729-9C5D-41307395B90B",
+                              "identifier" : {
+                                "id" : "72C345F4-E450-4788-AF1B-377132325B44",
+                                "isPlaceholder" : false,
+                                "string" : "Boolean"
+                              }
+                            },
+                            "type" : "typeIdentifier"
+                          },
+                          "defaultValue" : {
+                            "data" : {
+                              "id" : "A3C1222F-F69E-4AFB-A11A-A9682D2C2883"
+                            },
+                            "type" : "none"
+                          },
+                          "id" : "12BD5005-ACEC-4C7F-8C96-4A5EAFBAFB06",
+                          "localName" : {
+                            "id" : "D85B58AE-6E1B-4F73-AB32-D06B82703CF5",
+                            "name" : "b"
+                          }
+                        },
+                        "type" : "parameter"
+                      },
+                      {
+                        "data" : {
+                          "id" : "B656508E-45AF-415A-8ED3-FBFF4B258C65"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "returnType" : {
+                      "data" : {
+                        "genericArguments" : [
+
+                        ],
+                        "id" : "CC5AF7EA-99D5-4E65-9F92-D35BE1B38FE0",
+                        "identifier" : {
+                          "id" : "4571EB52-BC55-4F4A-81C6-85E45325FDBB",
+                          "isPlaceholder" : false,
+                          "string" : "Boolean"
+                        }
+                      },
+                      "type" : "typeIdentifier"
+                    }
+                  },
+                  "type" : "function"
+                },
+                {
+                  "data" : {
+                    "id" : "D6B21B32-87DA-4CDB-BA05-20CE271CDE97"
+                  },
+                  "type" : "placeholder"
+                }
+              ],
+              "id" : "0AF65E4F-146A-43A8-93CD-EBA4B9790DF0",
+              "name" : {
+                "id" : "B868B962-18EE-460E-8D27-247C24E96718",
+                "name" : "Boolean"
+              }
+            },
+            "type" : "namespace"
+          },
+          "id" : "969EAFAE-E00B-4CDE-9C66-F2A189AD81A1"
+        },
+        "type" : "declaration"
+      },
+      {
+        "data" : {
+          "content" : {
+            "data" : {
+              "comment" : {
+                "id" : "BEC45826-FD46-4DBD-B408-FADCBC4B6388",
+                "string" : "# Number\n\nA rational number. This can be a whole number, like `42`, or a decimal number, like `3.14`.\n\nThis number is represented internally as a floating point number.\n\n## Example\n\nWe can declare a number variable to use elsewhere in our app:\n\n```logic\n<Declarations>\n  <Variable name=\"padding\" type=\"Number\" value=\"12\"\/>\n<\/Declarations>\n```\n\n## Generating Code\n\nThis will be converted to a **CGFloat** in Swift."
+              },
+              "declarations" : [
+                {
+                  "data" : {
+                    "id" : "8C50AE0E-940E-4FD1-9F6E-90AC01DD6ADB"
+                  },
+                  "type" : "placeholder"
+                }
+              ],
+              "genericParameters" : [
+
+              ],
+              "id" : "4704ED19-0780-48AB-AAC3-BDDE1F774974",
+              "name" : {
+                "id" : "1A737EB4-2146-48AD-8B96-BA34A42F6E3D",
+                "name" : "Number"
+              }
+            },
+            "type" : "record"
+          },
+          "id" : "50BF705D-DC61-4B64-BF77-E24B2A435E4F"
+        },
+        "type" : "declaration"
+      },
+      {
+        "data" : {
+          "content" : {
+            "data" : {
+              "comment" : {
+                "id" : "3C44DC71-D554-4298-9DFC-B4A6F24D657E",
+                "string" : "# String\n\nA `String` is a sequence of characters, such as `h` or `e`, put together to form text such as `hello`.\n\n## Example\n\nWe might want to declare a greeting variable as a `String`:\n\n```logic\n<Declarations>\n  <Variable name=\"greeting\" type=\"String\" value=\"Hello, world\"\/>\n<\/Declarations>\n```"
+              },
+              "declarations" : [
+                {
+                  "data" : {
+                    "id" : "FE23427C-3CE4-4872-87E9-9FD15B24E05A"
+                  },
+                  "type" : "placeholder"
+                }
+              ],
+              "genericParameters" : [
+
+              ],
+              "id" : "38AF6873-3054-4568-8501-29DA0C031AB0",
+              "name" : {
+                "id" : "813DDF07-85B2-4581-BAFB-909FFEE04D2C",
+                "name" : "String"
+              }
+            },
+            "type" : "record"
+          },
+          "id" : "33B2CBA0-CE33-42C6-9085-B085B4D0FCF3"
+        },
+        "type" : "declaration"
+      },
+      {
+        "data" : {
+          "content" : {
+            "data" : {
+              "declarations" : [
+                {
+                  "data" : {
+                    "block" : [
+                      {
+                        "data" : {
+                          "id" : "AB8775D7-DE2A-4E22-BF09-F1253638EAC4"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "genericParameters" : [
+
+                    ],
+                    "id" : "B1EB7B60-1AD5-4E6B-97D5-9145A889354E",
+                    "name" : {
+                      "id" : "68CE2FE7-C1A5-4AB3-B705-ACC3894253D8",
+                      "name" : "concat"
+                    },
+                    "parameters" : [
+                      {
+                        "data" : {
+                          "annotation" : {
+                            "data" : {
+                              "genericArguments" : [
+
+                              ],
+                              "id" : "1E0D1535-ED5C-4166-B99B-16321CDA0417",
+                              "identifier" : {
+                                "id" : "EE7E21A3-C1DF-4916-B47A-FAFAC2170614",
+                                "isPlaceholder" : false,
+                                "string" : "String"
+                              }
+                            },
+                            "type" : "typeIdentifier"
+                          },
+                          "defaultValue" : {
+                            "data" : {
+                              "id" : "A173015F-D3AE-4B62-89A9-F3A90B388C8C"
+                            },
+                            "type" : "none"
+                          },
+                          "id" : "0977169B-CFCE-443F-8ABE-6F29FF6978F3",
+                          "localName" : {
+                            "id" : "BE072E80-0BEF-4E0A-9301-08358FC3CFF5",
+                            "name" : "a"
+                          }
+                        },
+                        "type" : "parameter"
+                      },
+                      {
+                        "data" : {
+                          "annotation" : {
+                            "data" : {
+                              "genericArguments" : [
+
+                              ],
+                              "id" : "BD807FD6-59E5-4B8C-B361-D4C0DE6DF64E",
+                              "identifier" : {
+                                "id" : "3B8F157B-45E3-4906-B5D1-BDB4618C396B",
+                                "isPlaceholder" : false,
+                                "string" : "String"
+                              }
+                            },
+                            "type" : "typeIdentifier"
+                          },
+                          "defaultValue" : {
+                            "data" : {
+                              "id" : "A1448B34-5A06-4324-97F0-024F9F02FE91"
+                            },
+                            "type" : "none"
+                          },
+                          "id" : "DD155A7D-6FC1-4BA5-83BC-6E5377CB79F5",
+                          "localName" : {
+                            "id" : "B5A0648C-67E6-4F31-83AD-C7A0DAEAD8BB",
+                            "name" : "b"
+                          }
+                        },
+                        "type" : "parameter"
+                      },
+                      {
+                        "data" : {
+                          "id" : "936F5D31-8903-4B81-9ABD-F91A00DF4271"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "returnType" : {
+                      "data" : {
+                        "genericArguments" : [
+
+                        ],
+                        "id" : "05537C49-76C8-437B-B383-7DB7728E8830",
+                        "identifier" : {
+                          "id" : "987B6346-7E67-4676-B1FD-B8C2F56FE02C",
+                          "isPlaceholder" : false,
+                          "string" : "String"
+                        }
+                      },
+                      "type" : "typeIdentifier"
+                    }
+                  },
+                  "type" : "function"
+                },
+                {
+                  "data" : {
+                    "id" : "8DF98CDC-7740-452D-957E-490CD5E189FD"
+                  },
+                  "type" : "placeholder"
+                }
+              ],
+              "id" : "6415970C-BFFF-4469-B828-1F49DF7778AB",
+              "name" : {
+                "id" : "CF48E3F0-A2B5-423A-BF4A-1BE9F5102621",
+                "name" : "String"
+              }
+            },
+            "type" : "namespace"
+          },
+          "id" : "6E7212B5-1CE1-45AC-9AEF-AB982CFAD06E"
+        },
+        "type" : "declaration"
+      },
+      {
+        "data" : {
+          "content" : {
+            "data" : {
+              "comment" : {
+                "id" : "C08434EB-0588-4532-B901-28834A8B5829",
+                "string" : "# Array\n\nA generic type representing a sequence of elements. Each element must be the same type."
+              },
+              "declarations" : [
+                {
+                  "data" : {
+                    "id" : "902B5AAB-A230-4EA7-8307-E54E02E9EF89"
+                  },
+                  "type" : "placeholder"
+                }
+              ],
+              "genericParameters" : [
+                {
+                  "data" : {
+                    "id" : "F729FE29-139E-4AC7-AA1C-F5348F78C947",
+                    "name" : {
+                      "id" : "959B1F95-4BEC-4967-B0AC-9840626BB012",
+                      "name" : "Element"
+                    }
+                  },
+                  "type" : "parameter"
+                }
+              ],
+              "id" : "BB90CBFC-1FA9-4D68-9400-4626E3CEA5E2",
+              "name" : {
+                "id" : "7067605B-A5DA-4B7F-8424-62921AACB1C7",
+                "name" : "Array"
+              }
+            },
+            "type" : "record"
+          },
+          "id" : "8CEDFAA1-E0DD-4E75-AF07-7DF1BF63EB5F"
+        },
+        "type" : "declaration"
+      },
+      {
+        "data" : {
+          "content" : {
+            "data" : {
+              "cases" : [
+                {
+                  "data" : {
+                    "associatedValueTypes" : [
+                      {
+                        "data" : {
+                          "genericArguments" : [
+
+                          ],
+                          "id" : "635972CA-C330-425F-8016-F54227B7C0FD",
+                          "identifier" : {
+                            "id" : "E06FAC63-7EEF-4604-974F-2A590D415C55",
+                            "isPlaceholder" : false,
+                            "string" : "Wrapped"
+                          }
+                        },
+                        "type" : "typeIdentifier"
+                      },
+                      {
+                        "data" : {
+                          "id" : "05644862-058E-4942-A8A0-90B730640E58"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "id" : "D6E21C5C-C007-4A75-92D8-450E25F12323",
+                    "name" : {
+                      "id" : "CF8C671B-3262-42B8-BEC0-6FE7FFF4FD02",
+                      "name" : "value"
+                    }
+                  },
+                  "type" : "enumerationCase"
+                },
+                {
+                  "data" : {
+                    "associatedValueTypes" : [
+                      {
+                        "data" : {
+                          "id" : "391B8BE0-6A04-4AE9-B792-3AEBF4584CF8"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "id" : "8B7C164A-1833-48DF-9E96-6E8E393148C7",
+                    "name" : {
+                      "id" : "A7BF05B9-9AAF-4F30-9E7D-FF22155A032C",
+                      "name" : "none"
+                    }
+                  },
+                  "type" : "enumerationCase"
+                },
+                {
+                  "data" : {
+                    "id" : "7E3C5CCC-9A56-448E-8F8B-9FD23656A56B"
+                  },
+                  "type" : "placeholder"
+                }
+              ],
+              "comment" : {
+                "id" : "0517624B-1349-4537-9705-9290CECC7B77",
+                "string" : "# Optional\n\nA generic type representing a value that may or may not exist."
+              },
+              "genericParameters" : [
+                {
+                  "data" : {
+                    "id" : "9DFCBADC-6D70-46F1-8F34-ED5BFFA25689",
+                    "name" : {
+                      "id" : "85C5F437-8B2E-43F6-8321-B6AEEA9A8E5C",
+                      "name" : "Wrapped"
+                    }
+                  },
+                  "type" : "parameter"
+                }
+              ],
+              "id" : "BFA17096-0F22-4B66-B71E-065E7E1C57BE",
+              "name" : {
+                "id" : "4A2E7836-73E5-464E-B75C-EE29C53C1C98",
+                "name" : "Optional"
+              }
+            },
+            "type" : "enumeration"
+          },
+          "id" : "56CC8207-F728-41A3-B5C9-C4CCB384E590"
+        },
+        "type" : "declaration"
+      },
+      {
+        "data" : {
+          "id" : "D477D9E0-D651-48C9-97BE-6D60C8B446CC"
+        },
+        "type" : "placeholder"
+      }
+    ],
+    "id" : "0AA4ACF6-FBC7-41A1-805D-993DE28BE142"
+  },
+  "type" : "program"
+}

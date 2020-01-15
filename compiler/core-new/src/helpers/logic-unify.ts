@@ -1,0 +1,563 @@
+import * as LogicAST from './logic-ast'
+import * as LogicScope from './logic-scope'
+import * as LogicTraversal from './logic-traversal'
+import { type } from 'os'
+import { resolve } from 'dns'
+
+type FunctionArgument = {
+  label?: string
+  type: Unification
+}
+
+type Unification =
+  | {
+      type: 'variable'
+      value: string
+    }
+  | {
+      type: 'constant'
+      name: string
+      parameters: Unification[]
+    }
+  | {
+      type: 'generic'
+      name: string
+    }
+  | {
+      type: 'function'
+      arguments: FunctionArgument[]
+      returnType: Unification
+    }
+
+type Contraint = {
+  head: Unification
+  tail: Unification
+}
+
+class LogicNameGenerator {
+  private prefix: string
+  private currentIndex = 0
+  constructor(prefix: string = '') {
+    this.prefix = prefix
+  }
+  next() {
+    this.currentIndex += 1
+    let name = this.currentIndex.toString(36)
+    return `${this.prefix}${name}`
+  }
+}
+
+export type UnificationContext = {
+  constraints: Contraint[]
+  nodes: { [key: string]: Unification }
+  patternTypes: { [key: string]: Unification }
+  typeNameGenerator: LogicNameGenerator
+}
+
+function unificationType(
+  genericsInScope: [string, string][],
+  getName: () => string,
+  typeAnnotation: LogicAST.TypeAnnotation
+): Unification {
+  if (typeAnnotation.data.type === 'typeIdentifier') {
+    const { string, isPlaceholder } = typeAnnotation.data.data.identifier.data
+    if (isPlaceholder) {
+      return {
+        type: 'variable',
+        value: getName(),
+      }
+    }
+    const generic = genericsInScope.find(g => g[0] === string)
+    if (generic) {
+      return {
+        type: 'generic',
+        name: generic[1],
+      }
+    }
+    const parameters = typeAnnotation.data.data.genericArguments.map(arg =>
+      unificationType(genericsInScope, getName, arg)
+    )
+    return {
+      type: 'constant',
+      name: string,
+      parameters,
+    }
+  }
+  if (typeAnnotation.data.type === 'placeholder') {
+    return {
+      type: 'variable',
+      value: getName(),
+    }
+  }
+  return {
+    type: 'variable',
+    value: 'Function type error',
+  }
+}
+
+function substitute(
+  substitution: Map<Unification, Unification>,
+  type: Unification
+): Unification {
+  let resolvedType = substitution.get(type) ? substitution.get(type) : type
+
+  if (resolvedType.type === 'variable' || resolvedType.type === 'generic') {
+    return resolvedType
+  }
+
+  if (resolvedType.type === 'constant') {
+    return {
+      type: 'constant',
+      name: resolvedType.name,
+      parameters: resolvedType.parameters.map(x => substitute(substitution, x)),
+    }
+  }
+
+  if (resolvedType.type === 'function') {
+    return {
+      type: 'function',
+      returnType: substitute(substitution, resolvedType.returnType),
+      arguments: resolvedType.arguments.map(arg => ({
+        label: arg.label,
+        type: substitute(substitution, arg.type),
+      })),
+    }
+  }
+}
+
+function genericNames(type: Unification): string[] {
+  if (type.type === 'variable') {
+    return []
+  }
+  if (type.type === 'constant') {
+    return type.parameters
+      .map(genericNames)
+      .reduce((prev, x) => prev.concat(x), [])
+  }
+  if (type.type === 'generic') {
+    return [type.name]
+  }
+  if (type.type === 'function') {
+    return type.arguments
+      .map(x => x.type)
+      .concat(type.returnType)
+      .map(genericNames)
+      .reduce((prev, x) => prev.concat(x), [])
+  }
+}
+
+function replaceGenericsWithVars(getName: () => string, type: Unification) {
+  let substitution = new Map<Unification, Unification>()
+  genericNames(type).forEach(name =>
+    substitution.set(
+      { type: 'generic', name },
+      { type: 'variable', value: getName() }
+    )
+  )
+
+  return substitute(substitution, type)
+}
+
+function specificIdentifierType(
+  scopeContext: LogicScope.ScopeContext,
+  unificationContext: UnificationContext,
+  id: string
+): Unification {
+  const patternId = scopeContext.identifierToPattern[id]
+
+  if (!patternId) {
+    return {
+      type: 'variable',
+      value: unificationContext.typeNameGenerator.next(),
+    }
+  }
+
+  const scopedType = unificationContext.patternTypes[patternId]
+
+  if (!scopedType) {
+    return {
+      type: 'variable',
+      value: unificationContext.typeNameGenerator.next(),
+    }
+  }
+
+  return replaceGenericsWithVars(
+    unificationContext.typeNameGenerator.next.bind(unificationContext),
+    scopedType
+  )
+}
+
+const makeEmptyContext = (): UnificationContext => ({
+  constraints: [],
+  nodes: {},
+  patternTypes: {},
+  typeNameGenerator: new LogicNameGenerator('?'),
+})
+
+export const makeUnificationContext = (
+  rootNode: LogicAST.SyntaxNode,
+  scopeContext: LogicScope.ScopeContext,
+  initialContext: UnificationContext = makeEmptyContext()
+): UnificationContext => {
+  let build = (
+    result: UnificationContext,
+    node: LogicAST.SyntaxNode,
+    config: LogicTraversal.TraversalConfig
+  ): UnificationContext => {
+    config.needsRevisitAfterTraversingChildren = true
+
+    if (
+      node.type === 'statement' &&
+      node.data.type === 'branch' &&
+      config._isRevisit
+    ) {
+      result.nodes[node.data.data.condition.data.data.id] = bool
+    }
+
+    if (node.type === 'declaration') {
+      if (node.data.type === 'record' && !config._isRevisit) {
+        const genericNames = node.data.data.genericParameters
+          .map(param =>
+            param.data.type === 'parameter'
+              ? param.data.data.name.data.name
+              : undefined
+          )
+          .filter(x => !!x)
+        const genericsInScope = genericNames.map(x => [
+          x,
+          result.typeNameGenerator.next(),
+        ])
+        const universalTypes = genericNames.map<Unification>((x, i) => ({
+          type: 'generic',
+          name: genericsInScope[i][1],
+        }))
+
+        let parameterTypes: FunctionArgument[] = []
+
+        node.data.data.declarations.forEach(declaration => {
+          if (
+            declaration.data.type !== 'variable' ||
+            !declaration.data.data.annotation
+          ) {
+            return
+          }
+          const { annotation, name } = declaration.data.data
+          const annotationType = unificationType(
+            [],
+            result.typeNameGenerator.next.bind(result),
+            annotation
+          )
+          parameterTypes.unshift({
+            label: name.data.name,
+            type: annotationType,
+          })
+
+          result.nodes[name.data.id] = annotationType
+          result.patternTypes[name.data.id] = annotationType
+        })
+
+        const returnType: Unification = {
+          type: 'constant',
+          name: node.data.data.name.data.name,
+          parameters: universalTypes,
+        }
+        let functionType: Unification = {
+          type: 'function',
+          arguments: parameterTypes,
+          returnType,
+        }
+
+        result.nodes[node.data.data.name.data.id] = functionType
+        result.patternTypes[node.data.data.name.data.id] = functionType
+      }
+
+      if (node.data.type === 'enumeration' && !config._isRevisit) {
+        const genericNames = node.data.data.genericParameters
+          .map(param =>
+            param.data.type === 'parameter'
+              ? param.data.data.name.data.name
+              : undefined
+          )
+          .filter(x => !!x)
+        const genericsInScope: [string, string][] = genericNames.map(x => [
+          x,
+          result.typeNameGenerator.next(),
+        ])
+        const universalTypes = genericNames.map<Unification>((x, i) => ({
+          type: 'generic',
+          name: genericsInScope[i][1],
+        }))
+
+        const returnType: Unification = {
+          type: 'constant',
+          name: node.data.data.name.data.name,
+          parameters: universalTypes,
+        }
+
+        node.data.data.cases.forEach(enumCase => {
+          if (enumCase.data.type === 'placeholder') {
+            return
+          }
+          const parameterTypes = enumCase.data.data.associatedValueTypes
+            .map(annotation => {
+              if (annotation.data.type === 'placeholder') {
+                return
+              }
+              return {
+                label: undefined,
+                type: unificationType(
+                  genericsInScope,
+                  result.typeNameGenerator.next.bind(result),
+                  annotation
+                ),
+              }
+            })
+            .filter(x => !!x)
+          let functionType: Unification = {
+            type: 'function',
+            arguments: parameterTypes,
+            returnType,
+          }
+
+          result.nodes[enumCase.data.data.name.data.id] = functionType
+          result.patternTypes[enumCase.data.data.name.data.id] = functionType
+        })
+
+        /* Not used for unification, but used for convenience in evaluation */
+        result.nodes[node.data.data.name.data.id] = returnType
+        result.patternTypes[node.data.data.name.data.id] = returnType
+      }
+
+      if (node.data.type === 'function' && !config._isRevisit) {
+        const genericNames = node.data.data.genericParameters
+          .map(param =>
+            param.data.type === 'parameter'
+              ? param.data.data.name.data.name
+              : undefined
+          )
+          .filter(x => !!x)
+        const genericsInScope: [string, string][] = genericNames.map(x => [
+          x,
+          result.typeNameGenerator.next(),
+        ])
+
+        let parameterTypes: FunctionArgument[] = []
+
+        node.data.data.parameters.forEach(param => {
+          if (param.data.type === 'placeholder') {
+            return
+          }
+          const { name, id } = param.data.data.localName.data
+          let annotationType = unificationType(
+            [],
+            result.typeNameGenerator.next.bind(result),
+            param.data.data.annotation
+          )
+          parameterTypes.unshift({ label: name, type: annotationType })
+
+          result.nodes[id] = annotationType
+          result.patternTypes[id] = annotationType
+        })
+
+        let returnType = unificationType(
+          genericsInScope,
+          result.typeNameGenerator.next.bind(result),
+          node.data.data.returnType
+        )
+        let functionType: Unification = {
+          type: 'function',
+          arguments: parameterTypes,
+          returnType,
+        }
+
+        result.nodes[node.data.data.name.data.id] = functionType
+        result.patternTypes[node.data.data.name.data.id] = functionType
+      }
+
+      if (node.data.type === 'variable' && config._isRevisit) {
+        if (
+          !node.data.data.initializer ||
+          !node.data.data.annotation ||
+          node.data.data.annotation.data.type === 'placeholder'
+        ) {
+          config.ignoreChildren = true
+        } else {
+          const annotationType = unificationType(
+            [],
+            result.typeNameGenerator.next.bind(result),
+            node.data.data.annotation
+          )
+          const initializerId = node.data.data.initializer.data.data.id
+          const initializerType = result.nodes[initializerId]
+
+          if (initializerType) {
+            result.constraints.push({
+              head: annotationType,
+              tail: initializerType,
+            })
+          } else {
+            console.warn(
+              `WARNING: No initializer type for ${node.data.data.name.data.name} (${initializerId})`
+            )
+          }
+
+          result.patternTypes[node.data.data.name.data.id] = annotationType
+        }
+      }
+    }
+
+    if (node.type === 'expression') {
+      if (node.data.type === 'placeholder' && config._isRevisit) {
+        result.nodes[node.data.data.id] = {
+          type: 'variable',
+          value: result.typeNameGenerator.next(),
+        }
+      }
+      if (node.data.type === 'identifierExpression' && config._isRevisit) {
+        let type = specificIdentifierType(
+          scopeContext,
+          result,
+          node.data.data.identifier.data.id
+        )
+
+        result.nodes[node.data.data.id] = type
+        result.nodes[node.data.data.identifier.data.id] = type
+      }
+      if (node.data.type === 'functionCallExpression' && config._isRevisit) {
+        const calleeType = result.nodes[node.data.data.expression.data.data.id]
+
+        /* Unify against these to enforce a function type */
+
+        const placeholderReturnType: Unification = {
+          type: 'variable',
+          value: result.typeNameGenerator.next(),
+        }
+
+        const placeholderArgTypes = node.data.data.arguments
+          .map<FunctionArgument>(arg => {
+            if (arg.data.type === 'placeholder') {
+              return
+            }
+            return {
+              label: arg.data.data.label,
+              type: {
+                type: 'variable',
+                value: result.typeNameGenerator.next(),
+              },
+            }
+          })
+          .filter(x => !!x)
+
+        const placeholderFunctionType: Unification = {
+          type: 'function',
+          arguments: placeholderArgTypes,
+          returnType: placeholderReturnType,
+        }
+
+        result.constraints.push({
+          head: calleeType,
+          tail: placeholderFunctionType,
+        })
+
+        result.nodes[node.data.data.id] = placeholderReturnType
+
+        let argumentValues = node.data.data.arguments
+          .map<LogicAST.Expression>(arg =>
+            arg.data.type === 'placeholder'
+              ? undefined
+              : arg.data.data.expression
+          )
+          .filter(x => !!x)
+
+        const constraints = placeholderArgTypes.map((argType, i) => ({
+          head: argType.type,
+          tail: result.nodes[argumentValues[i].data.data.id],
+        }))
+
+        result.constraints = result.constraints.concat(constraints)
+      }
+      if (node.data.type === 'memberExpression') {
+        if (!config._isRevisit) {
+          config.ignoreChildren = true
+        } else {
+          let type = specificIdentifierType(
+            scopeContext,
+            result,
+            node.data.data.id
+          )
+
+          result.nodes[node.data.data.id] = type
+        }
+      }
+      if (node.data.type === 'literalExpression' && config._isRevisit) {
+        result.nodes[node.data.data.id] =
+          result.nodes[node.data.data.literal.data.data.id]
+      }
+      /* TODO: Binary expression */
+    }
+
+    if (node.type === 'literal' && config._isRevisit) {
+      if (node.data.type === 'boolean') {
+        result.nodes[node.data.data.id] = bool
+      }
+      if (node.data.type === 'number') {
+        result.nodes[node.data.data.id] = number
+      }
+      if (node.data.type === 'string') {
+        result.nodes[node.data.data.id] = string
+      }
+      if (node.data.type === 'color') {
+        result.nodes[node.data.data.id] = color
+      }
+      if (node.data.type === 'array') {
+        const elementType: Unification = {
+          type: 'variable',
+          value: result.typeNameGenerator.next(),
+        }
+        result.nodes[node.data.data.id] = elementType
+
+        const constraints = node.data.data.value.map(expression => ({
+          head: elementType,
+          tail: result.nodes[expression.data.data.id] || {
+            type: 'variable',
+            value: result.typeNameGenerator.next(),
+          },
+        }))
+
+        result.constraints = result.constraints.concat(constraints)
+      }
+    }
+
+    return result
+  }
+
+  return LogicTraversal.reduce(
+    rootNode,
+    LogicTraversal.emptyConfig(),
+    initialContext,
+    build
+  )
+}
+
+/* Builtins */
+const unit: Unification = { type: 'constant', name: 'Void', parameters: [] }
+const bool: Unification = { type: 'constant', name: 'Boolean', parameters: [] }
+const number: Unification = { type: 'constant', name: 'Number', parameters: [] }
+const string: Unification = { type: 'constant', name: 'String', parameters: [] }
+const color: Unification = { type: 'constant', name: 'Color', parameters: [] }
+const shadow: Unification = { type: 'constant', name: 'Shadow', parameters: [] }
+const textStyle: Unification = {
+  type: 'constant',
+  name: 'TextStyle',
+  parameters: [],
+}
+const optional = (type: Unification): Unification => ({
+  type: 'constant',
+  name: 'Optional',
+  parameters: [type],
+})
+const array = (typeUnification: Unification): Unification => ({
+  type: 'constant',
+  name: 'Array',
+  parameters: [typeUnification],
+})

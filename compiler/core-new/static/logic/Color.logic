@@ -1,0 +1,237 @@
+{
+  "data" : {
+    "block" : [
+      {
+        "data" : {
+          "content" : {
+            "data" : {
+              "id" : "6D5E7079-F205-40F3-8376-EAE309D7D31A",
+              "name" : {
+                "id" : "C36A00D2-189B-405B-9DCF-8FC1DE05242A",
+                "name" : "Prelude"
+              }
+            },
+            "type" : "importDeclaration"
+          },
+          "id" : "0BDA2286-737C-4E14-8FBB-61B5D8454F1B"
+        },
+        "type" : "declaration"
+      },
+      {
+        "data" : {
+          "content" : {
+            "data" : {
+              "comment" : {
+                "id" : "951E23B6-95BA-40AD-95B2-4315CBF1FED5",
+                "string" : "# Color\n\nA color value. Colors can be defined using CSS color codes. \n\n## Example\n\nWe might declare a color variable, `ocean` to use throughout our design system to represent the hex code `#69D2E7`:\n\n```logic\n<Declarations>\n  <Variable name=\"ocean\" type=\"Color\" value=\"#69D2E7\"\/>\n<\/Declarations>\n```"
+              },
+              "declarations" : [
+                {
+                  "data" : {
+                    "annotation" : {
+                      "data" : {
+                        "genericArguments" : [
+
+                        ],
+                        "id" : "435E9B0F-6418-4591-8DDB-25CE57B059F2",
+                        "identifier" : {
+                          "id" : "4C4AB187-1446-47C6-A649-A7C71682767B",
+                          "isPlaceholder" : false,
+                          "string" : "String"
+                        }
+                      },
+                      "type" : "typeIdentifier"
+                    },
+                    "id" : "DBE8C810-2A0E-4763-B831-416AA609A33E",
+                    "initializer" : {
+                      "data" : {
+                        "id" : "E46F7965-D8EE-4183-834D-67759FE4023A",
+                        "literal" : {
+                          "data" : {
+                            "id" : "077C1A3F-11A7-46C6-832E-7027E8855F07",
+                            "value" : ""
+                          },
+                          "type" : "string"
+                        }
+                      },
+                      "type" : "literalExpression"
+                    },
+                    "name" : {
+                      "id" : "41F3954C-15B3-4B8C-B469-23EBCCE78E39",
+                      "name" : "value"
+                    }
+                  },
+                  "type" : "variable"
+                },
+                {
+                  "data" : {
+                    "id" : "381192A7-2A0C-4112-AB92-A48F328E0669"
+                  },
+                  "type" : "placeholder"
+                }
+              ],
+              "genericParameters" : [
+
+              ],
+              "id" : "B0C9E8C8-DEDC-415C-B23B-2742AE793323",
+              "name" : {
+                "id" : "8835C04F-A4CC-4741-89D5-5FA8B00BD3D7",
+                "name" : "Color"
+              }
+            },
+            "type" : "record"
+          },
+          "id" : "8B3CB7A6-A775-4644-B2ED-7BB0A165C803"
+        },
+        "type" : "declaration"
+      },
+      {
+        "data" : {
+          "content" : {
+            "data" : {
+              "declarations" : [
+                {
+                  "data" : {
+                    "block" : [
+                      {
+                        "data" : {
+                          "id" : "885C7A69-7158-4C29-ACC4-ECF5C59CC691"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "comment" : {
+                      "id" : "FD20F1A5-6415-42A4-A9FD-68605EDE80C2",
+                      "string" : "# Saturate\n\nAdjust the saturation of a color."
+                    },
+                    "genericParameters" : [
+
+                    ],
+                    "id" : "AD51098F-1FEB-432E-AB91-C0AC40C70B96",
+                    "name" : {
+                      "id" : "3C80617B-DE12-4E57-BED8-D8D4B91F31F4",
+                      "name" : "saturate"
+                    },
+                    "parameters" : [
+                      {
+                        "data" : {
+                          "annotation" : {
+                            "data" : {
+                              "genericArguments" : [
+
+                              ],
+                              "id" : "A2A29E36-6ABE-482C-B844-E2537D96ACE2",
+                              "identifier" : {
+                                "id" : "25FDC09D-805B-4976-9578-59F3ADD94B8B",
+                                "isPlaceholder" : false,
+                                "string" : "Color"
+                              }
+                            },
+                            "type" : "typeIdentifier"
+                          },
+                          "comment" : {
+                            "id" : "4A177220-09A9-4D13-BCE5-AD8C533F267D",
+                            "string" : "# Color\n\nThe base color to adjust."
+                          },
+                          "defaultValue" : {
+                            "data" : {
+                              "id" : "29BCDA02-91B8-4336-B024-E06F2F78C4E6"
+                            },
+                            "type" : "none"
+                          },
+                          "id" : "5E6B700A-C9F3-48A6-B0FC-7EE86AEBDD64",
+                          "localName" : {
+                            "id" : "D2CDD7BE-81C9-4B09-9CDD-5E8E09E3FDA5",
+                            "name" : "color"
+                          }
+                        },
+                        "type" : "parameter"
+                      },
+                      {
+                        "data" : {
+                          "annotation" : {
+                            "data" : {
+                              "genericArguments" : [
+
+                              ],
+                              "id" : "56F7DE88-E930-4D8D-ADE4-54FBB1D7B727",
+                              "identifier" : {
+                                "id" : "F30D8892-CCD7-49B2-B6E5-8674CD2E8480",
+                                "isPlaceholder" : false,
+                                "string" : "Number"
+                              }
+                            },
+                            "type" : "typeIdentifier"
+                          },
+                          "comment" : {
+                            "id" : "89E8F2C9-5F5B-40EE-9974-529348A1454E",
+                            "string" : "# Percent\n\nHow much to adjust saturation. A value **greater than 1** will result in a more saturated color, and a value **less than 1** will result in a less saturated color."
+                          },
+                          "defaultValue" : {
+                            "data" : {
+                              "id" : "FE9BDCED-3115-4BC4-9589-C9D19DA47209"
+                            },
+                            "type" : "none"
+                          },
+                          "id" : "52CAAA23-2E0D-4A05-A346-07400734DBFD",
+                          "localName" : {
+                            "id" : "A0B64D24-03F6-4048-9A7B-A9457CBBA5AE",
+                            "name" : "percent"
+                          }
+                        },
+                        "type" : "parameter"
+                      },
+                      {
+                        "data" : {
+                          "id" : "DB241054-9ED3-4011-B165-EA0B4CFBA6F4"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "returnType" : {
+                      "data" : {
+                        "genericArguments" : [
+
+                        ],
+                        "id" : "2C2ADB0B-849B-46DE-8AC4-ADECEA4A7C8F",
+                        "identifier" : {
+                          "id" : "E5978B13-A272-4FEC-AB94-4EE98FC1E0D6",
+                          "isPlaceholder" : false,
+                          "string" : "Color"
+                        }
+                      },
+                      "type" : "typeIdentifier"
+                    }
+                  },
+                  "type" : "function"
+                },
+                {
+                  "data" : {
+                    "id" : "F7C9F1E1-15E6-4B80-A9D1-6302F4AAD54D"
+                  },
+                  "type" : "placeholder"
+                }
+              ],
+              "id" : "A573412A-68E3-4C01-95D2-08837A7BFF5B",
+              "name" : {
+                "id" : "E3603B09-F4A4-454C-B8BE-3622535ECE4B",
+                "name" : "Color"
+              }
+            },
+            "type" : "namespace"
+          },
+          "id" : "D07ECF1A-2BA1-43FC-A7E4-A370493010A6"
+        },
+        "type" : "declaration"
+      },
+      {
+        "data" : {
+          "id" : "7F77CD37-824F-4006-B412-E1CDFEAA6B46"
+        },
+        "type" : "placeholder"
+      }
+    ],
+    "id" : "4BE95B16-FBBC-4945-9EA6-98FDC1CB5674"
+  },
+  "type" : "program"
+}

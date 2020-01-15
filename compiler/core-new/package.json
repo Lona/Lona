@@ -1,0 +1,36 @@
+{
+  "name": "lonac",
+  "version": "0.10.0",
+  "description": "Lona cross-platform code compiler",
+  "main": "lib/index.js",
+  "repository": "https://github.com/airbnb/Lona",
+  "author": "Mathieu Dutour",
+  "license": "MIT",
+  "dependencies": {
+    "@lona/serialization": "^0.0.17",
+    "glob": "^7.1.6",
+    "lodash.lowerfirst": "^4.3.1",
+    "lodash.snakecase": "^4.1.1",
+    "memfs": "^3.0.3",
+    "svg-transform-parser": "^0.0.1",
+    "svgpath": "^2.2.2",
+    "svgson-next": "^4.3.0",
+    "yargs": "^15.1.0"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.1",
+    "@types/node": "^13.1.6",
+    "jest": "^24.9.0",
+    "prettier": "^1.19.1",
+    "typescript": "^3.7.4"
+  },
+  "prettier": {
+    "proseWrap": "never",
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "semi": false
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}
