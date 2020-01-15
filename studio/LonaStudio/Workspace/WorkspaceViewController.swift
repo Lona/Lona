@@ -110,6 +110,8 @@ class WorkspaceViewController: NSSplitViewController {
             if document !== oldValue {
                 update()
 
+                self.inspectedContent = nil
+
                 if let document = document as? MarkdownDocument {
                     let key = document.addChangeListener { _ in
                         self.update()
@@ -330,8 +332,6 @@ class WorkspaceViewController: NSSplitViewController {
         }
     }
 
-    private lazy var directoryViewController = DirectoryViewController()
-
     // A document's window controllers are deallocated if there are no associated documents.
     // This ViewController can contain a reference.
     private var windowController: NSWindowController?
@@ -383,13 +383,13 @@ class WorkspaceViewController: NSSplitViewController {
         }
 
         fileNavigator.onDeleteFile = { path, options in
-            NSDocumentController.shared.documents.forEach { document in
-                let url = URL(fileURLWithPath: path)
-                // TODO: If deleting a directory, close all files that are descendants
-                if let fileURL = document.fileURL, fileURL == url || fileURL == url.appendingPathComponent("README.md") {
-                    self.close(document: document, discardingUnsavedChanges: true)
-                }
-            }
+//            NSDocumentController.shared.documents.forEach { document in
+//                let url = URL(fileURLWithPath: path)
+//                // TODO: If deleting a directory, close all files that are descendants
+//                if let fileURL = document.fileURL, fileURL == url || fileURL == url.appendingPathComponent("README.md") {
+//                    self.close(document: document, discardingUnsavedChanges: true)
+//                }
+//            }
             LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
         }
 
@@ -458,13 +458,15 @@ class WorkspaceViewController: NSSplitViewController {
             return true
         }
 
-        fileNavigator.onSelect = { [unowned self] path in
+        fileNavigator.onSelect = { path in
             if let path = path {
-                self.openDocument(path)
+                let fileURL = URL(fileURLWithPath: path)
+                DocumentController.shared.openDocument(withContentsOf: fileURL, display: true).finalFailure { [unowned self] error in
+                    self.fileNavigator.selectedFile = path
+                    self.update()
+                }
             }
         }
-
-        directoryViewController.onSelectComponent = self.openDocument
     }
 
     private lazy var contentListItem = NSSplitViewItem(contentListWithViewController: fileNavigatorViewController)
@@ -508,7 +510,7 @@ class WorkspaceViewController: NSSplitViewController {
         codeEditorViewController.document = document
 
         guard let document = document else {
-            if let path = lastOpenedDocumentPath, FileManager.default.isDirectory(path: path) {
+            if let path = fileNavigator.selectedFile, FileManager.default.isDirectory(path: path) {
                 let contentView = NoDocument(
                     titleText: "This folder has no index page (README.md)",
                     buttonTitleText: "Create index page"
@@ -559,7 +561,7 @@ class WorkspaceViewController: NSSplitViewController {
         }
 
         if let fileURL = document.fileURL {
-            fileNavigator.selectedFile = fileURL.lastPathComponent == "README.md"
+            fileNavigator.selectedFile = fileURL.lastPathComponent == MarkdownDocument.INDEX_PAGE_NAME
                 ? fileURL.deletingLastPathComponent().path
                 : fileURL.path
         }
@@ -571,7 +573,7 @@ class WorkspaceViewController: NSSplitViewController {
             fileIcon = NSWorkspace.shared.icon(forFile: fileURL.path)
 
             // When editing a README, display the name of the directory as the title
-            if fileURL.lastPathComponent == "README.md" {
+            if fileURL.lastPathComponent == MarkdownDocument.INDEX_PAGE_NAME {
                 titleText = fileURL.deletingLastPathComponent().lastPathComponent
             }
         } else {
@@ -752,9 +754,20 @@ class WorkspaceViewController: NSSplitViewController {
 
             editorViewController.contentView = markdownViewController.view
 
-            markdownViewController.onNavigateToPage = { [unowned self, unowned document] page in
+            markdownViewController.onNavigateToPage = { [unowned document] page in
                 guard let fileURL = document.fileURL else { return false }
-                self.openDocument(fileURL.deletingLastPathComponent().appendingPathComponent(page).path)
+                let pageURL = fileURL.deletingLastPathComponent().appendingPathComponent(page)
+
+                DocumentController.shared.openDocument(withContentsOf: pageURL, display: true).finalFailure { error in
+                    Alert.runInformationalAlert(
+                        messageText: "Page \(page) not found",
+                        informativeText: [
+                            "The page \(page) doesn't seem to exist on your filesystem.",
+                            "It may have been deleted by another author"
+                        ].joined(separator: " ")
+                    )
+                }
+
                 return true
             }
             markdownViewController.onRequestCreatePage = { [unowned document] index, shouldReplace in
@@ -769,19 +782,6 @@ class WorkspaceViewController: NSSplitViewController {
                 return true
             }
         }
-    }
-
-    // We keep track of the last opened document path so that if it fails to open,
-    // we can show the correct placeholder content. However, there are probably other
-    // ways a document can be presented, so this is not perfect.
-    var lastOpenedDocumentPath: String?
-
-    func openDocument(_ path: String) {
-        lastOpenedDocumentPath = path
-
-        let fileURL = URL(fileURLWithPath: path)
-
-        DocumentController.shared.openDocument(withContentsOf: fileURL, display: true)
     }
 
     // Subscriptions
@@ -838,10 +838,6 @@ class WorkspaceViewController: NSSplitViewController {
         windowController.document = newDocument
 
         self.document = newDocument
-
-        // Set this after updating the document (which calls update)
-        // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
-        self.inspectedContent = nil
     }
 
     @discardableResult private func close(document: NSDocument, discardingUnsavedChanges: Bool) -> Bool {
@@ -901,11 +897,6 @@ class WorkspaceViewController: NSSplitViewController {
         }
 
         self.document = nil
-        self.lastOpenedDocumentPath = nil
-
-        // Set this after updating the document (which calls update)
-        // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
-        self.inspectedContent = nil
 
         return true
     }

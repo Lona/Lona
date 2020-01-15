@@ -319,7 +319,7 @@ extension MarkdownDocument {
             return false
         }
 
-        let remainingFiles = files.filter { $0 != "README.md" && $0 != ".DS_Store" }
+        let remainingFiles = files.filter { $0 != MarkdownDocument.INDEX_PAGE_NAME && $0 != ".DS_Store" }
 
         Swift.print(originalFileURL.deletingLastPathComponent().path, "remaining files", remainingFiles)
 

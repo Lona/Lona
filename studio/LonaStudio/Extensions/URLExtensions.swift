@@ -32,4 +32,9 @@ extension URL {
         let configURL = self.appendingPathComponent("lona.json")
         return FileManager.default.fileExists(atPath: configURL.path)
     }
+
+    func isLonaMarkdownDirectory() -> Bool {
+        let readmeURL = self.appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)
+        return FileManager.default.fileExists(atPath: readmeURL.path)
+    }
 }

@@ -185,10 +185,10 @@ class FileNavigator: NSBox {
                 }))
             }
 
-            menu.addItem(NSMenuItem(title: "New Document", onClick: { [unowned self] in
+            menu.addItem(NSMenuItem(title: "New Page", onClick: { [unowned self] in
                 guard let newFileName = Alert.runTextInputAlert(
-                    messageText: "Enter a new document name",
-                    placeholderText: "File name") else { return }
+                    messageText: "Enter a new page name",
+                    placeholderText: "Page name") else { return }
 
                 _ = self.performCreateMarkdownFile?(makePath(filename: newFileName, withExtension: "md"))
             }))
@@ -200,13 +200,7 @@ class FileNavigator: NSBox {
 
                 let parentURL = URL(fileURLWithPath: path)
 
-                let newDirectory = VirtualDirectory(name: newFileName) {
-                    [
-                        VirtualFile(name: "README.md") {
-                            "# \(newFileName)".data(using: .utf8)!
-                        }
-                    ]
-                }
+                let newDirectory = VirtualDirectory(name: newFileName)
 
                 do {
                     try VirtualFileSystem.write(node: newDirectory, relativeTo: parentURL)
@@ -345,6 +339,8 @@ class FileNavigator: NSBox {
                 let imageView = NSImageView(image: image)
                 imageView.imageScaling = .scaleProportionallyUpOrDown
                 iconView = imageView
+            } else if URL(fileURLWithPath: path).isLonaMarkdownDirectory() {
+                iconView = FileIcon()
             } else {
                 iconView = FolderIcon()
             }

@@ -23,7 +23,8 @@ class DocumentController: NSDocumentController {
         }
     }
 
-
+    // When attempting to open a directory, instead attempt to open its `README.md`.
+    // If we fail to open a file, hide the current file within the workspace.
     override func openDocument(
         withContentsOf url: URL,
         display displayDocument: Bool,
@@ -31,12 +32,20 @@ class DocumentController: NSDocumentController {
     ) {
         if !ensureValidWorkspaceForOpeningFile(url: url) { return }
 
-        let realURL = FileManager.default.isDirectory(path: url.path) ? url.appendingPathComponent("README.md") : url
+        let realURL = FileManager.default.isDirectory(path: url.path)
+            ? url.appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)
+            : url
 
-        super.openDocument(withContentsOf: realURL, display: displayDocument, completionHandler: completionHandler)
+        super.openDocument(withContentsOf: realURL, display: displayDocument, completionHandler: {
+            document, documentWasAlreadyOpen, error in
+            if let _ = error, displayDocument {
+                self.removeAllDocumentsFromWorkspaceWindowControllers()
+            }
+            completionHandler(document, documentWasAlreadyOpen, error)
+        })
     }
 
-    // For simplicity of document handling, always show Welcome window for now
+    // Should do exactly what `openDocument` does
     override public func reopenDocument(
         for urlOrNil: URL?,
         withContentsOf contentsURL: URL,
@@ -45,9 +54,17 @@ class DocumentController: NSDocumentController {
 
         if !ensureValidWorkspaceForOpeningFile(url: contentsURL) { return }
 
-        let realURL = FileManager.default.isDirectory(path: contentsURL.path) ? contentsURL.appendingPathComponent("README.md") : contentsURL
+        let realURL = FileManager.default.isDirectory(path: contentsURL.path)
+            ? contentsURL.appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)
+            : contentsURL
 
-        super.reopenDocument(for: urlOrNil, withContentsOf: realURL, display: displayDocument, completionHandler: completionHandler)
+        super.reopenDocument(for: urlOrNil, withContentsOf: realURL, display: displayDocument, completionHandler: {
+            document, documentWasAlreadyOpen, error in
+            if let _ = error, displayDocument {
+                self.removeAllDocumentsFromWorkspaceWindowControllers()
+            }
+            completionHandler(document, documentWasAlreadyOpen, error)
+        })
     }
 }
 
@@ -74,6 +91,20 @@ extension DocumentController {
 // MARK: - Window Controllers
 
 extension DocumentController {
+    private func removeAllDocumentsFromWorkspaceWindowControllers() {
+        workspaceWindowControllers.forEach { workspaceWindowController in
+            if let document = workspaceWindowController.document as? NSDocument {
+                document.removeWindowController(workspaceWindowController)
+            }
+
+            let workspaceViewController = workspaceWindowController.workspaceViewController
+
+            workspaceViewController.inspectedContent = nil
+            workspaceViewController.document = nil
+            workspaceViewController.update()
+        }
+    }
+
     public func createOrFindWorkspaceWindowController(for document: NSDocument) {
         let workspaceWindowController = workspaceWindowControllers.first ?? WorkspaceWindowController.create()
         let workspaceViewController = workspaceWindowController.workspaceViewController
@@ -89,16 +120,11 @@ extension DocumentController {
 
         workspaceViewController.inspectedContent = nil
         workspaceViewController.document = document
-
-        // We call update here, since sometimes updating the document doesn't call the
-        // didSet handler. Calling update is sometimes redundant though.
         workspaceViewController.update()
     }
 
     public var workspaceWindowControllers: [WorkspaceWindowController] {
-        let allWindowControllers = Array(documents.compactMap { document in
-            document.windowControllers.compactMap({ $0 as? WorkspaceWindowController })
-        }.joined())
+        let allWindowControllers = NSApp.windows.compactMap { $0.windowController as? WorkspaceWindowController }
         let uniqueWindowControllers = Array(Set(allWindowControllers))
         return uniqueWindowControllers
     }
