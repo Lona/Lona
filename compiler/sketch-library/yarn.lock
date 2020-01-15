@@ -3637,10 +3637,10 @@ lodash@^4.17.13:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
 
-lonac@^0.8.9:
-  version "0.8.9"
-  resolved "https://registry.yarnpkg.com/lonac/-/lonac-0.8.9.tgz#baed49bc4b60a6031401eeff646937096195afaf"
-  integrity sha512-08/2MHteJ2B5mcg6SLQJo/xgLa74wtXdt7xxaW4hsE3JDsAXsPbAfNeRV7WKJrQCEvVAlGVKyOFdIDiWH1mOzA==
+lonac@^0.9.1:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/lonac/-/lonac-0.9.1.tgz#a1a63b2706fed0f25c2b9d6331ceb4cf9b6652fd"
+  integrity sha512-kWaaTo5c105DaOpKh3rWpbCEHWta05oFouCP5Q8LoohY5urBhd7RQVB7Jph1jMhDHQqpE5V1F2PBNTHnjo8YRQ==
   dependencies:
     "@lona/serialization" "^0.0.17"
     lodash.lowerfirst "^4.3.1"
