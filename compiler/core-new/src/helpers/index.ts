@@ -23,10 +23,11 @@ export default async (workspacePath: string, outputPath?: string) => {
     },
   }
 
-  const evaluationContext = generateEvaluationContext(config, fsWrapper)
+  const evaluationContext = await generateEvaluationContext(config, fsWrapper)
 
   return {
     fs: fsWrapper,
     config,
+    evaluationContext,
   }
 }

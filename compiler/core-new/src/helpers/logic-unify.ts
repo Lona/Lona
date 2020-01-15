@@ -1,8 +1,7 @@
+import intersection from 'lodash.intersection'
 import * as LogicAST from './logic-ast'
 import * as LogicScope from './logic-scope'
 import * as LogicTraversal from './logic-traversal'
-import { type } from 'os'
-import { resolve } from 'dns'
 
 type FunctionArgument = {
   label?: string
@@ -28,6 +27,29 @@ type Unification =
       arguments: FunctionArgument[]
       returnType: Unification
     }
+
+/* Builtins */
+const unit: Unification = { type: 'constant', name: 'Void', parameters: [] }
+const bool: Unification = { type: 'constant', name: 'Boolean', parameters: [] }
+const number: Unification = { type: 'constant', name: 'Number', parameters: [] }
+const string: Unification = { type: 'constant', name: 'String', parameters: [] }
+const color: Unification = { type: 'constant', name: 'Color', parameters: [] }
+const shadow: Unification = { type: 'constant', name: 'Shadow', parameters: [] }
+const textStyle: Unification = {
+  type: 'constant',
+  name: 'TextStyle',
+  parameters: [],
+}
+const optional = (type: Unification): Unification => ({
+  type: 'constant',
+  name: 'Optional',
+  parameters: [type],
+})
+const array = (typeUnification: Unification): Unification => ({
+  type: 'constant',
+  name: 'Array',
+  parameters: [typeUnification],
+})
 
 type Contraint = {
   head: Unification
@@ -539,25 +561,110 @@ export const makeUnificationContext = (
   )
 }
 
-/* Builtins */
-const unit: Unification = { type: 'constant', name: 'Void', parameters: [] }
-const bool: Unification = { type: 'constant', name: 'Boolean', parameters: [] }
-const number: Unification = { type: 'constant', name: 'Number', parameters: [] }
-const string: Unification = { type: 'constant', name: 'String', parameters: [] }
-const color: Unification = { type: 'constant', name: 'Color', parameters: [] }
-const shadow: Unification = { type: 'constant', name: 'Shadow', parameters: [] }
-const textStyle: Unification = {
-  type: 'constant',
-  name: 'TextStyle',
-  parameters: [],
+export const unify = (
+  constraints: Contraint[],
+  substitution: Map<Unification, Unification> = new Map()
+): Map<Unification, Unification> => {
+  while (constraints.length > 0) {
+    const constraint = constraints.shift()
+    let { head, tail } = constraint
+
+    if (head == tail) {
+      continue
+    }
+
+    if (head.type === 'function' && tail.type === 'function') {
+      const headArguments = head.arguments
+      const tailArguments = tail.arguments
+      const headContainsLabels = headArguments.some(x => !!x.label)
+      const tailContainsLabels = tailArguments.some(x => !!x.label)
+
+      if (
+        (headContainsLabels && !tailContainsLabels && tailArguments.length) ||
+        (tailContainsLabels && !headContainsLabels && headArguments.length)
+      ) {
+        throw new Error(
+          `[UnificationError] [GenericArgumentsLabelMismatch] ${headArguments} ${tailArguments}`
+        )
+      }
+
+      if (!headContainsLabels && !tailContainsLabels) {
+        if (headArguments.length !== tailArguments.length) {
+          throw new Error(
+            `[UnificationError] [GenericArgumentsCountMismatch] ${head} ${tail}`
+          )
+        }
+
+        headArguments.forEach((a, i) => {
+          constraints.push({ head: a.type, tail: tailArguments[i].type })
+        })
+      } else {
+        const headLabels = headArguments.map(arg => arg.label).filter(x => !!x)
+        const tailLabels = tailArguments.map(arg => arg.label).filter(x => !!x)
+
+        let common = intersection(headLabels, tailLabels)
+
+        common.forEach(label => {
+          const headArgumentType = headArguments.find(
+            arg => arg.label === label
+          ).type
+          const tailArgumentType = tailArguments.find(
+            arg => arg.label === label
+          ).type
+          constraints.push({ head: headArgumentType, tail: tailArgumentType })
+        })
+      }
+
+      constraints.push({ head: head.returnType, tail: tail.returnType })
+    } else if (head.type === 'constant' && tail.type === 'constant') {
+      if (head.name !== tail.name) {
+        throw new Error(`[UnificationError] [NameMismatch] ${head} ${tail}`)
+      }
+      const headParameters = head.parameters
+      const tailParameters = tail.parameters
+      if (headParameters.length !== tailParameters.length) {
+        throw new Error(
+          `[UnificationError] [GenericArgumentsCountMismatch] ${head} ${tail}`
+        )
+      }
+      headParameters.forEach((a, i) => {
+        constraints.push({ head: a, tail: tailParameters[i] })
+      })
+    } else if (head.type === 'generic' || tail.type === 'generic') {
+      console.warn('tried to unify generics (problem?)', head, tail)
+    } else if (head.type === 'variable') {
+      substitution.set(head, tail)
+    } else if (tail.type === 'variable') {
+      substitution.set(tail, head)
+    } else if (
+      (head.type === 'constant' && tail.type === 'function') ||
+      (head.type === 'function' && tail.type === 'constant')
+    ) {
+      throw new Error(`[UnificationError] [KindMismatch] ${head} ${tail}`)
+    }
+
+    constraints = constraints.map(c => {
+      const head = substitution.get(c.head)
+      const tail = substitution.get(c.tail)
+
+      if (head && tail) {
+        return { head, tail }
+      }
+      if (head) {
+        return {
+          head,
+          tail: c.tail,
+        }
+      }
+      if (tail) {
+        return {
+          head: c.head,
+          tail,
+        }
+      }
+      return c
+    })
+  }
+
+  return substitution
 }
-const optional = (type: Unification): Unification => ({
-  type: 'constant',
-  name: 'Optional',
-  parameters: [type],
-})
-const array = (typeUnification: Unification): Unification => ({
-  type: 'constant',
-  name: 'Array',
-  parameters: [typeUnification],
-})
