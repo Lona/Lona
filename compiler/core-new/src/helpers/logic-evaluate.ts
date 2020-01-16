@@ -2,7 +2,7 @@ import * as LogicUnify from './logic-unify'
 import * as LogicAST from './logic-ast'
 import * as LogicScope from './logic-scope'
 
-type Memory =
+export type Memory =
   | { type: 'unit' }
   | { type: 'bool'; value: boolean }
   | { type: 'number'; value: number }
@@ -21,7 +21,7 @@ type Memory =
         | { type: 'enumInit'; value: string }
     }
 
-type Value = {
+export type Value = {
   type: LogicUnify.Unification
   memory: Memory
 }

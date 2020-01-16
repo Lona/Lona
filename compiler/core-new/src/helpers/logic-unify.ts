@@ -8,68 +8,72 @@ type FunctionArgument = {
   type: Unification
 }
 
-export type Unification =
-  | {
-      type: 'variable'
-      value: string
-    }
-  | {
-      type: 'constant'
-      name: string
-      parameters: Unification[]
-    }
-  | {
-      type: 'generic'
-      name: string
-    }
-  | {
-      type: 'function'
-      arguments: FunctionArgument[]
-      returnType: Unification
-    }
+type Variable = {
+  type: 'variable'
+  value: string
+}
+
+type Constant = {
+  type: 'constant'
+  name: string
+  parameters: Unification[]
+}
+
+type Generic = {
+  type: 'generic'
+  name: string
+}
+
+type Function = {
+  type: 'function'
+  arguments: FunctionArgument[]
+  returnType: Unification
+}
+
+export type Unification = Variable | Constant | Generic | Function
 
 /* Builtins */
-export const unit: Unification = {
+export const unit: Constant = {
   type: 'constant',
   name: 'Void',
   parameters: [],
 }
-export const bool: Unification = {
+export const bool: Constant = {
   type: 'constant',
   name: 'Boolean',
   parameters: [],
 }
-export const number: Unification = {
+export const number: Constant = {
   type: 'constant',
   name: 'Number',
   parameters: [],
 }
-export const string: Unification = {
+export const string: Constant = {
   type: 'constant',
   name: 'String',
   parameters: [],
 }
-export const color: Unification = {
+export const color: Constant = {
   type: 'constant',
   name: 'Color',
   parameters: [],
 }
-export const shadow: Unification = {
+export const shadow: Constant = {
   type: 'constant',
   name: 'Shadow',
   parameters: [],
 }
-export const textStyle: Unification = {
+export const textStyle: Constant = {
   type: 'constant',
   name: 'TextStyle',
   parameters: [],
 }
-export const optional = (type: Unification): Unification => ({
+export const optional = (type: Unification): Constant => ({
   type: 'constant',
   name: 'Optional',
   parameters: [type],
 })
-export const array = (typeUnification: Unification): Unification => ({
+export const array = (typeUnification: Unification): Constant => ({
   type: 'constant',
   name: 'Array',
   parameters: [typeUnification],

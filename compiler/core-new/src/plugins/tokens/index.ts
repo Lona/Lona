@@ -1,14 +1,14 @@
 import * as path from 'path'
 import * as serialization from '@lona/serialization'
 import { Helpers } from '../../helpers'
-import * as LogicAST from '../../helpers/logic-ast'
+import { ConvertedWorkspace, ConvertedFile } from './tokens-ast'
+import { convert } from './convert'
 
 export const parseFile = async (
   filePath: string,
-  helpers: Helpers,
-  options: any
+  helpers: Helpers
 ): Promise<string> => {
-  let logicNode: LogicAST.AST.SyntaxNode
+  let logicNode: serialization.LogicAST.SyntaxNode
   if (path.extname(filePath) === '.logic') {
     logicNode = JSON.parse(
       serialization.convertLogic(
@@ -23,12 +23,26 @@ export const parseFile = async (
   } else {
     throw new Error(`${filePath} is not a token file`)
   }
+
+  const name = path.basename(filePath, path.extname(filePath))
+  const outputPath = path.join(path.dirname(filePath), `${name}.flat.json`)
+
+  const file: ConvertedFile = {
+    inputPath: filePath,
+    name,
+    outputPath,
+    contents: {
+      type: 'flatTokens',
+      value: convert(logicNode, helpers),
+    },
+  }
+
+  return JSON.stringify(file, null, '  ')
 }
 
 export const parseWorkspace = async (
   workspacePath: string,
-  helpers: Helpers,
-  options: any
+  helpers: Helpers
 ): Promise<void> => {
   if (!helpers.evaluationContext) {
     helpers.reporter.warn('Failed to evaluate workspace.')
@@ -42,21 +56,16 @@ export const parseWorkspace = async (
     return
   }
 
-  console.log(
-    JSON.stringify(
-      {
-        flatTokensSchemaVersion: '0.0.1',
-        files: (
-          await Promise.all(
-            helpers.config.logicPaths
-              .concat(helpers.config.tokenPaths)
-              .map(x => parseFile(x, helpers, options))
-          )
-        ).map(x => JSON.parse(x)),
-      },
-      null,
-      '  '
-    )
-  )
+  const workspace: ConvertedWorkspace = {
+    flatTokensSchemaVersion: '0.0.1',
+    files: (
+      await Promise.all(
+        helpers.config.logicPaths
+          .concat(helpers.config.tokenPaths)
+          .map(x => parseFile(x, helpers))
+      )
+    ).map(x => JSON.parse(x)),
+  }
+  console.log(JSON.stringify(workspace, null, '  '))
   return
 }

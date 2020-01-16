@@ -66,7 +66,10 @@ export type TextStyleToken = {
   value: TextStyleTokenValue
 }
 
-export type Token = ColorToken | ShadowToken | TextStyleToken
+export type Token = {
+  qualifiedName: Array<string>
+  value: TextStyleTokenValue | ShadowTokenValue | ColorTokenValue
+}
 
 export type ConvertedFileContents =
   | {
