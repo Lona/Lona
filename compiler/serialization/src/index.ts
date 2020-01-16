@@ -11,14 +11,15 @@ import {
 import { convertTokens, decodeTokens, encodeTokens } from './lona-tokens'
 import { convertTypes, decodeTypes, encodeTypes } from './lona-types'
 
-import { AST } from 'lona-ast'
+import * as MDXAST from './types/lona-ast'
+import * as LogicAST from './types/logic-ast'
 
 // Document
 
 function decodeDocument(
   contents: string,
   format: SERIALIZATION_FORMAT
-): { children: AST.Content[] } {
+): { children: MDXAST.Content[] } {
   try {
     switch (format) {
       case SERIALIZATION_FORMAT.JSON:
@@ -35,7 +36,7 @@ function decodeDocument(
 }
 
 function encodeDocument(
-  ast: { children: AST.Content[] },
+  ast: { children: MDXAST.Content[] },
   format: SERIALIZATION_FORMAT,
   options: {} = {}
 ) {
@@ -83,13 +84,13 @@ function extractProgram(
   const declarations = children
     .filter(child => child.type === 'code' && child.data.lang === 'tokens')
     // Get Logic syntax node
-    .map((child: AST.LonaTokens) => child.data.parsed)
+    .map((child: MDXAST.LonaTokens) => child.data.parsed)
     // Get declarations
     .map(node => node.data.declarations)
 
-  const flattened = [].concat(...declarations)
+  const flattened: LogicAST.Declaration[] = [].concat(...declarations)
 
-  const topLevelDeclarations = {
+  const topLevelDeclarations: LogicAST.TopLevelDeclarations = {
     data: {
       declarations: flattened,
       id: uuid().toUpperCase(),
@@ -100,18 +101,25 @@ function extractProgram(
   return stringify(topLevelDeclarations, { space: '  ' })
 }
 
-module.exports = {
+const convertLogic = convertTokens
+const decodeLogic = decodeTokens
+const encodeLogic = encodeTokens
+const printMdxNode = mdx.printNode
+
+export {
+  MDXAST,
+  LogicAST,
   SERIALIZATION_FORMAT,
   convertTypes,
-  convertLogic: convertTokens,
+  convertLogic,
   convertDocument,
   decodeTypes,
-  decodeLogic: decodeTokens,
+  decodeLogic,
   decodeDocument,
   encodeTypes,
-  encodeLogic: encodeTokens,
+  encodeLogic,
   encodeDocument,
   extractProgram,
   detectFormat,
-  printMdxNode: mdx.printNode,
+  printMdxNode,
 }

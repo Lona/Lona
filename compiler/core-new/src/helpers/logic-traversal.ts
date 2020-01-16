@@ -22,10 +22,10 @@ export let emptyConfig = (): TraversalConfig => ({
 })
 
 function reduceChildren<T>(
-  node: LogicAST.SyntaxNode,
+  node: LogicAST.AST.SyntaxNode,
   config: TraversalConfig,
   initialResult: T,
-  f: (x: T, node: LogicAST.SyntaxNode, config: TraversalConfig) => T
+  f: (x: T, node: LogicAST.AST.SyntaxNode, config: TraversalConfig) => T
 ): T {
   return LogicAST.subNodes(node).reduce<T>((prev, x) => {
     if (config.stopTraversal) {
@@ -36,10 +36,10 @@ function reduceChildren<T>(
 }
 
 export const reduce = function<T>(
-  node: LogicAST.SyntaxNode,
+  node: LogicAST.AST.SyntaxNode,
   config: TraversalConfig,
   initialResult: T,
-  f: (x: T, node: LogicAST.SyntaxNode, config: TraversalConfig) => T
+  f: (x: T, node: LogicAST.AST.SyntaxNode, config: TraversalConfig) => T
 ) {
   if (config.stopTraversal) {
     return initialResult

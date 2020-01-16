@@ -20,6 +20,7 @@ const json = {
                 id: '0',
                 isPlaceholder: false,
                 string: 'Number',
+                type: 'identifier',
               },
             },
             type: 'typeIdentifier',
@@ -30,6 +31,7 @@ const json = {
           id: '0',
           isPlaceholder: false,
           string: 'Array',
+          type: 'identifier',
         },
       },
       type: 'typeIdentifier',
@@ -71,6 +73,7 @@ const json = {
     name: {
       id: '0',
       name: 'x',
+      type: 'pattern',
     },
   },
   type: 'variable',

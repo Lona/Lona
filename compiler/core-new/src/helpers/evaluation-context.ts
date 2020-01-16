@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
+import * as serialization from '@lona/serialization'
 import { Config } from '../utils/config'
 import * as LogicAST from './logic-ast'
 import * as LogicScope from './logic-scope'
@@ -7,29 +8,24 @@ import * as LogicUnify from './logic-unify'
 import * as LogicEvaluate from './logic-evaluate'
 import uuid from '../utils/uuid'
 
-function standardImportsProgram(): LogicAST.Program {
-  const libraryImports: LogicAST.Statement[] = [
+function standardImportsProgram(): LogicAST.AST.Program {
+  const libraryImports: LogicAST.AST.Statement[] = [
     'Prelude',
     'Color',
     'Shadow',
     'TextStyle',
   ].map(libraryName => ({
-    type: 'statement',
+    type: 'declaration',
     data: {
-      type: 'declaration',
-      data: {
-        id: uuid(),
-        content: {
-          type: 'declaration',
-          data: {
-            type: 'importDeclaration',
-            data: {
-              id: uuid(),
-              name: {
-                type: 'pattern',
-                data: { id: uuid(), name: libraryName },
-              },
-            },
+      id: uuid(),
+      content: {
+        type: 'importDeclaration',
+        data: {
+          id: uuid(),
+          name: {
+            type: 'pattern',
+            id: uuid(),
+            name: libraryName,
           },
         },
       },
@@ -46,23 +42,23 @@ function standardImportsProgram(): LogicAST.Program {
 }
 
 function resolveImports(
-  program: LogicAST.Program,
+  program: LogicAST.AST.Program,
   existingImports: string[] = []
-): LogicAST.Program {
+): LogicAST.AST.Program {
   return {
     type: 'program',
     data: {
       id: uuid(),
       block: program.data.block
         .map(x => {
-          if (x.data.type !== 'declaration') {
+          if (x.type !== 'declaration') {
             return [x]
           }
-          if (x.data.data.content.data.type !== 'importDeclaration') {
+          if (x.data.content.type !== 'importDeclaration') {
             return [x]
           }
 
-          const libraryName = x.data.data.content.data.data.name.data.name
+          const libraryName = x.data.content.data.name.name
 
           if (existingImports.indexOf(libraryName) !== -1) {
             return [x]
@@ -108,8 +104,25 @@ export const generate = async (
   fs: { readFile(filePath: string): Promise<string> }
 ) => {
   const logicFiles = (
-    await Promise.all(config.logicPaths.map(x => fs.readFile(x)))
-  ).map(x => JSON.parse(x) as LogicAST.SyntaxNode)
+    await Promise.all(
+      config.logicPaths
+        .map(x =>
+          fs
+            .readFile(x)
+            .then(data =>
+              serialization.convertLogic(
+                data,
+                serialization.SERIALIZATION_FORMAT.JSON
+              )
+            )
+        )
+        .concat(
+          config.tokenPaths.map(x =>
+            fs.readFile(x).then(data => serialization.extractProgram(data))
+          )
+        )
+    )
+  ).map(x => JSON.parse(x) as LogicAST.AST.SyntaxNode)
 
   let programNode = LogicAST.joinPrograms(logicFiles.map(LogicAST.makeProgram))
 

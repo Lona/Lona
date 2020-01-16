@@ -32,7 +32,7 @@ type Thunk = {
   f: (args: Value[]) => Value
 }
 
-class EvaluationContext {
+export class EvaluationContext {
   values: { [uuid: string]: Value } = {}
   thunks: { [uuid: string]: Thunk } = {}
 
@@ -72,8 +72,8 @@ class EvaluationContext {
 const makeEmpty = () => new EvaluationContext()
 
 export const evaluate = (
-  node: LogicAST.SyntaxNode,
-  rootNode: LogicAST.SyntaxNode,
+  node: LogicAST.AST.SyntaxNode,
+  rootNode: LogicAST.AST.SyntaxNode,
   scopeContext: LogicScope.ScopeContext,
   unificationContext: LogicUnify.UnificationContext,
   substitution: Map<LogicUnify.Unification, LogicUnify.Unification>,
@@ -99,9 +99,9 @@ export const evaluate = (
 
   /* TODO: handle statements */
 
-  if (node.type === 'literal') {
-    if (node.data.type === 'boolean') {
-      const { value, id } = node.data.data
+  switch (node.type) {
+    case 'boolean': {
+      const { value, id } = node.data
       context.add(id, {
         label: 'Boolean Literal',
         dependencies: [],
@@ -113,9 +113,10 @@ export const evaluate = (
           },
         }),
       })
+      break
     }
-    if (node.data.type === 'number') {
-      const { value, id } = node.data.data
+    case 'number': {
+      const { value, id } = node.data
       context.add(id, {
         label: 'Number Literal',
         dependencies: [],
@@ -127,9 +128,10 @@ export const evaluate = (
           },
         }),
       })
+      break
     }
-    if (node.data.type === 'string') {
-      const { value, id } = node.data.data
+    case 'string': {
+      const { value, id } = node.data
       context.add(id, {
         label: 'String Literal',
         dependencies: [],
@@ -141,9 +143,10 @@ export const evaluate = (
           },
         }),
       })
+      break
     }
-    if (node.data.type === 'color') {
-      const { value, id } = node.data.data
+    case 'color': {
+      const { value, id } = node.data
       context.add(id, {
         label: 'Color Literal',
         dependencies: [],
@@ -163,239 +166,236 @@ export const evaluate = (
           },
         }),
       })
+      break
     }
-    if (node.data.type === 'array') {
-      const type = unificationContext.nodes[node.data.data.id]
+    case 'array': {
+      const type = unificationContext.nodes[node.data.id]
       if (!type) {
         console.warn('Failed to unify type of array')
-      } else {
-        const resolvedType = LogicUnify.substitute(substitution, type)
-        const dependencies = node.data.data.value
-          .filter(x => x.data.type !== 'placeholder')
-          .map(x => x.data.data.id)
-        context.add(node.data.data.id, {
-          label: 'Array Literal',
-          dependencies,
-          f: values => ({
-            type: resolvedType,
-            memory: {
-              type: 'array',
-              value: values,
-            },
-          }),
-        })
-      }
-    }
-  }
-
-  if (node.type === 'expression') {
-    switch (node.data.type) {
-      case 'literalExpression': {
-        context.add(node.data.data.id, {
-          label: 'Literal expression',
-          dependencies: [node.data.data.literal.data.data.id],
-          f: values => values[0],
-        })
         break
       }
-      case 'identifierExpression': {
-        const { id, string } = node.data.data.identifier.data
-        const patternId = scopeContext.identifierToPattern[id]
-
-        if (!patternId) {
-          break
-        }
-        context.add(id, {
-          label: 'Identifier ' + string,
-          dependencies: [patternId],
-          f: values => values[0],
-        })
-        context.add(node.data.data.id, {
-          label: 'IdentifierExpression ' + string,
-          dependencies: [patternId],
-          f: values => values[0],
-        })
-
-        break
-      }
-      case 'memberExpression': {
-        const patternId = scopeContext.identifierToPattern[node.data.data.id]
-        if (!patternId) {
-          break
-        }
-        context.add(node.data.data.id, {
-          label: 'Member expression',
-          dependencies: [patternId],
-          f: values => values[0],
-        })
-
-        break
-      }
-      case 'binaryExpression': {
-        console.warn('TODO: ' + node.data.type)
-        break
-      }
-      case 'functionCallExpression': {
-        const { expression, arguments: args } = node.data.data
-        let functionType = unificationContext.nodes[expression.data.data.id]
-        if (!functionType) {
-          console.warn('Unknown type of functionCallExpression')
-          break
-        }
-
-        const resolvedType = LogicUnify.substitute(substitution, functionType)
-        if (resolvedType.type !== 'function') {
-          console.warn(
-            'Invalid functionCallExpression type (only functions are valid)',
-            resolvedType
-          )
-          break
-        }
-
-        const dependencies = [expression.data.data.id].concat(
-          args
-            .map(arg => {
-              if (
-                arg.data.type === 'placeholder' ||
-                (arg.data.data.expression.data.type ===
-                  'identifierExpression' &&
-                  arg.data.data.expression.data.data.identifier.data
-                    .isPlaceholder)
-              ) {
-                return undefined
-              }
-              return arg.data.data.expression.data.data.id
-            })
-            .filter(x => !!x)
-        )
-
-        context.add(node.data.data.id, {
-          label: 'FunctionCallExpression',
-          dependencies,
-          f: values => {
-            const [functionValue, ...functionArgs] = values
-            if (
-              functionValue.memory.type !== 'function' ||
-              functionValue.memory.value.type === 'path'
-            ) {
-              return { type: LogicUnify.unit, memory: { type: 'unit' } }
-            }
-
-            if (functionValue.memory.value.type === 'enumInit') {
-              return {
-                type: resolvedType.returnType,
-                memory: {
-                  type: 'enum',
-                  value: functionValue.memory.value.value,
-                  data: functionArgs,
-                },
-              }
-            }
-
-            if (functionValue.memory.value.type === 'recordInit') {
-              const members: [string, Value | void][] = Object.entries(
-                functionValue.memory.value.value
-              ).map(([key, value]) => {
-                const arg = args.find(
-                  x =>
-                    x.data.type === 'argument' &&
-                    !!x.data.data.label &&
-                    x.data.data.label === key
-                )
-                let argumentValue: Value | void
-
-                if (arg && arg.data.type === 'argument') {
-                  const { expression } = arg.data.data
-                  if (
-                    expression.data.type !== 'identifierExpression' ||
-                    !expression.data.data.identifier.data.isPlaceholder
-                  ) {
-                    const dependencyIndex = dependencies.indexOf(
-                      expression.data.data.id
-                    )
-
-                    if (dependencyIndex !== -1) {
-                      argumentValue = values[dependencyIndex]
-                    }
-                  }
-                }
-
-                if (argumentValue) {
-                  return [key, argumentValue]
-                }
-                return [key, value[1]]
-              })
-
-              return {
-                type: resolvedType.returnType,
-                memory: {
-                  type: 'record',
-                  value: members.reduce((prev, m) => {
-                    if (!m[1]) {
-                      return prev
-                    }
-                    prev[m[0]] = m[1]
-                    return prev
-                  }, {}),
-                },
-              }
-            }
+      const resolvedType = LogicUnify.substitute(substitution, type)
+      const dependencies = node.data.value
+        .filter(x => x.type !== 'placeholder')
+        .map(x => x.data.id)
+      context.add(node.data.id, {
+        label: 'Array Literal',
+        dependencies,
+        f: values => ({
+          type: resolvedType,
+          memory: {
+            type: 'array',
+            value: values,
           },
-        })
-        break
-      }
+        }),
+      })
+      break
     }
-  }
-
-  if (node.type === 'declaration') {
-    if (node.data.type === 'variable' && node.data.data.initializer) {
-      context.add(node.data.data.name.data.id, {
-        label: 'Variable initializer for ' + node.data.data.name.data.name,
-        dependencies: [node.data.data.initializer.data.data.id],
+    case 'literalExpression': {
+      context.add(node.data.id, {
+        label: 'Literal expression',
+        dependencies: [node.data.literal.data.id],
         f: values => values[0],
       })
+      break
     }
-    if (node.data.type === 'function') {
-      const { name } = node.data.data
-      const type = unificationContext.patternTypes[name.data.id]
-      const fullPath = LogicAST.declarationPathTo(rootNode, node.data.data.id)
+    case 'identifierExpression': {
+      const { id, string } = node.data.identifier
+      const patternId = scopeContext.identifierToPattern[id]
+
+      if (!patternId) {
+        break
+      }
+      context.add(id, {
+        label: 'Identifier ' + string,
+        dependencies: [patternId],
+        f: values => values[0],
+      })
+      context.add(node.data.id, {
+        label: 'IdentifierExpression ' + string,
+        dependencies: [patternId],
+        f: values => values[0],
+      })
+
+      break
+    }
+    case 'memberExpression': {
+      const patternId = scopeContext.identifierToPattern[node.data.id]
+      if (!patternId) {
+        break
+      }
+      context.add(node.data.id, {
+        label: 'Member expression',
+        dependencies: [patternId],
+        f: values => values[0],
+      })
+
+      break
+    }
+    case 'binaryExpression': {
+      console.warn('TODO: ' + node.type)
+      break
+    }
+    case 'functionCallExpression': {
+      const { expression, arguments: args } = node.data
+      let functionType = unificationContext.nodes[expression.data.id]
+      if (!functionType) {
+        console.warn('Unknown type of functionCallExpression')
+        break
+      }
+
+      const resolvedType = LogicUnify.substitute(substitution, functionType)
+      if (resolvedType.type !== 'function') {
+        console.warn(
+          'Invalid functionCallExpression type (only functions are valid)',
+          resolvedType
+        )
+        break
+      }
+
+      const dependencies = [expression.data.id].concat(
+        args
+          .map(arg => {
+            if (
+              arg.type === 'placeholder' ||
+              (arg.data.expression.type === 'identifierExpression' &&
+                arg.data.expression.data.identifier.isPlaceholder)
+            ) {
+              return undefined
+            }
+            return arg.data.expression.data.id
+          })
+          .filter(x => !!x)
+      )
+
+      context.add(node.data.id, {
+        label: 'FunctionCallExpression',
+        dependencies,
+        f: values => {
+          const [functionValue, ...functionArgs] = values
+          if (
+            functionValue.memory.type !== 'function' ||
+            functionValue.memory.value.type === 'path'
+          ) {
+            return { type: LogicUnify.unit, memory: { type: 'unit' } }
+          }
+
+          if (functionValue.memory.value.type === 'enumInit') {
+            return {
+              type: resolvedType.returnType,
+              memory: {
+                type: 'enum',
+                value: functionValue.memory.value.value,
+                data: functionArgs,
+              },
+            }
+          }
+
+          if (functionValue.memory.value.type === 'recordInit') {
+            const members: [string, Value | void][] = Object.entries(
+              functionValue.memory.value.value
+            ).map(([key, value]) => {
+              const arg = args.find(
+                x =>
+                  x.type === 'argument' &&
+                  !!x.data.label &&
+                  x.data.label === key
+              )
+              let argumentValue: Value | void
+
+              if (arg && arg.type === 'argument') {
+                const { expression } = arg.data
+                if (
+                  expression.type !== 'identifierExpression' ||
+                  !expression.data.identifier.isPlaceholder
+                ) {
+                  const dependencyIndex = dependencies.indexOf(
+                    expression.data.id
+                  )
+
+                  if (dependencyIndex !== -1) {
+                    argumentValue = values[dependencyIndex]
+                  }
+                }
+              }
+
+              if (argumentValue) {
+                return [key, argumentValue]
+              }
+              return [key, value[1]]
+            })
+
+            return {
+              type: resolvedType.returnType,
+              memory: {
+                type: 'record',
+                value: members.reduce((prev, m) => {
+                  if (!m[1]) {
+                    return prev
+                  }
+                  prev[m[0]] = m[1]
+                  return prev
+                }, {}),
+              },
+            }
+          }
+        },
+      })
+      break
+    }
+    case 'variable': {
+      if (node.data.initializer) {
+        context.add(node.data.name.id, {
+          label: 'Variable initializer for ' + node.data.name.name,
+          dependencies: [node.data.initializer.data.id],
+          f: values => values[0],
+        })
+      }
+      break
+    }
+    case 'function': {
+      const { name } = node.data
+      const type = unificationContext.patternTypes[name.id]
+      const fullPath = LogicAST.declarationPathTo(rootNode, node.data.id)
 
       if (!type) {
         console.warn('Unknown function type')
-      } else {
-        context.add(name.data.id, {
-          label: 'Function declaration for ' + name.data.name,
-          dependencies: [],
-          f: _ => ({
-            type,
-            memory: {
-              type: 'function',
-              value: {
-                type: 'path',
-                value: fullPath,
-              },
-            },
-          }),
-        })
+        break
       }
+      context.add(name.id, {
+        label: 'Function declaration for ' + name.name,
+        dependencies: [],
+        f: _ => ({
+          type,
+          memory: {
+            type: 'function',
+            value: {
+              type: 'path',
+              value: fullPath,
+            },
+          },
+        }),
+      })
+
+      break
     }
-    if (node.data.type === 'record') {
-      const { name, declarations } = node.data.data
-      const type = unificationContext.patternTypes[name.data.id]
+    case 'record': {
+      const { name, declarations } = node.data
+      const type = unificationContext.patternTypes[name.id]
       if (!type) {
         console.warn('Unknown record type')
       } else {
         const resolvedType = LogicUnify.substitute(substitution, type)
         const dependencies = declarations
           .map(x =>
-            x.data.type === 'variable' && x.data.data.initializer
-              ? x.data.data.initializer.data.data.id
+            x.type === 'variable' && x.data.initializer
+              ? x.data.initializer.data.id
               : undefined
           )
           .filter(x => !!x)
 
-        context.add(name.data.id, {
-          label: 'Record declaration for ' + name.data.name,
+        context.add(name.id, {
+          label: 'Record declaration for ' + name.name,
           dependencies,
           f: values => {
             const parameterTypes: {
@@ -404,24 +404,22 @@ export const evaluate = (
             let index = 0
 
             declarations.forEach(declaration => {
-              if (declaration.data.type !== 'variable') {
+              if (declaration.type !== 'variable') {
                 return
               }
               const parameterType =
-                unificationContext.patternTypes[
-                  declaration.data.data.name.data.id
-                ]
+                unificationContext.patternTypes[declaration.data.name.id]
               if (!parameterType) {
                 return
               }
 
               let initialValue: Value | void
-              if (declaration.data.data.initializer) {
+              if (declaration.data.initializer) {
                 initialValue = values[index]
                 index += 1
               }
 
-              parameterTypes[declaration.data.data.name.data.name] = [
+              parameterTypes[declaration.data.name.name] = [
                 parameterType,
                 initialValue,
               ]
@@ -440,35 +438,38 @@ export const evaluate = (
           },
         })
       }
+      break
     }
-    if (node.data.type === 'enumeration') {
-      const type = unificationContext.patternTypes[node.data.data.name.data.id]
+    case 'enumeration': {
+      const type = unificationContext.patternTypes[node.data.name.id]
 
       if (!type) {
         console.warn('unknown enumberation type')
-      } else {
-        node.data.data.cases.forEach(enumCase => {
-          if (enumCase.data.type !== 'enumerationCase') {
-            return
-          }
-          const resolvedConsType = LogicUnify.substitute(substitution, type)
-          const { name } = enumCase.data.data
-          context.add(name.data.id, {
-            label: 'Enum case declaration for ' + name.data.name,
-            dependencies: [],
-            f: _ => ({
-              type: resolvedConsType,
-              memory: {
-                type: 'function',
-                value: {
-                  type: 'enumInit',
-                  value: name.data.name,
-                },
-              },
-            }),
-          })
-        })
+        break
       }
+      node.data.cases.forEach(enumCase => {
+        if (enumCase.type !== 'enumerationCase') {
+          return
+        }
+        const resolvedConsType = LogicUnify.substitute(substitution, type)
+        const { name } = enumCase.data
+        context.add(name.id, {
+          label: 'Enum case declaration for ' + name.name,
+          dependencies: [],
+          f: _ => ({
+            type: resolvedConsType,
+            memory: {
+              type: 'function',
+              value: {
+                type: 'enumInit',
+                value: name.name,
+              },
+            },
+          }),
+        })
+      })
+
+      break
     }
   }
 

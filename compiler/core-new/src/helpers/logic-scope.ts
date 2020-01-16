@@ -44,13 +44,13 @@ let setInCurrentNamespace = (
 ) => context.namespace.set(context.currentNamespacePath.concat([name]), value)
 
 let setGenericParameters = (
-  genericParameters: LogicAST.GenericParameter[],
+  genericParameters: LogicAST.AST.GenericParameter[],
   context: ScopeContext
 ) =>
   genericParameters.forEach(genericParameter => {
-    if (genericParameter.data.type === 'parameter') {
-      context.patternToTypeName[genericParameter.data.data.name.data.id] =
-        genericParameter.data.data.name.data.name
+    if (genericParameter.type === 'parameter') {
+      context.patternToTypeName[genericParameter.data.name.id] =
+        genericParameter.data.name.name
     }
   })
 
@@ -82,12 +82,12 @@ let builtInTypeConstructorNames = [
   'Color',
 ]
 
-function getNodeId(node: LogicAST.SyntaxNode) {
-  return 'id' in node.data ? node.data.id : node.data.data.id
+function getNodeId(node: LogicAST.AST.SyntaxNode) {
+  return 'id' in node ? node.id : node.data.id
 }
 
 export const build = (
-  rootNode: LogicAST.SyntaxNode,
+  rootNode: LogicAST.AST.SyntaxNode,
   targetId?: string,
   initialContext: ScopeContext = empty()
 ): ScopeContext => {
@@ -95,66 +95,53 @@ export const build = (
 
   function namespaceDeclarations(
     context: ScopeContext,
-    node: LogicAST.SyntaxNode,
+    node: LogicAST.AST.SyntaxNode,
     config: LogicTraversal.TraversalConfig
   ) {
     config.needsRevisitAfterTraversingChildren = true
 
-    if (node.type === 'declaration') {
-      if (node.data.type === 'variable' && config._isRevisit) {
-        setInCurrentNamespace(
-          node.data.data.name.data.name,
-          node.data.data.name.data.id,
-          context
-        )
-      }
-      if (node.data.type === 'function' && config._isRevisit) {
-        setInCurrentNamespace(
-          node.data.data.name.data.name,
-          node.data.data.name.data.id,
-          context
-        )
-      }
-      if (node.data.type === 'record') {
-        if (!config._isRevisit) {
-          /* Avoid introducing member variables into the namespace */
-          config.ignoreChildren = true
-        } else {
-          const patternName = node.data.data.name.data.name
-          /* Built-ins should be constructed using literals */
-          if (builtInTypeConstructorNames.indexOf(patternName) === -1) {
-            /* Create constructor function */
-            setInCurrentNamespace(
-              patternName,
-              node.data.data.name.data.id,
-              context
-            )
-          }
+    if (node.type === 'variable' && config._isRevisit) {
+      setInCurrentNamespace(node.data.name.name, node.data.name.id, context)
+    }
+    if (node.type === 'function' && config._isRevisit) {
+      setInCurrentNamespace(node.data.name.name, node.data.name.id, context)
+    }
+    if (node.type === 'record') {
+      if (!config._isRevisit) {
+        /* Avoid introducing member variables into the namespace */
+        config.ignoreChildren = true
+      } else {
+        const patternName = node.data.name.name
+        /* Built-ins should be constructed using literals */
+        if (builtInTypeConstructorNames.indexOf(patternName) === -1) {
+          /* Create constructor function */
+          setInCurrentNamespace(patternName, node.data.name.id, context)
         }
       }
-      if (node.data.type === 'enumeration' && config._isRevisit) {
-        const patternName = node.data.data.name.data.name
-        pushNamespace(patternName, context)
+    }
 
-        /* Add initializers for each case into the namespace */
-        node.data.data.cases.forEach(enumCase => {
-          if (enumCase.data.type === 'enumerationCase') {
-            setInCurrentNamespace(
-              enumCase.data.data.name.data.name,
-              enumCase.data.data.name.data.id,
-              context
-            )
-          }
-        })
+    if (node.type === 'enumeration' && config._isRevisit) {
+      const patternName = node.data.name.name
+      pushNamespace(patternName, context)
 
+      /* Add initializers for each case into the namespace */
+      node.data.cases.forEach(enumCase => {
+        if (enumCase.type === 'enumerationCase') {
+          setInCurrentNamespace(
+            enumCase.data.name.name,
+            enumCase.data.name.id,
+            context
+          )
+        }
+      })
+
+      popNamespace(context)
+    }
+    if (node.type === 'namespace') {
+      if (config._isRevisit) {
         popNamespace(context)
-      }
-      if (node.data.type === 'namespace') {
-        if (config._isRevisit) {
-          popNamespace(context)
-        } else {
-          pushNamespace(node.data.data.name.data.name, context)
-        }
+      } else {
+        pushNamespace(node.data.name.name, context)
       }
     }
 
@@ -163,7 +150,7 @@ export const build = (
 
   let walk = (
     context: ScopeContext,
-    node: LogicAST.SyntaxNode,
+    node: LogicAST.AST.SyntaxNode,
     config: LogicTraversal.TraversalConfig
   ) => {
     if (getNodeId(node) == targetId) {
@@ -173,136 +160,128 @@ export const build = (
 
     config.needsRevisitAfterTraversingChildren = true
 
-    if (node.type === 'typeAnnotation' && !config._isRevisit) {
+    if (LogicAST.isTypeAnnotation(node) && !config._isRevisit) {
       config.ignoreChildren = true
       config.needsRevisitAfterTraversingChildren = false
       return context
     }
 
     if (node.type === 'identifier' && config._isRevisit) {
-      if (node.data.isPlaceholder) {
+      if (node.isPlaceholder) {
         return context
       }
-      let lookup = context.patternNames[node.data.string]
+      let lookup = context.patternNames[node.string]
       if (!lookup) {
-        lookup = context.namespace.get([node.data.string])
+        lookup = context.namespace.get([node.string])
       }
       if (!lookup) {
         lookup = context.namespace.get(
-          context.currentNamespacePath.concat([node.data.string])
+          context.currentNamespacePath.concat([node.string])
         )
       }
 
       if (lookup) {
-        context.identifierToPattern[node.data.id] = lookup
+        context.identifierToPattern[node.id] = lookup
       } else {
-        console.warn('Failed to find pattern for identifier:', node.data.string)
+        console.warn('Failed to find pattern for identifier:', node.string)
       }
       return context
     }
 
-    if (
-      node.type === 'expression' &&
-      node.data.type === 'memberExpression' &&
-      !config._isRevisit
-    ) {
+    if (node.type === 'memberExpression' && !config._isRevisit) {
       config.ignoreChildren = true
       const identifiers = LogicAST.flattenedMemberExpression(node)
       if (!identifiers) {
         return context
       }
 
-      const keyPath = identifiers.map(x => x.data.string)
+      const keyPath = identifiers.map(x => x.string)
       const patternId = context.namespace.get(keyPath)
       if (patternId) {
-        context.identifierToPattern[node.data.data.id] = patternId
+        context.identifierToPattern[node.data.id] = patternId
       }
       return context
     }
 
-    if (node.type === 'declaration') {
-      if (node.data.type === 'variable' && config._isRevisit) {
-        const { id: variableId, name: variableName } = node.data.data.name.data
-        context.patternNames.set(variableId, variableName)
-        context.patternToName[variableName] = variableId
+    if (node.type === 'variable' && config._isRevisit) {
+      const { id: variableId, name: variableName } = node.data.name
+      context.patternNames.set(variableId, variableName)
+      context.patternToName[variableName] = variableId
+      return context
+    }
+    if (node.type === 'function') {
+      if (config._isRevisit) {
+        context.patternNames.pop()
         return context
       }
-      if (node.data.type === 'function') {
-        if (config._isRevisit) {
-          context.patternNames.pop()
-          return context
+
+      const { id: functionId, name: functionName } = node.data.name
+      context.patternToName[functionId] = functionName
+      context.patternNames.set(functionName, functionId)
+      context.patternNames.push()
+
+      node.data.parameters.forEach(parameter => {
+        if (parameter.type === 'parameter') {
+          const {
+            id: parameterId,
+            name: parameterName,
+          } = parameter.data.localName
+          context.patternToName[parameterId] = parameterName
+          context.patternNames.set(parameterName, parameterId)
         }
+      })
 
-        const { id: functionId, name: functionName } = node.data.data.name.data
-        context.patternToName[functionId] = functionName
-        context.patternNames.set(functionName, functionId)
-        context.patternNames.push()
+      setGenericParameters(node.data.genericParameters, context)
 
-        node.data.data.parameters.forEach(parameter => {
-          if (parameter.data.type === 'parameter') {
-            const {
-              id: parameterId,
-              name: parameterName,
-            } = parameter.data.data.localName.data
-            context.patternToName[parameterId] = parameterName
-            context.patternNames.set(parameterName, parameterId)
+      return context
+    }
+    if (node.type === 'record') {
+      const { id: recordId, name: recordName } = node.data.name
+      if (!config._isRevisit) {
+        context.patternToTypeName[recordId] = recordName
+        setGenericParameters(node.data.genericParameters, context)
+
+        node.data.declarations.forEach(declaration => {
+          if (declaration.type === 'variable' && declaration.data.initializer) {
+            LogicTraversal.reduce(
+              declaration.data.initializer,
+              config,
+              context,
+              walk
+            )
           }
         })
 
-        setGenericParameters(node.data.data.genericParameters, context)
-
-        return context
-      }
-      if (node.data.type === 'record') {
-        const { id: recordId, name: recordName } = node.data.data.name.data
-        if (!config._isRevisit) {
-          context.patternToTypeName[recordId] = recordName
-          setGenericParameters(node.data.data.genericParameters, context)
-
-          node.data.data.declarations.forEach(declaration => {
-            if (
-              declaration.data.type === 'variable' &&
-              declaration.data.data.initializer
-            ) {
-              LogicTraversal.reduce(
-                declaration.data.data.initializer,
-                config,
-                context,
-                walk
-              )
-            }
-          })
-
-          config.ignoreChildren = true
-        } else {
-          if (builtInTypeConstructorNames.indexOf(recordName) === -1) {
-            context.patternToName[recordId] = recordName
-            context.patternNames.set(recordName, recordId)
-          }
+        config.ignoreChildren = true
+      } else {
+        if (builtInTypeConstructorNames.indexOf(recordName) === -1) {
+          context.patternToName[recordId] = recordName
+          context.patternNames.set(recordName, recordId)
         }
-        return context
       }
-      if (node.data.type === 'enumeration') {
-        if (!config._isRevisit) {
-          pushNamespace(node.data.data.name.data.name, context)
-
-          setGenericParameters(node.data.data.genericParameters, context)
-        } else {
-          popNamespace(context)
-        }
-        return context
-      }
-      if (node.data.type === 'namespace') {
-        if (!config._isRevisit) {
-          context.patternNames.push()
-          pushNamespace(name, context)
-        } else {
-          context.patternNames.pop()
-          popNamespace(context)
-        }
-        return context
-      }
+      return context
     }
+    if (node.type === 'enumeration') {
+      if (!config._isRevisit) {
+        pushNamespace(node.data.name.name, context)
+
+        setGenericParameters(node.data.genericParameters, context)
+      } else {
+        popNamespace(context)
+      }
+      return context
+    }
+    if (node.type === 'namespace') {
+      if (!config._isRevisit) {
+        context.patternNames.push()
+        pushNamespace(name, context)
+      } else {
+        context.patternNames.pop()
+        popNamespace(context)
+      }
+      return context
+    }
+
     return context
   }
 

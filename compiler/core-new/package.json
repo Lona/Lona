@@ -7,7 +7,7 @@
   "author": "Mathieu Dutour",
   "license": "MIT",
   "dependencies": {
-    "@lona/serialization": "^0.0.17",
+    "@lona/serialization": "0.0.18-pre-2",
     "glob": "^7.1.6",
     "lodash.intersection": "^4.4.0",
     "lodash.lowerfirst": "^4.3.1",

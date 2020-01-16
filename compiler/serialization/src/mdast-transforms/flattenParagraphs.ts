@@ -1,6 +1,6 @@
 import visit from 'unist-util-visit'
 
-import { MDAST } from 'mdx-ast'
+import * as MDAST from '../types/mdx-ast'
 
 export default function flattenParagraphs(
   targetType: MDAST.BlockContent['type']

@@ -9,8 +9,8 @@ import parseTokens from './mdast-transforms/parseTokens'
 
 import { SERIALIZATION_FORMAT } from './lona-format'
 
-import { MDAST } from 'mdx-ast'
-import { AST } from 'lona-ast'
+import * as MDAST from './types/mdx-ast'
+import * as AST from './types/lona-ast'
 
 const flattenImageParagraphs = FlattenImageParagraphs()
 

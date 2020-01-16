@@ -1,4 +1,4 @@
-import * as json from './convert/json'
+import * as json from './convert/json/types'
 import * as xml from './convert/xml/types'
 
 import { normalizeFormat, SERIALIZATION_FORMAT } from './lona-format'

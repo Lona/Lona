@@ -1,4 +1,6 @@
-import * as json from './convert/json'
+import * as AST from './types/logic-ast'
+
+import * as json from './convert/json/tokens'
 import * as xml from './convert/xml/tokens'
 import * as swift from './convert/swift/tokens'
 
@@ -22,7 +24,10 @@ export function decodeTokens(contents: string, format: SERIALIZATION_FORMAT) {
   }
 }
 
-export function encodeTokens(ast: Object, format: SERIALIZATION_FORMAT) {
+export function encodeTokens(
+  ast: AST.SyntaxNode,
+  format: SERIALIZATION_FORMAT
+) {
   try {
     switch (format) {
       case SERIALIZATION_FORMAT.JSON:

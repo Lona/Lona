@@ -2,7 +2,7 @@ import visit from 'unist-util-visit'
 import unified from 'unified'
 import rehypeParse from 'rehype-parse'
 
-import { MDAST } from 'mdx-ast'
+import * as MDAST from '../types/mdx-ast'
 
 const htmlParser = unified().use(rehypeParse, { fragment: true })
 

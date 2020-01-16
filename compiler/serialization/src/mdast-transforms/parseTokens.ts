@@ -1,6 +1,6 @@
 import visit from 'unist-util-visit'
 
-import { MDAST } from 'mdx-ast'
+import * as MDAST from '../types/mdx-ast'
 import { SERIALIZATION_FORMAT } from '../lona-format'
 
 export default function parseTokens(

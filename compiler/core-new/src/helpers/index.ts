@@ -3,8 +3,26 @@ import * as path from 'path'
 
 import { config as Config } from '../utils'
 import { generate as generateEvaluationContext } from './evaluation-context'
+import { EvaluationContext } from './logic-evaluate'
 
-export default async (workspacePath: string, outputPath?: string) => {
+export type Helpers = {
+  fs: {
+    readFile(filePath: string): Promise<string>
+    writeFile(filePath: string, data: string): Promise<void>
+  }
+  config: Config.Config
+  evaluationContext: EvaluationContext | void
+  reporter: {
+    log(...args: any[]): void
+    warn(...args: any[]): void
+    error(...args: any[]): void
+  }
+}
+
+export default async (
+  workspacePath: string,
+  outputPath?: string
+): Promise<Helpers> => {
   const config = await Config.load(workspacePath)
 
   const fsWrapper = {
@@ -29,5 +47,10 @@ export default async (workspacePath: string, outputPath?: string) => {
     fs: fsWrapper,
     config,
     evaluationContext,
+    reporter: {
+      log: console.log.bind(console),
+      warn: console.warn.bind(console),
+      error: console.error.bind(console),
+    },
   }
 }
