@@ -8,7 +8,7 @@ type FunctionArgument = {
   type: Unification
 }
 
-type Unification =
+export type Unification =
   | {
       type: 'variable'
       value: string
@@ -29,23 +29,47 @@ type Unification =
     }
 
 /* Builtins */
-const unit: Unification = { type: 'constant', name: 'Void', parameters: [] }
-const bool: Unification = { type: 'constant', name: 'Boolean', parameters: [] }
-const number: Unification = { type: 'constant', name: 'Number', parameters: [] }
-const string: Unification = { type: 'constant', name: 'String', parameters: [] }
-const color: Unification = { type: 'constant', name: 'Color', parameters: [] }
-const shadow: Unification = { type: 'constant', name: 'Shadow', parameters: [] }
-const textStyle: Unification = {
+export const unit: Unification = {
+  type: 'constant',
+  name: 'Void',
+  parameters: [],
+}
+export const bool: Unification = {
+  type: 'constant',
+  name: 'Boolean',
+  parameters: [],
+}
+export const number: Unification = {
+  type: 'constant',
+  name: 'Number',
+  parameters: [],
+}
+export const string: Unification = {
+  type: 'constant',
+  name: 'String',
+  parameters: [],
+}
+export const color: Unification = {
+  type: 'constant',
+  name: 'Color',
+  parameters: [],
+}
+export const shadow: Unification = {
+  type: 'constant',
+  name: 'Shadow',
+  parameters: [],
+}
+export const textStyle: Unification = {
   type: 'constant',
   name: 'TextStyle',
   parameters: [],
 }
-const optional = (type: Unification): Unification => ({
+export const optional = (type: Unification): Unification => ({
   type: 'constant',
   name: 'Optional',
   parameters: [type],
 })
-const array = (typeUnification: Unification): Unification => ({
+export const array = (typeUnification: Unification): Unification => ({
   type: 'constant',
   name: 'Array',
   parameters: [typeUnification],
@@ -117,7 +141,7 @@ function unificationType(
   }
 }
 
-function substitute(
+export function substitute(
   substitution: Map<Unification, Unification>,
   type: Unification
 ): Unification {

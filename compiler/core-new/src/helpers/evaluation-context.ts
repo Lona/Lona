@@ -4,6 +4,7 @@ import { Config } from '../utils/config'
 import * as LogicAST from './logic-ast'
 import * as LogicScope from './logic-scope'
 import * as LogicUnify from './logic-unify'
+import * as LogicEvaluate from './logic-evaluate'
 import uuid from '../utils/uuid'
 
 function standardImportsProgram(): LogicAST.Program {

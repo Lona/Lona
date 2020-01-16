@@ -5,12 +5,4 @@ export type Plugin = {
     helpers: any,
     options: any
   ): Promise<void>
-
-  /** @deprecated */
-  legacyParseFile?: (
-    filePath: string,
-    fromFormat: string,
-    helpers: any,
-    options: any
-  ) => Promise<string>
 }

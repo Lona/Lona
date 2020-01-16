@@ -18,8 +18,6 @@ export const load = async (workspacePath: string): Promise<Config> => {
   const rootDirname = path.dirname(path.dirname(__dirname))
   console.warn(`Running compiler from: ${rootDirname}`)
 
-  const logicLibrariesPath = path.join(rootDirname, 'static/logic')
-
   const lonaFile = JSON.parse(
     await fs.promises.readFile(path.join(workspacePath, 'lona.json'), 'utf-8')
   ) as LonaJSON

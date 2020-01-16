@@ -691,3 +691,43 @@ export function flattenedMemberExpression(
   }
   return flattenedChildren.concat(memberExpression.data.data.memberName)
 }
+
+function pathTo(node: SyntaxNode, id: string): SyntaxNode[] | void {
+  if (id === ('id' in node.data ? node.data.id : node.data.data.id)) {
+    return [node]
+  }
+  return subNodes(node).reduce<SyntaxNode[] | void>((prev, item) => {
+    if (prev) {
+      return prev
+    }
+    const subPath = pathTo(item, id)
+    if (subPath) {
+      return [node, ...subPath]
+    }
+    return undefined
+  }, undefined)
+}
+
+export function declarationPathTo(node: SyntaxNode, id: string) {
+  const path = pathTo(node, id)
+  if (!path) {
+    return []
+  }
+  return (path.filter(x => x.type === 'declaration') as Declaration[]).map(
+    x => {
+      switch (x.data.type) {
+        case 'variable':
+        case 'function':
+        case 'enumeration':
+        case 'namespace':
+        case 'record':
+        case 'importDeclaration': {
+          return x.data.data.name.data.name
+        }
+        case 'placeholder': {
+          return ''
+        }
+      }
+    }
+  )
+}
