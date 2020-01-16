@@ -1,14 +1,15 @@
 import * as AST from './types/logic-ast'
 
-import * as json from './convert/json/tokens'
-import * as xml from './convert/xml/tokens'
-import * as swift from './convert/swift/tokens'
+import * as json from './convert/json/logic'
+import * as xml from './convert/xml/logic'
+import * as swift from './convert/swift/logic'
 
 import { normalizeFormat, SERIALIZATION_FORMAT } from './lona-format'
 
-export function decodeTokens(contents: string, format: SERIALIZATION_FORMAT) {
+export function decodeLogic(contents: string, format?: SERIALIZATION_FORMAT) {
+  const sourceFormat = normalizeFormat(contents, format)
   try {
-    switch (format) {
+    switch (sourceFormat) {
       case SERIALIZATION_FORMAT.JSON:
         return json.parse(contents)
       case SERIALIZATION_FORMAT.XML:
@@ -16,18 +17,15 @@ export function decodeTokens(contents: string, format: SERIALIZATION_FORMAT) {
       case SERIALIZATION_FORMAT.SOURCE:
         return swift.parse(contents)
       default:
-        throw new Error(`Unknown decoding format ${format}`)
+        throw new Error(`Unknown decoding format ${sourceFormat}`)
     }
   } catch (e) {
     console.error(e)
-    throw new Error(`Failed to decode logic as ${format}.`)
+    throw new Error(`Failed to decode logic as ${sourceFormat}.`)
   }
 }
 
-export function encodeTokens(
-  ast: AST.SyntaxNode,
-  format: SERIALIZATION_FORMAT
-) {
+export function encodeLogic(ast: AST.SyntaxNode, format: SERIALIZATION_FORMAT) {
   try {
     switch (format) {
       case SERIALIZATION_FORMAT.JSON:
@@ -45,7 +43,7 @@ export function encodeTokens(
   }
 }
 
-export function convertTokens(
+export function convertLogic(
   contents: string,
   targetFormat: SERIALIZATION_FORMAT,
   options: { sourceFormat?: SERIALIZATION_FORMAT } = {}
@@ -54,6 +52,6 @@ export function convertTokens(
 
   if (sourceFormat === targetFormat) return contents
 
-  const ast = decodeTokens(contents, sourceFormat)
-  return encodeTokens(ast, targetFormat)
+  const ast = decodeLogic(contents, sourceFormat)
+  return encodeLogic(ast, targetFormat)
 }

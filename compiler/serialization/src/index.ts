@@ -8,7 +8,7 @@ import {
   normalizeFormat,
   detectFormat,
 } from './lona-format'
-import { convertTokens, decodeTokens, encodeTokens } from './lona-tokens'
+import { convertLogic, decodeLogic, encodeLogic } from './lona-logic'
 import { convertTypes, decodeTypes, encodeTypes } from './lona-types'
 
 import * as MDXAST from './types/lona-ast'
@@ -18,20 +18,21 @@ import * as LogicAST from './types/logic-ast'
 
 function decodeDocument(
   contents: string,
-  format: SERIALIZATION_FORMAT
+  format?: SERIALIZATION_FORMAT
 ): { children: MDXAST.Content[] } {
+  const sourceFormat = normalizeFormat(contents, format)
   try {
-    switch (format) {
+    switch (sourceFormat) {
       case SERIALIZATION_FORMAT.JSON:
         return JSON.parse(contents)
       case SERIALIZATION_FORMAT.SOURCE:
-        return mdx.parse(contents, convertTokens)
+        return mdx.parse(contents, convertLogic)
       default:
-        throw new Error(`Unknown decoding format ${format}`)
+        throw new Error(`Unknown decoding format ${sourceFormat}`)
     }
   } catch (e) {
     console.error(e)
-    throw new Error(`Failed to decode document as ${format}.`)
+    throw new Error(`Failed to decode document as ${sourceFormat}.`)
   }
 }
 
@@ -45,7 +46,7 @@ function encodeDocument(
       case SERIALIZATION_FORMAT.JSON:
         return stringify(ast, { space: '  ' })
       case SERIALIZATION_FORMAT.SOURCE:
-        return mdx.print(ast, convertTokens, options)
+        return mdx.print(ast, convertLogic, options)
       default:
         throw new Error(`Unknown encoding format ${format}`)
     }
@@ -71,7 +72,7 @@ function convertDocument(
   return encodeDocument(ast, targetFormat, options)
 }
 
-function extractProgram(
+function extractProgramAST(
   contents: string,
   options: { sourceFormat?: SERIALIZATION_FORMAT } = {}
 ) {
@@ -98,12 +99,18 @@ function extractProgram(
     type: 'topLevelDeclarations',
   }
 
-  return stringify(topLevelDeclarations, { space: '  ' })
+  return topLevelDeclarations
 }
 
-const convertLogic = convertTokens
-const decodeLogic = decodeTokens
-const encodeLogic = encodeTokens
+function extractProgram(
+  contents: string,
+  options: { sourceFormat?: SERIALIZATION_FORMAT } = {}
+) {
+  const ast = extractProgramAST(contents, options)
+
+  return stringify(ast, { space: '  ' })
+}
+
 const printMdxNode = mdx.printNode
 
 export {
@@ -122,4 +129,5 @@ export {
   extractProgram,
   detectFormat,
   printMdxNode,
+  extractProgramAST,
 }

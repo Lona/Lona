@@ -10,15 +10,10 @@ export const parseFile = async (
 ): Promise<string> => {
   let logicNode: serialization.LogicAST.SyntaxNode
   if (path.extname(filePath) === '.logic') {
-    logicNode = JSON.parse(
-      serialization.convertLogic(
-        await helpers.fs.readFile(filePath),
-        serialization.SERIALIZATION_FORMAT.JSON
-      )
-    )
+    logicNode = serialization.decodeLogic(await helpers.fs.readFile(filePath))
   } else if (path.extname(filePath) === '.md') {
-    logicNode = JSON.parse(
-      serialization.extractProgram(await helpers.fs.readFile(filePath))
+    logicNode = serialization.extractProgramAST(
+      await helpers.fs.readFile(filePath)
     )
   } else {
     throw new Error(`${filePath} is not a token file`)

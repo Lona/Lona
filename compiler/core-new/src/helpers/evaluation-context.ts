@@ -103,26 +103,15 @@ export const generate = async (
   config: Config,
   fs: { readFile(filePath: string): Promise<string> }
 ) => {
-  const logicFiles = (
-    await Promise.all(
-      config.logicPaths
-        .map(x =>
-          fs
-            .readFile(x)
-            .then(data =>
-              serialization.convertLogic(
-                data,
-                serialization.SERIALIZATION_FORMAT.JSON
-              )
-            )
+  const logicFiles = await Promise.all(
+    config.logicPaths
+      .map(x => fs.readFile(x).then(data => serialization.decodeLogic(data)))
+      .concat(
+        config.tokenPaths.map(x =>
+          fs.readFile(x).then(data => serialization.extractProgramAST(data))
         )
-        .concat(
-          config.tokenPaths.map(x =>
-            fs.readFile(x).then(data => serialization.extractProgram(data))
-          )
-        )
-    )
-  ).map(x => JSON.parse(x) as LogicAST.AST.SyntaxNode)
+      )
+  )
 
   let programNode = LogicAST.joinPrograms(logicFiles.map(LogicAST.makeProgram))
 
