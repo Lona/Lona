@@ -108,7 +108,7 @@ class MarkdownDocument: NSDocument {
 
 extension MarkdownDocument {
 
-    enum MarkdownError: Error {
+    enum MarkdownDocumentError: Error {
         case failedToDeleteFile
         case directoryNotEmpty
     }
@@ -124,13 +124,35 @@ extension MarkdownDocument {
         }
     }
 
-    func replacePageLink(blocks: [BlockEditor.Block], oldTarget: String, newTarget: String) -> [BlockEditor.Block] {
+    static func replacePageLink(blocks: [BlockEditor.Block], oldTarget: String, newTarget: String) -> [BlockEditor.Block] {
         return blocks.map { block in
             switch block.content {
             case .page(title: let title, target: oldTarget):
                 return .init(.page(title: title, target: newTarget), block.listDepth)
             default:
                 return block
+            }
+        }
+    }
+
+    static func removePageLink(blocks: [BlockEditor.Block], target: String) -> [BlockEditor.Block] {
+        return blocks.filter { block in
+            switch block.content {
+            case .page(_, target: target):
+                return false
+            default:
+                return true
+            }
+        }
+    }
+
+    static func pageLinks(blocks: [BlockEditor.Block]) -> [String] {
+        return blocks.compactMap { block in
+            switch block.content {
+            case .page(_, target: let target):
+                return target
+            default:
+                return nil
             }
         }
     }
@@ -162,16 +184,10 @@ extension MarkdownDocument {
         } else {
             guard let fileURL = fileURL else { return }
 
-            Swift.print("Will delete", deleted)
-
             // If we deleted child pages, we automatically save
             save(to: fileURL, for: .saveOperation).finalSuccess {
-                Swift.print("Saved after delete", fileURL)
-
                 if self.shouldConvertToFile() {
                     self.convertToFile().finalResult { _ in
-                        Swift.print("Finished converting")
-
                         self.changeEmitter.emit(self.content)
                     }
                 } else {
@@ -224,7 +240,7 @@ extension MarkdownDocument {
         }
     }
 
-    func deleteChildPageFiles(_ deleted: [String], userInitiated: Bool) -> Result<Void, MarkdownError> {
+    private func deleteChildPageFiles(_ deleted: [String], userInitiated: Bool) -> Result<Void, MarkdownDocumentError> {
         guard let fileURL = fileURL else { return .success(()) }
 
         if deleted.isEmpty { return .success(()) }
@@ -263,6 +279,9 @@ extension MarkdownDocument {
 
         let pageName = originalFileURL.deletingPathExtension().lastPathComponent
         let directoryURL = originalFileURL.deletingLastPathComponent().appendingPathComponent(pageName).deletingPathExtension()
+        let readmeURL = directoryURL.appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)
+
+        Swift.print("Converting \(pageName) to directory:", originalFileURL.path, "->", readmeURL.path)
 
         do {
             try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: false, attributes: [:])
@@ -270,8 +289,6 @@ extension MarkdownDocument {
             Swift.print("Error creating directory \(directoryURL)", error)
             return .failure(error as NSError)
         }
-
-        let readmeURL = directoryURL.appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)
 
         let saved: Promise<URL, NSError> = save(to: readmeURL, for: .saveAsOperation).onSuccess {
             do {
@@ -289,7 +306,7 @@ extension MarkdownDocument {
 
             DocumentController.shared.openDocument(withContentsOf: parentReadmeURL, display: false).finalSuccess { parentDocument in
                 if let parentDocument = parentDocument as? MarkdownDocument {
-                    let updated = self.replacePageLink(
+                    let updated = MarkdownDocument.self.replacePageLink(
                         blocks: parentDocument.content,
                         oldTarget: originalFileURL.lastPathComponent,
                         newTarget: directoryURL.lastPathComponent
@@ -321,7 +338,7 @@ extension MarkdownDocument {
 
         let remainingFiles = files.filter { $0 != MarkdownDocument.INDEX_PAGE_NAME && $0 != ".DS_Store" }
 
-        Swift.print(originalFileURL.deletingLastPathComponent().path, "remaining files", remainingFiles)
+//        Swift.print(originalFileURL.deletingLastPathComponent().path, "remaining files", remainingFiles)
 
         return remainingFiles.isEmpty
     }
@@ -334,19 +351,17 @@ extension MarkdownDocument {
     func convertToFile() -> Promise<URL, NSError> {
         guard let originalFileURL = fileURL else { return .failure(.init()) }
 
-        if !shouldConvertToFile() { return .failure(MarkdownError.directoryNotEmpty as NSError) }
-
-        Swift.print("Convert to file")
+        if !shouldConvertToFile() { return .failure(MarkdownDocumentError.directoryNotEmpty as NSError) }
 
         let pageName = originalFileURL.deletingLastPathComponent().lastPathComponent
         let directoryURL = originalFileURL.deletingLastPathComponent()
         let pageURL = directoryURL.deletingLastPathComponent().appendingPathComponent(pageName + ".md")
 
-        Swift.print("Saving", originalFileURL.path, "as", pageURL.path)
+        Swift.print("Converting \(pageName) to file:", originalFileURL.path, "->", pageURL.path)
 
         let saved: Promise<URL, NSError> = save(to: pageURL, for: .saveAsOperation).onSuccess {
             do {
-                try FileManager.default.removeItem(at: originalFileURL)
+                try FileManager.default.removeItem(at: directoryURL)
             } catch let error {
                 return .failure(error as NSError)
             }
@@ -360,7 +375,7 @@ extension MarkdownDocument {
 
             DocumentController.shared.openDocument(withContentsOf: parentReadmeURL, display: false).finalSuccess { parentDocument in
                 if let parentDocument = parentDocument as? MarkdownDocument {
-                    let updated = self.replacePageLink(
+                    let updated = MarkdownDocument.replacePageLink(
                         blocks: parentDocument.content,
                         oldTarget: directoryURL.lastPathComponent,
                         newTarget: pageURL.lastPathComponent

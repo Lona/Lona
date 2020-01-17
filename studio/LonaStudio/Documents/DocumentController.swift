@@ -71,18 +71,53 @@ class DocumentController: NSDocumentController {
 // MARK: - Document helpers
 
 extension DocumentController {
-    public func delete(document: NSDocument) {
+    public func findOpenDocument(for url: URL) -> NSDocument? {
+        if FileManager.default.isDirectory(path: url.path) {
+            return findOpenDocument(for: url.appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME))
+        }
+
+        return documents.first(where: { document in document.fileURL == url })
+    }
+
+    public func close(document: NSDocument) {
         removeDocument(document)
 
         if let currentDocument = workspaceWindowControllers.first?.document as? NSDocument, document === currentDocument {
             removeAllDocumentsFromWorkspaceWindowControllers()
         }
+    }
+
+    public func delete(document: NSDocument) {
+        close(document: document)
 
         if let fileURL = document.fileURL {
-            do {
-                try FileManager.default.removeItem(at: fileURL)
-            } catch {
-                Swift.print("INFO", error)
+            let urlToRemove = fileURL.lastPathComponent == MarkdownDocument.INDEX_PAGE_NAME
+                ? fileURL.deletingLastPathComponent()
+                : fileURL
+
+            openDocument(withContentsOf: urlToRemove.deletingLastPathComponent(), display: false).onResult { (result) -> Promise<NSDocument, NSError> in
+                switch result {
+                case .success(let parentDocument):
+                    let pageName = urlToRemove.lastPathComponent
+                    if let parentDocument = parentDocument as? MarkdownDocument,
+                        MarkdownDocument.pageLinks(blocks: parentDocument.content).contains(pageName) {
+
+                        let updated = MarkdownDocument.removePageLink(blocks: parentDocument.content, target: pageName)
+                        parentDocument.setContent(updated, userInitiated: false)
+                        return .success(parentDocument)
+                    }
+                    return .failure(NSError.init())
+                case .failure(let error):
+                    return .failure(error)
+                }
+            }.finalFailure { (error: NSError) in
+                Swift.print("Falling back to deleting file manually", urlToRemove)
+
+                do {
+                    try FileManager.default.removeItem(at: urlToRemove)
+                } catch {
+                    Swift.print("INFO", error)
+                }
             }
         }
     }

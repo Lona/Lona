@@ -383,8 +383,23 @@ class WorkspaceViewController: NSSplitViewController {
         }
 
         fileNavigator.performDeleteFile = { path in
-            if let document = DocumentController.shared.documents.first(where: { $0.fileURL?.path == path }) {
-                DocumentController.shared.delete(document: document)
+            let fileURL = URL(fileURLWithPath: path)
+
+            // Attempt to delete the file specially a document, falling back to deleting the file
+            DocumentController.shared.openDocument(withContentsOf: fileURL, display: false).finalResult { result in
+                switch result {
+                case .success(let document):
+                    DocumentController.shared.delete(document: document)
+                case .failure:
+                    do {
+                        try FileManager.default.removeItem(at: fileURL)
+                    } catch {
+                        Alert.runInformationalAlert(
+                            messageText: "Couldn't delete file",
+                            informativeText: "The file \(fileURL.lastPathComponent) could not be deleted"
+                        )
+                    }
+                }
 
                 LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
             }
@@ -394,8 +409,10 @@ class WorkspaceViewController: NSSplitViewController {
         fileNavigator.onDeleteFile = { path, options in
             if options.contains(.ownEvent) { return }
 
-            if let document = DocumentController.shared.documents.first(where: { $0.fileURL?.path == path }) {
-                DocumentController.shared.delete(document: document)
+            let fileURL = URL(fileURLWithPath: path)
+
+            if let document = DocumentController.shared.findOpenDocument(for: fileURL) {
+                DocumentController.shared.close(document: document)
 
                 LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
             }
@@ -773,13 +790,16 @@ class WorkspaceViewController: NSSplitViewController {
                         // Display the document once we know it exists on the filesystem
                         DocumentController.shared.openDocument(withContentsOf: pageURL, display: true)
                     case .failure:
-                        Alert.runInformationalAlert(
+                        if Alert.runConfirmationAlert(
+                            confirmationText: "Delete link",
                             messageText: "Page \(page) not found",
                             informativeText: [
                                 "The page \(page) doesn't seem to exist on your filesystem.",
-                                "It may have been deleted by another author"
-                            ].joined(separator: " ")
-                        )
+                                "It may have been deleted by another author."
+                                ].joined(separator: " ")) {
+                            let updated = MarkdownDocument.removePageLink(blocks: document.content, target: page)
+                            document.setContent(updated, userInitiated: false)
+                        }
                     }
                 }
 

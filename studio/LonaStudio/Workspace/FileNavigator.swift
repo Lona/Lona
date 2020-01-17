@@ -333,7 +333,6 @@ class FileNavigator: NSBox {
         if FileManager.default.isDirectory(path: path) {
             if path == rootPath {
                 let image = NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
-                image.size = .init(width: 20, height: 20)
                 let imageView = NSImageView(image: image)
                 imageView.imageScaling = .scaleProportionallyUpOrDown
                 iconView = imageView
