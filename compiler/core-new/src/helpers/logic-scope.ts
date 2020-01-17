@@ -1,30 +1,6 @@
 import * as LogicAST from './logic-ast'
 import * as LogicTraversal from './logic-traversal'
-
-class ShallowMap<T> {
-  private map: { namespace: string[]; value: T }[] = []
-
-  private find(k: string[]) {
-    return (x: { namespace: string[]; value: T }) =>
-      x.namespace.length === k.length && x.namespace.every((y, i) => y === k[i])
-  }
-
-  public get(k: string[]): T | void {
-    const found = this.map.find(this.find(k))
-    if (found) {
-      return found.value
-    }
-  }
-
-  public set(k: string[], v: T) {
-    const existing = this.map.findIndex(this.find(k))
-    if (existing !== -1) {
-      this.map[existing].value = v
-    } else {
-      this.map.push({ namespace: k, value: v })
-    }
-  }
-}
+import { ShallowMap } from '../utils/shallow-map'
 
 class ScopeStack<K extends string, V> {
   private scopes: { [key: string]: V }[] = [{}]
@@ -80,7 +56,7 @@ let setGenericParameters = (
   })
 
 export type ScopeContext = {
-  namespace: ShallowMap<string>
+  namespace: ShallowMap<string[], string>
   currentNamespacePath: string[]
   /* Values in these are never removed, even if a variable is out of scope */
   patternToName: { [key: string]: string }

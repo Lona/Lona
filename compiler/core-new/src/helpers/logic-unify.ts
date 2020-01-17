@@ -2,6 +2,7 @@ import intersection from 'lodash.intersection'
 import * as LogicAST from './logic-ast'
 import * as LogicScope from './logic-scope'
 import * as LogicTraversal from './logic-traversal'
+import { ShallowMap } from '../utils/shallow-map'
 
 type FunctionArgument = {
   label?: string
@@ -146,10 +147,13 @@ function unificationType(
 }
 
 export function substitute(
-  substitution: Map<Unification, Unification>,
+  substitution: ShallowMap<Unification, Unification>,
   type: Unification
 ): Unification {
-  let resolvedType = substitution.get(type) ? substitution.get(type) : type
+  let resolvedType = substitution.get(type)
+  if (!resolvedType) {
+    resolvedType = type
+  }
 
   if (resolvedType.type === 'variable' || resolvedType.type === 'generic') {
     return resolvedType
@@ -197,7 +201,7 @@ function genericNames(type: Unification): string[] {
 }
 
 function replaceGenericsWithVars(getName: () => string, type: Unification) {
-  let substitution = new Map<Unification, Unification>()
+  let substitution = new ShallowMap<Unification, Unification>()
   genericNames(type).forEach(name =>
     substitution.set(
       { type: 'generic', name },
@@ -232,7 +236,7 @@ function specificIdentifierType(
   }
 
   return replaceGenericsWithVars(
-    unificationContext.typeNameGenerator.next.bind(unificationContext),
+    () => unificationContext.typeNameGenerator.next(),
     scopedType
   )
 }
@@ -284,7 +288,7 @@ export const makeUnificationContext = (
         const { annotation, name } = declaration.data
         const annotationType = unificationType(
           [],
-          result.typeNameGenerator.next.bind(result),
+          () => result.typeNameGenerator.next(),
           annotation
         )
         parameterTypes.unshift({
@@ -301,10 +305,10 @@ export const makeUnificationContext = (
         name: node.data.name.name,
         parameters: universalTypes,
       }
-      let functionType: Unification = {
+      const functionType: Unification = {
         type: 'function',
-        arguments: parameterTypes,
         returnType,
+        arguments: parameterTypes,
       }
 
       result.nodes[node.data.name.id] = functionType
@@ -345,16 +349,16 @@ export const makeUnificationContext = (
               label: undefined,
               type: unificationType(
                 genericsInScope,
-                result.typeNameGenerator.next.bind(result),
+                () => result.typeNameGenerator.next(),
                 annotation
               ),
             }
           })
           .filter(x => !!x)
-        let functionType: Unification = {
+        const functionType: Unification = {
           type: 'function',
-          arguments: parameterTypes,
           returnType,
+          arguments: parameterTypes,
         }
 
         result.nodes[enumCase.data.name.id] = functionType
@@ -386,7 +390,7 @@ export const makeUnificationContext = (
         const { name, id } = param.data.localName
         let annotationType = unificationType(
           [],
-          result.typeNameGenerator.next.bind(result),
+          () => result.typeNameGenerator.next(),
           param.data.annotation
         )
         parameterTypes.unshift({ label: name, type: annotationType })
@@ -397,13 +401,13 @@ export const makeUnificationContext = (
 
       let returnType = unificationType(
         genericsInScope,
-        result.typeNameGenerator.next.bind(result),
+        () => result.typeNameGenerator.next(),
         node.data.returnType
       )
       let functionType: Unification = {
         type: 'function',
-        arguments: parameterTypes,
         returnType,
+        arguments: parameterTypes,
       }
 
       result.nodes[node.data.name.id] = functionType
@@ -420,7 +424,7 @@ export const makeUnificationContext = (
       } else {
         const annotationType = unificationType(
           [],
-          result.typeNameGenerator.next.bind(result),
+          () => result.typeNameGenerator.next(),
           node.data.annotation
         )
         const initializerId = node.data.initializer.data.id
@@ -484,8 +488,8 @@ export const makeUnificationContext = (
 
       const placeholderFunctionType: Unification = {
         type: 'function',
-        arguments: placeholderArgTypes,
         returnType: placeholderReturnType,
+        arguments: placeholderArgTypes,
       }
 
       result.constraints.push({
@@ -504,6 +508,7 @@ export const makeUnificationContext = (
       const constraints = placeholderArgTypes.map((argType, i) => ({
         head: argType.type,
         tail: result.nodes[argumentValues[i].data.id],
+        origin: node,
       }))
 
       result.constraints = result.constraints.concat(constraints)
@@ -548,6 +553,7 @@ export const makeUnificationContext = (
           type: 'variable',
           value: result.typeNameGenerator.next(),
         },
+        origin: node,
       }))
 
       result.constraints = result.constraints.concat(constraints)
@@ -566,8 +572,8 @@ export const makeUnificationContext = (
 
 export const unify = (
   constraints: Contraint[],
-  substitution: Map<Unification, Unification> = new Map()
-): Map<Unification, Unification> => {
+  substitution: ShallowMap<Unification, Unification> = new ShallowMap()
+): ShallowMap<Unification, Unification> => {
   while (constraints.length > 0) {
     const constraint = constraints.shift()
     let { head, tail } = constraint
@@ -579,8 +585,8 @@ export const unify = (
     if (head.type === 'function' && tail.type === 'function') {
       const headArguments = head.arguments
       const tailArguments = tail.arguments
-      const headContainsLabels = headArguments.some(x => !!x.label)
-      const tailContainsLabels = tailArguments.some(x => !!x.label)
+      const headContainsLabels = headArguments.some(x => x.label)
+      const tailContainsLabels = tailArguments.some(x => x.label)
 
       if (
         (headContainsLabels && !tailContainsLabels && tailArguments.length) ||
@@ -599,7 +605,10 @@ export const unify = (
         }
 
         headArguments.forEach((a, i) => {
-          constraints.push({ head: a.type, tail: tailArguments[i].type })
+          constraints.push({
+            head: a.type,
+            tail: tailArguments[i].type,
+          })
         })
       } else {
         const headLabels = headArguments.map(arg => arg.label).filter(x => !!x)
@@ -614,14 +623,24 @@ export const unify = (
           const tailArgumentType = tailArguments.find(
             arg => arg.label === label
           ).type
-          constraints.push({ head: headArgumentType, tail: tailArgumentType })
+          constraints.push({
+            head: headArgumentType,
+            tail: tailArgumentType,
+          })
         })
       }
 
-      constraints.push({ head: head.returnType, tail: tail.returnType })
+      constraints.push({
+        head: head.returnType,
+        tail: tail.returnType,
+      })
     } else if (head.type === 'constant' && tail.type === 'constant') {
       if (head.name !== tail.name) {
-        throw new Error(`[UnificationError] [NameMismatch] ${head} ${tail}`)
+        console.error(head)
+        console.error(tail)
+        throw new Error(
+          `[UnificationError] [NameMismatch] ${head.name} ${tail.name}`
+        )
       }
       const headParameters = head.parameters
       const tailParameters = tail.parameters
@@ -631,7 +650,10 @@ export const unify = (
         )
       }
       headParameters.forEach((a, i) => {
-        constraints.push({ head: a, tail: tailParameters[i] })
+        constraints.push({
+          head: a,
+          tail: tailParameters[i],
+        })
       })
     } else if (head.type === 'generic' || tail.type === 'generic') {
       console.error('tried to unify generics (problem?)', head, tail)
@@ -651,18 +673,20 @@ export const unify = (
       const tail = substitution.get(c.tail)
 
       if (head && tail) {
-        return { head, tail }
+        return { head, tail, origin: c }
       }
       if (head) {
         return {
           head,
           tail: c.tail,
+          origin: c,
         }
       }
       if (tail) {
         return {
           head: c.head,
           tail,
+          origin: c,
         }
       }
       return c

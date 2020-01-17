@@ -1,6 +1,7 @@
 import * as LogicUnify from './logic-unify'
 import * as LogicAST from './logic-ast'
 import * as LogicScope from './logic-scope'
+import { ShallowMap } from '../utils/shallow-map'
 
 export type Memory =
   | { type: 'unit' }
@@ -74,7 +75,7 @@ export const evaluate = (
   rootNode: LogicAST.AST.SyntaxNode,
   scopeContext: LogicScope.ScopeContext,
   unificationContext: LogicUnify.UnificationContext,
-  substitution: Map<LogicUnify.Unification, LogicUnify.Unification>,
+  substitution: ShallowMap<LogicUnify.Unification, LogicUnify.Unification>,
   context_: EvaluationContext = makeEmpty()
 ): EvaluationContext | void => {
   const context = LogicAST.subNodes(node).reduce((prev, subNode) => {
