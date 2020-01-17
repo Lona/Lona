@@ -19,6 +19,17 @@ class MarkdownDocument: NSDocument {
         self.hasUndoManager = false
     }
 
+    init(title: String) {
+        super.init()
+
+        self.hasUndoManager = false
+
+        _content = [
+            .init(.text(.init(string: title), .h1), .none),
+            .makeDefaultEmptyBlock()
+        ]
+    }
+
     override var autosavingFileType: String? {
         return nil
     }
@@ -146,6 +157,25 @@ extension MarkdownDocument {
         }
     }
 
+    static func insertPageLink(blocks: [BlockEditor.Block], title: String, target: String) -> [BlockEditor.Block] {
+
+        // Only allow one page link for any given target
+        if pageLinks(blocks: blocks).contains(target) { return blocks }
+
+        let pageLinkBlock: BlockEditor.Block = .init(.page(title: title, target: target), .default)
+
+        var clone = blocks
+        if clone.last?.isEmpty == true {
+            clone[clone.count - 1] = pageLinkBlock
+        } else {
+            clone.append(pageLinkBlock)
+        }
+
+        clone.append(.makeDefaultEmptyBlock())
+
+        return clone
+    }
+
     static func pageLinks(blocks: [BlockEditor.Block]) -> [String] {
         return blocks.compactMap { block in
             switch block.content {
@@ -268,6 +298,32 @@ extension MarkdownDocument {
         return .success(())
     }
 
+    // Make sure the parent document contains a link to this document
+    func ensureParentLink(customTitle: String? = nil) -> Promise<MarkdownDocument, NSError> {
+        guard let fileURL = fileURL else { return .failure(NSError.init()) }
+
+        let defaultTitle = isIndexPage
+            ? fileURL.deletingLastPathComponent().lastPathComponent
+            : fileURL.deletingPathExtension().lastPathComponent
+
+        let title = customTitle ?? defaultTitle
+
+        let parentURL = isIndexPage
+            ? fileURL.deletingLastPathComponent().deletingLastPathComponent()
+            : fileURL.deletingLastPathComponent()
+
+        // If the parent folder represents a page, make sure we have a link to the new markdown document
+        return DocumentController.shared.openDocument(withContentsOf: parentURL, display: false).onSuccess { [unowned self] parentDocument in
+            guard let parentDocument = parentDocument as? MarkdownDocument else { return .failure(NSError.init()) }
+
+            let updated = MarkdownDocument.insertPageLink(blocks: parentDocument.content, title: title, target: title + ".md")
+            parentDocument.setContent(updated, userInitiated: false)
+            _ = parentDocument.save(to: parentDocument.fileURL!, for: .saveOperation)
+
+            return .success(self)
+        }
+    }
+
     // Convert Page.md to Page/README.md
     // - Make the Page directory
     // - Delete the old Page.md
@@ -297,7 +353,7 @@ extension MarkdownDocument {
                 return .failure(error as NSError)
             }
 
-            return .success(readmeURL)
+            return .success(directoryURL)
         }
 
         // Fix the parent URL. If it fails, still consider the whole operation a success
@@ -386,6 +442,6 @@ extension MarkdownDocument {
             }
         }
 
-        return .success(originalFileURL)
+        return .success(pageURL)
     }
 }

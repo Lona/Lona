@@ -37,4 +37,12 @@ extension URL {
         let readmeURL = self.appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)
         return FileManager.default.fileExists(atPath: readmeURL.path)
     }
+
+    func hasMarkdownExtension() -> Bool {
+        return pathExtension == ".md"
+    }
+
+    func isLonaPage() -> Bool {
+        return isLonaMarkdownDirectory() || hasMarkdownExtension()
+    }
 }

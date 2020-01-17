@@ -126,20 +126,21 @@ extension DocumentController {
 // MARK: - File helpers
 
 extension DocumentController {
+
+    // Make a new page
+    // - Initialize a new document with default content
+    // - Save the document
+    // - Create a link to the document in the parent page
     public func makeAndOpenMarkdownDocument(
         withTitle title: String,
         savedTo url: URL
     ) -> Promise<MarkdownDocument, NSError> {
-        let document = MarkdownDocument()
+        let document = MarkdownDocument(title: title)
 
-        document.setContent([
-            .init(.text(.init(string: title), .h1), .none),
-            .makeDefaultEmptyBlock()
-        ], userInitiated: false)
-
-        return document.save(to: url, for: .saveOperation).onSuccess({ _ in
-            return self.openDocument(withContentsOf: url, display: true)
-        }).onSuccess { document in .success(document as! MarkdownDocument) }
+        return document.save(to: url, for: .saveOperation)
+            .onSuccess({ document.ensureParentLink(customTitle: title) })
+            .onSuccess({ _ in self.openDocument(withContentsOf: url, display: true) })
+            .onSuccess({ (document: NSDocument) in .success(document as! MarkdownDocument) })
     }
 }
 

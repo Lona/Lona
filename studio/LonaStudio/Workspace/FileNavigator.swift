@@ -103,9 +103,7 @@ class FileNavigator: NSBox {
 
     public var performCreateComponent: ((FileTree.Path) -> Bool)?
 
-    public var performCreateLogicFile: ((FileTree.Path) -> Bool)?
-
-    public var performCreateMarkdownFile: ((FileTree.Path) -> Bool)?
+    public var performCreatePage: ((String, FileTree.Path) -> Void)?
 
     // MARK: - Private
 
@@ -154,6 +152,17 @@ class FileNavigator: NSBox {
     }
 
     private func menuForFile(atPath path: String) -> NSMenu {
+
+        // Allow the user to enter a file name with or without a path extension
+        func normalizeInputPath(_ path: String, filename: String, withExtension pathExtension: String) -> String {
+            let newFileURL = URL(fileURLWithPath: path).appendingPathComponent(filename)
+            let newFilePath = newFileURL.pathExtension == pathExtension ?
+                newFileURL.path : newFileURL.appendingPathExtension(pathExtension).path
+            return newFilePath
+        }
+
+        let url = URL(fileURLWithPath: path)
+
         let menu = NSMenu(title: "Menu")
 
         menu.addItem(NSMenuItem(title: "Reveal in Finder", onClick: {
@@ -166,30 +175,15 @@ class FileNavigator: NSBox {
                 menu.addItem(NSMenuItem.separator())
             }
 
-            func makePath(filename: String, withExtension pathExtension: String) -> String {
-                let newFileURL = URL(fileURLWithPath: path).appendingPathComponent(filename)
-                let newFilePath = newFileURL.pathExtension == pathExtension ?
-                    newFileURL.path : newFileURL.appendingPathExtension(pathExtension).path
-                return newFilePath
-            }
-
             if CSUserPreferences.useExperimentalFeatures {
                 menu.addItem(NSMenuItem(title: "New Component", onClick: { [unowned self] in
                     guard let newFileName = Alert.runTextInputAlert(
                         messageText: "Enter a new component name",
                         placeholderText: "Component name") else { return }
 
-                    _ = self.performCreateComponent?(makePath(filename: newFileName, withExtension: "component"))
+                    _ = self.performCreateComponent?(normalizeInputPath(path, filename: newFileName, withExtension: "component"))
                 }))
             }
-
-            menu.addItem(NSMenuItem(title: "New Page", onClick: { [unowned self] in
-                guard let newFileName = Alert.runTextInputAlert(
-                    messageText: "Enter a new page name",
-                    placeholderText: "Page name") else { return }
-
-                _ = self.performCreateMarkdownFile?(makePath(filename: newFileName, withExtension: "md"))
-            }))
 
             menu.addItem(NSMenuItem(title: "New Folder", onClick: { [unowned self] in
                 guard let newFileName = Alert.runTextInputAlert(
@@ -207,6 +201,18 @@ class FileNavigator: NSBox {
                 } catch {
                     Swift.print("Failed to create directory \(newFileName)")
                 }
+            }))
+        }
+
+        if url.isLonaPage() {
+            menu.addItem(NSMenuItem(title: "New Page", onClick: { [unowned self] in
+                guard var pageName = Alert.runTextInputAlert(
+                    messageText: "Enter a new page name",
+                    placeholderText: "Page name") else { return }
+                if pageName.hasSuffix(".md") {
+                    pageName.removeLast(3)
+                }
+                self.performCreatePage?(pageName, path)
             }))
         }
 

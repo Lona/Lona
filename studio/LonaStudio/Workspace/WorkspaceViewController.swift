@@ -439,33 +439,6 @@ class WorkspaceViewController: NSSplitViewController {
             }
         }
 
-        fileNavigator.performCreateLogicFile = { path in
-            let document = LogicDocument()
-
-            let name = URL(fileURLWithPath: path).deletingPathExtension().lastPathComponent
-
-            document.content = .topLevelDeclarations(
-                .init(
-                    id: UUID(),
-                    declarations: .init(
-                        [
-                            WorkspaceTemplate.makeImport(name: "Color"),
-                            WorkspaceTemplate.makeNamespace(name: name, declarations:
-                                [
-                                    .placeholder(id: UUID())
-                                ]
-                            ),
-                            .placeholder(id: UUID())
-                        ]
-                    )
-                )
-            )
-
-//            return self.performCreateFile(path: path, document: document, ofType: "Logic")
-
-            return true
-        }
-
         fileNavigator.performCreateComponent = { path in
             let document = ComponentDocument()
             document.component = CSComponent.makeDefaultComponent()
@@ -474,13 +447,32 @@ class WorkspaceViewController: NSSplitViewController {
             return true
         }
 
-        fileNavigator.performCreateMarkdownFile = { path in
-            let fileURL = URL(fileURLWithPath: path)
-            let title = URL(fileURLWithPath: path).deletingPathExtension().lastPathComponent
+        // The parent may be a directory or .md file. The `pageName` does not end in ".md".
+        fileNavigator.performCreatePage = { pageName, parentPath in
+            let parentURL = URL(fileURLWithPath: parentPath)
 
-            _ = DocumentController.shared.makeAndOpenMarkdownDocument(withTitle: title, savedTo: fileURL)
+            if FileManager.default.isDirectory(path: parentPath) {
+                let fileURL = parentURL.appendingPathComponent(pageName + ".md")
 
-            return true
+                _ = DocumentController.shared.makeAndOpenMarkdownDocument(withTitle: pageName, savedTo: fileURL)
+            } else {
+                DocumentController.shared.openDocument(withContentsOf: parentURL, display: false)
+                .onSuccess({ parentDocument -> Promise<MarkdownDocument, NSError> in
+                    if let parentDocument = parentDocument as? MarkdownDocument {
+                        return .success(parentDocument)
+                    } else {
+                        return .failure(NSError.init())
+                    }
+                })
+                // First, convert the parent to a directory
+                .onSuccess({ parentDocument in parentDocument.convertToDirectory() })
+                .onSuccess({ directoryURL in
+                    DocumentController.shared.makeAndOpenMarkdownDocument(
+                        withTitle: pageName,
+                        savedTo: directoryURL.appendingPathComponent(pageName + ".md")
+                    )
+                })
+            }
         }
 
         fileNavigator.onSelect = { path in
@@ -542,11 +534,24 @@ class WorkspaceViewController: NSSplitViewController {
                 )
 
                 contentView.onClick = {
-//                    _ = self.performCreateFile(
-//                        path: URL(fileURLWithPath: path).appendingPathComponent("README.md").path,
-//                        document: MarkdownDocument(),
-//                        ofType: "Markdown"
-//                    )
+                    let fileURL = URL(fileURLWithPath: path)
+                    let title = fileURL.lastPathComponent
+                    let document = MarkdownDocument(title: title)
+                    let pageURL = fileURL.appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)
+
+                    // Create a README.md file
+                    document.save(to: pageURL, for: .saveOperation)
+                        .onSuccess({ _ in document.ensureParentLink(customTitle: title) })
+                        // Attempt to convert to a plain file, in case there's nothing else in this folder
+                        .onSuccess({ _ in document.convertToFile() })
+                        .finalResult({ result in
+                            switch result {
+                            case .success(let convertedURL):
+                                DocumentController.shared.openDocument(withContentsOf: convertedURL, display: true)
+                            case .failure:
+                                DocumentController.shared.openDocument(withContentsOf: pageURL, display: true)
+                            }
+                        })
                 }
 
                 editorViewController.contentView = contentView
