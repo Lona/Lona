@@ -382,15 +382,23 @@ class WorkspaceViewController: NSSplitViewController {
             LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
         }
 
+        fileNavigator.performDeleteFile = { path in
+            if let document = DocumentController.shared.documents.first(where: { $0.fileURL?.path == path }) {
+                DocumentController.shared.delete(document: document)
+
+                LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
+            }
+        }
+
+        // Handle files being removed from the filesystem (e.g. via Finder)
         fileNavigator.onDeleteFile = { path, options in
-//            NSDocumentController.shared.documents.forEach { document in
-//                let url = URL(fileURLWithPath: path)
-//                // TODO: If deleting a directory, close all files that are descendants
-//                if let fileURL = document.fileURL, fileURL == url || fileURL == url.appendingPathComponent("README.md") {
-//                    self.close(document: document, discardingUnsavedChanges: true)
-//                }
-//            }
-            LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
+            if options.contains(.ownEvent) { return }
+
+            if let document = DocumentController.shared.documents.first(where: { $0.fileURL?.path == path }) {
+                DocumentController.shared.delete(document: document)
+
+                LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
+            }
         }
 
         // Don't allow moving these json files within Lona Studio.
@@ -758,14 +766,21 @@ class WorkspaceViewController: NSSplitViewController {
                 guard let fileURL = document.fileURL else { return false }
                 let pageURL = fileURL.deletingLastPathComponent().appendingPathComponent(page)
 
-                DocumentController.shared.openDocument(withContentsOf: pageURL, display: true).finalFailure { error in
-                    Alert.runInformationalAlert(
-                        messageText: "Page \(page) not found",
-                        informativeText: [
-                            "The page \(page) doesn't seem to exist on your filesystem.",
-                            "It may have been deleted by another author"
-                        ].joined(separator: " ")
-                    )
+                // Attempt to open the document without displaying it
+                DocumentController.shared.openDocument(withContentsOf: pageURL, display: false).finalResult { result in
+                    switch result {
+                    case .success:
+                        // Display the document once we know it exists on the filesystem
+                        DocumentController.shared.openDocument(withContentsOf: pageURL, display: true)
+                    case .failure:
+                        Alert.runInformationalAlert(
+                            messageText: "Page \(page) not found",
+                            informativeText: [
+                                "The page \(page) doesn't seem to exist on your filesystem.",
+                                "It may have been deleted by another author"
+                            ].joined(separator: " ")
+                        )
+                    }
                 }
 
                 return true

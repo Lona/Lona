@@ -68,6 +68,26 @@ class DocumentController: NSDocumentController {
     }
 }
 
+// MARK: - Document helpers
+
+extension DocumentController {
+    public func delete(document: NSDocument) {
+        removeDocument(document)
+
+        if let currentDocument = workspaceWindowControllers.first?.document as? NSDocument, document === currentDocument {
+            removeAllDocumentsFromWorkspaceWindowControllers()
+        }
+
+        if let fileURL = document.fileURL {
+            do {
+                try FileManager.default.removeItem(at: fileURL)
+            } catch {
+                Swift.print("INFO", error)
+            }
+        }
+    }
+}
+
 // MARK: - File helpers
 
 extension DocumentController {

@@ -99,6 +99,8 @@ class FileNavigator: NSBox {
         set { fileTree.selectedFile = newValue }
     }
 
+    public var performDeleteFile: ((FileTree.Path) -> Void)?
+
     public var performCreateComponent: ((FileTree.Path) -> Bool)?
 
     public var performCreateLogicFile: ((FileTree.Path) -> Bool)?
@@ -147,11 +149,7 @@ class FileNavigator: NSBox {
         ).run()
 
         if response == "Delete" {
-            do {
-                try FileManager.default.removeItem(at: fileURL)
-            } catch {
-                Swift.print("Failed to delete \(fileURL.path)")
-            }
+            self.performDeleteFile?(path)
         }
     }
 
