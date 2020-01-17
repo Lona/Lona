@@ -2,30 +2,36 @@ import * as path from 'path'
 import { Helpers } from '../../helpers'
 import { ConvertedWorkspace, ConvertedFile } from '../../types/tokens-ast'
 import { convert } from './convert'
+import { findChildPages } from './utils'
 
 export const parseFile = async (
   filePath: string,
   helpers: Helpers
 ): Promise<string> => {
-  const logicNode = helpers.config.logicFiles[filePath]
+  const documentNode = helpers.config.componentFiles[filePath]
 
-  if (!logicNode) {
-    throw new Error(`${filePath} is not a token file`)
+  if (!documentNode) {
+    throw new Error(`${filePath} is not a documentation file`)
   }
 
   const name = path.basename(filePath, path.extname(filePath))
   const outputPath = path.relative(
     helpers.config.workspacePath,
-    path.join(path.dirname(filePath), `${name}.flat.json`)
+    path.join(path.dirname(filePath), `${name}.mdx`)
   )
+
+  const value = {
+    mdxString: convert(documentNode, helpers),
+    children: findChildPages(documentNode),
+  }
 
   const file: ConvertedFile = {
     inputPath: path.relative(helpers.config.workspacePath, filePath),
     outputPath,
     name,
     contents: {
-      type: 'flatTokens',
-      value: convert(logicNode, helpers),
+      type: 'documentationPage',
+      value,
     },
   }
 

@@ -9,13 +9,14 @@
     "build": "rm -rf ./lib && tsc --declaration",
     "prepublishOnly": "npm run build",
     "snapshot": "npm run snapshot:tokens",
-    "snapshot:tokens": "ts-node src/bin.ts convert ../../examples/FlatTokens --format=tokens > ../../examples/generated/FlatTokens/output.json"
+    "snapshot:tokens": "ts-node src/bin.ts convert ../../examples/FlatTokens --format=tokens > ../../examples/generated/FlatTokens/output.json",
+    "snapshot:documentation": "ts-node src/bin.ts convert ../../examples/FlatTokens --format=documentation > ../../examples/generated/tokens/documentation.json"
   },
   "repository": "https://github.com/airbnb/Lona",
   "author": "Mathieu Dutour",
   "license": "MIT",
   "dependencies": {
-    "@lona/serialization": "0.0.18-pre-4",
+    "@lona/serialization": "0.0.18-pre-8",
     "glob": "^7.1.6",
     "lodash.intersection": "^4.4.0",
     "yargs": "^15.1.0"

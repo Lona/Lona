@@ -5,6 +5,8 @@ describe('mdx <-> json', () => {
   describe('root', () => {
     const mdx = `# heading
 
+<a class="page" href="child.md">child</a>
+
 a`
 
     const json = {
@@ -21,6 +23,13 @@ a`
                 },
               },
             ],
+          },
+        },
+        {
+          type: 'page',
+          data: {
+            value: 'child',
+            url: 'child.md',
           },
         },
         {

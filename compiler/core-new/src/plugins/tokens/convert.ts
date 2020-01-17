@@ -1,9 +1,9 @@
 import * as serialization from '@lona/serialization'
 import { Helpers } from '../../helpers'
-import { Token } from './tokens-ast'
+import { Token } from '../../types/tokens-ast'
 import * as TokenValue from './token-value'
 
-const convertDeclaration = (
+export const convertDeclaration = (
   declaration: serialization.LogicAST.Declaration,
   helpers: Helpers
 ): Token | void => {
@@ -35,7 +35,7 @@ export const convert = (
       .map(x => (x.type === 'declaration' ? x.data.content : undefined))
       .filter(x => !!x)
   } else if ('type' in node && node.type === 'topLevelDeclarations') {
-    declarations = node.data.declarations.filter(x => x.type !== 'placeholder')
+    declarations = node.data.declarations
   } else {
     helpers.reporter.warn('Unhandled top-level syntaxNode type')
     return []

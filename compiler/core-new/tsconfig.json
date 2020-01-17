@@ -11,7 +11,7 @@
     "esModuleInterop": true,
 
     "types": ["node"],
-    "typeRoots": ["node_modules/@types", "types"]
+    "typeRoots": ["node_modules/@types", "src/types"]
   },
   "exclude": ["node_modules", "**/*.test.ts"]
 }

@@ -7,7 +7,7 @@
       "contents": {
         "type": "documentationPage",
         "value": {
-          "mdxString": "# Colors\n\n<div\n  class=\"lona-token lona-token-color\">\n  <div class=\"lona-token-preview lona-token-preview-color\" data-color=\"#45CBFF\" />\n  <div\n    class=\"lona-token-details lona-token-details-color\">\n    <span class=\"lona-token-name lona-token-name-color\">primary</span>\n    <span class=\"lona-token-value lona-token-value-color\">#45CBFF</span>\n  </div>\n</div>\n\n<div\n  class=\"lona-token lona-token-color\">\n  <div class=\"lona-token-preview lona-token-preview-color\" data-color=\"#45CBFF\" />\n  <div\n    class=\"lona-token-details lona-token-details-color\">\n    <span class=\"lona-token-name lona-token-name-color\">accent</span>\n    <span class=\"lona-token-value lona-token-value-color\">#45CBFF</span>\n  </div>\n</div>",
+          "mdxString": "# Colors\n\n<div class=\"lona-token lona-token-color\">\n  <div  class=\"lona-token-preview lona-token-preview-color\" data-color=\"#45CBFF\"></div>\n  <div class=\"lona-token-details lona-token-details-color\">\n    <span class=\"lona-token-name lona-token-name-color\">primary</span>\n    <span class=\"lona-token-value lona-token-value-color\">#45CBFF</span>\n  </div>\n</div>\n\n<div class=\"lona-token lona-token-color\">\n  <div  class=\"lona-token-preview lona-token-preview-color\" data-color=\"#45CBFF\"></div>\n  <div class=\"lona-token-details lona-token-details-color\">\n    <span class=\"lona-token-name lona-token-name-color\">accent</span>\n    <span class=\"lona-token-value lona-token-value-color\">#45CBFF</span>\n  </div>\n</div>",
           "children": []
         }
       }
@@ -35,7 +35,7 @@
       "contents": {
         "type": "documentationPage",
         "value": {
-          "mdxString": "<div\n  class=\"lona-token lona-token-color\">\n  <div\n    class=\"lona-token-preview lona-token-preview-shadow\"\n    data-x=\"0\"\n    data-y=\"2\"\n    data-blur=\"2\"\n    data-radius=\"0\"\n    data-color=\"black\" />\n  <div\n    class=\"lona-token-details lona-token-details-color\">\n    <span class=\"lona-token-name lona-token-name-color\">small</span>\n    <span class=\"lona-token-value lona-token-value-color\">0px 2px 2px 0px black</span>\n  </div>\n</div>",
+          "mdxString": "<div class=\"lona-token lona-token-shadow\">\n  <div  class=\"lona-token-preview lona-token-preview-shadow\" data-x=\"0\" data-y=\"2\" data-blur=\"2\" data-radius=\"0\" data-color=\"black\"></div>\n  <div class=\"lona-token-details lona-token-details-shadow\">\n    <span class=\"lona-token-name lona-token-name-shadow\">small</span>\n    <span class=\"lona-token-value lona-token-value-shadow\">0px 2px 2px 0px black</span>\n  </div>\n</div>",
           "children": []
         }
       }
@@ -47,7 +47,7 @@
       "contents": {
         "type": "documentationPage",
         "value": {
-          "mdxString": "<div\n  class=\"lona-token lona-token-textStyle\">\n  <div\n    class=\"lona-token-preview lona-token-preview-textStyle\"\n    data-fontFamily=\"Helvetica\"\n    data-fontWeight=\"700\"\n    data-fontSize=\"28\"\n    data-color=\"teal\" />\n  <div\n    class=\"lona-token-details lona-token-details-textStyle\">\n    <span class=\"lona-token-name lona-token-name-textStyle\">heading1</span>\n    <span class=\"lona-token-value lona-token-value-textStyle\">heading1</span>\n  </div>\n</div>",
+          "mdxString": "<div class=\"lona-token lona-token-textStyle\">\n  <div  class=\"lona-token-preview lona-token-preview-textStyle\" data-fontFamily=\"Helvetica\" data-fontWeight=\"700\" data-fontSize=\"28\" data-color=\"teal\"></div>\n  <div class=\"lona-token-details lona-token-details-textStyle\">\n    <span class=\"lona-token-name lona-token-name-textStyle\">heading1</span>\n    <span class=\"lona-token-value lona-token-value-textStyle\">Helvetica 700 28px teal</span>\n  </div>\n</div>",
           "children": []
         }
       }

@@ -22,11 +22,10 @@ export default function parsePage() {
         Array.isArray(className) &&
         className.includes('page')
       ) {
-        return {
-          type: 'page',
-          url: href,
-          value: (children[0] && children[0].value) || href,
-        }
+        // @ts-ignore
+        node.type = 'page'
+        node.url = href
+        node.value = (children[0] && children[0].value) || href
       }
 
       return node

@@ -72,14 +72,7 @@ function convertDocument(
   return encodeDocument(ast, targetFormat, options)
 }
 
-function extractProgramAST(
-  contents: string,
-  options: { sourceFormat?: SERIALIZATION_FORMAT } = {}
-) {
-  const sourceFormat = normalizeFormat(contents, options.sourceFormat)
-
-  const ast = decodeDocument(contents, sourceFormat)
-
+function extractProgramFromAST(ast: { children: MDXAST.Content[] }) {
   const { children } = ast
 
   const declarations = children
@@ -106,9 +99,13 @@ function extractProgram(
   contents: string,
   options: { sourceFormat?: SERIALIZATION_FORMAT } = {}
 ) {
-  const ast = extractProgramAST(contents, options)
+  const sourceFormat = normalizeFormat(contents, options.sourceFormat)
 
-  return stringify(ast, { space: '  ' })
+  const ast = decodeDocument(contents, sourceFormat)
+
+  const program = extractProgramFromAST(ast)
+
+  return stringify(program, { space: '  ' })
 }
 
 const printMdxNode = mdx.printNode
@@ -129,5 +126,5 @@ export {
   extractProgram,
   detectFormat,
   printMdxNode,
-  extractProgramAST,
+  extractProgramFromAST,
 }

@@ -14,6 +14,11 @@ export type Config = {
   componentPaths: string[]
   documentPaths: string[]
   logicPaths: string[]
+  componentFiles: {
+    [filePath: string]: {
+      children: serialization.MDXAST.Content[]
+    }
+  }
   logicFiles: { [filePath: string]: serialization.LogicAST.SyntaxNode }
 } & LonaJSON
 
@@ -57,6 +62,7 @@ export async function load(
   )
 
   const logicFiles = {}
+  const componentFiles = {}
 
   if (options && options.forEvaluation) {
     await Promise.all(
@@ -65,14 +71,19 @@ export async function load(
           options.fs
             .readFile(x)
             .then(data => serialization.decodeLogic(data))
-            .then(ast => (logicFiles[x] = ast))
+            .then(ast => {
+              logicFiles[x] = ast
+            })
         )
         .concat(
           documentPaths.map(x =>
             options.fs
               .readFile(x)
-              .then(data => serialization.extractProgramAST(data))
-              .then(ast => (logicFiles[x] = ast))
+              .then(data => serialization.decodeDocument(data))
+              .then(ast => {
+                componentFiles[x] = ast
+                logicFiles[x] = serialization.extractProgramFromAST(ast)
+              })
           )
         )
     )
@@ -85,6 +96,7 @@ export async function load(
     documentPaths,
     logicPaths,
     logicFiles,
+    componentFiles,
     version: require('../../package.json').version,
   }
 }

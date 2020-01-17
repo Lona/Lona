@@ -99,7 +99,7 @@ export interface Code extends Literal {
     lang?: string
     meta?: string
     value: string
-    parsed?: Object
+    parsed?: LogicAST.TopLevelDeclarations
   }
 }
 
