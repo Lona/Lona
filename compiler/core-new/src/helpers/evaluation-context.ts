@@ -1,6 +1,5 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import * as serialization from '@lona/serialization'
 import { Config } from '../utils/config'
 import * as LogicAST from './logic-ast'
 import * as LogicScope from './logic-scope'
@@ -64,26 +63,26 @@ function resolveImports(
             return [x]
           }
 
-          const libraryExists = fs.existsSync(
-            path.join(__dirname, '../../static', `${libraryName}.logic`)
+          const libraryPath = path.join(
+            __dirname,
+            '../../static/logic',
+            `${libraryName}.logic`
           )
+          const libraryExists = fs.existsSync(libraryPath)
 
           if (!libraryExists) {
-            console.warn(`Failed to find library ${libraryName}`)
+            console.error(
+              `Failed to find library ${libraryName} at path ${libraryPath}`
+            )
             return [x]
           }
 
           const library = LogicAST.makeProgram(
-            JSON.parse(
-              fs.readFileSync(
-                path.join(__dirname, '../../static', `${libraryName}.logic`),
-                'utf8'
-              )
-            )
+            JSON.parse(fs.readFileSync(libraryPath, 'utf8'))
           )
 
           if (!library) {
-            console.warn(`Failed to import library ${libraryName}`)
+            console.error(`Failed to import library ${libraryName}`)
             return [x]
           }
 
@@ -99,21 +98,10 @@ function resolveImports(
   }
 }
 
-export const generate = async (
-  config: Config,
-  fs: { readFile(filePath: string): Promise<string> }
-) => {
-  const logicFiles = await Promise.all(
-    config.logicPaths
-      .map(x => fs.readFile(x).then(data => serialization.decodeLogic(data)))
-      .concat(
-        config.tokenPaths.map(x =>
-          fs.readFile(x).then(data => serialization.extractProgramAST(data))
-        )
-      )
+export const generate = async (config: Config) => {
+  let programNode = LogicAST.joinPrograms(
+    Object.values(config.logicFiles).map(LogicAST.makeProgram)
   )
-
-  let programNode = LogicAST.joinPrograms(logicFiles.map(LogicAST.makeProgram))
 
   programNode = LogicAST.joinPrograms([standardImportsProgram(), programNode])
   programNode = resolveImports(programNode)

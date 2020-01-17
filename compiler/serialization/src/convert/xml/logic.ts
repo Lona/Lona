@@ -77,13 +77,21 @@ export function print(logicJson: AST.SyntaxNode): string {
     index: number,
     list: AST.SyntaxNode[]
   ) {
-    if (index === list.length - 1 && item.type === 'placeholder') {
+    if (
+      index === list.length - 1 &&
+      'type' in item &&
+      item.type === 'placeholder'
+    ) {
       return false
     }
     return true
   }
 
   function getChildren(node: AST.SyntaxNode): AST.SyntaxNode[] {
+    if (!('type' in node)) {
+      // pattern or identifier
+      return []
+    }
     switch (node.type) {
       case 'functionCallExpression': {
         const { expression, arguments: args } = node.data
@@ -127,6 +135,11 @@ export function print(logicJson: AST.SyntaxNode): string {
   }
 
   function processStandardNode(node: AST.SyntaxNode) {
+    if (!('type' in node)) {
+      // pattern or identifier
+      return
+    }
+
     const nodeName = nodeRenaming[node.type] || upperFirst(node.type)
 
     const attributes: {
@@ -290,7 +303,6 @@ export function parse(root: string): AST.SyntaxNode {
         id: createUUID(),
         genericArguments,
         identifier: {
-          type: 'identifier',
           id: createUUID(),
           isPlaceholder: false,
           string: name,
@@ -308,7 +320,6 @@ export function parse(root: string): AST.SyntaxNode {
           data: {
             id: createUUID(),
             identifier: {
-              type: 'identifier',
               id: createUUID(),
               isPlaceholder: false,
               string: attributes.name,
@@ -329,7 +340,6 @@ export function parse(root: string): AST.SyntaxNode {
             genericParameters: [],
             id: createUUID(),
             name: {
-              type: 'pattern',
               id: createUUID(),
               name: attributes.name,
             },
@@ -409,7 +419,6 @@ export function parse(root: string): AST.SyntaxNode {
             data: {
               id: createUUID(),
               name: {
-                type: 'pattern',
                 id: createUUID(),
                 name: attributes.name,
               },
@@ -514,7 +523,6 @@ export function parse(root: string): AST.SyntaxNode {
 
     if (patternNodeMapping[nodeName]) {
       data[patternNodeMapping[nodeName]] = {
-        type: 'pattern',
         id: createUUID(),
         name: attributes.name,
       }
@@ -523,7 +531,6 @@ export function parse(root: string): AST.SyntaxNode {
     if (identifierNodeMapping[nodeName]) {
       delete data.name
       data[identifierNodeMapping[nodeName]] = {
-        type: 'identifier',
         id: createUUID(),
         isPlaceholder: false,
         string: attributes.name,

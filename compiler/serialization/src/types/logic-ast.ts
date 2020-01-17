@@ -1,5 +1,4 @@
 export type Identifier = {
-  type: 'identifier'
   id: string
   string: string
   isPlaceholder: boolean
@@ -103,7 +102,6 @@ export type EnumerationCase =
   | EnumerationCaseEnumerationCase
 
 export type Pattern = {
-  type: 'pattern'
   id: string
   name: string
 }
@@ -443,8 +441,6 @@ export type CommentNode = {
 export type SyntaxNode =
   | Statement
   | Declaration
-  | Identifier
-  | Pattern
   | Expression
   | BinaryOperator
   | Program

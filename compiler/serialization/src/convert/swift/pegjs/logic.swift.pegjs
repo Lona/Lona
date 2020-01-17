@@ -304,12 +304,11 @@ typeAnnotationList =
     return buildList(head, tail, 2)
   }
 
-pattern = name:rawIdentifier { return { type: 'pattern', id: uuid(), name } }
+pattern = name:rawIdentifier { return { id: uuid(), name } }
 
 identifier =
   string:rawIdentifier {
     return {
-      type: 'identifier',
       id: uuid(),
       isPlaceholder: false,
       string

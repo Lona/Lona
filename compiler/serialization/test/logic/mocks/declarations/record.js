@@ -22,7 +22,6 @@ const json = {
                 id: '0',
                 isPlaceholder: false,
                 string: 'Color',
-                type: 'identifier',
               },
             },
             type: 'typeIdentifier',
@@ -44,7 +43,6 @@ const json = {
           name: {
             id: '0',
             name: 'light',
-            type: 'pattern',
           },
         },
         type: 'variable',
@@ -59,7 +57,6 @@ const json = {
                 id: '0',
                 isPlaceholder: false,
                 string: 'Color',
-                type: 'identifier',
               },
             },
             type: 'typeIdentifier',
@@ -81,7 +78,6 @@ const json = {
           name: {
             id: '0',
             name: 'dark',
-            type: 'pattern',
           },
         },
         type: 'variable',
@@ -98,7 +94,6 @@ const json = {
     name: {
       id: '0',
       name: 'ThemedColor',
-      type: 'pattern',
     },
   },
   type: 'record',

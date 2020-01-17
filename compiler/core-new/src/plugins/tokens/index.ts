@@ -1,5 +1,4 @@
 import * as path from 'path'
-import * as serialization from '@lona/serialization'
 import { Helpers } from '../../helpers'
 import { ConvertedWorkspace, ConvertedFile } from './tokens-ast'
 import { convert } from './convert'
@@ -8,24 +7,22 @@ export const parseFile = async (
   filePath: string,
   helpers: Helpers
 ): Promise<string> => {
-  let logicNode: serialization.LogicAST.SyntaxNode
-  if (path.extname(filePath) === '.logic') {
-    logicNode = serialization.decodeLogic(await helpers.fs.readFile(filePath))
-  } else if (path.extname(filePath) === '.md') {
-    logicNode = serialization.extractProgramAST(
-      await helpers.fs.readFile(filePath)
-    )
-  } else {
+  const logicNode = helpers.config.logicFiles[filePath]
+
+  if (!logicNode) {
     throw new Error(`${filePath} is not a token file`)
   }
 
   const name = path.basename(filePath, path.extname(filePath))
-  const outputPath = path.join(path.dirname(filePath), `${name}.flat.json`)
+  const outputPath = path.relative(
+    helpers.config.workspacePath,
+    path.join(path.dirname(filePath), `${name}.flat.json`)
+  )
 
   const file: ConvertedFile = {
-    inputPath: filePath,
-    name,
+    inputPath: path.relative(helpers.config.workspacePath, filePath),
     outputPath,
+    name,
     contents: {
       type: 'flatTokens',
       value: convert(logicNode, helpers),
@@ -52,14 +49,14 @@ export const parseWorkspace = async (
   }
 
   const workspace: ConvertedWorkspace = {
-    flatTokensSchemaVersion: '0.0.1',
     files: (
       await Promise.all(
         helpers.config.logicPaths
-          .concat(helpers.config.tokenPaths)
+          .concat(helpers.config.documentPaths)
           .map(x => parseFile(x, helpers))
       )
     ).map(x => JSON.parse(x)),
+    flatTokensSchemaVersion: '0.0.1',
   }
   console.log(JSON.stringify(workspace, null, '  '))
   return

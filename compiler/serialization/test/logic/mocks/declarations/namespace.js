@@ -21,7 +21,6 @@ const json = {
         name: {
           id: '0',
           name: 'Colors',
-          type: 'pattern',
         },
       },
       type: 'namespace',

@@ -20,7 +20,9 @@ export const getConfig = async (workspacePath: string) => {
 export const convertFile = async (
   filePath: string,
   formatter: Plugin,
-  options: any
+  options?: {
+    [argName: string]: unknown
+  }
 ) => {
   const workspace = await findWorkspace(filePath)
   if (!workspace) {
@@ -34,9 +36,11 @@ export const convertFile = async (
 
 export const convertWorkspace = async (
   workspacePath: string,
-  outputPath: string,
+  outputPath: unknown,
   formatter: Plugin,
-  options: any
+  options?: {
+    [argName: string]: unknown
+  }
 ) => {
   return formatter.parseWorkspace(
     workspacePath,
@@ -48,7 +52,9 @@ export const convertWorkspace = async (
 export const convert = async (
   fileOrWorkspacePath: string,
   format: string,
-  options: any
+  options?: {
+    [argName: string]: unknown
+  }
 ) => {
   const resolvedPath = path.resolve(fileOrWorkspacePath)
   const formatter = findPlugin(format)

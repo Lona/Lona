@@ -68,7 +68,6 @@ const json = {
           id: '0',
           isPlaceholder: false,
           string: 'ThemedColor',
-          type: 'identifier',
         },
       },
       type: 'identifierExpression',

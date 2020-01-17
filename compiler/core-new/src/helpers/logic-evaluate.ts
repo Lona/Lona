@@ -40,30 +40,28 @@ export class EvaluationContext {
     this.thunks[uuid] = thunk
   }
 
-  evaluate(uuid: string) {
+  evaluate(uuid: string): Value | void {
     const value = this.values[uuid]
     if (value) {
       return value
     }
     const thunk = this.thunks[uuid]
     if (!thunk) {
-      console.warn(`no thunk for ${uuid}`)
+      console.error(`no thunk for ${uuid}`)
       return undefined
     }
 
-    const resolvedDependencies = thunk.dependencies.map<Value>(
-      this.evaluate.bind(this)
-    )
+    const resolvedDependencies = thunk.dependencies.map(x => this.evaluate(x))
     if (resolvedDependencies.some(x => !x)) {
-      console.warn(
-        `Failed to evaluate thunk - missing dep ${
+      console.error(
+        `Failed to evaluate thunk ${uuid} - missing dep ${
           thunk.dependencies[resolvedDependencies.findIndex(x => !x)]
         }`
       )
       return undefined
     }
 
-    const result = thunk.f(resolvedDependencies)
+    const result = thunk.f(resolvedDependencies as Value[])
     this.values[uuid] = result
     return result
   }
@@ -171,7 +169,7 @@ export const evaluate = (
     case 'array': {
       const type = unificationContext.nodes[node.data.id]
       if (!type) {
-        console.warn('Failed to unify type of array')
+        console.error('Failed to unify type of array')
         break
       }
       const resolvedType = LogicUnify.substitute(substitution, type)
@@ -233,20 +231,20 @@ export const evaluate = (
       break
     }
     case 'binaryExpression': {
-      console.warn('TODO: ' + node.type)
+      console.error('TODO: ' + node.type)
       break
     }
     case 'functionCallExpression': {
       const { expression, arguments: args } = node.data
       let functionType = unificationContext.nodes[expression.data.id]
       if (!functionType) {
-        console.warn('Unknown type of functionCallExpression')
+        console.error('Unknown type of functionCallExpression')
         break
       }
 
       const resolvedType = LogicUnify.substitute(substitution, functionType)
       if (resolvedType.type !== 'function') {
-        console.warn(
+        console.error(
           'Invalid functionCallExpression type (only functions are valid)',
           resolvedType
         )
@@ -258,6 +256,7 @@ export const evaluate = (
           .map(arg => {
             if (
               arg.type === 'placeholder' ||
+              arg.data.expression.type === 'placeholder' ||
               (arg.data.expression.type === 'identifierExpression' &&
                 arg.data.expression.data.identifier.isPlaceholder)
             ) {
@@ -359,7 +358,7 @@ export const evaluate = (
       const fullPath = LogicAST.declarationPathTo(rootNode, node.data.id)
 
       if (!type) {
-        console.warn('Unknown function type')
+        console.error('Unknown function type')
         break
       }
       context.add(name.id, {
@@ -383,7 +382,7 @@ export const evaluate = (
       const { name, declarations } = node.data
       const type = unificationContext.patternTypes[name.id]
       if (!type) {
-        console.warn('Unknown record type')
+        console.error('Unknown record type')
       } else {
         const resolvedType = LogicUnify.substitute(substitution, type)
         const dependencies = declarations
@@ -444,7 +443,7 @@ export const evaluate = (
       const type = unificationContext.patternTypes[node.data.name.id]
 
       if (!type) {
-        console.warn('unknown enumberation type')
+        console.error('unknown enumberation type')
         break
       }
       node.data.cases.forEach(enumCase => {

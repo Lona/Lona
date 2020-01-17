@@ -92,8 +92,11 @@ const getFontWeight = (
 }
 
 const getShadowValue = (
-  value: LogicEvaluate.Value
+  value: LogicEvaluate.Value | void
 ): TokenAST.ShadowTokenValue | void => {
+  if (!value) {
+    return undefined
+  }
   if (
     value.type.type !== 'constant' ||
     value.type.name !== LogicUnify.shadow.name ||
@@ -121,8 +124,11 @@ const getShadowValue = (
 }
 
 const getTextStyleValue = (
-  value: LogicEvaluate.Value
+  value: LogicEvaluate.Value | void
 ): TokenAST.TextStyleTokenValue | void => {
+  if (!value) {
+    return undefined
+  }
   if (
     value.type.type !== 'constant' ||
     value.type.name !== LogicUnify.textStyle.name ||
@@ -153,18 +159,20 @@ const getTextStyleValue = (
   return {
     type: 'textStyle',
     value: {
+      fontFamily,
+      fontWeight,
       fontSize,
       lineHeight,
       letterSpacing,
       fontName,
-      fontFamily,
       color,
-      fontWeight,
     },
   }
 }
 
-export const create = (value: LogicEvaluate.Value) =>
+export const create = (
+  value: LogicEvaluate.Value | void
+): TokenAST.TokenValue | void =>
   getColorValue(value) ||
   getShadowValue(value) ||
   getTextStyleValue(value) ||

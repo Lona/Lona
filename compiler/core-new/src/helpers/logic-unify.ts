@@ -432,7 +432,7 @@ export const makeUnificationContext = (
             tail: initializerType,
           })
         } else {
-          console.warn(
+          console.error(
             `WARNING: No initializer type for ${node.data.name.name} (${initializerId})`
           )
         }
@@ -634,7 +634,7 @@ export const unify = (
         constraints.push({ head: a, tail: tailParameters[i] })
       })
     } else if (head.type === 'generic' || tail.type === 'generic') {
-      console.warn('tried to unify generics (problem?)', head, tail)
+      console.error('tried to unify generics (problem?)', head, tail)
     } else if (head.type === 'variable') {
       substitution.set(head, tail)
     } else if (tail.type === 'variable') {

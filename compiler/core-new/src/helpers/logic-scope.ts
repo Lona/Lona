@@ -1,6 +1,31 @@
 import * as LogicAST from './logic-ast'
 import * as LogicTraversal from './logic-traversal'
 
+class ShallowMap<T> {
+  private map: { namespace: string[]; value: T }[] = []
+
+  private find(k: string[]) {
+    return (x: { namespace: string[]; value: T }) =>
+      x.namespace.length === k.length && x.namespace.every((y, i) => y === k[i])
+  }
+
+  public get(k: string[]): T | void {
+    const found = this.map.find(this.find(k))
+    if (found) {
+      return found.value
+    }
+  }
+
+  public set(k: string[], v: T) {
+    const existing = this.map.findIndex(this.find(k))
+    if (existing !== -1) {
+      this.map[existing].value = v
+    } else {
+      this.map.push({ namespace: k, value: v })
+    }
+  }
+}
+
 class ScopeStack<K extends string, V> {
   private scopes: { [key: string]: V }[] = [{}]
 
@@ -55,7 +80,7 @@ let setGenericParameters = (
   })
 
 export type ScopeContext = {
-  namespace: Map<string[], string>
+  namespace: ShallowMap<string>
   currentNamespacePath: string[]
   /* Values in these are never removed, even if a variable is out of scope */
   patternToName: { [key: string]: string }
@@ -66,7 +91,7 @@ export type ScopeContext = {
 }
 
 let empty = (): ScopeContext => ({
-  namespace: new Map(),
+  namespace: new ShallowMap(),
   currentNamespacePath: [],
   patternToName: {},
   identifierToPattern: {},
@@ -82,13 +107,9 @@ let builtInTypeConstructorNames = [
   'Color',
 ]
 
-function getNodeId(node: LogicAST.AST.SyntaxNode) {
-  return 'id' in node ? node.id : node.data.id
-}
-
 export const build = (
   rootNode: LogicAST.AST.SyntaxNode,
-  targetId?: string,
+
   initialContext: ScopeContext = empty()
 ): ScopeContext => {
   const config = LogicTraversal.emptyConfig()
@@ -153,87 +174,52 @@ export const build = (
     node: LogicAST.AST.SyntaxNode,
     config: LogicTraversal.TraversalConfig
   ) => {
-    if (getNodeId(node) == targetId) {
-      config.stopTraversal = true
-      return context
-    }
-
     config.needsRevisitAfterTraversingChildren = true
 
     if (LogicAST.isTypeAnnotation(node) && !config._isRevisit) {
       config.ignoreChildren = true
       config.needsRevisitAfterTraversingChildren = false
-      return context
-    }
-
-    if (node.type === 'identifier' && config._isRevisit) {
-      if (node.isPlaceholder) {
-        return context
-      }
-      let lookup = context.patternNames[node.string]
-      if (!lookup) {
-        lookup = context.namespace.get([node.string])
-      }
-      if (!lookup) {
-        lookup = context.namespace.get(
-          context.currentNamespacePath.concat([node.string])
-        )
-      }
-
-      if (lookup) {
-        context.identifierToPattern[node.id] = lookup
-      } else {
-        console.warn('Failed to find pattern for identifier:', node.string)
-      }
-      return context
     }
 
     if (node.type === 'memberExpression' && !config._isRevisit) {
       config.ignoreChildren = true
       const identifiers = LogicAST.flattenedMemberExpression(node)
-      if (!identifiers) {
-        return context
+      if (identifiers) {
+        const keyPath = identifiers.map(x => x.string)
+        const patternId = context.namespace.get(keyPath)
+        if (patternId) {
+          context.identifierToPattern[node.data.id] = patternId
+        }
       }
-
-      const keyPath = identifiers.map(x => x.string)
-      const patternId = context.namespace.get(keyPath)
-      if (patternId) {
-        context.identifierToPattern[node.data.id] = patternId
-      }
-      return context
     }
 
     if (node.type === 'variable' && config._isRevisit) {
       const { id: variableId, name: variableName } = node.data.name
-      context.patternNames.set(variableId, variableName)
+      context.patternNames.set(variableName, variableId)
       context.patternToName[variableName] = variableId
-      return context
     }
     if (node.type === 'function') {
       if (config._isRevisit) {
         context.patternNames.pop()
-        return context
+      } else {
+        const { id: functionId, name: functionName } = node.data.name
+        context.patternToName[functionId] = functionName
+        context.patternNames.set(functionName, functionId)
+        context.patternNames.push()
+
+        node.data.parameters.forEach(parameter => {
+          if (parameter.type === 'parameter') {
+            const {
+              id: parameterId,
+              name: parameterName,
+            } = parameter.data.localName
+            context.patternToName[parameterId] = parameterName
+            context.patternNames.set(parameterName, parameterId)
+          }
+        })
+
+        setGenericParameters(node.data.genericParameters, context)
       }
-
-      const { id: functionId, name: functionName } = node.data.name
-      context.patternToName[functionId] = functionName
-      context.patternNames.set(functionName, functionId)
-      context.patternNames.push()
-
-      node.data.parameters.forEach(parameter => {
-        if (parameter.type === 'parameter') {
-          const {
-            id: parameterId,
-            name: parameterName,
-          } = parameter.data.localName
-          context.patternToName[parameterId] = parameterName
-          context.patternNames.set(parameterName, parameterId)
-        }
-      })
-
-      setGenericParameters(node.data.genericParameters, context)
-
-      return context
     }
     if (node.type === 'record') {
       const { id: recordId, name: recordName } = node.data.name
@@ -259,7 +245,6 @@ export const build = (
           context.patternNames.set(recordName, recordId)
         }
       }
-      return context
     }
     if (node.type === 'enumeration') {
       if (!config._isRevisit) {
@@ -269,17 +254,40 @@ export const build = (
       } else {
         popNamespace(context)
       }
-      return context
     }
     if (node.type === 'namespace') {
       if (!config._isRevisit) {
         context.patternNames.push()
-        pushNamespace(name, context)
+        pushNamespace(node.data.name.name, context)
       } else {
         context.patternNames.pop()
         popNamespace(context)
       }
-      return context
+    }
+
+    const identifier = LogicAST.getIdentifier(node)
+    if (identifier && !config.ignoreChildren && !config._isRevisit) {
+      if (!identifier.isPlaceholder) {
+        let lookup = context.patternNames.get(identifier.string)
+        if (!lookup) {
+          lookup = context.namespace.get([identifier.string])
+        }
+        if (!lookup) {
+          lookup = context.namespace.get(
+            context.currentNamespacePath.concat([identifier.string])
+          )
+        }
+
+        if (lookup) {
+          context.identifierToPattern[identifier.id] = lookup
+        } else {
+          console.error(
+            'Failed to find pattern for identifier:',
+            identifier.string,
+            node
+          )
+        }
+      }
     }
 
     return context

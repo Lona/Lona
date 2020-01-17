@@ -21,10 +21,8 @@ export type Helpers = {
 
 export default async (
   workspacePath: string,
-  outputPath?: string
+  outputPath?: unknown
 ): Promise<Helpers> => {
-  const config = await Config.load(workspacePath)
-
   const fsWrapper = {
     readFile(filePath: string) {
       return fs.promises.readFile(
@@ -34,14 +32,24 @@ export default async (
     },
     writeFile(filePath: string, data: string) {
       return fs.promises.writeFile(
-        path.resolve(outputPath, filePath),
+        path.resolve(
+          typeof outputPath === 'string'
+            ? outputPath
+            : path.join(process.cwd(), 'lona-generated'),
+          filePath
+        ),
         data,
         'utf-8'
       )
     },
   }
 
-  const evaluationContext = await generateEvaluationContext(config, fsWrapper)
+  const config = await Config.load(workspacePath, {
+    forEvaluation: true,
+    fs: fsWrapper,
+  })
+
+  const evaluationContext = await generateEvaluationContext(config)
 
   return {
     fs: fsWrapper,

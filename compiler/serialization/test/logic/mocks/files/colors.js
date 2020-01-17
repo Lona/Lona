@@ -29,7 +29,6 @@ const json = {
               name: {
                 id: '0',
                 name: 'Prelude',
-                type: 'pattern',
               },
             },
             type: 'importDeclaration',
@@ -53,7 +52,6 @@ const json = {
                           id: '0',
                           isPlaceholder: false,
                           string: 'Color',
-                          type: 'identifier',
                         },
                       },
                       type: 'typeIdentifier',
@@ -75,7 +73,6 @@ const json = {
                     name: {
                       id: '0',
                       name: 'a',
-                      type: 'pattern',
                     },
                   },
                   type: 'variable',
@@ -93,7 +90,6 @@ const json = {
                                 id: '0',
                                 isPlaceholder: false,
                                 string: 'Color',
-                                type: 'identifier',
                               },
                             },
                             type: 'typeIdentifier',
@@ -115,7 +111,6 @@ const json = {
                           name: {
                             id: '0',
                             name: 'b',
-                            type: 'pattern',
                           },
                         },
                         type: 'variable',
@@ -131,7 +126,6 @@ const json = {
                     name: {
                       id: '0',
                       name: 'Nested',
-                      type: 'pattern',
                     },
                   },
                   type: 'namespace',
@@ -147,7 +141,6 @@ const json = {
               name: {
                 id: '0',
                 name: 'Colors',
-                type: 'pattern',
               },
             },
             type: 'namespace',

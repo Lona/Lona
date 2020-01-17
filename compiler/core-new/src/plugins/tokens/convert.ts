@@ -30,11 +30,11 @@ export const convert = (
   helpers: Helpers
 ): Token[] => {
   let declarations: serialization.LogicAST.Declaration[]
-  if (node.type === 'program') {
+  if ('type' in node && node.type === 'program') {
     declarations = node.data.block
       .map(x => (x.type === 'declaration' ? x.data.content : undefined))
       .filter(x => !!x)
-  } else if (node.type === 'topLevelDeclarations') {
+  } else if ('type' in node && node.type === 'topLevelDeclarations') {
     declarations = node.data.declarations.filter(x => x.type !== 'placeholder')
   } else {
     helpers.reporter.warn('Unhandled top-level syntaxNode type')

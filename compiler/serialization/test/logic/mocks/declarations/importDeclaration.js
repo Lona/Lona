@@ -11,7 +11,6 @@ const json = {
         name: {
           id: '0',
           name: 'Prelude',
-          type: 'pattern',
         },
       },
       type: 'importDeclaration',

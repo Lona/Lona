@@ -10,6 +10,10 @@ export function print(node: AST.SyntaxNode, options: { indent?: number } = {}) {
   const { indent = 2 } = options
 
   function printNode(node: AST.SyntaxNode): string {
+    if (!('type' in node)) {
+      // pattern or identifier
+      return
+    }
     switch (node.type) {
       case 'program': {
         const { block } = node.data

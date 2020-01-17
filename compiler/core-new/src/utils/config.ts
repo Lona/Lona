@@ -1,5 +1,6 @@
 import * as path from 'path'
 import * as fs from 'fs'
+import * as serialization from '@lona/serialization'
 
 import * as fileSearch from './file-search'
 
@@ -9,14 +10,30 @@ type LonaJSON = {
 
 export type Config = {
   version: string
+  workspacePath: string
   componentPaths: string[]
-  tokenPaths: string[]
+  documentPaths: string[]
   logicPaths: string[]
+  logicFiles: { [filePath: string]: serialization.LogicAST.SyntaxNode }
 } & LonaJSON
 
-export const load = async (workspacePath: string): Promise<Config> => {
+export function load(workspacePath: string): Promise<Config>
+export function load(
+  workspacePath: string,
+  options: {
+    forEvaluation: boolean
+    fs: { readFile(filePath: string): Promise<string> }
+  }
+): Promise<Config>
+export async function load(
+  workspacePath: string,
+  options?: {
+    forEvaluation?: boolean
+    fs?: { readFile(filePath: string): Promise<string> }
+  }
+): Promise<Config> {
   const rootDirname = path.dirname(path.dirname(__dirname))
-  console.warn(`Running compiler from: ${rootDirname}`)
+  console.error(`Running compiler from: ${rootDirname}`)
 
   const lonaFile = JSON.parse(
     await fs.promises.readFile(path.join(workspacePath, 'lona.json'), 'utf-8')
@@ -30,7 +47,7 @@ export const load = async (workspacePath: string): Promise<Config> => {
     path.join(workspacePath, '**/*.component'),
     lonaFile
   )
-  const tokenPaths = fileSearch.sync(
+  const documentPaths = fileSearch.sync(
     path.join(workspacePath, '**/*.md'),
     lonaFile
   )
@@ -39,11 +56,35 @@ export const load = async (workspacePath: string): Promise<Config> => {
     lonaFile
   )
 
+  const logicFiles = {}
+
+  if (options && options.forEvaluation) {
+    await Promise.all(
+      logicPaths
+        .map(x =>
+          options.fs
+            .readFile(x)
+            .then(data => serialization.decodeLogic(data))
+            .then(ast => (logicFiles[x] = ast))
+        )
+        .concat(
+          documentPaths.map(x =>
+            options.fs
+              .readFile(x)
+              .then(data => serialization.extractProgramAST(data))
+              .then(ast => (logicFiles[x] = ast))
+          )
+        )
+    )
+  }
+
   return {
     ...lonaFile,
+    workspacePath,
     componentPaths,
-    tokenPaths,
+    documentPaths,
     logicPaths,
+    logicFiles,
     version: require('../../package.json').version,
   }
 }
