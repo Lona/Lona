@@ -9,6 +9,10 @@
 import AppKit
 import Foundation
 
+enum DocumentError: Error {
+    case fileAlreadyExists(title: String, url: URL)
+}
+
 // MARK: - DocumentController
 
 class DocumentController: NSDocumentController {
@@ -135,6 +139,13 @@ extension DocumentController {
         withTitle title: String,
         savedTo url: URL
     ) -> Promise<MarkdownDocument, NSError> {
+        if FileManager.default.fileExists(atPath: url.path) {
+            Alert.runInformationalAlert(
+                messageText: "Couldn't create page \(title)",
+                informativeText: "A file already exists at \(url.path).")
+            return .failure(DocumentError.fileAlreadyExists(title: title, url: url) as NSError)
+        }
+
         let document = MarkdownDocument(title: title)
 
         return document.save(to: url, for: .saveOperation)

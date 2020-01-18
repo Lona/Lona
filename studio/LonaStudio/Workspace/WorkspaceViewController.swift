@@ -866,106 +866,25 @@ class WorkspaceViewController: NSSplitViewController {
 
         super.keyUp(with: event)
     }
-
-    // Documents
-
-    private func createAndShowNewDocument(in windowController: NSWindowController) {
-        let newDocument = ComponentDocument()
-        newDocument.component = CSComponent.makeDefaultComponent()
-
-        NSDocumentController.shared.addDocument(newDocument)
-        newDocument.addWindowController(windowController)
-        windowController.document = newDocument
-
-        self.document = newDocument
-    }
-
-    @discardableResult private func close(document: NSDocument, discardingUnsavedChanges: Bool) -> Bool {
-        if !discardingUnsavedChanges && document.isDocumentEdited {
-            let name = document.fileURL?.lastPathComponent ?? "Untitled"
-            guard let result = Alert(
-                items: [
-                    DocumentAction.cancel,
-                    DocumentAction.discardChanges,
-                    DocumentAction.saveChanges],
-                messageText: "Save changes to \(name)",
-                informativeText: "The document \(name) has unsaved changes. Save them now?").run()
-                else { return false }
-            switch result {
-            case .saveChanges:
-                var saveURL: URL
-
-                if let url = document.fileURL {
-                    saveURL = url
-                } else {
-                    let dialog = NSSavePanel()
-
-                    dialog.title                   = "Save .component file"
-                    dialog.showsResizeIndicator    = true
-                    dialog.showsHiddenFiles        = false
-                    dialog.canCreateDirectories    = true
-                    dialog.allowedFileTypes        = ["component"]
-
-                    // User canceled the save. Don't swap out the document.
-                    if dialog.runModal() != NSApplication.ModalResponse.OK {
-                        return false
-                    }
-
-                    guard let url = dialog.url else { return false }
-
-                    saveURL = url
-                }
-
-                document.save(to: saveURL, ofType: document.fileType ?? "DocumentType", for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
-                    // TODO: We should not close the document if it fails to save
-                    Swift.print("Failed to save", saveURL, error as Any)
-                })
-
-                LonaPlugins.current.trigger(eventType: .onSaveComponent)
-            case .cancel:
-                return false
-            case .discardChanges:
-                break
-            }
-        }
-
-        NSDocumentController.shared.removeDocument(document)
-
-        if let windowController = document.windowControllers.first {
-            windowController.document = nil
-            document.removeWindowController(windowController)
-        }
-
-        self.document = nil
-
-        return true
-    }
 }
 
 // MARK: - IBActions
 
 extension WorkspaceViewController {
     @IBAction func newDocument(_ sender: AnyObject) {
-        if let document = self.document {
-            guard close(document: document, discardingUnsavedChanges: false) else { return }
+        guard var pageName = Alert.runTextInputAlert(
+            messageText: "Create a new page in this workspace",
+            placeholderText: "Page name") else { return }
+        if pageName.hasSuffix(".md") {
+            pageName.removeLast(3)
         }
-
-        guard let windowController = self.view.window?.windowController else { return }
-
-        createAndShowNewDocument(in: windowController)
+        _ = DocumentController.shared.makeAndOpenMarkdownDocument(
+            withTitle: pageName,
+            savedTo: CSUserPreferences.workspaceURL.appendingPathComponent(pageName + ".md")
+        )
     }
 
     @objc func document(_ doc: NSDocument?, didSave: Bool, contextInfo: UnsafeMutableRawPointer?) {
-        update()
-        fileNavigator.reloadData()
-    }
-
-    @objc func documentDidSaveAs(_ doc: NSDocument?, didSave: Bool, contextInfo: UnsafeMutableRawPointer?) {
-        update()
-        fileNavigator.reloadData()
-    }
-
-    @objc func document(_ doc: NSDocument?, didDuplicate: Bool, contextInfo: UnsafeMutableRawPointer?) {
         update()
         fileNavigator.reloadData()
     }
@@ -974,25 +893,6 @@ extension WorkspaceViewController {
         document?.save(
             withDelegate: self,
             didSave: #selector(document(_:didSave:contextInfo:)),
-            contextInfo: nil)
-    }
-
-    // https://developer.apple.com/documentation/appkit/nsdocument/1515171-saveas
-    // The default implementation runs the modal Save panel to get the file location under which
-    // to save the document. It writes the document to this file, sets the document’s file location
-    // and document type (if a native type), and clears the document’s edited status.
-    @IBAction func saveDocumentAs(_ sender: AnyObject) {
-        document?.runModalSavePanel(
-            for: .saveAsOperation,
-            delegate: self,
-            didSave: #selector(documentDidSaveAs(_:didSave:contextInfo:)),
-            contextInfo: nil)
-    }
-
-    @IBAction func duplicate(_ sender: AnyObject) {
-        document?.duplicate(
-            withDelegate: self,
-            didDuplicate: #selector(document(_:didDuplicate:contextInfo:)),
             contextInfo: nil)
     }
 
