@@ -7,12 +7,12 @@ export type Plugin = {
     options: {
       [argName: string]: unknown
     }
-  ): Promise<string>
+  ): Promise<any>
   parseWorkspace(
     workspacePath: string,
     helpers: Helpers,
     options: {
       [argName: string]: unknown
     }
-  ): Promise<void>
+  ): Promise<any>
 }

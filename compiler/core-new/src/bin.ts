@@ -53,10 +53,20 @@ yargs
       if (typeof argv.format !== 'string') {
         throw new Error('format option needs to be a string')
       }
-      convert(argv.path, argv.format, argv).catch(err => {
-        console.error(err)
-        process.exit(1)
-      })
+      convert(argv.path, argv.format, argv)
+        .then(result => {
+          if (result) {
+            if (typeof result === 'string') {
+              console.log(result)
+            } else {
+              console.log(JSON.stringify(result, null, '  '))
+            }
+          }
+        })
+        .catch(err => {
+          console.error(err)
+          process.exit(1)
+        })
     }
   )
   .demandCommand(1, 'Pass --help to see all available commands and options.')

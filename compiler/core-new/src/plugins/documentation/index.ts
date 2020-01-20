@@ -7,7 +7,7 @@ import { findChildPages } from './utils'
 export const parseFile = async (
   filePath: string,
   helpers: Helpers
-): Promise<string> => {
+): Promise<ConvertedFile> => {
   const documentNode = helpers.config.componentFiles[filePath]
 
   if (!documentNode) {
@@ -35,35 +35,35 @@ export const parseFile = async (
     },
   }
 
-  return JSON.stringify(file, null, '  ')
+  return file
 }
 
 export const parseWorkspace = async (
   workspacePath: string,
-  helpers: Helpers
-): Promise<void> => {
+  helpers: Helpers,
+  options: {
+    [key: string]: unknown
+  }
+): Promise<ConvertedWorkspace | void> => {
+  let workspace: ConvertedWorkspace
+
   if (!helpers.evaluationContext) {
     helpers.reporter.warn('Failed to evaluate workspace.')
-    console.log(
-      JSON.stringify(
-        { flatTokensSchemaVersion: '0.0.1', files: [] },
-        null,
-        '  '
-      )
-    )
-    return
-  }
-
-  const workspace: ConvertedWorkspace = {
-    files: (
-      await Promise.all(
+    workspace = { flatTokensSchemaVersion: '0.0.1', files: [] }
+  } else {
+    workspace = {
+      files: await Promise.all(
         helpers.config.logicPaths
           .concat(helpers.config.documentPaths)
           .map(x => parseFile(x, helpers))
-      )
-    ).map(x => JSON.parse(x)),
-    flatTokensSchemaVersion: '0.0.1',
+      ),
+      flatTokensSchemaVersion: '0.0.1',
+    }
   }
-  console.log(JSON.stringify(workspace, null, '  '))
-  return
+
+  if (!options.output) {
+    return workspace
+  }
+
+  await helpers.fs.writeFile('docs.json', JSON.stringify(workspace, null, '  '))
 }
