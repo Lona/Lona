@@ -42,7 +42,7 @@ class LogicDocument: NSDocument {
     }
 
     override func makeWindowControllers() {
-        DocumentController.shared.createOrFindWorkspaceWindowController(for: self)
+        // We manage window controllers in `showWindows`
     }
 
     override func showWindows() {

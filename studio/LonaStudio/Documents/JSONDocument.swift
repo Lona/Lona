@@ -41,7 +41,7 @@ class JSONDocument: NSDocument {
     var content: Content?
 
     override func makeWindowControllers() {
-        DocumentController.shared.createOrFindWorkspaceWindowController(for: self)
+        // We manage window controllers in `showWindows`
     }
 
     override func showWindows() {

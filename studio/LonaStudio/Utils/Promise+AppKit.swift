@@ -24,3 +24,21 @@ extension NSDocumentController {
         }
     }
 }
+
+extension NSDocument {
+    @discardableResult public func save(
+        to url: URL,
+        ofType type: String,
+        for saveOperation: NSDocument.SaveOperationType
+    ) -> Promise<NSDocument, NSError> {
+        return Promise<Void, NSError>.result { completed in
+            self.save(to: url, ofType: type, for: saveOperation, completionHandler: { error in
+                if let error = error {
+                    return completed(.failure(error as NSError))
+                } else {
+                    return completed(.success(self))
+                }
+            })
+        }
+    }
+}

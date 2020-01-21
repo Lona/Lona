@@ -434,8 +434,14 @@ class WorkspaceViewController: NSSplitViewController {
 
         fileNavigator.performCreateComponent = { path in
             let document = ComponentDocument()
-            document.component = CSComponent.makeDefaultComponent()
-//            return self.performCreateFile(path: path, document: document, ofType: "DocumentType")
+
+            let fileURL = URL(fileURLWithPath: path)
+
+            document
+                .save(to: fileURL, ofType: "DocumentType", for: .saveOperation)
+                .onSuccess({ document in
+                    DocumentController.shared.openDocument(withContentsOf: fileURL, display: true)
+                })
 
             return true
         }
