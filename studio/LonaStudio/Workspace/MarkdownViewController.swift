@@ -34,6 +34,8 @@ class MarkdownViewController: NSViewController {
 
     // MARK: Public
 
+    override var undoManager: UndoManager? { return nil }
+
     public var editable: Bool = true
 
     public var preview: Bool = true

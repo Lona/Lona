@@ -187,7 +187,8 @@ extension MarkdownDocument {
         }
     }
 
-    func setContent(_ value: [BlockEditor.Block], userInitiated: Bool) {
+    // Set the document's content. Returns true if the changes can be undone.
+    @discardableResult func setContent(_ value: [BlockEditor.Block], userInitiated: Bool) -> Bool {
         let oldPages = pages(blocks: content)
         let newPages = pages(blocks: value)
 
@@ -201,18 +202,25 @@ extension MarkdownDocument {
             }
         }
 
-        _ = deleteChildPageFiles(deleted, userInitiated: userInitiated)
+        // Delete child pages. Check the return to see if the user canceled the deletion
+        switch deleteChildPageFiles(deleted, userInitiated: userInitiated) {
+        case .success(false):
+            return false
+        default:
+            break
+        }
 
         let value = value.isEmpty ? [BlockEditor.Block.makeDefaultEmptyBlock()] : value
 
         self._content = value
 
-        self.updateChangeCount(.changeDone)
 
         if deleted.isEmpty {
             self.changeEmitter.emit(self.content)
+
+            return true
         } else {
-            guard let fileURL = fileURL else { return }
+            guard let fileURL = fileURL else { return true }
 
             // If we deleted child pages, we automatically save
             save(to: fileURL, for: .saveOperation).finalSuccess {
@@ -224,6 +232,8 @@ extension MarkdownDocument {
                     self.changeEmitter.emit(self.content)
                 }
             }
+
+            return false
         }
     }
 
@@ -270,32 +280,39 @@ extension MarkdownDocument {
         }
     }
 
-    private func deleteChildPageFiles(_ deleted: [String], userInitiated: Bool) -> Result<Void, MarkdownDocumentError> {
-        guard let fileURL = fileURL else { return .success(()) }
+    // Returns false if canceled, true otherwise
+    private func deleteChildPageFiles(_ deleted: [String], userInitiated: Bool) -> Result<Bool, MarkdownDocumentError> {
+        guard let fileURL = fileURL else { return .success(true) }
 
-        if deleted.isEmpty { return .success(()) }
+        if deleted.isEmpty { return .success(true) }
 
         let pageNoun = "page\(deleted.count > 1 ? "s" : "")"
 
-        if !userInitiated || Alert.runConfirmationAlert(
-            confirmationText: "Delete \(pageNoun)",
-            messageText: "This will delete the \(pageNoun) \(deleted.map { "'\($0)'" }.joined(separator: ", ")) and can't be undone. Continue?"
-        ) {
-            for pageName in deleted {
-                let pageURL = fileURL.deletingLastPathComponent().appendingPathComponent(pageName)
+        if userInitiated {
+            let ok = Alert.runConfirmationAlert(
+                confirmationText: "Delete \(pageNoun)",
+                messageText: "This will delete the \(pageNoun) \(deleted.map { "'\($0)'" }.joined(separator: ", ")) and can't be undone. Continue?"
+            )
 
-                do {
-                    try FileManager.default.removeItem(at: pageURL)
-                } catch CocoaError.fileNoSuchFile {
-                    // Continue if the file didn't exist
-                } catch {
-                    Swift.print("Failed to delete markdown page \(pageName)")
-                    return .failure(.failedToDeleteFile)
-                }
+            if !ok {
+                return .success(false)
             }
         }
 
-        return .success(())
+        for pageName in deleted {
+            let pageURL = fileURL.deletingLastPathComponent().appendingPathComponent(pageName)
+
+            do {
+                try FileManager.default.removeItem(at: pageURL)
+            } catch CocoaError.fileNoSuchFile {
+                // Continue if the file didn't exist
+            } catch {
+                Swift.print("Failed to delete markdown page \(pageName)")
+                return .failure(.failedToDeleteFile)
+            }
+        }
+
+        return .success(true)
     }
 
     // Make sure the parent document contains a link to this document
