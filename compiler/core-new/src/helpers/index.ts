@@ -9,6 +9,7 @@ export type Helpers = {
   fs: {
     readFile(filePath: string): Promise<string>
     writeFile(filePath: string, data: string): Promise<void>
+    copyDir(dirPath: string): Promise<void>
   }
   config: Config.Config
   evaluationContext: EvaluationContext | void
@@ -21,8 +22,12 @@ export type Helpers = {
 
 export default async (
   workspacePath: string,
-  outputPath?: unknown
+  _outputPath?: unknown
 ): Promise<Helpers> => {
+  const outputPath =
+    typeof _outputPath === 'string'
+      ? _outputPath
+      : path.join(process.cwd(), 'lona-generated')
   const fsWrapper = {
     readFile(filePath: string) {
       return fs.promises.readFile(
@@ -32,14 +37,28 @@ export default async (
     },
     writeFile(filePath: string, data: string) {
       return fs.promises.writeFile(
-        path.resolve(
-          typeof outputPath === 'string'
-            ? outputPath
-            : path.join(process.cwd(), 'lona-generated'),
-          filePath
-        ),
+        path.resolve(outputPath, filePath),
         data,
         'utf-8'
+      )
+    },
+    async copyDir(dirPath: string) {
+      const resolvedPath = path.resolve(workspacePath, dirPath)
+      const files = await fs.promises.readdir(resolvedPath)
+
+      Promise.all(
+        files.map(async x => {
+          if (
+            (await fs.promises.stat(path.join(resolvedPath, x))).isDirectory
+          ) {
+            return
+          }
+
+          return fsWrapper.writeFile(
+            path.join(dirPath, x),
+            await fsWrapper.readFile(path.join(dirPath, x))
+          )
+        })
       )
     },
   }
