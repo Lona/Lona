@@ -1,5 +1,15 @@
 import * as Glob from 'glob'
+import * as path from 'path'
 
-export const sync = (glob: string, options: { ignore?: string[] } = {}) => {
-  return Glob.sync(glob, options)
+/** search for files respecting the glob patter in the workspace.
+ * @returns an array of relative paths
+ */
+export const sync = (
+  workspacePath: string,
+  glob: string,
+  options: { ignore?: string[] } = {}
+) => {
+  return Glob.sync(path.join(workspacePath, glob), options).map(x =>
+    path.relative(workspacePath, x)
+  )
 }

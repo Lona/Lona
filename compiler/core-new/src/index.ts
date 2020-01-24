@@ -31,7 +31,11 @@ export const convertFile = async (
     )
   }
 
-  return formatter.parseFile(filePath, await Helpers(workspace), options || {})
+  return formatter.parseFile(
+    path.relative(workspace, filePath),
+    await Helpers(workspace),
+    options || {}
+  )
 }
 
 export const convertWorkspace = async (

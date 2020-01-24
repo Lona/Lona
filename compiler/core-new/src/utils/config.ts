@@ -49,17 +49,12 @@ export async function load(
   }
 
   const componentPaths = fileSearch.sync(
-    path.join(workspacePath, '**/*.component'),
+    workspacePath,
+    '**/*.component',
     lonaFile
   )
-  const documentPaths = fileSearch.sync(
-    path.join(workspacePath, '**/*.md'),
-    lonaFile
-  )
-  const logicPaths = fileSearch.sync(
-    path.join(workspacePath, '**/*.logic'),
-    lonaFile
-  )
+  const documentPaths = fileSearch.sync(workspacePath, '**/*.md', lonaFile)
+  const logicPaths = fileSearch.sync(workspacePath, '**/*.logic', lonaFile)
 
   const logicFiles = {}
   const componentFiles = {}
