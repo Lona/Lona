@@ -98,23 +98,18 @@ function resolveImports(
   }
 }
 
-export const generate = async (config: Config) => {
-  let programNode = LogicAST.joinPrograms(
-    Object.values(config.logicFiles).map(LogicAST.makeProgram)
-  )
-
-  programNode = LogicAST.joinPrograms([standardImportsProgram(), programNode])
-  programNode = resolveImports(programNode)
-
+export const scopedEvaluationContext = (
+  programNode: LogicAST.AST.SyntaxNode
+) => {
   const scopeContext = LogicScope.build(programNode)
 
   const unificationContext = LogicUnify.makeUnificationContext(
     programNode,
     scopeContext
   )
-  let substitution = LogicUnify.unify(unificationContext.constraints)
+  const substitution = LogicUnify.unify(unificationContext.constraints)
 
-  let evaluationContext = LogicEvaluate.evaluate(
+  const evaluationContext = LogicEvaluate.evaluate(
     programNode,
     programNode,
     scopeContext,
@@ -123,4 +118,15 @@ export const generate = async (config: Config) => {
   )
 
   return evaluationContext
+}
+
+export const generate = (config: Config) => {
+  let programNode = LogicAST.joinPrograms(
+    Object.values(config.logicFiles).map(LogicAST.makeProgram)
+  )
+
+  programNode = LogicAST.joinPrograms([standardImportsProgram(), programNode])
+  programNode = resolveImports(programNode)
+
+  return scopedEvaluationContext(programNode)
 }

@@ -49,12 +49,12 @@ export default async (
     fs: fsWrapper,
   })
 
-  const evaluationContext = await generateEvaluationContext(config)
-
   return {
     fs: fsWrapper,
     config,
-    evaluationContext,
+    get evaluationContext() {
+      return generateEvaluationContext(config)
+    },
     reporter: {
       log: console.log.bind(console),
       warn: console.warn.bind(console),
