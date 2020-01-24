@@ -9,7 +9,7 @@ export type Helpers = {
   fs: {
     readFile(filePath: string): Promise<string>
     writeFile(filePath: string, data: string): Promise<void>
-    copyDir(dirPath: string): Promise<void>
+    copyDir(dirPath: string, output?: string): Promise<void>
   }
   config: Config.Config
   evaluationContext: EvaluationContext | void
@@ -42,7 +42,7 @@ export default async (
         'utf-8'
       )
     },
-    async copyDir(dirPath: string) {
+    async copyDir(dirPath: string, output: string = '.') {
       const resolvedPath = path.resolve(workspacePath, dirPath)
       const files = await fs.promises.readdir(resolvedPath)
 
@@ -56,7 +56,7 @@ export default async (
 
           return fsWrapper.writeFile(
             path.join(dirPath, x),
-            await fsWrapper.readFile(path.join(dirPath, x))
+            await fsWrapper.readFile(path.join(output, x))
           )
         })
       )

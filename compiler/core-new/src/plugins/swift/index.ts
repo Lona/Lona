@@ -55,4 +55,6 @@ export const parseWorkspace = async (
         await helpers.fs.writeFile(outputPath, swiftContent)
       })
   )
+
+  await helpers.fs.copyDir(path.join(__dirname, '../../../static/swift'))
 }
