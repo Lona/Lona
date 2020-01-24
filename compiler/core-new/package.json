@@ -18,14 +18,18 @@
   "dependencies": {
     "@lona/serialization": "0.0.18-pre-8",
     "glob": "^7.1.6",
+    "lodash.camelcase": "^4.3.0",
     "lodash.intersection": "^4.4.0",
     "lodash.isequal": "^4.5.0",
+    "lodash.upperfirst": "^4.3.1",
     "yargs": "^15.1.0"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",
+    "@types/lodash.camelcase": "^4.3.6",
     "@types/lodash.intersection": "^4.4.6",
     "@types/lodash.isequal": "^4.5.5",
+    "@types/lodash.upperfirst": "^4.3.6",
     "@types/node": "^13.1.6",
     "jest": "^24.9.0",
     "prettier": "^1.19.1",
