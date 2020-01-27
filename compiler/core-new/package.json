@@ -10,18 +10,21 @@
     "prepublishOnly": "npm run build",
     "snapshot": "npm run snapshot:tokens",
     "snapshot:tokens": "ts-node src/bin.ts convert ../../examples/FlatTokens --format=tokens > ../../examples/generated/FlatTokens/output.json",
-    "snapshot:documentation": "ts-node src/bin.ts convert ../../examples/FlatTokens --format=documentation > ../../examples/generated/tokens/documentation.json"
+    "snapshot:documentation": "ts-node src/bin.ts convert ../../examples/FlatTokens --format=documentation > ../../examples/generated/tokens/documentation.json",
+    "snapshot:swift": "ts-node src/bin.ts convert ../../examples/FlatTokens --format=swift --output=../../examples/generated/tokens/swift"
   },
   "repository": "https://github.com/airbnb/Lona",
   "author": "Mathieu Dutour",
   "license": "MIT",
   "dependencies": {
     "@lona/serialization": "0.0.18-pre-8",
+    "csscolorparser": "^1.0.3",
     "glob": "^7.1.6",
     "lodash.camelcase": "^4.3.0",
     "lodash.intersection": "^4.4.0",
     "lodash.isequal": "^4.5.0",
     "lodash.upperfirst": "^4.3.1",
+    "prettier": "^1.19.1",
     "yargs": "^15.1.0"
   },
   "devDependencies": {
@@ -31,8 +34,8 @@
     "@types/lodash.isequal": "^4.5.5",
     "@types/lodash.upperfirst": "^4.3.6",
     "@types/node": "^13.1.6",
+    "@types/prettier": "^1.19.0",
     "jest": "^24.9.0",
-    "prettier": "^1.19.1",
     "ts-node": "^8.6.2",
     "typescript": "^3.7.4"
   },

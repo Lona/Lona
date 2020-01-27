@@ -70,7 +70,6 @@ yargs
     }
   )
   .demandCommand(1, 'Pass --help to see all available commands and options.')
-  .strict()
   .fail(msg => {
     yargs.showHelp()
     console.log('\n' + msg)

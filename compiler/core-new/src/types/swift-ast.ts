@@ -42,7 +42,7 @@ export const DeclarationModifier = {
   ...OtherModifier,
 }
 
-type Literal =
+export type Literal =
   | { type: 'Nil'; data: undefined }
   | { type: 'Boolean'; data: boolean }
   | { type: 'Integer'; data: number }
@@ -86,7 +86,7 @@ export type TypeAnnotation =
   | { type: 'TypeInheritanceList'; data: { list: TypeAnnotation[] } }
   | { type: 'ProtocolCompositionType'; data: TypeAnnotation[] }
 
-type Pattern =
+export type Pattern =
   | { type: 'WildcardPattern' }
   | {
       type: 'IdentifierPattern'
@@ -116,8 +116,8 @@ type Pattern =
 /* | IsPattern */
 /* | AsPattern */
 
-type InitializerBlock =
-  | { type: 'GetterBlock'; data: SwiftNode }
+export type InitializerBlock =
+  | { type: 'GetterBlock'; data: SwiftNode[] }
   | {
       type: 'GetterSetterBlock'
       data: {
@@ -129,7 +129,7 @@ type InitializerBlock =
       type: 'WillSetDidSetBlock'
       data: {
         willSet?: SwiftNode[]
-        didSet?: SwiftNode
+        didSet?: SwiftNode[]
       }
     }
 

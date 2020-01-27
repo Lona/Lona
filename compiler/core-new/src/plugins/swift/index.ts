@@ -3,6 +3,7 @@ import upperFirst from 'lodash.upperfirst'
 import camelCase from 'lodash.camelcase'
 import { Helpers } from '../../helpers'
 import convertLogic from './convert-logic'
+import renderSwift from './render-ast'
 import * as SwiftAST from '../../types/swift-ast'
 
 export const parseFile = async (
@@ -26,7 +27,15 @@ export const parseFile = async (
     return ''
   }
 
-  return JSON.stringify(swiftAST, null, '  ')
+  return `import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+${renderSwift(swiftAST)}`
 }
 
 export const parseWorkspace = async (
@@ -47,10 +56,7 @@ export const parseWorkspace = async (
         const name = upperFirst(
           camelCase(path.basename(filePath, path.extname(filePath)))
         )
-        const outputPath = path.relative(
-          helpers.config.workspacePath,
-          path.join(path.dirname(filePath), `${name}.swift`)
-        )
+        const outputPath = path.join(path.dirname(filePath), `${name}.swift`)
 
         await helpers.fs.writeFile(outputPath, swiftContent)
       })
