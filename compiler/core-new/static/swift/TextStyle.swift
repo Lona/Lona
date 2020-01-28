@@ -24,7 +24,7 @@ public class TextStyle {
     lineHeight: CGFloat? = nil,
     kerning: Double? = nil,
     color: Color? = nil,
-    alignment: NSTextAlignment = .left) {
+    alignment: NSTextAlignment? = nil) {
     self.fontFamily = fontFamily
     self.fontName = fontName
     self.fontWeight = fontWeight ?? FontWeight.w400
@@ -32,7 +32,7 @@ public class TextStyle {
     self.lineHeight = lineHeight
     self.kerning = kerning ?? 0
     self.color = color
-    self.alignment = alignment
+    self.alignment = alignment ?? NSTextAlignment.left
   }
 
   public func with(

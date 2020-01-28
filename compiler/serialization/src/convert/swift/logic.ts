@@ -1,32 +1,9 @@
 import * as AST from '../../types/logic-ast'
 import { indentBlock } from '../../formatting'
 import parser from './pegjs/logicSwiftParser'
-import { visit } from './visit-logic-ast'
 
 export function parse(code: string, options?: {}): AST.SyntaxNode {
-  const ast = parser.parse(code, options)
-
-  visit(ast, node => {
-    if (node.type !== 'argument') {
-      return
-    }
-    const arg = node.data.expression
-
-    // in case we have an argument `Optional.value(x)`, we just want `x`
-    if (
-      arg.type === 'functionCallExpression' &&
-      arg.data.expression.type === 'memberExpression' &&
-      arg.data.expression.data.memberName.string === 'value' &&
-      arg.data.expression.data.expression.type === 'identifierExpression' &&
-      arg.data.expression.data.expression.data.identifier.string ===
-        'Optional' &&
-      arg.data.arguments[0].type === 'argument'
-    ) {
-      node.data.expression = arg.data.arguments[0].data.expression
-    }
-  })
-
-  return ast
+  return parser.parse(code, options)
 }
 
 export function print(node: AST.SyntaxNode, options: { indent?: number } = {}) {
