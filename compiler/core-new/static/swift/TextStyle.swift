@@ -1,50 +1,55 @@
 import Foundation
-import UIKit
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
 
 public class TextStyle {
-  public let family: String?
-  public let name: String?
-  public let weight: UIFont.Weight
-  public let size: CGFloat
+  public let fontFamily: String?
+  public let fontName: String?
+  public let fontWeight: Font.Weight
+  public let fontSize: CGFloat
   public let lineHeight: CGFloat?
   public let kerning: Double
-  public let color: UIColor?
+  public let color: Color?
   public let alignment: NSTextAlignment
 
   public init(
-    family: String? = nil,
-    name: String? = nil,
-    weight: UIFont.Weight = UIFont.Weight.regular,
-    size: CGFloat = UIFont.systemFontSize,
+    fontFamily: String? = nil,
+    fontName: String? = nil,
+    fontSize: CGFloat? = nil,
+    fontWeight: Font.Weight? = nil,
     lineHeight: CGFloat? = nil,
-    kerning: Double = 0,
-    color: UIColor? = nil,
+    kerning: Double? = nil,
+    color: Color? = nil,
     alignment: NSTextAlignment = .left) {
-    self.family = family
-    self.name = name
-    self.weight = weight
-    self.size = size
+    self.fontFamily = fontFamily
+    self.fontName = fontName
+    self.fontWeight = fontWeight ?? FontWeight.w400
+    self.fontSize = fontSize ?? Font.systemFontSize
     self.lineHeight = lineHeight
-    self.kerning = kerning
+    self.kerning = kerning ?? 0
     self.color = color
     self.alignment = alignment
   }
 
   public func with(
-    family: String? = nil,
-    name: String? = nil,
-    weight: UIFont.Weight? = nil,
-    size: CGFloat? = nil,
+    fontFamily: String? = nil,
+    fontName: String? = nil,
+    fontSize: CGFloat? = nil,
+    fontWeight: Font.Weight? = nil,
     lineHeight: CGFloat? = nil,
     kerning: Double? = nil,
-    color: UIColor? = nil,
+    color: Color? = nil,
     alignment: NSTextAlignment? = nil
     ) -> TextStyle {
     return TextStyle(
-      family: family ?? self.family,
-      name: name ?? self.name,
-      weight: weight ?? self.weight,
-      size: size ?? self.size,
+      fontFamily: fontFamily ?? self.fontFamily,
+      fontName: fontName ?? self.fontName,
+      fontSize: fontSize ?? self.fontSize,
+      fontWeight: fontWeight ?? self.fontWeight,
       lineHeight: lineHeight ?? self.lineHeight,
       kerning: kerning ?? self.kerning,
       color: color ?? self.color,
@@ -61,42 +66,48 @@ public class TextStyle {
     return paragraphStyle
   }()
 
-  public lazy var uiFontDescriptor: UIFontDescriptor = {
-    var attributes: [UIFontDescriptor.AttributeName: Any] = [:]
-    var family = self.family
+  public lazy var fontDescriptor: FontDescriptor = {
+    var attributes: [FontDescriptor.AttributeName: Any] = [:]
+    var fontFamily = self.fontFamily
 
-    if family == nil && name == nil {
-      family = UIFont.systemFont(ofSize: UIFont.systemFontSize).familyName
+    if fontFamily == nil && fontName == nil {
+      fontFamily = Font.systemFont(ofSize: Font.systemFontSize).familyName
     }
 
-    if let family = family {
-      attributes[UIFontDescriptor.AttributeName.family] = family
+    if let fontFamily = fontFamily {
+      attributes[FontDescriptor.AttributeName.family] = fontFamily
     }
 
-    if let name = name {
-      attributes[UIFontDescriptor.AttributeName.name] = name
+    if let fontName = fontName {
+      attributes[FontDescriptor.AttributeName.name] = fontName
     }
 
-    attributes[UIFontDescriptor.AttributeName.traits] = [
-      UIFontDescriptor.TraitKey.weight: weight
+    attributes[FontDescriptor.AttributeName.traits] = [
+      FontDescriptor.TraitKey.weight: fontWeight
     ]
 
-    return UIFontDescriptor(fontAttributes: attributes)
+    return FontDescriptor(fontAttributes: attributes)
   }()
 
-  public lazy var uiFont: UIFont = {
-    return UIFont(descriptor: uiFontDescriptor, size: size)
+  public lazy var font: Font = {
+    #if os(iOS) || os(tvOS) || os(watchOS)
+      return Font(descriptor: fontDescriptor, size: fontSize)
+    #elseif os(macOS)
+      // NSFont can return nil as opposed to UIFont
+      return Font(descriptor: fontDescriptor, size: fontSize) ??
+        Font.systemFont(ofSize: fontSize, weight: fontWeight)
+    #endif
   }()
 
   public lazy var attributeDictionary: [NSAttributedString.Key: Any] = {
     var attributes: [NSAttributedString.Key: Any] = [
-      .font: uiFont,
+      .font: font,
       .kern: kerning,
       .paragraphStyle: paragraphStyle
     ]
 
     if let lineHeight = lineHeight {
-      attributes[.baselineOffset] = (lineHeight - uiFont.ascender + uiFont.descender) / 4
+      attributes[.baselineOffset] = (lineHeight - font.ascender + font.descender) / 2
     }
 
     if let color = color {
@@ -132,10 +143,10 @@ public class TextStyle {
 extension TextStyle: Equatable {
   public static func == (lhs: TextStyle, rhs: TextStyle) -> Bool {
     return (
-      lhs.family == rhs.family &&
-      lhs.name == rhs.name &&
-      lhs.weight == rhs.weight &&
-      lhs.size == rhs.size &&
+      lhs.fontFamily == rhs.fontFamily &&
+      lhs.fontName == rhs.fontName &&
+      lhs.fontWeight == rhs.fontWeight &&
+      lhs.fontSize == rhs.fontSize &&
       lhs.lineHeight == rhs.lineHeight &&
       lhs.kerning == rhs.kerning &&
       lhs.color == rhs.color &&

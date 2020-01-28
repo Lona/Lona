@@ -458,7 +458,7 @@ function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
               )
             ),
             options.outputFile(
-              `./Assets.xcassets/colors/${ast.data.pattern.data.identifier.data}/Contents.json`,
+              `./Assets.xcassets/colors/${ast.data.pattern.data.identifier.data}.colorset/Contents.json`,
               JSON.stringify(
                 {
                   info: {
@@ -472,7 +472,7 @@ function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
                         'color-space': 'srgb',
                         components: {
                           red: `0x${rgba.r.toString(16).toUpperCase()}`,
-                          alpha: `${rgba.a}`,
+                          alpha: `${rgba.a.toFixed(3)}`,
                           blue: `0x${rgba.b.toString(16).toUpperCase()}`,
                           green: `0x${rgba.g.toString(16).toUpperCase()}`,
                         },
@@ -500,7 +500,7 @@ function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
           'Color(',
           'named: ',
           `"${ast.data.pattern.data.identifier.data}"`,
-          ')',
+          ')!',
         ])
       }
 

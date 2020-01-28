@@ -44,17 +44,17 @@ export default async (
       const resolvedPath = path.resolve(workspacePath, dirPath)
       const files = await fs.promises.readdir(resolvedPath)
 
-      Promise.all(
+      await Promise.all(
         files.map(async x => {
           if (
-            (await fs.promises.stat(path.join(resolvedPath, x))).isDirectory
+            (await fs.promises.stat(path.join(resolvedPath, x))).isDirectory()
           ) {
             return
           }
 
           return fsWrapper.writeFile(
-            path.join(dirPath, x),
-            await fsWrapper.readFile(path.join(output, x))
+            path.join(output, x),
+            await fsWrapper.readFile(path.join(dirPath, x))
           )
         })
       )

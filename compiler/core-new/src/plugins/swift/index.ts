@@ -25,6 +25,7 @@ export const parseFile = async (
     ) {
       return ''
     }
+    console.log(filePath, JSON.stringify(logicNode, null, '  '))
     swiftAST = convertLogic(logicNode, helpers)
   }
 
@@ -71,5 +72,8 @@ export const parseWorkspace = async (
       })
   )
 
-  await helpers.fs.copyDir(path.join(__dirname, '../../../static/swift'))
+  await helpers.fs.copyDir(
+    path.join(__dirname, '../../../static/swift'),
+    './lona-helpers'
+  )
 }
