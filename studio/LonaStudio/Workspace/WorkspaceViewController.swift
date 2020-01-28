@@ -69,21 +69,6 @@ class WorkspaceViewController: NSSplitViewController {
 
     // MARK: Public
 
-    public var codeViewVisible: Bool {
-        get {
-            return splitViewItems.contains(codeItem)
-        }
-        set {
-            if newValue && !codeViewVisible {
-                let mainIndex = splitViewItems.firstIndex(of: mainItem)!
-                insertSplitViewItem(codeItem, at: mainIndex + 1)
-            } else if !newValue && codeViewVisible {
-                removeSplitViewItem(codeItem)
-            }
-        }
-    }
-    public var onChangeCodeViewVisible: ((Bool) -> Void)?
-
     public var activePanes: [WorkspacePane] {
         get {
             return WorkspacePane.all.filter {
@@ -153,18 +138,10 @@ class WorkspaceViewController: NSSplitViewController {
 
     private lazy var editorViewController = EditorViewController()
 
-    private lazy var companionViewController = EditorViewController()
-
     func updateEditorHeader(parameters: EditorHeader.Parameters) {
         editorViewController.titleText = parameters.titleText
         editorViewController.subtitleText = parameters.subtitleText
         editorViewController.fileIcon = parameters.fileIcon
-    }
-
-    func updateCompanionHeader(parameters: EditorHeader.Parameters) {
-        companionViewController.titleText = parameters.titleText
-        companionViewController.subtitleText = parameters.subtitleText
-        companionViewController.fileIcon = parameters.fileIcon
     }
 
     private lazy var componentEditorViewController: ComponentEditorViewController = {
@@ -366,7 +343,6 @@ class WorkspaceViewController: NSSplitViewController {
     override func viewDidAppear() {
         windowController = view.window?.windowController
         onChangeActivePanes?(activePanes)
-        onChangeCodeViewVisible?(codeViewVisible)
     }
 
     override func viewDidDisappear() {
@@ -487,7 +463,6 @@ class WorkspaceViewController: NSSplitViewController {
 
     private lazy var contentListItem = NSSplitViewItem(contentListWithViewController: fileNavigatorViewController)
     private lazy var mainItem = NSSplitViewItem(viewController: editorViewController)
-    private lazy var codeItem = NSSplitViewItem(viewController: companionViewController)
     private lazy var sidebarItem = NSSplitViewItem(viewController: inspectorViewController)
 
     private func setUpLayout() {
@@ -507,11 +482,6 @@ class WorkspaceViewController: NSSplitViewController {
         mainItem.preferredThicknessFraction = 0.5
         addSplitViewItem(mainItem)
 
-        // The codeItem is added to the splitview dynamically, based on saved preference
-        codeItem.minimumThickness = 180
-        codeItem.preferredThicknessFraction = 0.5
-        codeItem.holdingPriority = .dragThatCannotResizeWindow - 1
-
         sidebarItem.collapseBehavior = .preferResizingSiblingsWithFixedSplitView
         sidebarItem.canCollapse = false
         sidebarItem.minimumThickness = 280
@@ -522,7 +492,6 @@ class WorkspaceViewController: NSSplitViewController {
     func update() {
         inspectorView.content = inspectedContent
 
-        companionViewController.contentView = codeEditorViewController.contentView
         codeEditorViewController.document = document
 
         guard let document = document else {
@@ -577,16 +546,7 @@ class WorkspaceViewController: NSSplitViewController {
             editorViewController.subtitleText = subtitleText
             editorViewController.fileIcon = fileIcon
 
-            companionViewController.titleText = titleText
-            companionViewController.subtitleText = subtitleText
-            companionViewController.fileIcon = fileIcon
-
             return
-        }
-
-        codeEditorViewController.updateEditorHeader = { [weak self] parameters in
-            guard let self = self else { return }
-            self.updateCompanionHeader(parameters: parameters)
         }
 
         if let fileURL = document.fileURL {
@@ -612,10 +572,6 @@ class WorkspaceViewController: NSSplitViewController {
         editorViewController.titleText = titleText
         editorViewController.subtitleText = subtitleText
         editorViewController.fileIcon = fileIcon
-
-        companionViewController.titleText = titleText
-        companionViewController.subtitleText = subtitleText
-        companionViewController.fileIcon = fileIcon
 
         if document is ComponentDocument {
             inspectorViewVisible = true
@@ -667,7 +623,6 @@ class WorkspaceViewController: NSSplitViewController {
             inspectorViewVisible = false
 
             editorViewController.contentView = logicViewController.view
-            updateCompanionHeader(parameters: codeEditorViewController.headerParameters)
 
             logicViewController.rootNode = document.content
             logicViewController.onChangeRootNode = { rootNode in
