@@ -7,6 +7,7 @@
 //
 
 import AppKit
+import BreadcrumbBar
 import Foundation
 
 // MARK: - EditorViewController
@@ -62,21 +63,29 @@ class EditorViewController: NSViewController {
     // MARK: Private
 
     private let contentContainerView = NSView(frame: .zero)
-    private let editorHeaderView = EditorHeader()
+    private let editorHeaderView = BreadcrumbBar()
 
-    public var titleText: String {
-        get { return editorHeaderView.titleText }
-        set { editorHeaderView.titleText = newValue }
+    private var breadcrumb: Breadcrumb = .init(id: UUID(), title: "", icon: nil) {
+        didSet {
+            editorHeaderView.breadcrumbs = [breadcrumb]
+        }
     }
 
-    public var subtitleText: String {
-        get { return editorHeaderView.subtitleText }
-        set { editorHeaderView.subtitleText = newValue }
+    public var titleText: String = "" {
+        didSet {
+            breadcrumb.title = titleText + subtitleText
+        }
+    }
+
+    public var subtitleText: String = "" {
+        didSet {
+            breadcrumb.title = titleText + subtitleText
+        }
     }
 
     public var fileIcon: NSImage? {
-        get { return editorHeaderView.fileIcon }
-        set { editorHeaderView.fileIcon = newValue }
+        get { return breadcrumb.icon }
+        set { breadcrumb.icon = newValue }
     }
 
     private func setUpViews() {
