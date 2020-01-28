@@ -6,5 +6,5 @@ import Foundation
   import AppKit
 #endif
 
-public let primary: Color = #colorLiteral(red: 0.27058823529411763, green: 0.796078431372549, blue: 1, alpha: 1)
+public let primary: Color = Color(named: "primary")
 public let accent: Color = primary

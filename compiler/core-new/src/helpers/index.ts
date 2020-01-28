@@ -36,11 +36,9 @@ export default async (
       )
     },
     writeFile(filePath: string, data: string) {
-      return fs.promises.writeFile(
-        path.resolve(outputPath, filePath),
-        data,
-        'utf-8'
-      )
+      const resolvedPath = path.resolve(outputPath, filePath)
+      fs.mkdirSync(path.dirname(resolvedPath), { recursive: true })
+      return fs.promises.writeFile(resolvedPath, data, 'utf-8')
     },
     async copyDir(dirPath: string, output: string = '.') {
       const resolvedPath = path.resolve(workspacePath, dirPath)

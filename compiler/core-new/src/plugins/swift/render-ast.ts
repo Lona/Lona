@@ -3,6 +3,15 @@ import { parseCSSColor } from 'csscolorparser'
 
 import * as SwiftAST from '../../types/swift-ast'
 
+type Options = {
+  outputFile?: (filePath: string, data: string) => Promise<void>
+  reporter: {
+    log(...args: any[]): void
+    warn(...args: any[]): void
+    error(...args: any[]): void
+  }
+}
+
 const printerOptions = { printWidth: 120, tabWidth: 2, useTabs: false }
 const builders = doc.builders
 
@@ -128,19 +137,33 @@ function renderDeclarationModifier(node: SwiftAST.DeclarationModifier) {
   }
 }
 
-function render(ast: SwiftAST.SwiftNode): Doc {
+function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
   switch (ast.type) {
     case 'SwiftIdentifier':
       return ast.data
     case 'LiteralExpression':
-      return renderLiteral(ast.data)
+      return renderLiteral(ast.data, options)
     case 'MemberExpression':
-      return group(indent(join(ast.data.map(render), [builders.softline, '.'])))
+      return group(
+        indent(
+          join(
+            ast.data.map(x => render(x, options)),
+            [builders.softline, '.']
+          )
+        )
+      )
     case 'TupleExpression':
       return builders.concat(
         (['('] as Doc[])
           .concat(
-            group(indent(join(ast.data.map(render), [',', builders.line])))
+            group(
+              indent(
+                join(
+                  ast.data.map(x => render(x, options)),
+                  [',', builders.line]
+                )
+              )
+            )
           )
           .concat([')'])
       )
@@ -150,18 +173,18 @@ function render(ast: SwiftAST.SwiftNode): Doc {
         ast.data.right.data.type === 'Array'
       ) {
         return group([
-          render(ast.data.left),
+          render(ast.data.left, options),
           ' ',
           ast.data.operator,
           ' ',
-          render(ast.data.right),
+          render(ast.data.right, options),
         ])
       }
       return group([
-        render(ast.data.left),
+        render(ast.data.left, options),
         ' ',
         ast.data.operator,
-        indent([builders.line, render(ast.data.right)]),
+        indent([builders.line, render(ast.data.right, options)]),
       ])
     }
     case 'PrefixExpression': {
@@ -170,13 +193,16 @@ function render(ast: SwiftAST.SwiftNode): Doc {
         ast.data.expression.type === 'SwiftIdentifier' ||
         ast.data.expression.type === 'MemberExpression'
       ) {
-        return builders.concat([ast.data.operator, render(ast.data.expression)])
+        return builders.concat([
+          ast.data.operator,
+          render(ast.data.expression, options),
+        ])
       }
       return group([
         ast.data.operator,
         '(',
         builders.softline,
-        render(ast.data.expression),
+        render(ast.data.expression, options),
         builders.softline,
         ')',
       ])
@@ -191,7 +217,7 @@ function render(ast: SwiftAST.SwiftNode): Doc {
       return builders.concat([
         operator,
         builders.line,
-        render(ast.data.expression),
+        render(ast.data.expression, options),
       ])
     }
     case 'ClassDeclaration': {
@@ -207,7 +233,10 @@ function render(ast: SwiftAST.SwiftNode): Doc {
       const maybeInherits = ast.data.inherits.length
         ? builders.concat([
             ': ',
-            builders.join(', ', ast.data.inherits.map(renderTypeAnnotation)),
+            builders.join(
+              ', ',
+              ast.data.inherits.map(x => renderTypeAnnotation(x, options))
+            ),
           ])
         : ''
       const opening = group([
@@ -225,7 +254,12 @@ function render(ast: SwiftAST.SwiftNode): Doc {
 
       return builders.concat([
         opening,
-        indent(prefixAll(ast.data.body.map(render), builders.hardline)),
+        indent(
+          prefixAll(
+            ast.data.body.map(x => render(x, options)),
+            builders.hardline
+          )
+        ),
         closing,
       ])
     }
@@ -240,7 +274,10 @@ function render(ast: SwiftAST.SwiftNode): Doc {
       const maybeInherits = ast.data.inherits.length
         ? builders.concat([
             ': ',
-            join(ast.data.inherits.map(renderTypeAnnotation), ', '),
+            join(
+              ast.data.inherits.map(x => renderTypeAnnotation(x, options)),
+              ', '
+            ),
           ])
         : ''
       const opening = group([
@@ -256,7 +293,12 @@ function render(ast: SwiftAST.SwiftNode): Doc {
 
       return builders.concat([
         opening,
-        indent(prefixAll(ast.data.body.map(render), builders.hardline)),
+        indent(
+          prefixAll(
+            ast.data.body.map(x => render(x, options)),
+            builders.hardline
+          )
+        ),
         closing,
       ])
     }
@@ -272,7 +314,10 @@ function render(ast: SwiftAST.SwiftNode): Doc {
       const maybeProtocols = ast.data.protocols.length
         ? builders.concat([
             ': ',
-            join(ast.data.protocols.map(renderTypeAnnotation), ', '),
+            join(
+              ast.data.protocols.map(x => renderTypeAnnotation(x, options)),
+              ', '
+            ),
           ])
         : ''
       const opening = group([
@@ -289,7 +334,12 @@ function render(ast: SwiftAST.SwiftNode): Doc {
 
       return builders.concat([
         opening,
-        indent(prefixAll(ast.data.body.map(render), builders.hardline)),
+        indent(
+          prefixAll(
+            ast.data.body.map(x => render(x, options)),
+            builders.hardline
+          )
+        ),
         closing,
       ])
     }
@@ -307,7 +357,10 @@ function render(ast: SwiftAST.SwiftNode): Doc {
       const maybeInherits = ast.data.inherits.length
         ? builders.concat([
             ': ',
-            join(ast.data.inherits.map(renderTypeAnnotation), ', '),
+            join(
+              ast.data.inherits.map(x => renderTypeAnnotation(x, options)),
+              ', '
+            ),
           ])
         : ''
       const opening = group([
@@ -324,7 +377,12 @@ function render(ast: SwiftAST.SwiftNode): Doc {
 
       return builders.concat([
         opening,
-        indent(prefixAll(ast.data.body.map(render), builders.hardline)),
+        indent(
+          prefixAll(
+            ast.data.body.map(x => render(x, options)),
+            builders.hardline
+          )
+        ),
         closing,
       ])
     }
@@ -343,7 +401,7 @@ function render(ast: SwiftAST.SwiftNode): Doc {
         builders.line,
         '=',
         builders.line,
-        renderTypeAnnotation(ast.data.annotation),
+        renderTypeAnnotation(ast.data.annotation, options),
       ])
     }
     case 'ConstantDeclaration': {
@@ -352,13 +410,105 @@ function render(ast: SwiftAST.SwiftNode): Doc {
         ' '
       )
       const maybeInit = ast.data.init
-        ? builders.concat([' = ', render(ast.data.init)])
+        ? builders.concat([' = ', render(ast.data.init, options)])
         : ''
+
+      // check if we have a public color literal declaration
+      if (
+        ast.data.pattern.type === 'IdentifierPattern' &&
+        ast.data.pattern.data.identifier.type === 'SwiftIdentifier' &&
+        ast.data.pattern.data.annotation &&
+        ast.data.pattern.data.annotation.type === 'TypeName' &&
+        ast.data.pattern.data.annotation.data === 'Color' &&
+        ast.data.init &&
+        ast.data.init.type === 'LiteralExpression' &&
+        ast.data.init.data.type === 'Color' &&
+        ast.data.modifiers.indexOf(
+          SwiftAST.DeclarationModifier.PublicModifier
+        ) !== -1
+      ) {
+        const rgba = parseColorDefault(ast.data.init.data.data, 'black')
+
+        if (options.outputFile) {
+          Promise.all([
+            options.outputFile(
+              './Assets.xcassets/Contents.json',
+              JSON.stringify(
+                {
+                  info: {
+                    version: 1,
+                    author: 'Lona',
+                  },
+                },
+                null,
+                '  '
+              )
+            ),
+            options.outputFile(
+              './Assets.xcassets/colors/Contents.json',
+              JSON.stringify(
+                {
+                  info: {
+                    version: 1,
+                    author: 'Lona',
+                  },
+                },
+                null,
+                '  '
+              )
+            ),
+            options.outputFile(
+              `./Assets.xcassets/colors/${ast.data.pattern.data.identifier.data}/Contents.json`,
+              JSON.stringify(
+                {
+                  info: {
+                    version: 1,
+                    author: 'Lona',
+                  },
+                  colors: [
+                    {
+                      idiom: 'universal',
+                      color: {
+                        'color-space': 'srgb',
+                        components: {
+                          red: `0x${rgba.r.toString(16).toUpperCase()}`,
+                          alpha: `${rgba.a}`,
+                          blue: `0x${rgba.b.toString(16).toUpperCase()}`,
+                          green: `0x${rgba.g.toString(16).toUpperCase()}`,
+                        },
+                      },
+                    },
+                  ],
+                },
+                null,
+                '  '
+              )
+            ),
+          ]).catch(err => options.reporter.error(err))
+        } else {
+          options.reporter.warn(
+            `The output needs an xcasset file which wasn't emitted`
+          )
+        }
+
+        return group([
+          modifiers,
+          ast.data.modifiers.length ? ' ' : '',
+          'let ',
+          renderPattern(ast.data.pattern, options),
+          ' = ',
+          'Color(',
+          'named: ',
+          `"${ast.data.pattern.data.identifier.data}"`,
+          ')',
+        ])
+      }
+
       return group([
         modifiers,
         ast.data.modifiers.length ? ' ' : '',
         'let ',
-        renderPattern(ast.data.pattern),
+        renderPattern(ast.data.pattern, options),
         maybeInit,
       ])
     }
@@ -368,19 +518,19 @@ function render(ast: SwiftAST.SwiftNode): Doc {
         ' '
       )
       const maybeInit = ast.data.init
-        ? builders.concat([' = ', render(ast.data.init)])
+        ? builders.concat([' = ', render(ast.data.init, options)])
         : ''
       const maybeBlock = ast.data.block
         ? builders.concat([
             builders.line,
-            renderInitializerBlock(ast.data.block),
+            renderInitializerBlock(ast.data.block, options),
           ])
         : ''
       return group([
         modifiers,
         ast.data.modifiers.length ? ' ' : '',
         'var ',
-        renderPattern(ast.data.pattern),
+        renderPattern(ast.data.pattern, options),
         maybeInit,
         maybeBlock,
       ])
@@ -392,9 +542,9 @@ function render(ast: SwiftAST.SwiftNode): Doc {
           : '',
         ast.data.localName,
         ': ',
-        renderTypeAnnotation(ast.data.annotation),
+        renderTypeAnnotation(ast.data.annotation, options),
         ast.data.defaultValue
-          ? builders.concat([' = ', render(ast.data.defaultValue)])
+          ? builders.concat([' = ', render(ast.data.defaultValue, options)])
           : '',
       ])
     case 'InitializerDeclaration':
@@ -406,27 +556,36 @@ function render(ast: SwiftAST.SwiftNode): Doc {
         '(',
         indent([
           builders.softline,
-          join(ast.data.parameters.map(render), [',', builders.line]),
+          join(
+            ast.data.parameters.map(x => render(x, options)),
+            [',', builders.line]
+          ),
         ]),
         ')',
         ast.data.throws ? ' throws' : '',
         builders.line,
-        render({
-          type: 'CodeBlock',
-          data: {
-            statements: ast.data.body,
+        render(
+          {
+            type: 'CodeBlock',
+            data: {
+              statements: ast.data.body,
+            },
           },
-        }),
+          options
+        ),
       ])
     case 'DeinitializerDeclaration':
       return builders.concat([
         'deinit ',
-        render({
-          type: 'CodeBlock',
-          data: {
-            statements: ast.data,
+        render(
+          {
+            type: 'CodeBlock',
+            data: {
+              statements: ast.data,
+            },
           },
-        }),
+          options
+        ),
       ])
     case 'FunctionDeclaration':
       return group([
@@ -441,21 +600,30 @@ function render(ast: SwiftAST.SwiftNode): Doc {
           '(',
           indent([
             builders.softline,
-            join(ast.data.parameters.map(render), [',', builders.line]),
+            join(
+              ast.data.parameters.map(x => render(x, options)),
+              [',', builders.line]
+            ),
           ]),
           ')',
           ast.data.result
-            ? builders.concat([' -> ', renderTypeAnnotation(ast.data.result)])
+            ? builders.concat([
+                ' -> ',
+                renderTypeAnnotation(ast.data.result, options),
+              ])
             : '',
           ast.data.throws ? ' throws' : '',
         ]),
         builders.line,
-        render({
-          type: 'CodeBlock',
-          data: {
-            statements: ast.data.body,
+        render(
+          {
+            type: 'CodeBlock',
+            data: {
+              statements: ast.data.body,
+            },
           },
-        }),
+          options
+        ),
       ])
     case 'ImportDeclaration':
       return group(['import', builders.line, ast.data])
@@ -466,40 +634,52 @@ function render(ast: SwiftAST.SwiftNode): Doc {
         /* builders.hardline, */
         'if',
         builders.line,
-        render(ast.data.condition),
+        render(ast.data.condition, options),
         builders.line,
-        render({
-          type: 'CodeBlock',
-          data: { statements: ast.data.block },
-        }),
+        render(
+          {
+            type: 'CodeBlock',
+            data: { statements: ast.data.block },
+          },
+          options
+        ),
       ])
     case 'ForInStatement':
       return group([
         'for',
         builders.line,
-        renderPattern(ast.data.item),
+        renderPattern(ast.data.item, options),
         builders.line,
         'in',
         builders.line,
-        render(ast.data.collection),
+        render(ast.data.collection, options),
         builders.line,
-        render({ type: 'CodeBlock', data: { statements: ast.data.block } }),
+        render(
+          { type: 'CodeBlock', data: { statements: ast.data.block } },
+          options
+        ),
       ])
     case 'WhileStatement':
       return group([
         'while',
         builders.line,
-        render(ast.data.condition),
+        render(ast.data.condition, options),
         builders.line,
-        render({ type: 'CodeBlock', data: { statements: ast.data.block } }),
+        render(
+          { type: 'CodeBlock', data: { statements: ast.data.block } },
+          options
+        ),
       ])
     case 'SwitchStatement':
       return group([
         'while',
         builders.line,
-        render(ast.data.expression),
+        render(ast.data.expression, options),
         builders.line,
-        render({ type: 'CodeBlock', data: { statements: ast.data.cases } }),
+        render(
+          { type: 'CodeBlock', data: { statements: ast.data.cases } },
+          options
+        ),
       ])
     case 'CaseLabel': {
       /* Automatically add break statement if needed, for convenience */
@@ -510,9 +690,17 @@ function render(ast: SwiftAST.SwiftNode): Doc {
 
       return builders.concat([
         'case ',
-        join(ast.data.patterns.map(renderPattern), [',', builders.line]),
+        join(
+          ast.data.patterns.map(x => renderPattern(x, options)),
+          [',', builders.line]
+        ),
         ':',
-        indent(prefixAll(statements.map(render), builders.hardline)),
+        indent(
+          prefixAll(
+            statements.map(x => render(x, options)),
+            builders.hardline
+          )
+        ),
       ])
     }
     case 'DefaultCaseLabel': {
@@ -524,20 +712,25 @@ function render(ast: SwiftAST.SwiftNode): Doc {
 
       return builders.concat([
         'default:',
-        indent(prefixAll(statements.map(render), builders.hardline)),
+        indent(
+          prefixAll(
+            statements.map(x => render(x, options)),
+            builders.hardline
+          )
+        ),
       ])
     }
     case 'ReturnStatement':
-      return group(['return', ast.data ? render(ast.data) : ''])
+      return group(['return', ast.data ? render(ast.data, options) : ''])
     case 'FunctionCallArgument':
       return ast.data.name
         ? group([
-            render(ast.data.name),
+            render(ast.data.name, options),
             ':',
             builders.line,
-            render(ast.data.value),
+            render(ast.data.value, options),
           ])
-        : group(render(ast.data.value))
+        : group(render(ast.data.value, options))
     case 'FunctionCallExpression': {
       // TODO: (Mathieu): is that right?
       const endsWithLiteral =
@@ -546,11 +739,14 @@ function render(ast: SwiftAST.SwiftNode): Doc {
         ast.data.arguments[0].data.value.type !== 'LiteralExpression'
       const args = builders.concat([
         endsWithLiteral ? builders.softline : '',
-        join(ast.data.arguments.map(render), [',', builders.line]),
+        join(
+          ast.data.arguments.map(x => render(x, options)),
+          [',', builders.line]
+        ),
       ])
 
       return group([
-        render(ast.data.name),
+        render(ast.data.name, options),
         '(',
         endsWithLiteral ? indent(args) : args,
         ')',
@@ -560,33 +756,45 @@ function render(ast: SwiftAST.SwiftNode): Doc {
       const name = nodeWithSafeIdentifier(ast.data.name)
       if (!ast.data.value) {
         const params = ast.data.parameters
-          ? renderTypeAnnotation(ast.data.parameters)
+          ? renderTypeAnnotation(ast.data.parameters, options)
           : ''
-        return group(['case ', render(name), params])
+        return group(['case ', render(name, options), params])
       }
-      return group(['case ', render(name), ' = ', render(ast.data.value)])
+      return group([
+        'case ',
+        render(name, options),
+        ' = ',
+        render(ast.data.value, options),
+      ])
     }
     case 'ConditionList':
-      return group(indent(join(ast.data.map(render), [',', builders.line])))
+      return group(
+        indent(
+          join(
+            ast.data.map(x => render(x, options)),
+            [',', builders.line]
+          )
+        )
+      )
 
     case 'CaseCondition':
       return group([
         'case ',
-        renderPattern(ast.data.pattern),
+        renderPattern(ast.data.pattern, options),
         builders.line,
         '=',
         builders.line,
-        render(ast.data.init),
+        render(ast.data.init, options),
       ])
     case 'OptionalBindingCondition':
       return group([
         ast.data.const ? 'let' : 'var',
         ' ',
-        renderPattern(ast.data.pattern),
+        renderPattern(ast.data.pattern, options),
         builders.line,
         '=',
         builders.line,
-        render(ast.data.init),
+        render(ast.data.init, options),
       ])
     case 'Empty':
       return '' // This only works if lines are added between statements...
@@ -602,7 +810,7 @@ function render(ast: SwiftAST.SwiftNode): Doc {
     }
     case 'LineEndComment':
       return builders.concat([
-        render(ast.data.line),
+        render(ast.data.line, options),
         builders.lineSuffix(` // ${ast.data.comment}`),
       ])
     case 'CodeBlock': {
@@ -616,30 +824,41 @@ function render(ast: SwiftAST.SwiftNode): Doc {
         return builders.concat([
           '{',
           builders.line,
-          render(ast.data.statements[0]),
+          render(ast.data.statements[0], options),
           builders.line,
           '}',
         ])
       }
       return builders.concat([
         '{',
-        indent(prefixAll(ast.data.statements.map(render), builders.hardline)),
+        indent(
+          prefixAll(
+            ast.data.statements.map(x => render(x, options)),
+            builders.hardline
+          )
+        ),
         builders.hardline,
         '}',
       ])
     }
     case 'StatementListHelper':
       /* TODO: Get rid of this? */
-      return join(ast.data.map(render), builders.hardline)
+      return join(
+        ast.data.map(x => render(x, options)),
+        builders.hardline
+      )
     case 'TopLevelDeclaration':
       return builders.concat([
-        join(ast.data.statements.map(render), [builders.hardline]),
+        join(
+          ast.data.statements.map(x => render(x, options)),
+          [builders.hardline]
+        ),
         builders.hardline,
       ])
   }
 }
 
-function renderLiteral(node: SwiftAST.Literal): Doc {
+function renderLiteral(node: SwiftAST.Literal, options: Options): Doc {
   switch (node.type) {
     case 'Nil':
       return 'nil'
@@ -666,36 +885,42 @@ function renderLiteral(node: SwiftAST.Literal): Doc {
       return group(['#imageLiteral(resourceName: "', node.data, '")'])
     case 'Array': {
       const maybeLine = node.data.length ? builders.softline : ''
-      const body = join(node.data.map(render), [',', builders.line])
+      const body = join(
+        node.data.map(x => render(x, options)),
+        [',', builders.line]
+      )
 
       return group(['[', indent([maybeLine, body]), maybeLine, ']'])
     }
   }
 }
 
-function renderTypeAnnotation(node: SwiftAST.TypeAnnotation): Doc {
+function renderTypeAnnotation(
+  node: SwiftAST.TypeAnnotation,
+  options: Options
+): Doc {
   switch (node.type) {
     case 'TypeName':
       return node.data
     case 'TypeIdentifier':
       return group([
-        renderTypeAnnotation(node.data.name),
+        renderTypeAnnotation(node.data.name, options),
         builders.line,
         '.',
         builders.line,
-        renderTypeAnnotation(node.data.member),
+        renderTypeAnnotation(node.data.member, options),
       ])
     case 'ArrayType':
-      return group(['[', renderTypeAnnotation(node.data), ']'])
+      return group(['[', renderTypeAnnotation(node.data, options), ']'])
     case 'DictionaryType':
       return group([
         '[',
-        renderTypeAnnotation(node.data.key),
+        renderTypeAnnotation(node.data.key, options),
         ': ',
-        renderTypeAnnotation(node.data.value),
+        renderTypeAnnotation(node.data.value, options),
       ])
     case 'OptionalType':
-      return group([renderTypeAnnotation(node.data), '?'])
+      return group([renderTypeAnnotation(node.data, options), '?'])
     case 'TupleType':
       return builders.concat([
         '(',
@@ -705,9 +930,9 @@ function renderTypeAnnotation(node: SwiftAST.TypeAnnotation): Doc {
               x.elementName
                 ? builders.concat([
                     `${x.elementName}: `,
-                    renderTypeAnnotation(x.annotation),
+                    renderTypeAnnotation(x.annotation, options),
                   ])
-                : renderTypeAnnotation(x.annotation)
+                : renderTypeAnnotation(x.annotation, options)
             ),
             ', '
           )
@@ -716,7 +941,10 @@ function renderTypeAnnotation(node: SwiftAST.TypeAnnotation): Doc {
       ])
     case 'FunctionType': {
       const args = group(
-        join(node.data.arguments.map(renderTypeAnnotation), ', ')
+        join(
+          node.data.arguments.map(x => renderTypeAnnotation(x, options)),
+          ', '
+        )
       )
       return group([
         '(',
@@ -724,49 +952,66 @@ function renderTypeAnnotation(node: SwiftAST.TypeAnnotation): Doc {
         args,
         ') -> ',
         node.data.returnType
-          ? renderTypeAnnotation(node.data.returnType)
+          ? renderTypeAnnotation(node.data.returnType, options)
           : 'Void',
         ')',
       ])
     }
     case 'TypeInheritanceList':
-      return group(join(node.data.list.map(renderTypeAnnotation), ', '))
+      return group(
+        join(
+          node.data.list.map(x => renderTypeAnnotation(x, options)),
+          ', '
+        )
+      )
     case 'ProtocolCompositionType':
-      return group(join(node.data.map(renderTypeAnnotation), ' & '))
+      return group(
+        join(
+          node.data.map(x => renderTypeAnnotation(x, options)),
+          ' & '
+        )
+      )
   }
 }
 
-function renderPattern(node: SwiftAST.Pattern): Doc {
+function renderPattern(node: SwiftAST.Pattern, options: Options): Doc {
   switch (node.type) {
     case 'WildcardPattern':
       return '_'
     case 'IdentifierPattern': {
       const name = nodeWithSafeIdentifier(node.data.identifier)
       if (!node.data.annotation) {
-        return render(name)
+        return render(name, options)
       }
       return builders.concat([
-        render(name),
+        render(name, options),
         ': ',
-        renderTypeAnnotation(node.data.annotation),
+        renderTypeAnnotation(node.data.annotation, options),
       ])
     }
     case 'ValueBindingPattern':
       return group([
         node.data.kind,
         builders.line,
-        renderPattern(node.data.pattern),
+        renderPattern(node.data.pattern, options),
       ])
     case 'TuplePattern':
-      return group(['(', join(node.data.map(renderPattern), ', '), ')'])
+      return group([
+        '(',
+        join(
+          node.data.map(x => renderPattern(x, options)),
+          ', '
+        ),
+        ')',
+      ])
     case 'OptionalPattern':
-      return builders.concat([renderPattern(node.data.value), '?'])
+      return builders.concat([renderPattern(node.data.value, options), '?'])
     case 'ExpressionPattern':
-      return render(node.data.value)
+      return render(node.data.value, options)
     case 'EnumCasePattern': {
       const maybeTypeIdentifier = node.data.typeIdentifier || ''
       const maybePattern = node.data.tuplePattern
-        ? renderPattern(node.data.tuplePattern)
+        ? renderPattern(node.data.tuplePattern, options)
         : ''
       return group([
         maybeTypeIdentifier,
@@ -780,25 +1025,35 @@ function renderPattern(node: SwiftAST.Pattern): Doc {
 
 const isSingleLine = (x: SwiftAST.SwiftNode[]) =>
   x.length === 1 && x[0].type !== 'IfStatement'
-const renderStatements = (x: SwiftAST.SwiftNode[]) =>
+const renderStatements = (x: SwiftAST.SwiftNode[], options: Options) =>
   isSingleLine(x)
-    ? builders.concat(['{ ', builders.concat(x.map(render)), ' }'])
-    : render({ type: 'CodeBlock', data: { statements: x } })
+    ? builders.concat([
+        '{ ',
+        builders.concat(x.map(x => render(x, options))),
+        ' }',
+      ])
+    : render({ type: 'CodeBlock', data: { statements: x } }, options)
 
-function renderInitializerBlock(node: SwiftAST.InitializerBlock): Doc {
+function renderInitializerBlock(
+  node: SwiftAST.InitializerBlock,
+  options: Options
+): Doc {
   switch (node.type) {
     case 'GetterBlock':
-      return render({ type: 'CodeBlock', data: { statements: node.data } })
+      return render(
+        { type: 'CodeBlock', data: { statements: node.data } },
+        options
+      )
     case 'GetterSetterBlock':
       return builders.concat([
         '{',
         indent([
           builders.hardline,
           'get ',
-          renderStatements(node.data.get),
+          renderStatements(node.data.get, options),
           builders.hardline,
           'set ',
-          renderStatements(node.data.set),
+          renderStatements(node.data.set, options),
         ]),
         builders.hardline,
         '}',
@@ -808,10 +1063,16 @@ function renderInitializerBlock(node: SwiftAST.InitializerBlock): Doc {
       /* Special case some single-statement willSet/didSet and render them in a single line
          since they are common in our generated code and are easier to read than multiline */
       const willSet = node.data.willSet
-        ? builders.concat(['willSet ', renderStatements(node.data.willSet)])
+        ? builders.concat([
+            'willSet ',
+            renderStatements(node.data.willSet, options),
+          ])
         : ''
       const didSet = node.data.didSet
-        ? builders.concat(['didSet ', renderStatements(node.data.didSet)])
+        ? builders.concat([
+            'didSet ',
+            renderStatements(node.data.didSet, options),
+          ])
         : ''
 
       if (!node.data.willSet && !node.data.didSet) {
@@ -849,12 +1110,7 @@ function renderInitializerBlock(node: SwiftAST.InitializerBlock): Doc {
   }
 }
 
-export default function toString(ast: SwiftAST.SwiftNode) {
-  return doc.printer.printDocToString(render(ast), printerOptions).formatted
+export default function toString(ast: SwiftAST.SwiftNode, options: Options) {
+  return doc.printer.printDocToString(render(ast, options), printerOptions)
+    .formatted
 }
-//   ast
-//   |> render
-//   |> (
-//     doc =>
-//       Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted
-//   );

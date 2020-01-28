@@ -8,7 +8,12 @@ import * as SwiftAST from '../../types/swift-ast'
 
 export const parseFile = async (
   filePath: string,
-  helpers: Helpers
+  helpers: Helpers & {
+    emitFile?: (filePath: string, data: string) => Promise<void>
+  },
+  options: {
+    [key: string]: unknown
+  }
 ): Promise<string> => {
   let swiftAST: SwiftAST.SwiftNode | undefined
 
@@ -27,6 +32,10 @@ export const parseFile = async (
     return ''
   }
 
+  // only output file if we passed an output option
+  const outputFile =
+    typeof options['output'] !== 'undefined' ? helpers.fs.writeFile : undefined
+
   return `import Foundation
 
 #if os(iOS) || os(tvOS) || os(watchOS)
@@ -35,7 +44,7 @@ export const parseFile = async (
   import AppKit
 #endif
 
-${renderSwift(swiftAST)}`
+${renderSwift(swiftAST, { outputFile, reporter: helpers.reporter })}`
 }
 
 export const parseWorkspace = async (
@@ -49,7 +58,7 @@ export const parseWorkspace = async (
     helpers.config.logicPaths
       .concat(helpers.config.documentPaths)
       .map(async filePath => {
-        const swiftContent = await parseFile(filePath, helpers)
+        const swiftContent = await parseFile(filePath, helpers, options)
         if (!swiftContent) {
           return
         }
