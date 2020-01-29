@@ -9,9 +9,6 @@
 import Foundation
 import AppKit
 
-import Foundation
-import AppKit
-
 private func layerType(for value: CSValue) -> String {
     return value.data.get(key: "type").string ?? "None"
 }

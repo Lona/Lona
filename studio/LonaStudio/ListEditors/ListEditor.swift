@@ -9,17 +9,6 @@
 import Foundation
 import AppKit
 
-//
-//  ListEditor.swift
-//  ComponentStudio
-//
-//  Created by devin_abbott on 5/26/17.
-//  Copyright © 2017 Devin Abbott. All rights reserved.
-//
-
-import Foundation
-import Cocoa
-
 class ListView<Element: DataNode>: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTextFieldDelegate {
 
     func setup() {

@@ -1,5 +1,6 @@
 disabled_rules:
   - closure_spacing
+  - closure_parameter_position
   - colon
   - cyclomatic_complexity
   - empty_enum_arguments
@@ -20,6 +21,7 @@ disabled_rules:
   - line_length
   - nesting
   - operator_usage_whitespace
+  - orphaned_doc_comment
   - redundant_string_enum_value
   - redundant_void_return
   - return_arrow_whitespace
@@ -50,7 +52,7 @@ indentation: 2
 
 custom_rules:
   no_objcMembers:
-    name: "@objcMembers"
-    regex: "@objcMembers"
-    message: "Explicitly use @objc on each member you want to expose to Objective-C"
+    name: '@objcMembers'
+    regex: '@objcMembers'
+    message: 'Explicitly use @objc on each member you want to expose to Objective-C'
     severity: error

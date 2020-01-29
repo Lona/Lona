@@ -68,7 +68,7 @@ class DictionaryEditor: NSView, CSControl {
 
         translatesAutoresizingMaskIntoConstraints = false
 
-        var editor: ListEditor<DictionaryItem>? = nil
+        var editor: ListEditor<DictionaryItem>?
 
         editor = ListEditor<DictionaryItem>(frame: frame, options: [
             .onAddElement({

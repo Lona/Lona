@@ -12,7 +12,7 @@ public class WorkspaceWindow: NSWindow {
 
     public override var isMovableByWindowBackground: Bool {
         get { return false }
-        set {}
+        set { _ = newValue }
     }
 
     public override var acceptsFirstResponder: Bool {

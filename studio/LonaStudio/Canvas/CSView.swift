@@ -19,7 +19,7 @@ private class InnerView: LNAImageView, CSRendering {
 
     override var alphaValue: CGFloat {
         get { return multipliedAlpha }
-        set {}
+        set { _ = newValue }
     }
 }
 

@@ -360,7 +360,7 @@ class WorkspaceViewController: NSSplitViewController {
             DocumentController.shared.openDocument(withContentsOf: fileURL, display: false).finalResult { result in
                 switch result {
                 case .success(let document):
-                    DocumentController.shared.delete(document: document)
+                    _ = DocumentController.shared.delete(document: document)
                 case .failure:
                     do {
                         try FileManager.default.removeItem(at: fileURL)
