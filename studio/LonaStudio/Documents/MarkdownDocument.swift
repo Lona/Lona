@@ -325,6 +325,8 @@ extension MarkdownDocument {
 
         let title = customTitle ?? defaultTitle
 
+        let target = isIndexPage ? title : title + ".md"
+
         let parentURL = isIndexPage
             ? fileURL.deletingLastPathComponent().deletingLastPathComponent()
             : fileURL.deletingLastPathComponent()
@@ -333,7 +335,39 @@ extension MarkdownDocument {
         return DocumentController.shared.openDocument(withContentsOf: parentURL, display: false).onSuccess { [unowned self] parentDocument in
             guard let parentDocument = parentDocument as? MarkdownDocument else { return .failure(NSError.init()) }
 
-            let updated = MarkdownDocument.insertPageLink(blocks: parentDocument.content, title: title, target: title + ".md")
+            Swift.print("Inserting link in \(parentURL) to \(target)")
+
+            let updated = MarkdownDocument.insertPageLink(blocks: parentDocument.content, title: title, target: target)
+            parentDocument.setContent(updated, userInitiated: false)
+            _ = parentDocument.save(to: parentDocument.fileURL!, for: .saveOperation)
+
+            return .success(self)
+        }
+    }
+
+    // Remove the parent document's link to this document
+    func removeParentLink(customTitle: String? = nil) -> Promise<MarkdownDocument, NSError> {
+        guard let fileURL = fileURL else { return .failure(NSError.init()) }
+
+        let defaultTitle = isIndexPage
+            ? fileURL.deletingLastPathComponent().lastPathComponent
+            : fileURL.deletingPathExtension().lastPathComponent
+
+        let title = customTitle ?? defaultTitle
+
+        let target = isIndexPage ? title : title + ".md"
+
+        let parentURL = isIndexPage
+            ? fileURL.deletingLastPathComponent().deletingLastPathComponent()
+            : fileURL.deletingLastPathComponent()
+
+        // If the parent folder represents a page, make sure we have a link to the new markdown document
+        return DocumentController.shared.openDocument(withContentsOf: parentURL, display: false).onSuccess { [unowned self] parentDocument in
+            guard let parentDocument = parentDocument as? MarkdownDocument else { return .failure(NSError.init()) }
+
+            Swift.print("Removing link in \(parentURL) to \(target)")
+
+            let updated = MarkdownDocument.removePageLink(blocks: parentDocument.content, target: target)
             parentDocument.setContent(updated, userInitiated: false)
             _ = parentDocument.save(to: parentDocument.fileURL!, for: .saveOperation)
 
@@ -460,5 +494,53 @@ extension MarkdownDocument {
         }
 
         return .success(pageURL)
+    }
+
+    func movePage(to nextURL: URL, display shouldDisplay: Bool) -> Promise<MarkdownDocument, NSError> {
+        guard let prevURL = fileURL else { return .failure(NSError()) }
+
+        let prevParentURL = prevURL.deletingLastPathComponent()
+        let nextParentURL = nextURL.deletingLastPathComponent()
+
+        let prevTitle = isIndexPage
+            ? prevURL.deletingLastPathComponent().lastPathComponent
+            : prevURL.deletingPathExtension().lastPathComponent
+
+        let prevParentIsLonaPage = prevParentURL.isLonaPage()
+
+        let fileToMove = isIndexPage ? prevURL.deletingLastPathComponent() : prevURL
+
+        do {
+            Swift.print("Move item", prevURL, nextURL)
+            try FileManager.default.copyItem(atPath: fileToMove.path, toPath: nextURL.path)
+        } catch {
+            return .failure(error as NSError)
+        }
+
+        return DocumentController.shared.openDocument(withContentsOf: nextURL, display: shouldDisplay)
+            .onSuccess({ (document: NSDocument) in .success(document as! MarkdownDocument) })
+            // Link this page with its new parent
+            .onSuccess({ (document: MarkdownDocument) -> Promise<MarkdownDocument, NSError> in
+                if nextParentURL.isLonaPage() {
+                    Swift.print("movePage: Insert link in \(nextParentURL) to \(prevURL)")
+                    return document.ensureParentLink()
+                } else {
+                    return .success(document)
+                }
+            })
+            // Unlink this page from its old parent
+            // This has a side effect of deleting the old file
+            .onSuccess({ (document: MarkdownDocument) -> Promise<MarkdownDocument, NSError> in
+                if prevParentIsLonaPage {
+                    Swift.print("movePage: Remove link in \(prevParentURL) to \(prevTitle)")
+                    return document.removeParentLink(customTitle: prevTitle)
+                } else {
+                    return .success(document)
+                }
+            })
+            .onSuccess({ document in
+                DocumentController.shared.close(document: self)
+                return .success(document)
+            })
     }
 }

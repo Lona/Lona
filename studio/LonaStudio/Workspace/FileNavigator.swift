@@ -11,11 +11,23 @@ import FileTree
 import Foundation
 import Logic
 
-private class FileTreeCellView: NSTableCellView {
+private class FileTreeCellView: NSTableCellView, NSTextFieldDelegate {
     public var onChangeBackgroundStyle: ((NSView.BackgroundStyle) -> Void)?
 
     override var backgroundStyle: NSView.BackgroundStyle {
         didSet { onChangeBackgroundStyle?(backgroundStyle) }
+    }
+
+    public var onBeginRenaming: (() -> Void)?
+
+    public var onEndRenaming: ((FileTree.Path) -> Void)?
+
+    public func controlTextDidEndEditing(_ obj: Notification) {
+        guard let textView = obj.object as? NSTextField else { return }
+
+        if let cellView = textView.superview as? FileTreeCellView {
+            cellView.onEndRenaming?(textView.stringValue)
+        }
     }
 }
 
@@ -120,7 +132,7 @@ class FileNavigator: NSBox {
 
         fileTree.showRootFile = true
         fileTree.rowHeightForFile = { [unowned self] path in self.rowHeightForFile(atPath: path) }
-        fileTree.rowViewForFile = { [unowned self] path, _ in self.rowViewForFile(atPath: path) }
+        fileTree.rowViewForFile = { [unowned self] path, options in self.rowViewForFile(atPath: path, options: options) }
         fileTree.imageForFile = { [unowned self] path, size in self.imageForFile(atPath: path, size: size) }
         fileTree.displayNameForFile = { [unowned self] path in self.displayNameForFile(atPath: path) }
         fileTree.menuForFile = { [unowned self] path in self.menuForFile(atPath: path) }
@@ -151,15 +163,21 @@ class FileNavigator: NSBox {
         }
     }
 
-    private func menuForFile(atPath path: String) -> NSMenu {
-
-        // Allow the user to enter a file name with or without a path extension
-        func normalizeInputPath(_ path: String, filename: String, withExtension pathExtension: String) -> String {
-            let newFileURL = URL(fileURLWithPath: path).appendingPathComponent(filename)
-            let newFilePath = newFileURL.pathExtension == pathExtension ?
-                newFileURL.path : newFileURL.appendingPathExtension(pathExtension).path
-            return newFilePath
+    private func handleRenameFile(atPath path: String) {
+        if let cellView = fileTree.beginRenamingFile(atPath: path) as? FileTreeCellView {
+            cellView.onBeginRenaming?()
         }
+    }
+
+    // Allow the user to enter a file name with or without a path extension
+    private static func normalizeInputPath(parentPath path: String, filename: String, withExtension pathExtension: String) -> String {
+        let newFileURL = URL(fileURLWithPath: path).appendingPathComponent(filename)
+        let newFilePath = newFileURL.pathExtension == pathExtension ?
+            newFileURL.path : newFileURL.appendingPathExtension(pathExtension).path
+        return newFilePath
+    }
+
+    private func menuForFile(atPath path: String) -> NSMenu {
 
         let url = URL(fileURLWithPath: path)
 
@@ -180,8 +198,8 @@ class FileNavigator: NSBox {
                     guard let newFileName = Alert.runTextInputAlert(
                         messageText: "Enter a new component name",
                         placeholderText: "Component name") else { return }
-
-                    _ = self.performCreateComponent?(normalizeInputPath(path, filename: newFileName, withExtension: "component"))
+                    let newPath = FileNavigator.normalizeInputPath(parentPath: path, filename: newFileName, withExtension: "component")
+                    _ = self.performCreateComponent?(newPath)
                 }))
             }
 
@@ -252,6 +270,10 @@ class FileNavigator: NSBox {
 
             menu.addItem(NSMenuItem(title: "Delete", onClick: {
                 self.deleteAlertForFile(atPath: path)
+            }))
+
+            menu.addItem(NSMenuItem(title: "Rename", onClick: {
+                self.handleRenameFile(atPath: path)
             }))
         }
 
@@ -326,7 +348,7 @@ class FileNavigator: NSBox {
         return path == rootPath ? 38 : fileTree.defaultRowHeight
     }
 
-    private func rowViewForFile(atPath path: String) -> NSView {
+    private func rowViewForFile(atPath path: String, options: FileTree.RowViewOptions) -> NSView {
         let thumbnailSize = fileTree.defaultThumbnailSize
         let thumbnailMargin = fileTree.defaultThumbnailMargin
         let name = displayNameForFile(atPath: path)
@@ -335,6 +357,11 @@ class FileNavigator: NSBox {
 
         let textView = NSTextField(labelWithString: name)
         let iconView: NSView
+
+        if options.contains(.editable) {
+            textView.isEditable = true
+            textView.isEnabled = true
+        }
 
         if FileManager.default.isDirectory(path: path) {
             if path == rootPath {
@@ -361,6 +388,8 @@ class FileNavigator: NSBox {
 
         view.addSubview(textView)
         view.addSubview(iconView)
+
+        view.textField = textView
 
         iconView.translatesAutoresizingMaskIntoConstraints = false
         iconView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: thumbnailMargin).isActive = true
@@ -415,9 +444,37 @@ class FileNavigator: NSBox {
                 } else if let iconView = iconView as? FileIcon {
                     iconView.selected = true
                 }
-                textView.textColor = .white
+
+                if options.contains(.editable) {
+                    textView.textColor = NSColor.controlTextColor
+                } else {
+                    textView.textColor = .white
+                }
             default:
                 break
+            }
+        }
+
+        view.onBeginRenaming = { [unowned self] in
+            textView.delegate = view
+            NSApp.activate(ignoringOtherApps: true)
+            self.fileTree.window?.makeFirstResponder(textView)
+        }
+
+        view.onEndRenaming = { [unowned self] newName in
+            Swift.print("End renaming", newName)
+
+            textView.delegate = nil
+
+            self.fileTree.endRenamingFile()
+
+            if newName != name {
+                let url = URL(fileURLWithPath: path)
+                let parentPath = url.deletingLastPathComponent().path
+                let newPath = url.hasMarkdownExtension()
+                    ? FileNavigator.normalizeInputPath(parentPath: parentPath, filename: newName, withExtension: "md")
+                    : URL(fileURLWithPath: parentPath).appendingPathComponent(newName).path
+                _ = self.fileTree.performMoveFile?(path, newPath)
             }
         }
 

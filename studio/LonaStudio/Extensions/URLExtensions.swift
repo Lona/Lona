@@ -39,7 +39,7 @@ extension URL {
     }
 
     func hasMarkdownExtension() -> Bool {
-        return pathExtension == ".md"
+        return pathExtension == "md"
     }
 
     func isLonaPage() -> Bool {

@@ -91,7 +91,7 @@ extension DocumentController {
         }
     }
 
-    public func delete(document: NSDocument) {
+    public func delete(document: NSDocument) -> Promise<NSDocument, NSError> {
         close(document: document)
 
         if let fileURL = document.fileURL {
@@ -99,7 +99,9 @@ extension DocumentController {
                 ? fileURL.deletingLastPathComponent()
                 : fileURL
 
-            openDocument(withContentsOf: urlToRemove.deletingLastPathComponent(), display: false).onResult { (result) -> Promise<NSDocument, NSError> in
+            Swift.print("Will remove", urlToRemove)
+
+            return openDocument(withContentsOf: urlToRemove.deletingLastPathComponent(), display: false).onResult { (result) -> Promise<NSDocument, NSError> in
                 switch result {
                 case .success(let parentDocument):
                     let pageName = urlToRemove.lastPathComponent
@@ -108,13 +110,13 @@ extension DocumentController {
 
                         let updated = MarkdownDocument.removePageLink(blocks: parentDocument.content, target: pageName)
                         parentDocument.setContent(updated, userInitiated: false)
-                        return .success(parentDocument)
+                        return .success(document)
                     }
                     return .failure(NSError.init())
                 case .failure(let error):
                     return .failure(error)
                 }
-            }.finalFailure { (error: NSError) in
+            }.onFailure { (error: NSError) in
                 Swift.print("Falling back to deleting file manually", urlToRemove)
 
                 do {
@@ -122,7 +124,11 @@ extension DocumentController {
                 } catch {
                     Swift.print("INFO", error)
                 }
+
+                return .success(document)
             }
+        } else {
+            fatalError("Can't delete document missing fileURL")
         }
     }
 }

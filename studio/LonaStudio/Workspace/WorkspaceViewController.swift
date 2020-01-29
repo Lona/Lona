@@ -393,13 +393,26 @@ class WorkspaceViewController: NSSplitViewController {
         fileNavigator.validateProposedMove = { prev, next in false }
 
         fileNavigator.performMoveFile = { prev, next in
-            do {
-                try FileManager.default.moveItem(atPath: prev, toPath: next)
-                LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
+            Swift.print("Move", prev, "=>", next)
+
+            let prevURL = URL(fileURLWithPath: prev)
+            let nextURL = URL(fileURLWithPath: next)
+
+            if prevURL.isLonaPage() {
+                DocumentController.shared.openDocument(withContentsOf: prevURL, display: false)
+                    // Save this page to its new location
+                    .onSuccess({ document in
+                        return (document as! MarkdownDocument).movePage(to: nextURL, display: true)
+                    })
                 return true
-            } catch {
-                Swift.print("Failed to move \(prev) to \(next)")
-                return false
+            } else {
+                do {
+                    try FileManager.default.moveItem(atPath: prev, toPath: next)
+                    return true
+                } catch {
+                    Swift.print("Failed to move \(prev) to \(next)")
+                    return false
+                }
             }
         }
 
