@@ -36,6 +36,16 @@ class EditorViewController: NSViewController {
 
     // MARK: Public
 
+    public var breadcrumbs: [Breadcrumb] {
+        get { return breadcrumbView.breadcrumbs }
+        set { breadcrumbView.breadcrumbs = newValue }
+    }
+
+    public var onClickBreadcrumb: ((UUID) -> Void)? {
+        get { return breadcrumbView.onClickBreadcrumb }
+        set { breadcrumbView.onClickBreadcrumb = newValue }
+    }
+
     public var contentView: NSView? {
         didSet {
             if let contentView = contentView {
@@ -47,7 +57,7 @@ class EditorViewController: NSViewController {
                     contentContainerView.addSubview(contentView)
 
                     contentView.translatesAutoresizingMaskIntoConstraints = false
-                    contentView.topAnchor.constraint(equalTo: editorHeaderView.bottomAnchor).isActive = true
+                    contentView.topAnchor.constraint(equalTo: breadcrumbView.bottomAnchor).isActive = true
                     contentView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor).isActive = true
                     contentView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor).isActive = true
                     contentView.bottomAnchor.constraint(equalTo: contentContainerView.bottomAnchor).isActive = true
@@ -63,47 +73,25 @@ class EditorViewController: NSViewController {
     // MARK: Private
 
     private let contentContainerView = NSView(frame: .zero)
-    private let editorHeaderView = BreadcrumbBar()
 
-    private var breadcrumb: Breadcrumb = .init(id: UUID(), title: "", icon: nil) {
-        didSet {
-            editorHeaderView.breadcrumbs = [breadcrumb]
-        }
-    }
-
-    public var titleText: String = "" {
-        didSet {
-            breadcrumb.title = titleText + subtitleText
-        }
-    }
-
-    public var subtitleText: String = "" {
-        didSet {
-            breadcrumb.title = titleText + subtitleText
-        }
-    }
-
-    public var fileIcon: NSImage? {
-        get { return breadcrumb.icon }
-        set { breadcrumb.icon = newValue }
-    }
+    private let breadcrumbView = BreadcrumbBar()
 
     private func setUpViews() {
         self.view = contentContainerView
 
-        editorHeaderView.fillColor = Colors.contentBackground
+        breadcrumbView.fillColor = Colors.contentBackground
     }
 
     private func setUpConstraints() {
         contentContainerView.translatesAutoresizingMaskIntoConstraints = false
-        editorHeaderView.translatesAutoresizingMaskIntoConstraints = false
+        breadcrumbView.translatesAutoresizingMaskIntoConstraints = false
 
-        contentContainerView.addSubview(editorHeaderView)
+        contentContainerView.addSubview(breadcrumbView)
 
-        editorHeaderView.topAnchor.constraint(equalTo: contentContainerView.topAnchor).isActive = true
-        editorHeaderView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor).isActive = true
-        editorHeaderView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor).isActive = true
-        editorHeaderView.heightAnchor.constraint(equalToConstant: 38).isActive = true
+        breadcrumbView.topAnchor.constraint(equalTo: contentContainerView.topAnchor).isActive = true
+        breadcrumbView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor).isActive = true
+        breadcrumbView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor).isActive = true
+        breadcrumbView.heightAnchor.constraint(equalToConstant: 38).isActive = true
     }
 
     private func update() {}

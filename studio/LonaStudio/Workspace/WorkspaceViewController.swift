@@ -7,6 +7,7 @@
 //
 
 import AppKit
+import BreadcrumbBar
 import FileTree
 import Foundation
 import Logic
@@ -137,12 +138,6 @@ class WorkspaceViewController: NSSplitViewController {
     }()
 
     private lazy var editorViewController = EditorViewController()
-
-    func updateEditorHeader(parameters: EditorHeader.Parameters) {
-        editorViewController.titleText = parameters.titleText
-        editorViewController.subtitleText = parameters.subtitleText
-        editorViewController.fileIcon = parameters.fileIcon
-    }
 
     private lazy var componentEditorViewController: ComponentEditorViewController = {
         let controller = ComponentEditorViewController()
@@ -489,6 +484,45 @@ class WorkspaceViewController: NSSplitViewController {
         addSplitViewItem(sidebarItem)
     }
 
+    private static func makeBreadcrumbs(for selectedFileURL: URL) -> (breadcrumbs: [Breadcrumb], handler: (UUID) -> Void) {
+        let relativePathComponents = selectedFileURL.pathComponents.dropFirst(CSUserPreferences.workspaceURL.pathComponents.count)
+
+        let workspaceBreadcrumb = Breadcrumb(
+            id: UUID(),
+            title: CSWorkspacePreferences.workspaceName,
+            icon: NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
+        )
+
+        var breadcrumbURLs: [UUID: URL] = [workspaceBreadcrumb.id: CSUserPreferences.workspaceURL]
+
+        let pageBreadcrumbs: [Breadcrumb] = relativePathComponents.enumerated().map { index, component in
+            let url = relativePathComponents.dropLast(relativePathComponents.count - index - 1).reduce(CSUserPreferences.workspaceURL, { (result, item) in
+                result.appendingPathComponent(item)
+            })
+
+            let id = UUID()
+
+            breadcrumbURLs[id] = url
+
+            let icon = url.isLonaMarkdownDirectory()
+                ? NSWorkspace.shared.icon(forFile: url.appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME).path)
+                : NSWorkspace.shared.icon(forFile: url.path)
+
+            let title = component.hasSuffix(".md") ? String(component.dropLast(3)) : component
+
+            return Breadcrumb(id: id, title: title, icon: icon)
+        }
+
+        let breadcrumbs = [workspaceBreadcrumb] + pageBreadcrumbs
+
+        let handler: (UUID) -> Void = { uuid in
+            guard let url = breadcrumbURLs[uuid] else { return }
+            DocumentController.shared.openDocument(withContentsOf: url, display: true)
+        }
+
+        return (breadcrumbs, handler)
+    }
+
     func update() {
         inspectorView.content = inspectedContent
 
@@ -538,40 +572,32 @@ class WorkspaceViewController: NSSplitViewController {
 
             inspectorViewVisible = false
 
-            let titleText = "No document"
-            let subtitleText = ""
-            let fileIcon: NSImage? = nil
-
-            editorViewController.titleText = titleText
-            editorViewController.subtitleText = subtitleText
-            editorViewController.fileIcon = fileIcon
+            editorViewController.breadcrumbs = [
+                .init(id: UUID(), title: "No document", icon: nil)
+            ]
 
             return
         }
 
         if let fileURL = document.fileURL {
-            fileNavigator.selectedFile = fileURL.lastPathComponent == MarkdownDocument.INDEX_PAGE_NAME
-                ? fileURL.deletingLastPathComponent().path
-                : fileURL.path
-        }
+            let selectedFileURL = fileURL.lastPathComponent == MarkdownDocument.INDEX_PAGE_NAME
+                ? fileURL.deletingLastPathComponent()
+                : fileURL
 
-        var titleText = document.fileURL?.lastPathComponent ?? "Untitled"
-        let subtitleText = document.isDocumentEdited == true ? " — Edited" : ""
-        let fileIcon: NSImage?
-        if let fileURL = document.fileURL {
-            fileIcon = NSWorkspace.shared.icon(forFile: fileURL.path)
+            fileNavigator.selectedFile = selectedFileURL.path
 
-            // When editing a README, display the name of the directory as the title
-            if fileURL.lastPathComponent == MarkdownDocument.INDEX_PAGE_NAME {
-                titleText = fileURL.deletingLastPathComponent().lastPathComponent
-            }
+            let (breadcrumbs, handler) = WorkspaceViewController.makeBreadcrumbs(for: selectedFileURL)
+
+            editorViewController.breadcrumbs = breadcrumbs
+            editorViewController.onClickBreadcrumb = handler
         } else {
-            fileIcon = NSImage()
-        }
+            let titleText = document.fileURL?.lastPathComponent ?? "Untitled"
+            let subtitleText = document.isDocumentEdited == true ? " — Edited" : ""
 
-        editorViewController.titleText = titleText
-        editorViewController.subtitleText = subtitleText
-        editorViewController.fileIcon = fileIcon
+            editorViewController.breadcrumbs = [
+                .init(id: UUID(), title: titleText + subtitleText, icon: nil)
+            ]
+        }
 
         if document is ComponentDocument {
             inspectorViewVisible = true
