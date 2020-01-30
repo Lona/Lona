@@ -253,7 +253,6 @@
 		6B8D7DA321BF04B60087A3F7 /* InspectorSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D7DA221BF04B60087A3F7 /* InspectorSectionHeader.swift */; };
 		6B9733CE2236E602005967E8 /* LonaJS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9733CD2236E602005967E8 /* LonaJS.swift */; };
 		6B9733D22236F2BF005967E8 /* svg-model.umd.js in Resources */ = {isa = PBXBuildFile; fileRef = 6B9733D12236F2BE005967E8 /* svg-model.umd.js */; };
-		6B9C662E23DFA1FF00F5FA6C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 6B9C662D23DFA1FF00F5FA6C /* SwiftPackageProductDependency */; };
 		6BA5BBD72173A7F600F086A7 /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD62173A7F600F086A7 /* Shadows.swift */; };
 		6BA5BBD92174F2A500F086A7 /* FileNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD82174F2A500F086A7 /* FileNavigator.swift */; };
 		6BA5BBDB2174FA2100F086A7 /* FileNavigatorHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBDA2174FA2100F086A7 /* FileNavigatorHeader.swift */; };
@@ -283,6 +282,7 @@
 		6BC6062C223F191A003E616B /* Logic.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BC60626223F1878003E616B /* Logic.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6BC60631223F1947003E616B /* Logic.framework.dSYM in Resources */ = {isa = PBXBuildFile; fileRef = 6BC60630223F1947003E616B /* Logic.framework.dSYM */; };
 		6BC60632223F194E003E616B /* Logic.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6BC60630223F1947003E616B /* Logic.framework.dSYM */; };
+		6BCCE31123E27034004C482E /* BreadcrumbBar in Frameworks */ = {isa = PBXBuildFile; productRef = 6BCCE31023E27034004C482E /* BreadcrumbBar */; };
 		6BCE162722D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCE162622D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift */; };
 		6BD4976121E42EC400BC3970 /* AccessibilityInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */; };
 		6BD4976321E53F2000BC3970 /* Accessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976221E53F2000BC3970 /* Accessibility.swift */; };
@@ -687,7 +687,7 @@
 				6BA6E895212F92B0009CD33C /* Witness.framework in Frameworks */,
 				6BC6062B223F191A003E616B /* Logic.framework in Frameworks */,
 				6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */,
-				6B9C662E23DFA1FF00F5FA6C /* BuildFile in Frameworks */,
+				6BCCE31123E27034004C482E /* BreadcrumbBar in Frameworks */,
 				6B5886862134D6BB00CCA69F /* ControlledComponents.framework in Frameworks */,
 				6B2DC1AB21361C4700679668 /* ColorPicker.framework in Frameworks */,
 				6BF894D32214E3DD000CD863 /* Differ.framework in Frameworks */,
@@ -1339,7 +1339,7 @@
 			);
 			name = LonaStudio;
 			packageProductDependencies = (
-				6B9C662D23DFA1FF00F5FA6C /* SwiftPackageProductDependency */,
+				6BCCE31023E27034004C482E /* BreadcrumbBar */,
 			);
 			productName = ComponentStudio;
 			productReference = 6B0AEFB41EBF74D800F35BBF /* LonaStudio.app */;
@@ -1404,7 +1404,7 @@
 			);
 			mainGroup = 6B0AEFAB1EBF74D700F35BBF;
 			packageReferences = (
-				6B9C662C23DFA1FF00F5FA6C /* RemoteSwiftPackageReference */,
+				6BCCE30F23E27034004C482E /* XCRemoteSwiftPackageReference "BreadcrumbBar" */,
 			);
 			productRefGroup = 6B0AEFB51EBF74D800F35BBF /* Products */;
 			projectDirPath = "";
@@ -2112,9 +2112,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		6B9C662C23DFA1FF00F5FA6C /* RemoteSwiftPackageReference */ = {
+		6BCCE30F23E27034004C482E /* XCRemoteSwiftPackageReference "BreadcrumbBar" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:dabbott/BreadcrumbBar.git";
+			repositoryURL = "https://github.com/dabbott/BreadcrumbBar.git";
 			requirement = {
 				branch = master;
 				kind = branch;
@@ -2123,9 +2123,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		6B9C662D23DFA1FF00F5FA6C /* SwiftPackageProductDependency */ = {
+		6BCCE31023E27034004C482E /* BreadcrumbBar */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 6B9C662C23DFA1FF00F5FA6C /* RemoteSwiftPackageReference */;
+			package = 6BCCE30F23E27034004C482E /* XCRemoteSwiftPackageReference "BreadcrumbBar" */;
 			productName = BreadcrumbBar;
 		};
 /* End XCSwiftPackageProductDependency section */
