@@ -42,10 +42,16 @@ script:
 
   - cd studio
   - carthage build --platform macOS
+    
+    # https://stackoverflow.com/a/58186048
+  - for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts
+  
   - xcodebuild -version
   - xcodebuild -showsdks
   - xcodebuild -list
-  - xcodebuild -resolvePackageDependencies -workspace "$WORKSPACE"
+
+    # Download Swift packages
+  - xcodebuild -resolvePackageDependencies -workspace "$WORKSPACE" -scheme "$SCHEME" 
 
     # Build Lona
   - if [ $BUILD_EXAMPLE == "YES" ]; then
