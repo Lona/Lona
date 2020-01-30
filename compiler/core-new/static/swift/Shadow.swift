@@ -10,13 +10,12 @@ public struct Shadow {
   let color: Color
   let offset: CGSize
   let blur: CGFloat
-  let radius: CGFloat
 
+  // radius is not supported on swift
   public init(x: CGFloat, y: CGFloat, blur: CGFloat, radius: CGFloat, color: Color) {
     self.color = color
     self.offset = CGSize(width: x, height: y)
     self.blur = blur
-    self.radius = radius
   }
 
   func apply(to layer: CALayer) {
