@@ -25,8 +25,8 @@ export const parseFile = async (
     ) {
       return ''
     }
-    console.log(filePath, JSON.stringify(logicNode, null, '  '))
-    swiftAST = convertLogic(logicNode, helpers)
+    const preludeDepencies = helpers.flagForPreludeDependencies(logicNode)
+    swiftAST = convertLogic(logicNode, preludeDepencies, helpers)
   }
 
   if (!swiftAST) {

@@ -1,9 +1,11 @@
 import * as fs from 'fs'
 import * as path from 'path'
+import { LogicAST } from '@lona/serialization'
 
 import { config as Config } from '../utils'
 import { generate as generateEvaluationContext } from './evaluation-context'
 import { EvaluationContext } from './logic-evaluate'
+import { flagForPreludeDependencies } from './prelude-flag'
 
 export type Helpers = {
   fs: {
@@ -13,11 +15,19 @@ export type Helpers = {
   }
   config: Config.Config
   evaluationContext: EvaluationContext | void
+  flagForPreludeDependencies: any
   reporter: {
     log(...args: any[]): void
     warn(...args: any[]): void
     error(...args: any[]): void
   }
+}
+
+export type PreludeFlags = {
+  [id: string]:
+    | LogicAST.RecordDeclaration
+    | LogicAST.EnumerationDeclaration
+    | LogicAST.NamespaceDeclaration
 }
 
 export default async (
@@ -72,6 +82,7 @@ export default async (
     get evaluationContext() {
       return generateEvaluationContext(config)
     },
+    flagForPreludeDependencies,
     reporter: {
       log: console.log.bind(console),
       warn: console.warn.bind(console),
