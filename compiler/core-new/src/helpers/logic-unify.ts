@@ -226,7 +226,7 @@ function specificIdentifierType(
     }
   }
 
-  const scopedType = unificationContext.patternTypes[patternId]
+  const scopedType = unificationContext.patternTypes[patternId.pattern]
 
   if (!scopedType) {
     return {
@@ -592,9 +592,8 @@ export const unify = (
         (headContainsLabels && !tailContainsLabels && tailArguments.length) ||
         (tailContainsLabels && !headContainsLabels && headArguments.length)
       ) {
-        throw new Error(
-          `[UnificationError] [GenericArgumentsLabelMismatch] ${headArguments} ${tailArguments}`
-        )
+        console.error(headArguments, tailArguments)
+        throw new Error(`[UnificationError] [GenericArgumentsLabelMismatch]`)
       }
 
       if (!headContainsLabels && !tailContainsLabels) {

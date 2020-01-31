@@ -30,16 +30,17 @@ export function isStatement(
 }
 
 export function isDeclaration(
-  node: LogicAST.SyntaxNode
+  node: LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier
 ): node is LogicAST.Declaration {
   return (
-    node.type === 'variable' ||
-    node.type === 'function' ||
-    node.type === 'enumeration' ||
-    node.type === 'namespace' ||
-    node.type === 'placeholder' ||
-    node.type === 'record' ||
-    node.type === 'importDeclaration'
+    'type' in node &&
+    (node.type === 'variable' ||
+      node.type === 'function' ||
+      node.type === 'enumeration' ||
+      node.type === 'namespace' ||
+      node.type === 'placeholder' ||
+      node.type === 'record' ||
+      node.type === 'importDeclaration')
   )
 }
 
@@ -228,6 +229,9 @@ export function subNodes(node: LogicAST.SyntaxNode): LogicAST.SyntaxNode[] {
 export function flattenedMemberExpression(
   memberExpression: LogicAST.Expression
 ): LogicAST.Identifier[] | void {
+  if (memberExpression.type === 'identifierExpression') {
+    return [memberExpression.data.identifier]
+  }
   if (memberExpression.type !== 'memberExpression') {
     return undefined
   }
@@ -244,6 +248,28 @@ export function flattenedMemberExpression(
     return undefined
   }
   return flattenedChildren.concat(memberExpression.data.memberName)
+}
+
+export function getNode(
+  rootNode: LogicAST.SyntaxNode,
+  id: string
+): LogicAST.SyntaxNode | void {
+  if (rootNode.data.id === id) {
+    return rootNode
+  }
+
+  if ('name' in rootNode.data && rootNode.data.name.id === id) {
+    return rootNode
+  }
+
+  const children = subNodes(rootNode)
+
+  for (let child of children) {
+    const node = getNode(child, id)
+    if (node) {
+      return node
+    }
+  }
 }
 
 function pathTo(
@@ -278,9 +304,7 @@ export function declarationPathTo(
   if (!path) {
     return []
   }
-  return (path.filter(
-    x => 'type' in x && x.type === 'declaration'
-  ) as LogicAST.Declaration[]).map(x => {
+  return path.filter(isDeclaration).map(x => {
     switch (x.type) {
       case 'variable':
       case 'function':

@@ -1,7 +1,7 @@
 import isEqual from 'lodash.isequal'
 
 export class ShallowMap<K, T> {
-  private map: { key: K; value: T }[] = []
+  public map: { key: K; value: T }[] = []
 
   private find(k: K) {
     return (x: { key: K; value: T }) => isEqual(x.key, k)
@@ -21,5 +21,11 @@ export class ShallowMap<K, T> {
     } else {
       this.map.push({ key: k, value: v })
     }
+  }
+
+  public copy() {
+    const dup = new ShallowMap()
+    this.map.forEach(x => dup.set(x.key, x.value))
+    return dup
   }
 }

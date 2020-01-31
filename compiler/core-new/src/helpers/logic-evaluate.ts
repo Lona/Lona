@@ -36,9 +36,26 @@ type Thunk = {
 export class EvaluationContext {
   values: { [uuid: string]: Value } = {}
   thunks: { [uuid: string]: Thunk } = {}
+  scopeContext: LogicScope.ScopeContext
+
+  constructor(scopeContext: LogicScope.ScopeContext) {
+    this.scopeContext = scopeContext
+  }
 
   add(uuid: string, thunk: Thunk) {
     this.thunks[uuid] = thunk
+  }
+
+  addValue(uuid: string, value: Value) {
+    this.values[uuid] = value
+  }
+
+  isFromInitialScope(uuid: string): boolean {
+    return (
+      this.scopeContext.identifierToPattern[uuid] || {
+        fromInitialContext: false,
+      }
+    ).fromInitialContext
   }
 
   evaluate(uuid: string): Value | void {
@@ -68,7 +85,8 @@ export class EvaluationContext {
   }
 }
 
-const makeEmpty = () => new EvaluationContext()
+const makeEmpty = (scopeContext: LogicScope.ScopeContext) =>
+  new EvaluationContext(scopeContext)
 
 export const evaluate = (
   node: LogicAST.AST.SyntaxNode,
@@ -76,7 +94,7 @@ export const evaluate = (
   scopeContext: LogicScope.ScopeContext,
   unificationContext: LogicUnify.UnificationContext,
   substitution: ShallowMap<LogicUnify.Unification, LogicUnify.Unification>,
-  context_: EvaluationContext = makeEmpty()
+  context_: EvaluationContext = makeEmpty(scopeContext)
 ): EvaluationContext | void => {
   const context = LogicAST.subNodes(node).reduce((prev, subNode) => {
     if (!prev) {
@@ -101,69 +119,53 @@ export const evaluate = (
   switch (node.type) {
     case 'boolean': {
       const { value, id } = node.data
-      context.add(id, {
-        label: 'Boolean Literal',
-        dependencies: [],
-        f: () => ({
-          type: LogicUnify.bool,
-          memory: {
-            type: 'bool',
-            value,
-          },
-        }),
+      context.addValue(id, {
+        type: LogicUnify.bool,
+        memory: {
+          type: 'bool',
+          value,
+        },
       })
       break
     }
     case 'number': {
       const { value, id } = node.data
-      context.add(id, {
-        label: 'Number Literal',
-        dependencies: [],
-        f: () => ({
-          type: LogicUnify.number,
-          memory: {
-            type: 'number',
-            value,
-          },
-        }),
+      context.addValue(id, {
+        type: LogicUnify.number,
+        memory: {
+          type: 'number',
+          value,
+        },
       })
       break
     }
     case 'string': {
       const { value, id } = node.data
-      context.add(id, {
-        label: 'String Literal',
-        dependencies: [],
-        f: () => ({
-          type: LogicUnify.string,
-          memory: {
-            type: 'string',
-            value,
-          },
-        }),
+      context.addValue(id, {
+        type: LogicUnify.string,
+        memory: {
+          type: 'string',
+          value,
+        },
       })
       break
     }
     case 'color': {
       const { value, id } = node.data
-      context.add(id, {
-        label: 'Color Literal',
-        dependencies: [],
-        f: () => ({
-          type: LogicUnify.color,
-          memory: {
-            type: 'record',
+      context.addValue(id, {
+        type: LogicUnify.color,
+        memory: {
+          type: 'record',
+          value: {
             value: {
-              value: {
-                type: LogicUnify.string,
-                memory: {
-                  type: 'string',
-                  value,
-                },
+              type: LogicUnify.string,
+              memory: {
+                type: 'string',
+                value,
               },
             },
           },
-        }),
+        },
       })
       break
     }
@@ -207,12 +209,12 @@ export const evaluate = (
       }
       context.add(id, {
         label: 'Identifier ' + string,
-        dependencies: [patternId],
+        dependencies: [patternId.pattern],
         f: values => values[0],
       })
       context.add(node.data.id, {
         label: 'IdentifierExpression ' + string,
-        dependencies: [patternId],
+        dependencies: [patternId.pattern],
         f: values => values[0],
       })
 
@@ -225,7 +227,7 @@ export const evaluate = (
       }
       context.add(node.data.id, {
         label: 'Member expression',
-        dependencies: [patternId],
+        dependencies: [patternId.pattern],
         f: values => values[0],
       })
 
@@ -273,10 +275,26 @@ export const evaluate = (
         dependencies,
         f: values => {
           const [functionValue, ...functionArgs] = values
-          if (
-            functionValue.memory.type !== 'function' ||
-            functionValue.memory.value.type === 'path'
-          ) {
+
+          if (functionValue.memory.type !== 'function') {
+            console.error('tried to evaluate a function that is not a function')
+            return { type: LogicUnify.unit, memory: { type: 'unit' } }
+          }
+
+          if (functionValue.memory.value.type === 'path') {
+            if (context.isFromInitialScope(expression.data.id)) {
+              // TODO: actually implement the functions
+              console.error(
+                `Failed to evaluate "${
+                  node.data.id
+                }": Unknown function ${functionValue.memory.value.value.join(
+                  '.'
+                )}`
+              )
+            }
+
+            // this is a custom function that we have no idea what it is
+            // so let's warn about it and ignore it
             return { type: LogicUnify.unit, memory: { type: 'unit' } }
           }
 
@@ -362,19 +380,15 @@ export const evaluate = (
         console.error('Unknown function type')
         break
       }
-      context.add(name.id, {
-        label: 'Function declaration for ' + name.name,
-        dependencies: [],
-        f: _ => ({
-          type,
-          memory: {
-            type: 'function',
-            value: {
-              type: 'path',
-              value: fullPath,
-            },
+      context.addValue(name.id, {
+        type,
+        memory: {
+          type: 'function',
+          value: {
+            type: 'path',
+            value: fullPath,
           },
-        }),
+        },
       })
 
       break
@@ -453,19 +467,15 @@ export const evaluate = (
         }
         const resolvedConsType = LogicUnify.substitute(substitution, type)
         const { name } = enumCase.data
-        context.add(name.id, {
-          label: 'Enum case declaration for ' + name.name,
-          dependencies: [],
-          f: _ => ({
-            type: resolvedConsType,
-            memory: {
-              type: 'function',
-              value: {
-                type: 'enumInit',
-                value: name.name,
-              },
+        context.addValue(name.id, {
+          type: resolvedConsType,
+          memory: {
+            type: 'function',
+            value: {
+              type: 'enumInit',
+              value: name.name,
             },
-          }),
+          },
         })
       })
 

@@ -5,7 +5,10 @@ import { LogicAST } from '@lona/serialization'
 import { config as Config } from '../utils'
 import { generate as generateEvaluationContext } from './evaluation-context'
 import { EvaluationContext } from './logic-evaluate'
-import { flagForPreludeDependencies } from './prelude-flag'
+import { HandlePreludeFactory } from './hardcoded-mapping'
+
+export { HardcodedMap } from './hardcoded-mapping'
+export { EvaluationContext } from './logic-evaluate'
 
 export type Helpers = {
   fs: {
@@ -15,7 +18,7 @@ export type Helpers = {
   }
   config: Config.Config
   evaluationContext: EvaluationContext | void
-  flagForPreludeDependencies: any
+  HandlePreludeFactory: typeof HandlePreludeFactory
   reporter: {
     log(...args: any[]): void
     warn(...args: any[]): void
@@ -76,13 +79,19 @@ export default async (
     fs: fsWrapper,
   })
 
+  let cachedEvaluationContext: EvaluationContext | void
+
   return {
     fs: fsWrapper,
     config,
     get evaluationContext() {
-      return generateEvaluationContext(config)
+      if (cachedEvaluationContext) {
+        return cachedEvaluationContext
+      }
+      cachedEvaluationContext = generateEvaluationContext(config)
+      return cachedEvaluationContext
     },
-    flagForPreludeDependencies,
+    HandlePreludeFactory,
     reporter: {
       log: console.log.bind(console),
       warn: console.warn.bind(console),

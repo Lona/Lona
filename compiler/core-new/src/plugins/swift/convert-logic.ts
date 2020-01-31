@@ -1,12 +1,17 @@
 import { LogicAST } from '@lona/serialization'
 
-import { Helpers, PreludeFlags } from '../../helpers'
+import { Helpers, HardcodedMap, EvaluationContext } from '../../helpers'
 import * as SwiftAST from '../../types/swift-ast'
 
 type LogicGenerationContext = {
   isStatic: boolean
   isTopLevel: boolean
   helpers: Helpers
+  handlePreludeDeps: (
+    node: LogicAST.SyntaxNode,
+    evaluationContext: void | EvaluationContext,
+    context: LogicGenerationContext
+  ) => SwiftAST.SwiftNode | void
 }
 
 function fontWeight(weight: string): SwiftAST.SwiftNode {
@@ -25,102 +30,66 @@ function fontWeight(weight: string): SwiftAST.SwiftNode {
   }
 }
 
-// that's the hardcoded mapping
-function handlePreludeDeps(
-  node: LogicAST.SyntaxNode,
-  preludeDepencies: PreludeFlags,
-  context: LogicGenerationContext
-): SwiftAST.SwiftNode | void {
-  const prelude = preludeDepencies[node.data.id]
-  if (!prelude) {
-    return
-  }
-
-  if (
-    prelude.data.name.name === 'TextStyle' ||
-    prelude.data.name.name === 'Shadow' ||
-    prelude.data.name.name === 'Color'
-  ) {
-    // we polyfill those so pass through
-    return
-  }
-
-  if (
-    prelude.data.name.name === 'FontWeight' &&
-    node.type === 'memberExpression'
-  ) {
-    switch (node.data.memberName.string) {
-      case 'ultraLight':
-      case 'w100':
-        return fontWeight('ultraLight')
-      case 'thin':
-      case 'w200':
-        return fontWeight('thin')
-      case 'light':
-      case 'w300':
-        return fontWeight('light')
-      case 'regular':
-      case 'w400':
-        return fontWeight('regular')
-      case 'medium':
-      case 'w500':
-        return fontWeight('medium')
-      case 'semibold':
-      case 'w600':
-        return fontWeight('semibold')
-      case 'bold':
-      case 'w700':
-        return fontWeight('bold')
-      case 'heavy':
-      case 'w800':
-        return fontWeight('heavy')
-      case 'black':
-      case 'w900':
-        return fontWeight('black')
-      default:
-        throw new Error(`Font weight "${node.data.memberName.string}"`)
-    }
-  }
-
-  if (prelude.data.name.name === 'Optional') {
-    if (
-      node.type === 'functionCallExpression' &&
-      node.data.expression.type === 'memberExpression' &&
-      node.data.expression.data.memberName.string === 'value' &&
-      node.data.arguments[0] &&
-      node.data.arguments[0].type === 'argument'
-    ) {
-      // that's a value
-      return expression(
-        node.data.arguments[0].data.expression,
-        preludeDepencies,
-        context
-      )
-    }
-    if (
-      node.type === 'memberExpression' &&
-      node.data.memberName.string === 'none'
-    ) {
-      return {
-        type: 'LiteralExpression',
-        data: { type: 'Nil', data: undefined },
+let hardcoded: HardcodedMap<SwiftAST.SwiftNode> = {
+  functionCallExpression: {
+    'Color.saturate': () => {},
+    'Boolean.or': () => {},
+    'Boolean.and': () => {},
+    'String.concat': () => {},
+    'Optional.value': (node, context) => {
+      if (
+        node.data.arguments[0] &&
+        node.data.arguments[0].type === 'argument'
+      ) {
+        return expression(node.data.arguments[0].data.expression, context)
       }
-    }
-  }
-
-  console.error(node, prelude)
-  throw new Error('unhandled prelude dep')
+      throw new Error(
+        'The first argument of `Optional.value` needs to be a value'
+      )
+    },
+    Shadow: () => {
+      // polyfilled
+    },
+    TextStyle: () => {
+      // polyfilled
+    },
+  },
+  memberExpression: {
+    'Optional.none': () => ({
+      type: 'LiteralExpression',
+      data: { type: 'Nil', data: undefined },
+    }),
+    'FontWeight.ultraLight': () => fontWeight('ultraLight'),
+    'FontWeight.thin': () => fontWeight('thin'),
+    'FontWeight.light': () => fontWeight('light'),
+    'FontWeight.regular': () => fontWeight('regular'),
+    'FontWeight.medium': () => fontWeight('medium'),
+    'FontWeight.semibold': () => fontWeight('semibold'),
+    'FontWeight.bold': () => fontWeight('bold'),
+    'FontWeight.heavy': () => fontWeight('heavy'),
+    'FontWeight.black': () => fontWeight('back'),
+    'FontWeight.w100': () => fontWeight('ultraLight'),
+    'FontWeight.w200': () => fontWeight('thin'),
+    'FontWeight.w300': () => fontWeight('light'),
+    'FontWeight.w400': () => fontWeight('regular'),
+    'FontWeight.w500': () => fontWeight('medium'),
+    'FontWeight.w600': () => fontWeight('semibold'),
+    'FontWeight.w700': () => fontWeight('bold'),
+    'FontWeight.w800': () => fontWeight('heavy'),
+    'FontWeight.w900': () => fontWeight('back'),
+    'TextStyle.systemTextColor': () => {},
+  },
 }
 
 export default function convert(
   node: LogicAST.SyntaxNode,
-  preludeDepencies: PreludeFlags,
   helpers: Helpers
 ): SwiftAST.SwiftNode {
   const context: LogicGenerationContext = {
     isStatic: false,
     isTopLevel: true,
     helpers,
+    handlePreludeDeps: helpers.HandlePreludeFactory(hardcoded),
   }
 
   if (node.type === 'program') {
@@ -129,7 +98,7 @@ export default function convert(
       data: {
         statements: node.data.block
           .filter(x => x.type !== 'placeholder')
-          .map(x => statement(x, preludeDepencies, context)),
+          .map(x => statement(x, context)),
       },
     }
   }
@@ -140,7 +109,7 @@ export default function convert(
       data: {
         statements: node.data.declarations
           .filter(x => x.type !== 'placeholder')
-          .map(x => declaration(x, preludeDepencies, context)),
+          .map(x => declaration(x, context)),
       },
     }
   }
@@ -152,15 +121,18 @@ export default function convert(
 
 const statement = (
   node: LogicAST.Statement,
-  preludeDepencies: PreludeFlags,
   context: LogicGenerationContext
 ): SwiftAST.SwiftNode => {
-  const potentialHandled = handlePreludeDeps(node, preludeDepencies, context)
+  const potentialHandled = context.handlePreludeDeps(
+    node,
+    context.helpers.evaluationContext,
+    context
+  )
   if (potentialHandled) {
     return potentialHandled
   }
   if (node.type === 'declaration') {
-    return declaration(node.data.content, preludeDepencies, context)
+    return declaration(node.data.content, context)
   }
   if (node.type === 'placeholder') {
     return { type: 'Empty', data: undefined }
@@ -172,10 +144,13 @@ const statement = (
 
 const declaration = (
   node: LogicAST.Declaration,
-  preludeDepencies: PreludeFlags,
   context: LogicGenerationContext
 ): SwiftAST.SwiftNode => {
-  const potentialHandled = handlePreludeDeps(node, preludeDepencies, context)
+  const potentialHandled = context.handlePreludeDeps(
+    node,
+    context.helpers.evaluationContext,
+    context
+  )
   if (potentialHandled) {
     return potentialHandled
   }
@@ -194,7 +169,7 @@ const declaration = (
           modifier: SwiftAST.DeclarationModifier.PublicModifier,
           body: node.data.declarations
             .filter(x => x.type !== 'placeholder')
-            .map(x => declaration(x, preludeDepencies, newContext)),
+            .map(x => declaration(x, newContext)),
         },
       }
     }
@@ -221,7 +196,7 @@ const declaration = (
             },
           },
           init: node.data.initializer
-            ? expression(node.data.initializer, preludeDepencies, context)
+            ? expression(node.data.initializer, context)
             : undefined,
         },
       }
@@ -244,7 +219,7 @@ const declaration = (
               localName: x.data.name.name,
               annotation: typeAnnotation(x.data.annotation, newContext),
               defaultValue: x.data.initializer
-                ? expression(x.data.initializer, preludeDepencies, newContext)
+                ? expression(x.data.initializer, newContext)
                 : undefined,
             },
           })),
@@ -283,11 +258,7 @@ const declaration = (
           modifier: SwiftAST.DeclarationModifier.PublicModifier,
           body: (memberVariables.length ? [initFunction] : []).concat(
             memberVariables.map(x =>
-              declaration(
-                { type: 'variable', data: { ...x.data } },
-                preludeDepencies,
-                newContext
-              )
+              declaration({ type: 'variable', data: { ...x.data } }, newContext)
             )
           ),
           /* TODO: Other declarations */
@@ -351,10 +322,13 @@ const declaration = (
 
 const expression = (
   node: LogicAST.Expression,
-  preludeDepencies: PreludeFlags,
   context: LogicGenerationContext
 ): SwiftAST.SwiftNode => {
-  const potentialHandled = handlePreludeDeps(node, preludeDepencies, context)
+  const potentialHandled = context.handlePreludeDeps(
+    node,
+    context.helpers.evaluationContext,
+    context
+  )
   if (potentialHandled) {
     return potentialHandled
   }
@@ -366,13 +340,13 @@ const expression = (
       }
     }
     case 'literalExpression': {
-      return literal(node.data.literal, preludeDepencies, context)
+      return literal(node.data.literal, context)
     }
     case 'memberExpression': {
       return {
         type: 'MemberExpression',
         data: [
-          expression(node.data.expression, preludeDepencies, context),
+          expression(node.data.expression, context),
           { type: 'SwiftIdentifier', data: node.data.memberName.string },
         ],
       }
@@ -381,7 +355,7 @@ const expression = (
       return {
         type: 'FunctionCallExpression',
         data: {
-          name: expression(node.data.expression, preludeDepencies, context),
+          name: expression(node.data.expression, context),
           arguments: node.data.arguments
             .map<SwiftAST.SwiftNode | undefined>(arg => {
               if (arg.type === 'placeholder') {
@@ -393,11 +367,7 @@ const expression = (
                   name: arg.data.label
                     ? { type: 'SwiftIdentifier', data: arg.data.label }
                     : undefined,
-                  value: expression(
-                    arg.data.expression,
-                    preludeDepencies,
-                    context
-                  ),
+                  value: expression(arg.data.expression, context),
                 },
               }
             })
@@ -418,10 +388,13 @@ const expression = (
 
 const literal = (
   node: LogicAST.Literal,
-  preludeDepencies: PreludeFlags,
   context: LogicGenerationContext
 ): SwiftAST.SwiftNode => {
-  const potentialHandled = handlePreludeDeps(node, preludeDepencies, context)
+  const potentialHandled = context.handlePreludeDeps(
+    node,
+    context.helpers.evaluationContext,
+    context
+  )
   if (potentialHandled) {
     return potentialHandled
   }
@@ -461,9 +434,7 @@ const literal = (
         type: 'LiteralExpression',
         data: {
           type: 'Array',
-          data: node.data.value.map(x =>
-            expression(x, preludeDepencies, context)
-          ),
+          data: node.data.value.map(x => expression(x, context)),
         },
       }
     }

@@ -7,39 +7,6 @@ import * as LogicUnify from './logic-unify'
 import * as LogicEvaluate from './logic-evaluate'
 import uuid from '../utils/uuid'
 
-function standardImportsProgram(): LogicAST.AST.Program {
-  const libraryImports: LogicAST.AST.Statement[] = [
-    'Prelude',
-    'Color',
-    'Shadow',
-    'TextStyle',
-  ].map(libraryName => ({
-    type: 'declaration',
-    data: {
-      id: uuid(),
-      content: {
-        type: 'importDeclaration',
-        data: {
-          id: uuid(),
-          name: {
-            type: 'pattern',
-            id: uuid(),
-            name: libraryName,
-          },
-        },
-      },
-    },
-  }))
-
-  return {
-    type: 'program',
-    data: {
-      id: uuid(),
-      block: libraryImports,
-    },
-  }
-}
-
 function resolveImports(
   program: LogicAST.AST.Program,
   existingImports: string[] = []
@@ -98,10 +65,30 @@ function resolveImports(
   }
 }
 
-export const scopedEvaluationContext = (
-  programNode: LogicAST.AST.SyntaxNode
-) => {
-  const scopeContext = LogicScope.build(programNode)
+export const generate = (config: Config) => {
+  const preludePath = path.join(__dirname, '../../static/logic')
+  const preludeLibs = fs.readdirSync(preludePath)
+
+  const libraryFiles: LogicAST.AST.Program[] = preludeLibs.map(
+    x =>
+      LogicAST.makeProgram(
+        JSON.parse(fs.readFileSync(path.join(preludePath, x), 'utf8'))
+      ) as LogicAST.AST.Program
+  )
+
+  const preludeProgram = LogicAST.joinPrograms(libraryFiles)
+
+  const preludeScope = LogicScope.build(preludeProgram)
+
+  let programNode = LogicAST.joinPrograms(
+    Object.values(config.logicFiles).map(LogicAST.makeProgram)
+  )
+
+  programNode = resolveImports(programNode)
+
+  const scopeContext = LogicScope.build(programNode, preludeScope)
+
+  programNode = LogicAST.joinPrograms([preludeProgram, programNode])
 
   const unificationContext = LogicUnify.makeUnificationContext(
     programNode,
@@ -118,15 +105,4 @@ export const scopedEvaluationContext = (
   )
 
   return evaluationContext
-}
-
-export const generate = (config: Config) => {
-  let programNode = LogicAST.joinPrograms(
-    Object.values(config.logicFiles).map(LogicAST.makeProgram)
-  )
-
-  programNode = LogicAST.joinPrograms([standardImportsProgram(), programNode])
-  programNode = resolveImports(programNode)
-
-  return scopedEvaluationContext(programNode)
 }
