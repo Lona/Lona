@@ -5,6 +5,22 @@ import { EvaluationContext } from './logic-evaluate'
 
 export type HardcodedMap<T> = {
   functionCallExpression: {
+    'Color.setHue': (
+      node: LogicAST.FunctionCallExpressionExpression,
+      ...args: any[]
+    ) => T | void
+    'Color.setSaturation': (
+      node: LogicAST.FunctionCallExpressionExpression,
+      ...args: any[]
+    ) => T | void
+    'Color.setLightness': (
+      node: LogicAST.FunctionCallExpressionExpression,
+      ...args: any[]
+    ) => T | void
+    'Color.fromHSL': (
+      node: LogicAST.FunctionCallExpressionExpression,
+      ...args: any[]
+    ) => T | void
     'Color.saturate': (
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: any[]
@@ -17,7 +33,15 @@ export type HardcodedMap<T> = {
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: any[]
     ) => T | void
+    'Number.range': (
+      node: LogicAST.FunctionCallExpressionExpression,
+      ...args: any[]
+    ) => T | void
     'String.concat': (
+      node: LogicAST.FunctionCallExpressionExpression,
+      ...args: any[]
+    ) => T | void
+    'Array.at': (
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: any[]
     ) => T | void
@@ -108,10 +132,6 @@ export type HardcodedMap<T> = {
       ...args: any[]
     ) => T | void
     'FontWeight.w900': (
-      node: LogicAST.MemberExpressionExpression,
-      ...args: any[]
-    ) => T | void
-    'TextStyle.systemTextColor': (
       node: LogicAST.MemberExpressionExpression,
       ...args: any[]
     ) => T | void

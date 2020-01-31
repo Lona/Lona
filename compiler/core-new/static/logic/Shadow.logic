@@ -24,8 +24,8 @@
       {
         "data" : {
           "comment" : {
-            "id" : "B9204D15-C12D-457F-833B-8DF4791B0350",
-            "string" : "# Shadow\n\nA drop shadow."
+            "id" : "4320F9BB-E3BA-47E2-A006-32F07DF4957B",
+            "string" : "I> Press enter to create a new shadow.\n\n# Shadow\n\nA drop shadow definition."
           },
           "declarations" : [
             {
@@ -235,7 +235,7 @@
             },
             {
               "data" : {
-                "id" : "B5D35EF3-CC12-4FA5-B070-7B3500E6F6EB"
+                "id" : "969FCE30-06C5-4B3A-A297-0EDBB97FCEAD"
               },
               "type" : "placeholder"
             }
@@ -253,7 +253,7 @@
       },
       {
         "data" : {
-          "id" : "8B6BD97A-530B-4212-8D2E-05F475876D3B"
+          "id" : "FAB202EF-B2A1-4EE8-8B2F-9219D7960022"
         },
         "type" : "placeholder"
       }

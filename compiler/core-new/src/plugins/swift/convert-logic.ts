@@ -33,9 +33,15 @@ function fontWeight(weight: string): SwiftAST.SwiftNode {
 let hardcoded: HardcodedMap<SwiftAST.SwiftNode> = {
   functionCallExpression: {
     'Color.saturate': () => {},
+    'Color.setHue': () => {},
+    'Color.setSaturation': () => {},
+    'Color.setLightness': () => {},
+    'Color.fromHSL': () => {},
     'Boolean.or': () => {},
     'Boolean.and': () => {},
     'String.concat': () => {},
+    'Number.range': () => {},
+    'Array.at': () => {},
     'Optional.value': (node, context) => {
       if (
         node.data.arguments[0] &&
@@ -77,7 +83,6 @@ let hardcoded: HardcodedMap<SwiftAST.SwiftNode> = {
     'FontWeight.w700': () => fontWeight('bold'),
     'FontWeight.w800': () => fontWeight('heavy'),
     'FontWeight.w900': () => fontWeight('back'),
-    'TextStyle.systemTextColor': () => {},
   },
 }
 

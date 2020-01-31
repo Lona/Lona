@@ -29,7 +29,7 @@
                 "associatedValueTypes" : [
                   {
                     "data" : {
-                      "id" : "518CF11E-83BE-4E26-8606-7799BE7C3A69"
+                      "id" : "D0A49B79-6B07-451C-ACD3-060287BDC0D7"
                     },
                     "type" : "placeholder"
                   }
@@ -51,7 +51,7 @@
                 "associatedValueTypes" : [
                   {
                     "data" : {
-                      "id" : "106C825D-8C69-42B5-AF5C-F0176C67763C"
+                      "id" : "6EE1B2B9-C2F6-462F-8772-1D1D473B4250"
                     },
                     "type" : "placeholder"
                   }
@@ -73,7 +73,7 @@
                 "associatedValueTypes" : [
                   {
                     "data" : {
-                      "id" : "A7C15D03-15F2-4128-B1F6-06C36BC9D10A"
+                      "id" : "F02A43E8-A7A0-470B-8BEF-9246E62A8152"
                     },
                     "type" : "placeholder"
                   }
@@ -95,7 +95,7 @@
                 "associatedValueTypes" : [
                   {
                     "data" : {
-                      "id" : "82E529EC-2C01-4DB6-8D47-04A2B11052FF"
+                      "id" : "F5046D77-520E-4947-9AA6-9DE25E534F3B"
                     },
                     "type" : "placeholder"
                   }
@@ -117,7 +117,7 @@
                 "associatedValueTypes" : [
                   {
                     "data" : {
-                      "id" : "4E5D33BB-50F3-4E61-9613-5B696E6AA443"
+                      "id" : "23C607D4-D657-4FE0-BD63-50F352CBB942"
                     },
                     "type" : "placeholder"
                   }
@@ -139,7 +139,7 @@
                 "associatedValueTypes" : [
                   {
                     "data" : {
-                      "id" : "718E27B1-FF4D-4A5B-865B-6D570D345949"
+                      "id" : "A4A1FD51-EED8-4DC5-B3A7-CF6FADD9527D"
                     },
                     "type" : "placeholder"
                   }
@@ -161,7 +161,7 @@
                 "associatedValueTypes" : [
                   {
                     "data" : {
-                      "id" : "2CDE25E2-2B28-4ADB-83C6-726D828C6C29"
+                      "id" : "EC04B4F8-68B8-4086-8EF1-3580AC15E543"
                     },
                     "type" : "placeholder"
                   }
@@ -183,7 +183,7 @@
                 "associatedValueTypes" : [
                   {
                     "data" : {
-                      "id" : "22C8BCC4-E57E-47BD-97BB-4A62E5E058F7"
+                      "id" : "EA034C27-3625-4D05-9835-E55A737E7EFA"
                     },
                     "type" : "placeholder"
                   }
@@ -205,7 +205,7 @@
                 "associatedValueTypes" : [
                   {
                     "data" : {
-                      "id" : "DDEFB387-B671-435D-82A8-33ED5608E564"
+                      "id" : "4E751A94-6346-4C3D-B5EC-1247437B31A8"
                     },
                     "type" : "placeholder"
                   }
@@ -224,7 +224,7 @@
             },
             {
               "data" : {
-                "id" : "863BB294-987C-46ED-A8D0-3136C2E048E2"
+                "id" : "5CB62DCC-DFBA-48AB-86B4-EA357DC89E91"
               },
               "type" : "placeholder"
             }
@@ -269,7 +269,7 @@
                     "arguments" : [
                       {
                         "data" : {
-                          "id" : "E41A3B84-8A55-4C0F-9B97-469619B43C00"
+                          "id" : "9AF5F577-7718-452B-A576-67BB5242BBAE"
                         },
                         "type" : "placeholder"
                       }
@@ -329,7 +329,7 @@
                     "arguments" : [
                       {
                         "data" : {
-                          "id" : "BBF0D459-DDE2-48AB-89A1-D3F34ACCF2A0"
+                          "id" : "2A662242-247A-4BBB-BDE4-50560124FEEA"
                         },
                         "type" : "placeholder"
                       }
@@ -389,7 +389,7 @@
                     "arguments" : [
                       {
                         "data" : {
-                          "id" : "AAA2BF0A-3A99-4CB3-A0AC-CE586B7C3E74"
+                          "id" : "6220728E-4919-406E-840B-B4C56EFE12EF"
                         },
                         "type" : "placeholder"
                       }
@@ -449,7 +449,7 @@
                     "arguments" : [
                       {
                         "data" : {
-                          "id" : "1FA3E8AE-9A28-461E-8B9B-E7EEFA0D0CD0"
+                          "id" : "98140899-0DA9-423D-8D8B-6808C7974107"
                         },
                         "type" : "placeholder"
                       }
@@ -509,7 +509,7 @@
                     "arguments" : [
                       {
                         "data" : {
-                          "id" : "17E9556D-7709-43E3-9CCA-D2411096451E"
+                          "id" : "7BBD923B-6F05-496E-9732-784CFBB9134C"
                         },
                         "type" : "placeholder"
                       }
@@ -569,7 +569,7 @@
                     "arguments" : [
                       {
                         "data" : {
-                          "id" : "F86B7D8F-64F8-4A0F-AE91-71C66B3CD809"
+                          "id" : "939FF33A-B660-4250-B293-8E5B234E17F1"
                         },
                         "type" : "placeholder"
                       }
@@ -629,7 +629,7 @@
                     "arguments" : [
                       {
                         "data" : {
-                          "id" : "720C0182-9FCF-4FA4-8273-7D2CEDE954D3"
+                          "id" : "5E48F828-3E97-4DF0-BAE2-366F02DA6FA3"
                         },
                         "type" : "placeholder"
                       }
@@ -689,7 +689,7 @@
                     "arguments" : [
                       {
                         "data" : {
-                          "id" : "57BB9605-1385-424F-9BC5-975EC331A3E0"
+                          "id" : "6C742FA9-8680-4DE3-9250-00FE9E155E96"
                         },
                         "type" : "placeholder"
                       }
@@ -749,7 +749,7 @@
                     "arguments" : [
                       {
                         "data" : {
-                          "id" : "F8EEB3DA-1053-463D-8481-B3257E588173"
+                          "id" : "373E1003-28B1-4EFB-94EB-025D0D5C8F8B"
                         },
                         "type" : "placeholder"
                       }
@@ -789,7 +789,7 @@
             },
             {
               "data" : {
-                "id" : "5D8CC983-214B-4A16-B337-84745B1F358D"
+                "id" : "08ADB035-F366-4DD9-AB30-E235882F9192"
               },
               "type" : "placeholder"
             }
@@ -805,8 +805,8 @@
       {
         "data" : {
           "comment" : {
-            "id" : "554AF04B-6696-454D-98B3-60CA1737EDC6",
-            "string" : "# Text Style\n\nThis represents a specific configuration of text parameters such as font and color."
+            "id" : "73366798-462E-497D-95A7-D8410901F1AA",
+            "string" : "I> Press enter to create a new Text Style.\n\n# Text Style\n\nThis represents a specific configuration of text parameters such as font and color."
           },
           "declarations" : [
             {
@@ -848,7 +848,7 @@
                     "arguments" : [
                       {
                         "data" : {
-                          "id" : "46A83F7A-EC42-4A13-9DD4-2EA80B039834"
+                          "id" : "8B687C4E-EAB6-4A6E-AD4A-CE351B304484"
                         },
                         "type" : "placeholder"
                       }
@@ -925,7 +925,7 @@
                     "arguments" : [
                       {
                         "data" : {
-                          "id" : "5831BF09-47E6-4148-9DF3-782006BA4010"
+                          "id" : "3C177ECC-F83F-4AC6-8F83-DDF12D0572A9"
                         },
                         "type" : "placeholder"
                       }
@@ -989,7 +989,7 @@
                     "arguments" : [
                       {
                         "data" : {
-                          "id" : "D38D0742-6B73-431B-95B7-85F05E407FFF"
+                          "id" : "EBD6E271-D2E1-4133-A5EF-2914075EEC66"
                         },
                         "type" : "placeholder"
                       }
@@ -1066,7 +1066,7 @@
                     "arguments" : [
                       {
                         "data" : {
-                          "id" : "19ECC9A3-6E07-4BEE-8510-BF1D16031B4D"
+                          "id" : "842E3CA8-B5A9-4D89-90F9-AACF0EE55679"
                         },
                         "type" : "placeholder"
                       }
@@ -1143,7 +1143,7 @@
                     "arguments" : [
                       {
                         "data" : {
-                          "id" : "4464004D-6A80-4026-9C7F-C92B82122099"
+                          "id" : "41A321B9-B6CC-4A3E-8197-F23867FDBC38"
                         },
                         "type" : "placeholder"
                       }
@@ -1220,7 +1220,7 @@
                     "arguments" : [
                       {
                         "data" : {
-                          "id" : "1E3D1C80-AA87-4948-BB0D-4515A01A5F68"
+                          "id" : "41EAAEC6-8BBC-40AC-B6F2-A7CB2D726AB2"
                         },
                         "type" : "placeholder"
                       }
@@ -1297,7 +1297,7 @@
                     "arguments" : [
                       {
                         "data" : {
-                          "id" : "9C7CAF79-BDC6-4358-8A96-6953B3A3B8BA"
+                          "id" : "131D1EED-AFEF-4400-A922-DE68778D0EAE"
                         },
                         "type" : "placeholder"
                       }
@@ -1337,7 +1337,7 @@
             },
             {
               "data" : {
-                "id" : "C8D05EE8-27F7-46CF-9A8A-350D4F949770"
+                "id" : "45DC0E1C-1A6B-48FB-9F1A-7278FDFFF61F"
               },
               "type" : "placeholder"
             }
@@ -1355,66 +1355,7 @@
       },
       {
         "data" : {
-          "declarations" : [
-            {
-              "data" : {
-                "annotation" : {
-                  "data" : {
-                    "genericArguments" : [
-
-                    ],
-                    "id" : "27A3B432-962A-42CE-A66C-F59E0F346831",
-                    "identifier" : {
-                      "id" : "8743118C-E135-425F-A15C-63BDDACE9297",
-                      "isPlaceholder" : false,
-                      "string" : "Color"
-                    }
-                  },
-                  "type" : "typeIdentifier"
-                },
-                "comment" : {
-                  "id" : "B29B5DD8-67F4-443F-A12D-4373182F67E9",
-                  "string" : "# System Color\n\nThe default font color of the target platform. \n\n## Example\n\nFor example, on macOS, this will take the operating system theme (e.g. light vs. dark) into account."
-                },
-                "id" : "CB97BF82-8E16-4046-95AE-14B202C3AD58",
-                "initializer" : {
-                  "data" : {
-                    "id" : "ABD0C33D-76B8-40DA-B283-ABAC3A26D33C",
-                    "literal" : {
-                      "data" : {
-                        "id" : "ED7E0B6C-6555-46E6-A15A-1DA2DB49428C",
-                        "value" : "black"
-                      },
-                      "type" : "color"
-                    }
-                  },
-                  "type" : "literalExpression"
-                },
-                "name" : {
-                  "id" : "019DFA78-3973-4A96-94C4-BB489BDEEC0C",
-                  "name" : "systemTextColor"
-                }
-              },
-              "type" : "variable"
-            },
-            {
-              "data" : {
-                "id" : "9E0B2FA8-AD58-4A6F-8B26-73C6DFC51B97"
-              },
-              "type" : "placeholder"
-            }
-          ],
-          "id" : "F0126EAA-3B35-4477-A601-98D2AE2B0F98",
-          "name" : {
-            "id" : "84B48160-B3A5-4A0E-B932-5D4C83256FAC",
-            "name" : "TextStyle"
-          }
-        },
-        "type" : "namespace"
-      },
-      {
-        "data" : {
-          "id" : "F71C2A0B-7D0E-47CE-A320-B94FA37C3699"
+          "id" : "1E55D982-07A1-4F93-BA66-A689E79ECF7A"
         },
         "type" : "placeholder"
       }
