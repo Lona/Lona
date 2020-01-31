@@ -15,6 +15,7 @@ export const findPlugin = (format: string): Plugin => {
       try {
         return require(`../plugins/${format}`)
       } catch (err) {
+        console.error(err)
         throw new Error(`Could not find plugin ${format}`)
       }
     }
