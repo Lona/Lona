@@ -17,7 +17,7 @@ export const parseFile = async (
   const outputPath = path.join(path.dirname(filePath), `${name}.flat.json`)
 
   const file: ConvertedFile = {
-    inputPath: path.relative(helpers.config.workspacePath, filePath),
+    inputPath: filePath,
     outputPath,
     name,
     contents: {
