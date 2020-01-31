@@ -6,7 +6,9 @@
   "bin": "lib/bin.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "rm -rf ./lib && tsc --declaration",
+    "build:src": "tsc -- declaration",
+    "build:types": "ts-node ./scripts/generate-prelude-types.ts",
+    "build": "rm -rf ./lib && npm run build:types && npm run build:src",
     "prepublishOnly": "npm run build",
     "snapshot": "npm run snapshot:tokens",
     "snapshot:tokens": "ts-node src/bin.ts convert ../../examples/FlatTokens --format=tokens > ../../examples/generated/FlatTokens/output.json",
