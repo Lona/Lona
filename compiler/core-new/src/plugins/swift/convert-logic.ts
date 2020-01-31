@@ -30,9 +30,33 @@ function fontWeight(weight: string): SwiftAST.SwiftNode {
   }
 }
 
-let hardcoded: HardcodedMap<SwiftAST.SwiftNode> = {
+const hardcoded: HardcodedMap<SwiftAST.SwiftNode, [LogicGenerationContext]> = {
   functionCallExpression: {
-    'Color.saturate': () => {},
+    'Color.saturate': (node, context) => {
+      if (!context.helpers.evaluationContext) {
+        return
+      }
+      const color = context.helpers.evaluationContext.evaluate(node.data.id)
+
+      if (
+        !color ||
+        color.type.type !== 'constant' ||
+        color.type.name !== 'Color' ||
+        color.memory.type !== 'record' ||
+        !color.memory.value.value ||
+        color.memory.value.value.memory.type !== 'string'
+      ) {
+        return
+      }
+
+      return {
+        type: 'LiteralExpression',
+        data: {
+          type: 'Color',
+          data: color.memory.value.value.memory.value,
+        },
+      }
+    },
     'Color.setHue': () => {},
     'Color.setSaturation': () => {},
     'Color.setLightness': () => {},
@@ -41,17 +65,28 @@ let hardcoded: HardcodedMap<SwiftAST.SwiftNode> = {
     'Boolean.and': () => {},
     'String.concat': () => {},
     'Number.range': () => {},
-    'Array.at': () => {},
+    'Array.at': (node, context) => {
+      if (
+        !node.data.arguments[0] ||
+        node.data.arguments[0].type !== 'argument' ||
+        !node.data.arguments[1] ||
+        node.data.arguments[1].type !== 'argument'
+      ) {
+        throw new Error(
+          'The first 2 arguments of `Array.at` need to be a value'
+        )
+      }
+    },
     'Optional.value': (node, context) => {
       if (
-        node.data.arguments[0] &&
-        node.data.arguments[0].type === 'argument'
+        !node.data.arguments[0] ||
+        node.data.arguments[0].type !== 'argument'
       ) {
-        return expression(node.data.arguments[0].data.expression, context)
+        throw new Error(
+          'The first argument of `Optional.value` needs to be a value'
+        )
       }
-      throw new Error(
-        'The first argument of `Optional.value` needs to be a value'
-      )
+      return expression(node.data.arguments[0].data.expression, context)
     },
     Shadow: () => {
       // polyfilled

@@ -2,6 +2,7 @@ import * as LogicUnify from './logic-unify'
 import * as LogicAST from './logic-ast'
 import * as LogicScope from './logic-scope'
 import { ShallowMap } from '../utils/shallow-map'
+import { hardcoded } from './logic-evaluation-hardcoded-map'
 
 export type Memory =
   | { type: 'unit' }
@@ -282,19 +283,25 @@ export const evaluate = (
           }
 
           if (functionValue.memory.value.type === 'path') {
-            if (context.isFromInitialScope(expression.data.id)) {
-              // TODO: actually implement the functions
-              console.error(
-                `Failed to evaluate "${
-                  node.data.id
-                }": Unknown function ${functionValue.memory.value.value.join(
-                  '.'
-                )}`
+            const functionName = functionValue.memory.value.value.join('.')
+            if (
+              context.isFromInitialScope(expression.data.id) &&
+              hardcoded.functionCallExpression[functionName]
+            ) {
+              const value = hardcoded.functionCallExpression[functionName](
+                node,
+                ...functionArgs
               )
+              if (value) {
+                return value
+              }
             }
 
             // this is a custom function that we have no idea what it is
             // so let's warn about it and ignore it
+            console.error(
+              `Failed to evaluate "${node.data.id}": Unknown function ${functionName}`
+            )
             return { type: LogicUnify.unit, memory: { type: 'unit' } }
           }
 

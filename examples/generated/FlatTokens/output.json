@@ -28,6 +28,17 @@
                 "css": "#45CBFF"
               }
             }
+          },
+          {
+            "qualifiedName": [
+              "testSaturate"
+            ],
+            "value": {
+              "type": "color",
+              "value": {
+                "css": "#29D7FF"
+              }
+            }
           }
         ]
       }

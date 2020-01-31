@@ -63,7 +63,7 @@ fs.writeFileSync(
 import { AST as LogicAST, flattenedMemberExpression } from './logic-ast'
 import { EvaluationContext } from './logic-evaluate'
 
-export type HardcodedMap<T> = {
+export type HardcodedMap<T, U extends any[]> = {
 ${Object.keys(hardcodedMapping)
   .map(
     k => `  ${k}: {
@@ -72,7 +72,7 @@ ${Object.keys(hardcodedMapping[k])
     x =>
       `    '${x}': (
       node: LogicAST.${syntaxNodeMapping[k]},
-      ...args: any[]
+      ...args: U
     ) => T | void`
   )
   .join('\n')}
@@ -81,10 +81,12 @@ ${Object.keys(hardcodedMapping[k])
   .join('\n')}
 }
 
-export const HandlePreludeFactory = <T>(hardcodedMap: HardcodedMap<T>) => (
+export const HandlePreludeFactory = <T, U extends any[]>(
+  hardcodedMap: HardcodedMap<T, U>
+) => (
   node: LogicAST.SyntaxNode,
   evaluationContext: void | EvaluationContext,
-  ...args: any[]
+  ...args: U
 ): T | void => {
   if (!evaluationContext) {
     return

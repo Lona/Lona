@@ -1,5 +1,5 @@
 import { doc, Doc } from 'prettier'
-import { parseCSSColor } from 'csscolorparser'
+import Color from 'color'
 
 import * as SwiftAST from '../../types/swift-ast'
 
@@ -71,18 +71,18 @@ function nodeWithSafeIdentifier(id: SwiftAST.SwiftNode): SwiftAST.SwiftNode {
 }
 
 function parseColorDefault(color: string, fallback: string) {
-  let parsed = parseCSSColor(color)
+  let parsed = Color(color)
   if (!parsed) {
-    parsed = parseCSSColor(fallback)
+    parsed = Color(fallback)
   }
   if (!parsed) {
     return { r: 0, g: 0, b: 0, a: 0 }
   }
   return {
-    r: parsed[0],
-    g: parsed[1],
-    b: parsed[2],
-    a: parsed[3],
+    r: parsed.red(),
+    g: parsed.green(),
+    b: parsed.blue(),
+    a: parsed.alpha(),
   }
 }
 

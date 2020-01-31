@@ -20,7 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "@lona/serialization": "0.0.18-pre-10",
-    "csscolorparser": "^1.0.3",
+    "color": "^3.1.2",
     "glob": "^7.1.6",
     "lodash.camelcase": "^4.3.0",
     "lodash.intersection": "^4.4.0",
@@ -30,6 +30,7 @@
     "yargs": "^15.1.0"
   },
   "devDependencies": {
+    "@types/color": "^3.0.1",
     "@types/glob": "^7.1.1",
     "@types/lodash.camelcase": "^4.3.6",
     "@types/lodash.intersection": "^4.4.6",

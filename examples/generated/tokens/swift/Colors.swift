@@ -8,3 +8,4 @@ import Foundation
 
 public let primary: Color = Color(named: "primary")!
 public let accent: Color = primary
+public let testSaturate: Color = Color(named: "testSaturate")!
