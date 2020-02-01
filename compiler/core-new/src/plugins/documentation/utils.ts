@@ -1,4 +1,5 @@
 import * as serialization from '@lona/serialization'
+import { nonNullable } from '../../utils'
 
 export const findChildPages = (root: {
   children: serialization.MDXAST.Content[]
@@ -9,5 +10,5 @@ export const findChildPages = (root: {
         return child.data.url
       }
     })
-    .filter(x => !!x)
+    .filter(nonNullable)
 }

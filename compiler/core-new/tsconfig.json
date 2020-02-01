@@ -5,8 +5,7 @@
     "outDir": "./lib",
     "rootDir": "./src",
 
-    "noImplicitUseStrict": true,
-    "noImplicitAny": false,
+    "strict": true /* Enable all strict type-checking options. */,
 
     "esModuleInterop": true,
 

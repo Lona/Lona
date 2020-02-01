@@ -9,7 +9,7 @@ let getField = (key: string, fields: LogicEvaluate.Memory) => {
   return fields.value[key]
 }
 
-const getColorString = (value: LogicEvaluate.Value): string | void => {
+const getColorString = (value: LogicEvaluate.Value): string | undefined => {
   if (
     value.type.type !== 'constant' ||
     value.type.name !== LogicUnify.color.name ||
@@ -24,8 +24,8 @@ const getColorString = (value: LogicEvaluate.Value): string | void => {
 }
 
 const getColorValue = (
-  value: LogicEvaluate.Value | void
-): TokenAST.ColorTokenValue | void => {
+  value?: LogicEvaluate.Value
+): TokenAST.ColorTokenValue | undefined => {
   if (!value) {
     return undefined
   }
@@ -36,7 +36,7 @@ const getColorValue = (
   return undefined
 }
 
-const getOptional = (value: LogicEvaluate.Value | void) => {
+const getOptional = (value?: LogicEvaluate.Value) => {
   if (!value) {
     return undefined
   }
@@ -53,8 +53,8 @@ const getOptional = (value: LogicEvaluate.Value | void) => {
 }
 
 const getFontWeight = (
-  value: LogicEvaluate.Value | void
-): TokenAST.FontWeight | void => {
+  value?: LogicEvaluate.Value
+): TokenAST.FontWeight | undefined => {
   if (!value) {
     return undefined
   }
@@ -92,8 +92,8 @@ const getFontWeight = (
 }
 
 const getShadowValue = (
-  value: LogicEvaluate.Value | void
-): TokenAST.ShadowTokenValue | void => {
+  value?: LogicEvaluate.Value
+): TokenAST.ShadowTokenValue | undefined => {
   if (!value) {
     return undefined
   }
@@ -110,7 +110,7 @@ const getShadowValue = (
   const [x, y, blur, radius] = ['x', 'y', 'blur', 'radius']
     .map(x => getField(x, fields))
     .map(x => (x && x.memory.type === 'number' ? x.memory.value : 0))
-  let color: TokenAST.ColorValue
+  let color: TokenAST.ColorValue | undefined
   if (fields.value['color']) {
     const colorValue = getColorValue(fields.value['color'])
     if (colorValue) {
@@ -124,8 +124,8 @@ const getShadowValue = (
 }
 
 const getTextStyleValue = (
-  value: LogicEvaluate.Value | void
-): TokenAST.TextStyleTokenValue | void => {
+  value?: LogicEvaluate.Value
+): TokenAST.TextStyleTokenValue | undefined => {
   if (!value) {
     return undefined
   }
@@ -171,8 +171,8 @@ const getTextStyleValue = (
 }
 
 export const create = (
-  value: LogicEvaluate.Value | void
-): TokenAST.TokenValue | void =>
+  value?: LogicEvaluate.Value
+): TokenAST.TokenValue | undefined =>
   getColorValue(value) ||
   getShadowValue(value) ||
   getTextStyleValue(value) ||

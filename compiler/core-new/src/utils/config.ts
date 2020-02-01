@@ -56,14 +56,21 @@ export async function load(
   const documentPaths = fileSearch.sync(workspacePath, '**/*.md', lonaFile)
   const logicPaths = fileSearch.sync(workspacePath, '**/*.logic', lonaFile)
 
-  const logicFiles = {}
-  const componentFiles = {}
+  const logicFiles: {
+    [filePath: string]: serialization.LogicAST.SyntaxNode
+  } = {}
+  const componentFiles: {
+    [filePath: string]: {
+      children: serialization.MDXAST.Content[]
+    }
+  } = {}
 
-  if (options && options.forEvaluation) {
+  if (options && options.forEvaluation && options.fs) {
+    const fs = options.fs
     await Promise.all(
       logicPaths
         .map(x =>
-          options.fs
+          fs
             .readFile(x)
             .then(data => serialization.decodeLogic(data))
             .then(ast => {
@@ -72,7 +79,7 @@ export async function load(
         )
         .concat(
           documentPaths.map(x =>
-            options.fs
+            fs
               .readFile(x)
               .then(data => serialization.decodeDocument(data))
               .then(ast => {

@@ -48,12 +48,19 @@ const hardcodedMapping = scopeContext._namespace.map
 
       return prev
     },
-    { functionCallExpression: {}, memberExpression: {} }
+    { functionCallExpression: {}, memberExpression: {} } as {
+      [type: string]: { [key: string]: LogicAST.AST.SyntaxNode }
+    }
   )
 
-const syntaxNodeMapping = {
+const syntaxNodeMapping: { [type: string]: string } = {
   functionCallExpression: 'FunctionCallExpressionExpression',
   memberExpression: 'MemberExpressionExpression',
+}
+
+const memberExprMapping: { [type: string]: string } = {
+  functionCallExpression: 'node.data.expression',
+  memberExpression: 'node',
 }
 
 fs.writeFileSync(
@@ -73,10 +80,23 @@ ${Object.keys(hardcodedMapping[k])
       `    '${x}': (
       node: LogicAST.${syntaxNodeMapping[k]},
       ...args: U
-    ) => T | void`
+    ) => T | undefined`
   )
   .join('\n')}
   }`
+  )
+  .join('\n')}
+}
+
+export const isHardcodedMapCall = {
+${Object.keys(hardcodedMapping)
+  .map(
+    k => `  ${k}: <T, U extends any[]>(
+    k: string,
+    map: HardcodedMap<T, U>
+  ): k is keyof HardcodedMap<T, U>['${k}'] => {
+    return k in map.${k}
+  },`
   )
   .join('\n')}
 }
@@ -85,37 +105,34 @@ export const HandlePreludeFactory = <T, U extends any[]>(
   hardcodedMap: HardcodedMap<T, U>
 ) => (
   node: LogicAST.SyntaxNode,
-  evaluationContext: void | EvaluationContext,
+  evaluationContext: undefined | EvaluationContext,
   ...args: U
-): T | void => {
+): T | undefined => {
   if (!evaluationContext) {
-    return
+    return undefined
   }
 
-  let matchedHardcodedNode: T | void
+  let matchedHardcodedNode: T | undefined
 
-  Object.keys(hardcodedMap).forEach(
-    (x: ${Object.keys(hardcodedMapping)
-      .map(k => `'${k}'`)
-      .join(' | ')}) => {
-      if (node.type === x) {
-        let memberExpression =
-          'memberName' in node.data ? node : node.data.expression
+  ${Object.keys(hardcodedMapping)
+    .map(
+      k => `if (node.type === '${k}') {
+    let memberExpression = ${memberExprMapping[k]}
 
-        if (!evaluationContext.isFromInitialScope(memberExpression.data.id)) {
-          return
-        }
-
-        const path = (flattenedMemberExpression(memberExpression) || [])
-          .map(y => y.string)
-          .join('.')
-
-        if (hardcodedMap[x][path]) {
-          matchedHardcodedNode = hardcodedMap[x][path](node, ...args)
-        }
-      }
+    if (!evaluationContext.isFromInitialScope(memberExpression.data.id)) {
+      return
     }
-  )
+
+    const path = (flattenedMemberExpression(memberExpression) || [])
+      .map(y => y.string)
+      .join('.')
+
+    if (isHardcodedMapCall.${k}(path, hardcodedMap)) {
+      matchedHardcodedNode = hardcodedMap.${k}[path](node, ...args)
+    }
+  }`
+    )
+    .join('\n\n  ')}
 
   return matchedHardcodedNode
 }

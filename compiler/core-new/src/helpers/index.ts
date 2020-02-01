@@ -17,7 +17,7 @@ export type Helpers = {
     copyDir(dirPath: string, output?: string): Promise<void>
   }
   config: Config.Config
-  evaluationContext: EvaluationContext | void
+  evaluationContext: EvaluationContext | undefined
   HandlePreludeFactory: typeof HandlePreludeFactory
   reporter: {
     log(...args: any[]): void
@@ -79,7 +79,7 @@ export default async (
     fs: fsWrapper,
   })
 
-  let cachedEvaluationContext: EvaluationContext | void
+  let cachedEvaluationContext: EvaluationContext | undefined
 
   return {
     fs: fsWrapper,

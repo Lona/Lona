@@ -13,7 +13,7 @@ export type ResolvedEnum = {
 
 export type Enum = {
   name: 'Enum' | 'Variant'
-  cases?: (string | void)[]
+  cases?: (string | undefined)[]
   case?: string
   type?: Type
 }
@@ -57,9 +57,15 @@ export function resolveEnum(x: Enum): ResolvedEnum {
   return {
     name: x.name,
     cases: x.cases
-      ? x.cases.map(y =>
-          y ? { tag: y, ltype: 'Unit' } : { tag: x.case, ltype: x.type }
-        )
+      ? x.cases.map(y => {
+          if (y) {
+            return { tag: y, ltype: 'Unit' }
+          }
+          if (x.case && x.type) {
+            return { tag: x.case, ltype: x.type }
+          }
+          throw new Error('missing tag name')
+        })
       : [],
   }
 }

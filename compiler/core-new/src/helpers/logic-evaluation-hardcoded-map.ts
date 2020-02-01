@@ -330,9 +330,11 @@ export const hardcoded: HardcodedMap<Value, (Value | void)[]> = {
     },
     Shadow: () => {
       // polyfilled
+      return undefined
     },
     TextStyle: () => {
       // polyfilled
+      return undefined
     },
   },
   memberExpression: {
@@ -340,23 +342,23 @@ export const hardcoded: HardcodedMap<Value, (Value | void)[]> = {
       type: unit,
       memory: { type: 'unit' },
     }),
-    'FontWeight.ultraLight': () => {},
-    'FontWeight.thin': () => {},
-    'FontWeight.light': () => {},
-    'FontWeight.regular': () => {},
-    'FontWeight.medium': () => {},
-    'FontWeight.semibold': () => {},
-    'FontWeight.bold': () => {},
-    'FontWeight.heavy': () => {},
-    'FontWeight.black': () => {},
-    'FontWeight.w100': () => {},
-    'FontWeight.w200': () => {},
-    'FontWeight.w300': () => {},
-    'FontWeight.w400': () => {},
-    'FontWeight.w500': () => {},
-    'FontWeight.w600': () => {},
-    'FontWeight.w700': () => {},
-    'FontWeight.w800': () => {},
-    'FontWeight.w900': () => {},
+    'FontWeight.ultraLight': () => undefined,
+    'FontWeight.thin': () => undefined,
+    'FontWeight.light': () => undefined,
+    'FontWeight.regular': () => undefined,
+    'FontWeight.medium': () => undefined,
+    'FontWeight.semibold': () => undefined,
+    'FontWeight.bold': () => undefined,
+    'FontWeight.heavy': () => undefined,
+    'FontWeight.black': () => undefined,
+    'FontWeight.w100': () => undefined,
+    'FontWeight.w200': () => undefined,
+    'FontWeight.w300': () => undefined,
+    'FontWeight.w400': () => undefined,
+    'FontWeight.w500': () => undefined,
+    'FontWeight.w600': () => undefined,
+    'FontWeight.w700': () => undefined,
+    'FontWeight.w800': () => undefined,
+    'FontWeight.w900': () => undefined,
   },
 }

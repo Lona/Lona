@@ -1,8 +1,9 @@
 import * as LogicUnify from './logic-unify'
 import * as LogicAST from './logic-ast'
 import * as LogicScope from './logic-scope'
-import { ShallowMap } from '../utils/shallow-map'
+import { isHardcodedMapCall } from './hardcoded-mapping'
 import { hardcoded } from './logic-evaluation-hardcoded-map'
+import { nonNullable, ShallowMap, assertNever } from '../utils'
 
 export type Memory =
   | { type: 'unit' }
@@ -59,7 +60,7 @@ export class EvaluationContext {
     ).fromInitialContext
   }
 
-  evaluate(uuid: string): Value | void {
+  evaluate(uuid: string): Value | undefined {
     const value = this.values[uuid]
     if (value) {
       return value
@@ -96,20 +97,23 @@ export const evaluate = (
   unificationContext: LogicUnify.UnificationContext,
   substitution: ShallowMap<LogicUnify.Unification, LogicUnify.Unification>,
   context_: EvaluationContext = makeEmpty(scopeContext)
-): EvaluationContext | void => {
-  const context = LogicAST.subNodes(node).reduce((prev, subNode) => {
-    if (!prev) {
-      return undefined
-    }
-    return evaluate(
-      subNode,
-      rootNode,
-      scopeContext,
-      unificationContext,
-      substitution,
-      prev
-    )
-  }, context_)
+): EvaluationContext | undefined => {
+  const context = LogicAST.subNodes(node).reduce<EvaluationContext | undefined>(
+    (prev, subNode) => {
+      if (!prev) {
+        return undefined
+      }
+      return evaluate(
+        subNode,
+        rootNode,
+        scopeContext,
+        unificationContext,
+        substitution,
+        prev
+      )
+    },
+    context_
+  )
 
   if (!context) {
     return undefined
@@ -268,7 +272,7 @@ export const evaluate = (
             }
             return arg.data.expression.data.id
           })
-          .filter(x => !!x)
+          .filter(nonNullable)
       )
 
       context.add(node.data.id, {
@@ -286,7 +290,7 @@ export const evaluate = (
             const functionName = functionValue.memory.value.value.join('.')
             if (
               context.isFromInitialScope(expression.data.id) &&
-              hardcoded.functionCallExpression[functionName]
+              isHardcodedMapCall.functionCallExpression(functionName, hardcoded)
             ) {
               const value = hardcoded.functionCallExpression[functionName](
                 node,
@@ -354,7 +358,7 @@ export const evaluate = (
               type: resolvedType.returnType,
               memory: {
                 type: 'record',
-                value: members.reduce((prev, m) => {
+                value: members.reduce<{ [field: string]: Value }>((prev, m) => {
                   if (!m[1]) {
                     return prev
                   }
@@ -364,6 +368,8 @@ export const evaluate = (
               },
             }
           }
+
+          assertNever(functionValue.memory.value)
         },
       })
       break
@@ -413,7 +419,7 @@ export const evaluate = (
               ? x.data.initializer.data.id
               : undefined
           )
-          .filter(x => !!x)
+          .filter(nonNullable)
 
         context.add(name.id, {
           label: 'Record declaration for ' + name.name,

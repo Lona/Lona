@@ -64,7 +64,12 @@ export const convert = async (
   const formatter = findPlugin(format)
 
   if (await isWorkspacePath(resolvedPath)) {
-    return convertWorkspace(resolvedPath, options.output, formatter, options)
+    return convertWorkspace(
+      resolvedPath,
+      (options || {}).output,
+      formatter,
+      options
+    )
   } else if (!fs.statSync(resolvedPath).isDirectory) {
     return convertFile(resolvedPath, formatter, options)
   } else {

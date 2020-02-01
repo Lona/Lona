@@ -2,11 +2,12 @@ import * as serialization from '@lona/serialization'
 import { Helpers } from '../../helpers'
 import { Token } from '../../types/tokens-ast'
 import * as TokenValue from './token-value'
+import { nonNullable } from '../../utils'
 
 export const convertDeclaration = (
   declaration: serialization.LogicAST.Declaration,
   helpers: Helpers
-): Token | void => {
+): Token | undefined => {
   if (!helpers.evaluationContext) {
     return undefined
   }
@@ -33,7 +34,7 @@ export const convert = (
   if ('type' in node && node.type === 'program') {
     declarations = node.data.block
       .map(x => (x.type === 'declaration' ? x.data.content : undefined))
-      .filter(x => !!x)
+      .filter(nonNullable)
   } else if ('type' in node && node.type === 'topLevelDeclarations') {
     declarations = node.data.declarations
   } else {
@@ -41,6 +42,7 @@ export const convert = (
     return []
   }
 
-  // @ts-ignore
-  return declarations.map(x => convertDeclaration(x, helpers)).filter(x => !!x)
+  return declarations
+    .map(x => convertDeclaration(x, helpers))
+    .filter(nonNullable)
 }

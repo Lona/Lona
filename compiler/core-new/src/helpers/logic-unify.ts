@@ -2,7 +2,7 @@ import intersection from 'lodash.intersection'
 import * as LogicAST from './logic-ast'
 import * as LogicScope from './logic-scope'
 import * as LogicTraversal from './logic-traversal'
-import { ShallowMap } from '../utils/shallow-map'
+import { ShallowMap, assertNever, nonNullable } from '../utils'
 
 type FunctionArgument = {
   label?: string
@@ -177,6 +177,8 @@ export function substitute(
       })),
     }
   }
+
+  assertNever(resolvedType)
 }
 
 function genericNames(type: Unification): string[] {
@@ -198,6 +200,7 @@ function genericNames(type: Unification): string[] {
       .map(genericNames)
       .reduce((prev, x) => prev.concat(x), [])
   }
+  assertNever(type)
 }
 
 function replaceGenericsWithVars(getName: () => string, type: Unification) {
@@ -269,7 +272,7 @@ export const makeUnificationContext = (
         .map(param =>
           param.type === 'parameter' ? param.data.name.name : undefined
         )
-        .filter(x => !!x)
+        .filter(nonNullable)
       const genericsInScope = genericNames.map(x => [
         x,
         result.typeNameGenerator.next(),
@@ -320,7 +323,7 @@ export const makeUnificationContext = (
         .map(param =>
           param.type === 'parameter' ? param.data.name.name : undefined
         )
-        .filter(x => !!x)
+        .filter(nonNullable)
       const genericsInScope: [string, string][] = genericNames.map(x => [
         x,
         result.typeNameGenerator.next(),
@@ -354,7 +357,7 @@ export const makeUnificationContext = (
               ),
             }
           })
-          .filter(x => !!x)
+          .filter(nonNullable)
         const functionType: Unification = {
           type: 'function',
           returnType,
@@ -375,7 +378,7 @@ export const makeUnificationContext = (
         .map(param =>
           param.type === 'parameter' ? param.data.name.name : undefined
         )
-        .filter(x => !!x)
+        .filter(nonNullable)
       const genericsInScope: [string, string][] = genericNames.map(x => [
         x,
         result.typeNameGenerator.next(),
@@ -472,7 +475,7 @@ export const makeUnificationContext = (
       }
 
       const placeholderArgTypes = node.data.arguments
-        .map<FunctionArgument>(arg => {
+        .map<FunctionArgument | undefined>(arg => {
           if (arg.type === 'placeholder') {
             return
           }
@@ -484,7 +487,7 @@ export const makeUnificationContext = (
             },
           }
         })
-        .filter(x => !!x)
+        .filter(nonNullable)
 
       const placeholderFunctionType: Unification = {
         type: 'function',
@@ -500,10 +503,10 @@ export const makeUnificationContext = (
       result.nodes[node.data.id] = placeholderReturnType
 
       let argumentValues = node.data.arguments
-        .map<LogicAST.AST.Expression>(arg =>
+        .map(arg =>
           arg.type === 'placeholder' ? undefined : arg.data.expression
         )
-        .filter(x => !!x)
+        .filter(nonNullable)
 
       const constraints = placeholderArgTypes.map((argType, i) => ({
         head: argType.type,
@@ -576,6 +579,10 @@ export const unify = (
 ): ShallowMap<Unification, Unification> => {
   while (constraints.length > 0) {
     const constraint = constraints.shift()
+    if (!constraint) {
+      // that's not possible, so it's just for TS
+      continue
+    }
     let { head, tail } = constraint
 
     if (head == tail) {
@@ -610,21 +617,31 @@ export const unify = (
           })
         })
       } else {
-        const headLabels = headArguments.map(arg => arg.label).filter(x => !!x)
-        const tailLabels = tailArguments.map(arg => arg.label).filter(x => !!x)
+        const headLabels = headArguments
+          .map(arg => arg.label)
+          .filter(nonNullable)
+        const tailLabels = tailArguments
+          .map(arg => arg.label)
+          .filter(nonNullable)
 
         let common = intersection(headLabels, tailLabels)
 
         common.forEach(label => {
           const headArgumentType = headArguments.find(
             arg => arg.label === label
-          ).type
+          )
           const tailArgumentType = tailArguments.find(
             arg => arg.label === label
-          ).type
+          )
+
+          if (!headArgumentType || !tailArgumentType) {
+            // not possible but here for TS
+            return
+          }
+
           constraints.push({
-            head: headArgumentType,
-            tail: tailArgumentType,
+            head: headArgumentType.type,
+            tail: tailArgumentType.type,
           })
         })
       }

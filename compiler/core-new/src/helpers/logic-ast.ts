@@ -12,7 +12,7 @@ export function joinPrograms(
       id: uuid(),
       block: programs.reduce(
         (prev, x) => (x ? prev.concat(x.data.block) : prev),
-        []
+        [] as LogicAST.Statement[]
       ),
     },
   }

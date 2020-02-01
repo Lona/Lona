@@ -3,6 +3,7 @@ import * as serialization from '@lona/serialization'
 import { Helpers } from '../../helpers'
 import { convertDeclaration } from '../tokens/convert'
 import { Token } from '../../types/tokens-ast'
+import { nonNullable, assertNever } from '../../utils'
 
 let tokenNameElement = (kind: string, content: string) =>
   `<span class="lona-token-name lona-token-name-${kind}">${content}</span>`
@@ -102,6 +103,8 @@ const convertToken = (token: Token): string => {
       ]),
     ])
   }
+
+  assertNever(token.value)
 }
 
 export const convert = (
@@ -113,7 +116,7 @@ export const convert = (
       if (child.type === 'code' && child.data.parsed) {
         return child.data.parsed.data.declarations
           .map(x => convertDeclaration(x, helpers))
-          .filter(x => !!x)
+          .filter(nonNullable)
           .map(convertToken)
           .join('')
       }

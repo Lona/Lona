@@ -1,6 +1,7 @@
 import { LogicAST } from '@lona/serialization'
 
 import { Helpers, HardcodedMap, EvaluationContext } from '../../helpers'
+import { nonNullable } from '../../utils'
 import * as SwiftAST from '../../types/swift-ast'
 
 type LogicGenerationContext = {
@@ -9,9 +10,9 @@ type LogicGenerationContext = {
   helpers: Helpers
   handlePreludeDeps: (
     node: LogicAST.SyntaxNode,
-    evaluationContext: void | EvaluationContext,
+    evaluationContext: undefined | EvaluationContext,
     context: LogicGenerationContext
-  ) => SwiftAST.SwiftNode | void
+  ) => SwiftAST.SwiftNode | undefined
 }
 
 function fontWeight(weight: string): SwiftAST.SwiftNode {
@@ -33,9 +34,9 @@ function fontWeight(weight: string): SwiftAST.SwiftNode {
 function evaluateColor(
   node: LogicAST.SyntaxNode,
   context: LogicGenerationContext
-): SwiftAST.SwiftNode | void {
+): SwiftAST.SwiftNode | undefined {
   if (!context.helpers.evaluationContext) {
-    return
+    return undefined
   }
   const color = context.helpers.evaluationContext.evaluate(node.data.id)
 
@@ -47,7 +48,7 @@ function evaluateColor(
     !color.memory.value.value ||
     color.memory.value.value.memory.type !== 'string'
   ) {
-    return
+    return undefined
   }
 
   return {
@@ -66,10 +67,10 @@ const hardcoded: HardcodedMap<SwiftAST.SwiftNode, [LogicGenerationContext]> = {
     'Color.setSaturation': evaluateColor,
     'Color.setLightness': evaluateColor,
     'Color.fromHSL': evaluateColor,
-    'Boolean.or': () => {},
-    'Boolean.and': () => {},
-    'String.concat': () => {},
-    'Number.range': () => {},
+    'Boolean.or': () => undefined,
+    'Boolean.and': () => undefined,
+    'String.concat': () => undefined,
+    'Number.range': () => undefined,
     'Array.at': (node, context) => {
       if (
         !node.data.arguments[0] ||
@@ -81,6 +82,8 @@ const hardcoded: HardcodedMap<SwiftAST.SwiftNode, [LogicGenerationContext]> = {
           'The first 2 arguments of `Array.at` need to be a value'
         )
       }
+
+      return undefined
     },
     'Optional.value': (node, context) => {
       if (
@@ -95,9 +98,11 @@ const hardcoded: HardcodedMap<SwiftAST.SwiftNode, [LogicGenerationContext]> = {
     },
     Shadow: () => {
       // polyfilled
+      return undefined
     },
     TextStyle: () => {
       // polyfilled
+      return undefined
     },
   },
   memberExpression: {
@@ -187,6 +192,12 @@ const statement = (
   return { type: 'Empty', data: undefined }
 }
 
+function isVariableDeclaration(
+  x: LogicAST.SyntaxNode
+): x is LogicAST.VariableDeclaration {
+  return x.type === 'variable'
+}
+
 const declaration = (
   node: LogicAST.Declaration,
   context: LogicGenerationContext
@@ -249,10 +260,9 @@ const declaration = (
     case 'record': {
       const newContext = { ...context, isStatic: false }
 
-      const memberVariables = node.data.declarations.filter<
-        LogicAST.VariableDeclaration
-        // @ts-ignore
-      >(x => x.type === 'variable')
+      const memberVariables = node.data.declarations.filter(
+        isVariableDeclaration
+      )
 
       const initFunction: SwiftAST.SwiftNode = {
         type: 'InitializerDeclaration',
@@ -301,7 +311,9 @@ const declaration = (
           name: node.data.name.name,
           inherits: [{ type: 'TypeName', data: 'Equatable' }],
           modifier: SwiftAST.DeclarationModifier.PublicModifier,
-          body: (memberVariables.length ? [initFunction] : []).concat(
+          body: ((memberVariables.length
+            ? [initFunction]
+            : []) as SwiftAST.SwiftNode[]).concat(
             memberVariables.map(x =>
               declaration({ type: 'variable', data: { ...x.data } }, newContext)
             )
@@ -351,7 +363,7 @@ const declaration = (
               }
               return enumCase
             })
-            .filter(x => !!x),
+            .filter(nonNullable),
         },
       }
     }
@@ -416,7 +428,7 @@ const expression = (
                 },
               }
             })
-            .filter(x => !!x),
+            .filter(nonNullable),
         },
       }
     }
@@ -511,9 +523,15 @@ const convertNativeType = (
 }
 
 const typeAnnotation = (
-  node: LogicAST.TypeAnnotation,
+  node: LogicAST.TypeAnnotation | undefined,
   context: LogicGenerationContext
 ): SwiftAST.TypeAnnotation => {
+  if (!node) {
+    context.helpers.reporter.warn(
+      'no type annotation when needed remaining in file'
+    )
+    return { type: 'TypeName', data: '_' }
+  }
   switch (node.type) {
     case 'typeIdentifier': {
       return {

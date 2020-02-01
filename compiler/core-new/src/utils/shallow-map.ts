@@ -7,7 +7,7 @@ export class ShallowMap<K, T> {
     return (x: { key: K; value: T }) => isEqual(x.key, k)
   }
 
-  public get(k: K): T | void {
+  public get(k: K): T | undefined {
     const found = this.map.find(this.find(k))
     if (found) {
       return found.value

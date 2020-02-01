@@ -8,169 +8,195 @@ export type HardcodedMap<T, U extends any[]> = {
     'Color.setHue': (
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'Color.setSaturation': (
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'Color.setLightness': (
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'Color.fromHSL': (
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'Color.saturate': (
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'Boolean.or': (
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'Boolean.and': (
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'Number.range': (
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'String.concat': (
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'Array.at': (
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'Optional.value': (
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'Shadow': (
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'TextStyle': (
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
   }
   memberExpression: {
     'Optional.none': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.ultraLight': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.thin': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.light': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.regular': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.medium': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.semibold': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.bold': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.heavy': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.black': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.w100': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.w200': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.w300': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.w400': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.w500': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.w600': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.w700': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.w800': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
     'FontWeight.w900': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U
-    ) => T | void
+    ) => T | undefined
   }
+}
+
+export const isHardcodedMapCall = {
+  functionCallExpression: <T, U extends any[]>(
+    k: string,
+    map: HardcodedMap<T, U>
+  ): k is keyof HardcodedMap<T, U>['functionCallExpression'] => {
+    return k in map.functionCallExpression
+  },
+  memberExpression: <T, U extends any[]>(
+    k: string,
+    map: HardcodedMap<T, U>
+  ): k is keyof HardcodedMap<T, U>['memberExpression'] => {
+    return k in map.memberExpression
+  },
 }
 
 export const HandlePreludeFactory = <T, U extends any[]>(
   hardcodedMap: HardcodedMap<T, U>
 ) => (
   node: LogicAST.SyntaxNode,
-  evaluationContext: void | EvaluationContext,
+  evaluationContext: undefined | EvaluationContext,
   ...args: U
-): T | void => {
+): T | undefined => {
   if (!evaluationContext) {
-    return
+    return undefined
   }
 
-  let matchedHardcodedNode: T | void
+  let matchedHardcodedNode: T | undefined
 
-  Object.keys(hardcodedMap).forEach(
-    (x: 'functionCallExpression' | 'memberExpression') => {
-      if (node.type === x) {
-        let memberExpression =
-          'memberName' in node.data ? node : node.data.expression
+  if (node.type === 'functionCallExpression') {
+    let memberExpression = node.data.expression
 
-        if (!evaluationContext.isFromInitialScope(memberExpression.data.id)) {
-          return
-        }
-
-        const path = (flattenedMemberExpression(memberExpression) || [])
-          .map(y => y.string)
-          .join('.')
-
-        if (hardcodedMap[x][path]) {
-          matchedHardcodedNode = hardcodedMap[x][path](node, ...args)
-        }
-      }
+    if (!evaluationContext.isFromInitialScope(memberExpression.data.id)) {
+      return
     }
-  )
+
+    const path = (flattenedMemberExpression(memberExpression) || [])
+      .map(y => y.string)
+      .join('.')
+
+    if (isHardcodedMapCall.functionCallExpression(path, hardcodedMap)) {
+      matchedHardcodedNode = hardcodedMap.functionCallExpression[path](node, ...args)
+    }
+  }
+
+  if (node.type === 'memberExpression') {
+    let memberExpression = node
+
+    if (!evaluationContext.isFromInitialScope(memberExpression.data.id)) {
+      return
+    }
+
+    const path = (flattenedMemberExpression(memberExpression) || [])
+      .map(y => y.string)
+      .join('.')
+
+    if (isHardcodedMapCall.memberExpression(path, hardcodedMap)) {
+      matchedHardcodedNode = hardcodedMap.memberExpression[path](node, ...args)
+    }
+  }
 
   return matchedHardcodedNode
 }

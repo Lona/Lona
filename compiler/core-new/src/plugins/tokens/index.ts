@@ -35,7 +35,7 @@ export const parseWorkspace = async (
   options: {
     [key: string]: unknown
   }
-): Promise<ConvertedWorkspace | void> => {
+): Promise<ConvertedWorkspace | undefined> => {
   let workspace: ConvertedWorkspace
 
   if (!helpers.evaluationContext) {
