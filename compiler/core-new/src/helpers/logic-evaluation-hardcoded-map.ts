@@ -2,7 +2,7 @@ import Color from 'color'
 
 import { HardcodedMap } from './index'
 import { Value } from './logic-evaluate'
-import { unit, string, bool, color } from './logic-unify'
+import { unit, string, bool, color, array, number } from './logic-unify'
 
 export const hardcoded: HardcodedMap<Value, (Value | void)[]> = {
   functionCallExpression: {
@@ -44,10 +44,159 @@ export const hardcoded: HardcodedMap<Value, (Value | void)[]> = {
         },
       }
     },
-    'Color.setHue': () => {},
-    'Color.setSaturation': () => {},
-    'Color.setLightness': () => {},
-    'Color.fromHSL': () => {},
+    'Color.setHue': (node, baseColor, hue) => {
+      if (
+        !baseColor ||
+        baseColor.type.type !== 'constant' ||
+        baseColor.type.name !== 'Color' ||
+        baseColor.memory.type !== 'record' ||
+        !baseColor.memory.value.value ||
+        baseColor.memory.value.value.memory.type !== 'string'
+      ) {
+        throw new Error(
+          'The first argument of `Color.setHue` need to be a color'
+        )
+      }
+
+      const parsedColor = Color(baseColor.memory.value.value.memory.value)
+
+      if (!hue || hue.memory.type !== 'number') {
+        throw new Error(
+          'The second argument of `Color.setHue` need to be a number'
+        )
+      }
+
+      return {
+        type: color,
+        memory: {
+          type: 'record',
+          value: {
+            value: {
+              type: string,
+              memory: {
+                type: 'string',
+                value: parsedColor.hue(hue.memory.value).hex(),
+              },
+            },
+          },
+        },
+      }
+    },
+    'Color.setSaturation': (node, baseColor, saturation) => {
+      if (
+        !baseColor ||
+        baseColor.type.type !== 'constant' ||
+        baseColor.type.name !== 'Color' ||
+        baseColor.memory.type !== 'record' ||
+        !baseColor.memory.value.value ||
+        baseColor.memory.value.value.memory.type !== 'string'
+      ) {
+        throw new Error(
+          'The first argument of `Color.setSaturation` need to be a color'
+        )
+      }
+
+      const parsedColor = Color(baseColor.memory.value.value.memory.value)
+
+      if (!saturation || saturation.memory.type !== 'number') {
+        throw new Error(
+          'The second argument of `Color.setSaturation` need to be a number'
+        )
+      }
+
+      return {
+        type: color,
+        memory: {
+          type: 'record',
+          value: {
+            value: {
+              type: string,
+              memory: {
+                type: 'string',
+                value: parsedColor.saturationl(saturation.memory.value).hex(),
+              },
+            },
+          },
+        },
+      }
+    },
+    'Color.setLightness': (node, baseColor, lightness) => {
+      if (
+        !baseColor ||
+        baseColor.type.type !== 'constant' ||
+        baseColor.type.name !== 'Color' ||
+        baseColor.memory.type !== 'record' ||
+        !baseColor.memory.value.value ||
+        baseColor.memory.value.value.memory.type !== 'string'
+      ) {
+        throw new Error(
+          'The first argument of `Color.setLightness` need to be a color'
+        )
+      }
+
+      const parsedColor = Color(baseColor.memory.value.value.memory.value)
+
+      if (!lightness || lightness.memory.type !== 'number') {
+        throw new Error(
+          'The second argument of `Color.setLightness` need to be a number'
+        )
+      }
+
+      return {
+        type: color,
+        memory: {
+          type: 'record',
+          value: {
+            value: {
+              type: string,
+              memory: {
+                type: 'string',
+                value: parsedColor.lightness(lightness.memory.value).hex(),
+              },
+            },
+          },
+        },
+      }
+    },
+    'Color.fromHSL': (node, hue, saturation, lightness) => {
+      if (!hue || hue.memory.type !== 'number') {
+        throw new Error(
+          'The first argument of `Color.fromHSL` need to be a number'
+        )
+      }
+      if (!saturation || saturation.memory.type !== 'number') {
+        throw new Error(
+          'The second argument of `Color.fromHSL` need to be a number'
+        )
+      }
+      if (!lightness || lightness.memory.type !== 'number') {
+        throw new Error(
+          'The third argument of `Color.fromHSL` need to be a number'
+        )
+      }
+
+      const parsedColor = Color({
+        h: hue.memory.value,
+        s: saturation.memory.value,
+        l: lightness.memory.value,
+      })
+
+      return {
+        type: color,
+        memory: {
+          type: 'record',
+          value: {
+            value: {
+              type: string,
+              memory: {
+                type: 'string',
+                value: parsedColor.hex(),
+              },
+            },
+          },
+        },
+      }
+    },
     'Boolean.or': (node, a, b) => {
       if (!a || a.memory.type !== 'bool') {
         throw new Error(
@@ -111,7 +260,55 @@ export const hardcoded: HardcodedMap<Value, (Value | void)[]> = {
         },
       }
     },
-    'Number.range': () => {},
+    'Number.range': (node, from, to, by) => {
+      if (!from || from.memory.type !== 'number') {
+        throw new Error(
+          'The first argument of `Number.range` need to be a number'
+        )
+      }
+      if (!to || to.memory.type !== 'number') {
+        throw new Error(
+          'The second argument of `Number.range` need to be a number'
+        )
+      }
+      if (!by || by.memory.type !== 'number') {
+        throw new Error(
+          'The third argument of `Number.range` need to be a number'
+        )
+      }
+
+      const arr = []
+
+      if (by.memory.value === 0 || by.memory.value === -0) {
+        // a step of 0 is weird
+      } else if (by.memory.value > 0 && to.memory.value < from.memory.value) {
+        // a positive step when the end is smaller than the beginning is weird
+      } else if (by.memory.value < 0 && to.memory.value > from.memory.value) {
+        // a negative step when the end is bigger than the beginning is weird
+      } else {
+        for (
+          let i = from.memory.value;
+          i < to.memory.value;
+          i += by.memory.value
+        ) {
+          arr.push(i)
+        }
+      }
+
+      return {
+        type: array(number),
+        memory: {
+          type: 'array',
+          value: arr.map(x => ({
+            type: number,
+            memory: {
+              type: 'number',
+              value: x,
+            },
+          })),
+        },
+      }
+    },
     'Array.at': (node, array, index) => {
       if (!array || array.memory.type !== 'array') {
         throw new Error('The first argument of `Array.at` need to be an array')

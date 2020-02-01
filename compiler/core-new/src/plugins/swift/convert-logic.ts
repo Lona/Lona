@@ -30,37 +30,42 @@ function fontWeight(weight: string): SwiftAST.SwiftNode {
   }
 }
 
+function evaluateColor(
+  node: LogicAST.SyntaxNode,
+  context: LogicGenerationContext
+): SwiftAST.SwiftNode | void {
+  if (!context.helpers.evaluationContext) {
+    return
+  }
+  const color = context.helpers.evaluationContext.evaluate(node.data.id)
+
+  if (
+    !color ||
+    color.type.type !== 'constant' ||
+    color.type.name !== 'Color' ||
+    color.memory.type !== 'record' ||
+    !color.memory.value.value ||
+    color.memory.value.value.memory.type !== 'string'
+  ) {
+    return
+  }
+
+  return {
+    type: 'LiteralExpression',
+    data: {
+      type: 'Color',
+      data: color.memory.value.value.memory.value,
+    },
+  }
+}
+
 const hardcoded: HardcodedMap<SwiftAST.SwiftNode, [LogicGenerationContext]> = {
   functionCallExpression: {
-    'Color.saturate': (node, context) => {
-      if (!context.helpers.evaluationContext) {
-        return
-      }
-      const color = context.helpers.evaluationContext.evaluate(node.data.id)
-
-      if (
-        !color ||
-        color.type.type !== 'constant' ||
-        color.type.name !== 'Color' ||
-        color.memory.type !== 'record' ||
-        !color.memory.value.value ||
-        color.memory.value.value.memory.type !== 'string'
-      ) {
-        return
-      }
-
-      return {
-        type: 'LiteralExpression',
-        data: {
-          type: 'Color',
-          data: color.memory.value.value.memory.value,
-        },
-      }
-    },
-    'Color.setHue': () => {},
-    'Color.setSaturation': () => {},
-    'Color.setLightness': () => {},
-    'Color.fromHSL': () => {},
+    'Color.saturate': evaluateColor,
+    'Color.setHue': evaluateColor,
+    'Color.setSaturation': evaluateColor,
+    'Color.setLightness': evaluateColor,
+    'Color.fromHSL': evaluateColor,
     'Boolean.or': () => {},
     'Boolean.and': () => {},
     'String.concat': () => {},
