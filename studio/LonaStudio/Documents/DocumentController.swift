@@ -17,6 +17,14 @@ enum DocumentError: Error {
 
 class DocumentController: NSDocumentController {
 
+    public var history = History() {
+        didSet {
+            historyEmitter.emit(history)
+        }
+    }
+
+    public var historyEmitter = Emitter<History>()
+
     override public static var shared: DocumentController {
         return NSDocumentController.shared as! DocumentController
     }
@@ -27,9 +35,57 @@ class DocumentController: NSDocumentController {
         }
     }
 
+    override func openDocument(
+        withContentsOf url: URL,
+        display displayDocument: Bool,
+        completionHandler: @escaping (NSDocument?, Bool, Error?) -> Void
+    ) {
+        self._openDocument(withContentsOf: url, display: displayDocument, completionHandler: {
+            document, documentWasAlreadyOpen, error in
+            if displayDocument {
+                self.history.navigateTo(url: url)
+            }
+            completionHandler(document, documentWasAlreadyOpen, error)
+        })
+    }
+
+    public func goBack(offset: Int = 0) -> Promise<NSDocument, NSError> {
+        guard history.canGoBack(offset: offset) else { return .failure(NSError()) }
+
+        let url = history.back[offset]
+
+        return .result { complete in
+            self._openDocument(withContentsOf: url, display: true, completionHandler: { document, _, error in
+                if let error = error {
+                    complete(.failure(error as NSError))
+                } else {
+                    self.history.goBack(offset: offset)
+                    complete(.success(document!))
+                }
+            })
+        }
+    }
+
+    public func goForward(offset: Int = 0) -> Promise<NSDocument, NSError> {
+        guard history.canGoForward(offset: offset) else { return .failure(NSError()) }
+
+        let url = history.forward[offset]
+
+        return .result { complete in
+            self._openDocument(withContentsOf: url, display: true, completionHandler: { document, _, error in
+                if let error = error {
+                    complete(.failure(error as NSError))
+                } else {
+                    self.history.goForward(offset: offset)
+                    complete(.success(document!))
+                }
+            })
+        }
+    }
+
     // When attempting to open a directory, instead attempt to open its `README.md`.
     // If we fail to open a file, hide the current file within the workspace.
-    override func openDocument(
+    private func _openDocument(
         withContentsOf url: URL,
         display displayDocument: Bool,
         completionHandler: @escaping (NSDocument?, Bool, Error?) -> Void
@@ -42,7 +98,7 @@ class DocumentController: NSDocumentController {
 
         super.openDocument(withContentsOf: realURL, display: displayDocument, completionHandler: {
             document, documentWasAlreadyOpen, error in
-            if let _ = error, displayDocument {
+            if displayDocument, let _ = error {
                 self.removeAllDocumentsFromWorkspaceWindowControllers()
             }
             completionHandler(document, documentWasAlreadyOpen, error)
@@ -64,8 +120,12 @@ class DocumentController: NSDocumentController {
 
         super.reopenDocument(for: urlOrNil, withContentsOf: realURL, display: displayDocument, completionHandler: {
             document, documentWasAlreadyOpen, error in
-            if let _ = error, displayDocument {
-                self.removeAllDocumentsFromWorkspaceWindowControllers()
+            if displayDocument {
+                if let _ = error {
+                    self.removeAllDocumentsFromWorkspaceWindowControllers()
+                } else {
+                    self.history.navigateTo(url: contentsURL)
+                }
             }
             completionHandler(document, documentWasAlreadyOpen, error)
         })
@@ -260,6 +320,8 @@ extension DocumentController {
 
     private func setWorkspace(url: URL) -> Bool {
         if url.isLonaWorkspace() {
+            history.reset()
+
             noteNewRecentDocumentURL(url)
 
             CSUserPreferences.workspaceURL = url

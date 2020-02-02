@@ -72,14 +72,56 @@ class EditorViewController: NSViewController {
 
     // MARK: Private
 
-    private let contentContainerView = NSView(frame: .zero)
+    private let contentContainerView = NSBox(frame: .zero)
 
-    private let breadcrumbView = BreadcrumbBar()
+    private let breadcrumbView = NavigationBar()
+
+    private func updateHistory(_ history: History) {
+        breadcrumbView.isBackEnabled = history.canGoBack()
+        breadcrumbView.isForwardEnabled = history.canGoForward()
+
+        breadcrumbView.menuForBackItem = {
+            return NSMenu(items: history.back.enumerated().map({ index, url in
+                let item = NSMenuItem(title: url.lastPathComponent, onClick: {
+                    _ = DocumentController.shared.goBack(offset: index)
+                })
+                let icon = NSWorkspace.shared.icon(forFile: url.path)
+                icon.size = .init(width: 16, height: 16)
+                item.image = icon
+                return item
+            }))
+        }
+
+        breadcrumbView.menuForForwardItem = {
+            return NSMenu(items: history.forward.enumerated().map({ index, url in
+                let item = NSMenuItem(title: url.lastPathComponent, onClick: {
+                    _ = DocumentController.shared.goForward(offset: index)
+                })
+                let icon = NSWorkspace.shared.icon(forFile: url.path)
+                icon.size = .init(width: 16, height: 16)
+                item.image = icon
+                return item
+            }))
+        }
+
+        breadcrumbView.onClickBack = {
+            _ = DocumentController.shared.goBack()
+        }
+
+        breadcrumbView.onClickForward = {
+            _ = DocumentController.shared.goForward()
+        }
+    }
 
     private func setUpViews() {
-        self.view = contentContainerView
+        contentContainerView.fillColor = Colors.contentBackground
+        contentContainerView.boxType = .custom
+        contentContainerView.borderType = .noBorder
+        contentContainerView.contentViewMargins = .zero
 
-        breadcrumbView.fillColor = Colors.contentBackground
+        DocumentController.shared.historyEmitter.addListener { [unowned self] history in self.updateHistory(history) }
+
+        self.view = contentContainerView
     }
 
     private func setUpConstraints() {
@@ -89,8 +131,8 @@ class EditorViewController: NSViewController {
         contentContainerView.addSubview(breadcrumbView)
 
         breadcrumbView.topAnchor.constraint(equalTo: contentContainerView.topAnchor).isActive = true
-        breadcrumbView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor).isActive = true
-        breadcrumbView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor).isActive = true
+        breadcrumbView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 8).isActive = true
+        breadcrumbView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor, constant: -8).isActive = true
         breadcrumbView.heightAnchor.constraint(equalToConstant: 38).isActive = true
     }
 
