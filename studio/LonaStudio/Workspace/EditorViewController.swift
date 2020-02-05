@@ -49,7 +49,7 @@ class EditorViewController: NSViewController {
     public var contentView: NSView? {
         didSet {
             if let contentView = contentView {
-                if contentView.superview != contentContainerView {
+                if contentView != oldValue {
                     oldValue?.removeFromSuperview()
 
                     contentView.removeFromSuperview()
