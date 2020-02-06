@@ -67,10 +67,78 @@ const hardcoded: HardcodedMap<SwiftAST.SwiftNode, [LogicGenerationContext]> = {
     'Color.setSaturation': evaluateColor,
     'Color.setLightness': evaluateColor,
     'Color.fromHSL': evaluateColor,
-    'Boolean.or': () => undefined,
-    'Boolean.and': () => undefined,
-    'String.concat': () => undefined,
-    'Number.range': () => undefined,
+    'Boolean.or': (node, context) => {
+      if (
+        !node.data.arguments[0] ||
+        node.data.arguments[0].type !== 'argument' ||
+        !node.data.arguments[1] ||
+        node.data.arguments[1].type !== 'argument'
+      ) {
+        throw new Error(
+          'The first 2 arguments of `Boolean.or` need to be a value'
+        )
+      }
+
+      return {
+        type: 'BinaryExpression',
+        data: {
+          left: expression(node.data.arguments[0].data.expression, context),
+          operator: '||',
+          right: expression(node.data.arguments[1].data.expression, context),
+        },
+      }
+    },
+    'Boolean.and': (node, context) => {
+      if (
+        !node.data.arguments[0] ||
+        node.data.arguments[0].type !== 'argument' ||
+        !node.data.arguments[1] ||
+        node.data.arguments[1].type !== 'argument'
+      ) {
+        throw new Error(
+          'The first 2 arguments of `Boolean.or` need to be a value'
+        )
+      }
+
+      return {
+        type: 'BinaryExpression',
+        data: {
+          left: expression(node.data.arguments[0].data.expression, context),
+          operator: '&&',
+          right: expression(node.data.arguments[1].data.expression, context),
+        },
+      }
+    },
+    'String.concat': (node, context) => {
+      if (
+        !node.data.arguments[0] ||
+        node.data.arguments[0].type !== 'argument' ||
+        !node.data.arguments[1] ||
+        node.data.arguments[1].type !== 'argument'
+      ) {
+        throw new Error(
+          'The first 2 arguments of `Array.at` need to be a value'
+        )
+      }
+      // TODO:
+      return undefined
+    },
+    'Number.range': (node, context) => {
+      if (
+        !node.data.arguments[0] ||
+        node.data.arguments[0].type !== 'argument' ||
+        !node.data.arguments[1] ||
+        node.data.arguments[1].type !== 'argument' ||
+        !node.data.arguments[2] ||
+        node.data.arguments[2].type !== 'argument'
+      ) {
+        throw new Error(
+          'The first 3 arguments of `Number.range` need to be a value'
+        )
+      }
+      // TODO:
+      return undefined
+    },
     'Array.at': (node, context) => {
       if (
         !node.data.arguments[0] ||
@@ -82,7 +150,7 @@ const hardcoded: HardcodedMap<SwiftAST.SwiftNode, [LogicGenerationContext]> = {
           'The first 2 arguments of `Array.at` need to be a value'
         )
       }
-
+      // TODO:
       return undefined
     },
     'Optional.value': (node, context) => {
