@@ -1,5 +1,13 @@
-import { doc, Doc } from 'prettier'
 import Color from 'color'
+import {
+  builders,
+  group,
+  indent,
+  join,
+  prefixAll,
+  Doc,
+  print,
+} from '../../utils/printer'
 
 import * as SwiftAST from './swift-ast'
 
@@ -13,31 +21,6 @@ type Options = {
 }
 
 const printerOptions = { printWidth: 120, tabWidth: 2, useTabs: false }
-const builders = doc.builders
-
-function group(x: Doc[] | Doc): Doc {
-  if (Array.isArray(x)) {
-    return builders.group(builders.concat(x))
-  }
-  return builders.group(x)
-}
-function indent(x: Doc[] | Doc): Doc {
-  if (Array.isArray(x)) {
-    return builders.indent(builders.concat(x))
-  }
-  return builders.indent(x)
-}
-
-function join(x: Doc[], separator: Doc | Doc[]): Doc {
-  if (Array.isArray(separator)) {
-    return builders.join(builders.concat(separator), x)
-  }
-  return builders.join(separator, x)
-}
-
-function prefixAll(x: Doc[], prefix: Doc): Doc[] {
-  return x.map(y => builders.concat([prefix, y]))
-}
 
 const reservedWords = ['true', 'false', 'default', 'case', 'break']
 
@@ -1111,6 +1094,5 @@ function renderInitializerBlock(
 }
 
 export default function toString(ast: SwiftAST.SwiftNode, options: Options) {
-  return doc.printer.printDocToString(render(ast, options), printerOptions)
-    .formatted
+  return print(render(ast, options), printerOptions)
 }

@@ -37,7 +37,7 @@ function reduceChildren<T>(
 
 export const reduce = function<T>(
   node: LogicAST.AST.SyntaxNode,
-  config: TraversalConfig,
+  config: TraversalConfig = emptyConfig(),
   initialResult: T,
   f: (x: T, node: LogicAST.AST.SyntaxNode, config: TraversalConfig) => T
 ) {

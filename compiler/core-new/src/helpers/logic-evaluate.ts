@@ -39,9 +39,14 @@ export class EvaluationContext {
   values: { [uuid: string]: Value } = {}
   thunks: { [uuid: string]: Thunk } = {}
   scopeContext: LogicScope.ScopeContext
+  rootNode: LogicAST.AST.SyntaxNode
 
-  constructor(scopeContext: LogicScope.ScopeContext) {
+  constructor(
+    scopeContext: LogicScope.ScopeContext,
+    rootNode: LogicAST.AST.SyntaxNode
+  ) {
     this.scopeContext = scopeContext
+    this.rootNode = rootNode
   }
 
   add(uuid: string, thunk: Thunk) {
@@ -58,6 +63,14 @@ export class EvaluationContext {
         fromInitialContext: false,
       }
     ).fromInitialContext
+  }
+
+  getPattern(uuid: string): string | undefined {
+    return (
+      this.scopeContext.identifierToPattern[uuid] || {
+        pattern: undefined,
+      }
+    ).pattern
   }
 
   evaluate(uuid: string): Value | undefined {
@@ -87,8 +100,10 @@ export class EvaluationContext {
   }
 }
 
-const makeEmpty = (scopeContext: LogicScope.ScopeContext) =>
-  new EvaluationContext(scopeContext)
+const makeEmpty = (
+  scopeContext: LogicScope.ScopeContext,
+  rootNode: LogicAST.AST.SyntaxNode
+) => new EvaluationContext(scopeContext, rootNode)
 
 export const evaluate = (
   node: LogicAST.AST.SyntaxNode,
@@ -96,7 +111,7 @@ export const evaluate = (
   scopeContext: LogicScope.ScopeContext,
   unificationContext: LogicUnify.UnificationContext,
   substitution: ShallowMap<LogicUnify.Unification, LogicUnify.Unification>,
-  context_: EvaluationContext = makeEmpty(scopeContext)
+  context_: EvaluationContext = makeEmpty(scopeContext, rootNode)
 ): EvaluationContext | undefined => {
   const context = LogicAST.subNodes(node).reduce<EvaluationContext | undefined>(
     (prev, subNode) => {

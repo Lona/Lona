@@ -56,7 +56,7 @@ export function isTypeAnnotation(
 
 export function makeProgram(
   node: LogicAST.SyntaxNode
-): LogicAST.Program | void {
+): LogicAST.Program | undefined {
   if (node.type === 'program') {
     return node
   }
@@ -81,6 +81,8 @@ export function makeProgram(
       },
     }
   }
+
+  return undefined
 }
 
 export function getPattern(node: LogicAST.SyntaxNode): LogicAST.Pattern | void {
@@ -253,7 +255,7 @@ export function flattenedMemberExpression(
 export function getNode(
   rootNode: LogicAST.SyntaxNode,
   id: string
-): LogicAST.SyntaxNode | void {
+): LogicAST.SyntaxNode | undefined {
   if (rootNode.data.id === id) {
     return rootNode
   }
@@ -270,12 +272,16 @@ export function getNode(
       return node
     }
   }
+
+  return undefined
 }
 
 function pathTo(
   node: LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier,
   id: string
-): (LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier)[] | void {
+):
+  | (LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier)[]
+  | undefined {
   if (id === ('id' in node ? node.id : node.data.id)) {
     return [node]
   }
@@ -283,7 +289,7 @@ function pathTo(
     return undefined
   }
   return subNodes(node).reduce<
-    (LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier)[] | void
+    (LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier)[] | undefined
   >((prev, item) => {
     if (prev) {
       return prev
@@ -294,6 +300,30 @@ function pathTo(
     }
     return undefined
   }, undefined)
+}
+
+export function findNode(
+  node: LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier,
+  id: string
+) {
+  const path = pathTo(node, id)
+  if (!path) {
+    return undefined
+  }
+
+  return path[path.length - 1]
+}
+
+export function findParentNode(
+  node: LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier,
+  id: string
+) {
+  const path = pathTo(node, id)
+  if (!path || path.length <= 1) {
+    return undefined
+  }
+
+  return path[path.length - 2]
 }
 
 export function declarationPathTo(

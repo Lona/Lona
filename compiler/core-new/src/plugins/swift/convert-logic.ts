@@ -3,6 +3,7 @@ import { LogicAST } from '@lona/serialization'
 import { Helpers, HardcodedMap, EvaluationContext } from '../../helpers'
 import { nonNullable } from '../../utils'
 import * as SwiftAST from './swift-ast'
+import { makeProgram } from '../../helpers/logic-ast'
 
 type LogicGenerationContext = {
   isStatic: boolean
@@ -96,7 +97,7 @@ const hardcoded: HardcodedMap<SwiftAST.SwiftNode, [LogicGenerationContext]> = {
         node.data.arguments[1].type !== 'argument'
       ) {
         throw new Error(
-          'The first 2 arguments of `Boolean.or` need to be a value'
+          'The first 2 arguments of `Boolean.and` need to be a value'
         )
       }
 
@@ -210,31 +211,21 @@ export default function convert(
     handlePreludeDeps: helpers.HandlePreludeFactory(hardcoded),
   }
 
-  if (node.type === 'program') {
-    return {
-      type: 'TopLevelDeclaration',
-      data: {
-        statements: node.data.block
-          .filter(x => x.type !== 'placeholder')
-          .map(x => statement(x, context)),
-      },
-    }
+  const program = makeProgram(node)
+
+  if (!program) {
+    helpers.reporter.warn(`Unhandled syntaxNode type "${node.type}"`)
+    return { type: 'Empty', data: undefined }
   }
 
-  if (node.type === 'topLevelDeclarations') {
-    return {
-      type: 'TopLevelDeclaration',
-      data: {
-        statements: node.data.declarations
-          .filter(x => x.type !== 'placeholder')
-          .map(x => declaration(x, context)),
-      },
-    }
+  return {
+    type: 'TopLevelDeclaration',
+    data: {
+      statements: program.data.block
+        .filter(x => x.type !== 'placeholder')
+        .map(x => statement(x, context)),
+    },
   }
-
-  helpers.reporter.warn(`Unhandled syntaxNode type "${node.type}"`)
-
-  return { type: 'Empty', data: undefined }
 }
 
 const statement = (
@@ -559,7 +550,9 @@ const literal = (
         type: 'LiteralExpression',
         data: {
           type: 'Array',
-          data: node.data.value.map(x => expression(x, context)),
+          data: node.data.value
+            .filter(x => x.type !== 'placeholder')
+            .map(x => expression(x, context)),
         },
       }
     }

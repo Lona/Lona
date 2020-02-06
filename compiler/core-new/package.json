@@ -25,6 +25,8 @@
     "lodash.camelcase": "^4.3.0",
     "lodash.intersection": "^4.4.0",
     "lodash.isequal": "^4.5.0",
+    "lodash.lowerfirst": "^4.3.1",
+    "lodash.snakecase": "^4.1.1",
     "lodash.upperfirst": "^4.3.1",
     "prettier": "^1.19.1",
     "yargs": "^15.1.0"
@@ -35,6 +37,8 @@
     "@types/lodash.camelcase": "^4.3.6",
     "@types/lodash.intersection": "^4.4.6",
     "@types/lodash.isequal": "^4.5.5",
+    "@types/lodash.lowerfirst": "^4.3.6",
+    "@types/lodash.snakecase": "^4.1.6",
     "@types/lodash.upperfirst": "^4.3.6",
     "@types/node": "^13.1.6",
     "@types/prettier": "^1.19.0",
