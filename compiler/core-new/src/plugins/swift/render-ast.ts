@@ -1,7 +1,7 @@
 import { doc, Doc } from 'prettier'
 import Color from 'color'
 
-import * as SwiftAST from '../../types/swift-ast'
+import * as SwiftAST from './swift-ast'
 
 type Options = {
   outputFile?: (filePath: string, data: string) => Promise<void>

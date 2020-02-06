@@ -1,6 +1,6 @@
 import * as serialization from '@lona/serialization'
 import { Helpers } from '../../helpers'
-import { Token } from '../../types/tokens-ast'
+import { Token } from './tokens-ast'
 import * as TokenValue from './token-value'
 import { nonNullable } from '../../utils'
 

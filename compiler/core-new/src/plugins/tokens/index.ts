@@ -1,6 +1,6 @@
 import * as path from 'path'
 import { Helpers } from '../../helpers'
-import { ConvertedWorkspace, ConvertedFile } from '../../types/tokens-ast'
+import { ConvertedWorkspace, ConvertedFile } from './tokens-ast'
 import { convert } from './convert'
 
 export const parseFile = async (

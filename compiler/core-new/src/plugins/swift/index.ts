@@ -4,7 +4,7 @@ import camelCase from 'lodash.camelcase'
 import { Helpers } from '../../helpers'
 import convertLogic from './convert-logic'
 import renderSwift from './render-ast'
-import * as SwiftAST from '../../types/swift-ast'
+import * as SwiftAST from './swift-ast'
 
 export const parseFile = async (
   filePath: string,
