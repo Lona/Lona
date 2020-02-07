@@ -36,15 +36,7 @@ export const parseFile = async (
   const outputFile =
     typeof options['output'] !== 'undefined' ? helpers.fs.writeFile : undefined
 
-  return `import Foundation
-
-#if os(iOS) || os(tvOS) || os(watchOS)
-  import UIKit
-#elseif os(macOS)
-  import AppKit
-#endif
-
-${renderJS(jsAST, { outputFile, reporter: helpers.reporter })}`
+  return `${renderJS(jsAST, { outputFile, reporter: helpers.reporter })}`
 }
 
 export const parseWorkspace = async (
