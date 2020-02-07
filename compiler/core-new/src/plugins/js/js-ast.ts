@@ -55,9 +55,9 @@ export type JSType =
    | Symbol
    | Void */
 
-type ObjectType = { members: TypeMember[] }
+export type ObjectType = { members: TypeMember[] }
 
-type TypeReference = {
+export type TypeReference = {
   name: string
   arguments: JSType[]
 }
