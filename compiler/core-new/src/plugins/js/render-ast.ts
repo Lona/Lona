@@ -88,7 +88,7 @@ function render(ast: JSAST.JSNode, options: Options): Doc {
       return group(['let ', render(ast.data, options)])
     case 'AssignmentExpression':
       return builders.fill([
-        group([render(ast.data.left, options), builders.line, '+']),
+        group([render(ast.data.left, options), builders.line, '=']),
         ' ',
         render(ast.data.right, options),
       ])
