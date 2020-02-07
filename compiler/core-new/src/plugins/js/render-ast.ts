@@ -268,7 +268,7 @@ function render(ast: JSAST.JSNode, options: Options): Doc {
     case 'CallExpression': {
       const parameterList = join(
         ast.data.arguments.map(x => render(x, options)),
-        builders.line
+        ', '
       )
       return builders.fill([
         render(ast.data.callee, options),
