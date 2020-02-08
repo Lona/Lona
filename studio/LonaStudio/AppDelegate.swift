@@ -28,6 +28,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         showWelcomeWindow(self)
+        NSDocumentController.shared.autosavingDelay = 3
     }
 
     func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> Bool {

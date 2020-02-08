@@ -812,6 +812,7 @@ class WorkspaceViewController: NSSplitViewController {
             }
             markdownViewController.onChange = { [unowned document] blocks in
                 document.setContent(blocks, userInitiated: true)
+                document.scheduleAutosaving()
                 return true
             }
         }

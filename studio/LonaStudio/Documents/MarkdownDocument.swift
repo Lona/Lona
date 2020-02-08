@@ -13,6 +13,8 @@ class MarkdownDocument: NSDocument {
 
     public static let INDEX_PAGE_NAME = "README.md"
 
+    // MARK: Lifecycle
+
     override init() {
         super.init()
 
@@ -30,13 +32,37 @@ class MarkdownDocument: NSDocument {
         ]
     }
 
-    override var autosavingFileType: String? {
-        return nil
+    // MARK: Autosaving
+
+    override var hasUnautosavedChanges: Bool {
+        return true
     }
 
-    var viewController: WorkspaceViewController? {
-        return windowControllers[0].contentViewController as? WorkspaceViewController
+    override class var autosavesInPlace: Bool {
+        return true
     }
+
+    override func autosave(withImplicitCancellability autosavingIsImplicitlyCancellable: Bool, completionHandler: @escaping (Error?) -> Void) {
+        guard let fileURL = fileURL else {
+            completionHandler(nil)
+            return
+        }
+
+        save(to: fileURL, for: .autosaveInPlaceOperation).finalResult({ result in
+            switch result {
+            case .success:
+                completionHandler(nil)
+            case .failure(let error):
+                completionHandler(error)
+            }
+        })
+    }
+
+    override func canAsynchronouslyWrite(to url: URL, ofType typeName: String, for saveOperation: NSDocument.SaveOperationType) -> Bool {
+        return true
+    }
+
+    // MARK: Content
 
     var _content: [BlockEditor.Block] = [] {
         didSet {
@@ -52,11 +78,11 @@ class MarkdownDocument: NSDocument {
         return MarkdownFile.makeMarkdownRoot(content).program()
     }
 
-    private var changeEmitter: Emitter<[BlockEditor.Block]> = .init()
-
     public var isIndexPage: Bool {
         return fileURL?.lastPathComponent == MarkdownDocument.INDEX_PAGE_NAME
     }
+
+    private var changeEmitter: Emitter<[BlockEditor.Block]> = .init()
 
     public func addChangeListener(_ listener: @escaping ([BlockEditor.Block]) -> Void) -> Int {
         return changeEmitter.addListener(listener)
@@ -64,6 +90,12 @@ class MarkdownDocument: NSDocument {
 
     public func removeChangeListener(forKey key: Int) {
         changeEmitter.removeListener(forKey: key)
+    }
+
+    // MARK: Views & Windows
+
+    var viewController: WorkspaceViewController? {
+        return windowControllers[0].contentViewController as? WorkspaceViewController
     }
 
     override func makeWindowControllers() {
@@ -75,6 +107,8 @@ class MarkdownDocument: NSDocument {
 
         super.showWindows()
     }
+
+    // MARK: Reading & Saving
 
     override func data(ofType typeName: String) throws -> Data {
         guard let data = MarkdownFile.makeMarkdownData(content) else {
@@ -116,6 +150,8 @@ class MarkdownDocument: NSDocument {
         }
     }
 }
+
+// MARK: - Page Editing
 
 extension MarkdownDocument {
 
