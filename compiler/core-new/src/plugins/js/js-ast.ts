@@ -151,6 +151,7 @@ export type Literal =
   | { type: 'Color'; data: string }
   | { type: 'Image'; data: string }
   | { type: 'Array'; data: JSNode[] }
+  | { type: 'Object'; data: JSNode[] }
 
 export type JSNode =
   /* Types */
@@ -159,7 +160,6 @@ export type JSNode =
   /* JS */
   | { type: 'Return'; data: JSNode }
   | { type: 'Literal'; data: Literal }
-  | { type: 'StringLiteral'; data: string }
   | { type: 'Identifier'; data: string[] }
   | { type: 'ImportDeclaration'; data: ImportDeclaration }
   | { type: 'ImportSpecifier'; data: ImportSpecifier }
@@ -181,8 +181,6 @@ export type JSNode =
   | { type: 'UnaryExpression'; data: UnaryExpression }
   | { type: 'IfStatement'; data: IfStatement }
   | { type: 'ConditionalExpression'; data: ConditionalExpression }
-  | { type: 'ArrayLiteral'; data: JSNode[] }
-  | { type: 'ObjectLiteral'; data: JSNode[] }
   | { type: 'Property'; data: Property }
   | { type: 'ExportDefaultDeclaration'; data: JSNode }
   | { type: 'ExportNamedDeclaration'; data: JSNode }

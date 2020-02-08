@@ -31,6 +31,12 @@ class ScopeStack<K extends string, V> {
 
     return result
   }
+
+  public copy() {
+    const stack = new ScopeStack<K, V>()
+    stack.scopes = this.scopes.map(x => ({ ...x }))
+    return stack
+  }
 }
 
 let pushNamespace = (name: string, context: ScopeContext) =>
@@ -95,6 +101,8 @@ export const build = (
   initialContext: ScopeContext = empty()
 ): ScopeContext => {
   const initialNamespace = initialContext._namespace.copy()
+  const initialPatternNames = initialContext._patternNames.copy()
+  const initialCurrentNamespacePath = [...initialContext._currentNamespacePath]
 
   const config = LogicTraversal.emptyConfig()
 
@@ -171,8 +179,10 @@ export const build = (
       if (identifiers) {
         const keyPath = identifiers.map(x => x.string)
         const patternId = context._namespace.get(keyPath)
-        const fromInitialContext = !!initialNamespace.get(keyPath)
+
         if (patternId) {
+          const fromInitialContext =
+            !!initialNamespace.get(keyPath) || initialNamespace.isEmpty()
           context.identifierToPattern[node.data.id] = {
             pattern: patternId,
             fromInitialContext,
@@ -260,19 +270,22 @@ export const build = (
     const identifier = LogicAST.getIdentifier(node)
     if (identifier && !config.ignoreChildren && !config._isRevisit) {
       if (!identifier.isPlaceholder) {
-        let lookup = context._patternNames.get(identifier.string)
-        if (!lookup) {
-          lookup = context._namespace.get([identifier.string])
-        }
-        if (!lookup) {
-          lookup = context._namespace.get(
+        const lookup =
+          context._patternNames.get(identifier.string) ||
+          context._namespace.get([identifier.string]) ||
+          context._namespace.get(
             context._currentNamespacePath.concat([identifier.string])
           )
-        }
-
-        const fromInitialContext = !!initialNamespace.get([identifier.string])
 
         if (lookup) {
+          const fromInitialContext =
+            !!initialPatternNames.get(identifier.string) ||
+            !!initialNamespace.get([identifier.string]) ||
+            !!initialNamespace.get(
+              initialCurrentNamespacePath.concat([identifier.string])
+            ) ||
+            initialNamespace.isEmpty()
+
           context.identifierToPattern[identifier.id] = {
             pattern: lookup,
             fromInitialContext,

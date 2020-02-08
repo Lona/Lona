@@ -81,9 +81,7 @@ function render(ast: JSAST.JSNode, options: Options): Doc {
     case 'Identifier':
       return group(ast.data.map(pathNode => smartPath(ast.data, pathNode)))
     case 'Literal':
-      return JSON.stringify(ast.data.data)
-    case 'StringLiteral':
-      return builders.concat(['"', ast.data.replace(/"/g, '\\"'), '"'])
+      return renderLiteral(ast.data, options)
     case 'VariableDeclaration':
       return group(['let ', render(ast.data, options)])
     case 'AssignmentExpression':
@@ -243,10 +241,13 @@ function render(ast: JSAST.JSNode, options: Options): Doc {
       )
 
       if (ast.data.body.length === 1 && ast.data.body[0].type === 'Return') {
-        if (ast.data.body[0].data.type === 'ObjectLiteral') {
+        if (
+          ast.data.body[0].data.type === 'Literal' &&
+          ast.data.body[0].data.data.type === 'Object'
+        ) {
           return builders.concat([
             group(['(', parameterList, ') => (']),
-            render(ast.data.body[0].data, options),
+            renderLiteral(ast.data.body[0].data.data, options),
             ')',
           ])
         }
@@ -346,24 +347,6 @@ function render(ast: JSAST.JSNode, options: Options): Doc {
       return builders.concat(['{...', render(ast.data, options), '}'])
     case 'SpreadElement':
       return builders.concat(['...', render(ast.data, options)])
-    case 'ArrayLiteral': {
-      const maybeLine = ast.data.length > 0 ? builders.line : ''
-      const body = join(
-        ast.data.map(x => render(x, options)),
-        [',', builders.line]
-      )
-
-      return group(['[', indent([maybeLine, body]), maybeLine, ']'])
-    }
-    case 'ObjectLiteral': {
-      const maybeLine = ast.data.length > 0 ? builders.line : ''
-      const body = join(
-        ast.data.map(x => render(x, options)),
-        [',', builders.line]
-      )
-
-      return group(['{', indent([maybeLine, body]), maybeLine, '}'])
-    }
     case 'Property': {
       const maybeValue = ast.data.value
         ? builders.concat([': ', render(ast.data.value, options)])
@@ -399,6 +382,42 @@ function render(ast: JSAST.JSNode, options: Options): Doc {
     default: {
       // TODO: assert never
       return ''
+    }
+  }
+}
+
+const renderLiteral = (literal: JSAST.Literal, options: Options) => {
+  switch (literal.type) {
+    case 'Image':
+    case 'Color':
+    case 'String':
+    case 'Number':
+    case 'Boolean':
+      return JSON.stringify(literal.data)
+    case 'Null':
+      return `null`
+    case 'Undefined':
+      return 'undefined'
+    case 'Array': {
+      const maybeLine = literal.data.length > 0 ? builders.line : ''
+      const body = join(
+        literal.data.map(x => render(x, options)),
+        [',', builders.line]
+      )
+
+      return group(['[', indent([maybeLine, body]), maybeLine, ']'])
+    }
+    case 'Object': {
+      const maybeLine = literal.data.length > 0 ? builders.line : ''
+      const body = join(
+        literal.data.map(x => render(x, options)),
+        [',', builders.line]
+      )
+
+      return group(['{', indent([maybeLine, body]), maybeLine, '}'])
+    }
+    default: {
+      assertNever(literal)
     }
   }
 }

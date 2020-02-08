@@ -113,22 +113,21 @@ export const evaluate = (
   substitution: ShallowMap<LogicUnify.Unification, LogicUnify.Unification>,
   context_: EvaluationContext = makeEmpty(scopeContext, rootNode)
 ): EvaluationContext | undefined => {
-  const context = LogicAST.subNodes(node).reduce<EvaluationContext | undefined>(
-    (prev, subNode) => {
-      if (!prev) {
-        return undefined
-      }
-      return evaluate(
-        subNode,
-        rootNode,
-        scopeContext,
-        unificationContext,
-        substitution,
-        prev
-      )
-    },
-    context_
-  )
+  const context = LogicAST.subNodes(node).nodes.reduce<
+    EvaluationContext | undefined
+  >((prev, subNode) => {
+    if (!prev) {
+      return undefined
+    }
+    return evaluate(
+      subNode,
+      rootNode,
+      scopeContext,
+      unificationContext,
+      substitution,
+      prev
+    )
+  }, context_)
 
   if (!context) {
     return undefined

@@ -173,8 +173,6 @@ const hardcoded: HardcodedMap<SwiftAST.SwiftNode, [LogicGenerationContext]> = {
       // polyfilled
       return undefined
     },
-  },
-  memberExpression: {
     'Optional.none': () => ({
       type: 'LiteralExpression',
       data: { type: 'Nil', data: undefined },
@@ -188,6 +186,8 @@ const hardcoded: HardcodedMap<SwiftAST.SwiftNode, [LogicGenerationContext]> = {
     'FontWeight.bold': () => fontWeight('bold'),
     'FontWeight.heavy': () => fontWeight('heavy'),
     'FontWeight.black': () => fontWeight('back'),
+  },
+  memberExpression: {
     'FontWeight.w100': () => fontWeight('ultraLight'),
     'FontWeight.w200': () => fontWeight('thin'),
     'FontWeight.w300': () => fontWeight('light'),

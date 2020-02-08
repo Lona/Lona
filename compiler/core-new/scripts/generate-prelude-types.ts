@@ -37,13 +37,7 @@ const hardcodedMapping = scopeContext._namespace.map
       }
 
       if (node.type === 'enumerationCase') {
-        if (
-          node.data.associatedValueTypes.some(x => x.type !== 'placeholder')
-        ) {
-          prev.functionCallExpression[key.join('.')] = node
-        } else {
-          prev.memberExpression[key.join('.')] = node
-        }
+        prev.functionCallExpression[key.join('.')] = node
       }
 
       return prev

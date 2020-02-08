@@ -24,8 +24,12 @@ export class ShallowMap<K, T> {
   }
 
   public copy() {
-    const dup = new ShallowMap()
+    const dup = new ShallowMap<K, T>()
     this.map.forEach(x => dup.set(x.key, x.value))
     return dup
+  }
+
+  public isEmpty() {
+    return this.map.length === 0
   }
 }

@@ -49,7 +49,47 @@ export type HardcodedMap<T, U extends any[]> = {
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: U
     ) => T | undefined
+    'Optional.none': (
+      node: LogicAST.FunctionCallExpressionExpression,
+      ...args: U
+    ) => T | undefined
     'Shadow': (
+      node: LogicAST.FunctionCallExpressionExpression,
+      ...args: U
+    ) => T | undefined
+    'FontWeight.ultraLight': (
+      node: LogicAST.FunctionCallExpressionExpression,
+      ...args: U
+    ) => T | undefined
+    'FontWeight.thin': (
+      node: LogicAST.FunctionCallExpressionExpression,
+      ...args: U
+    ) => T | undefined
+    'FontWeight.light': (
+      node: LogicAST.FunctionCallExpressionExpression,
+      ...args: U
+    ) => T | undefined
+    'FontWeight.regular': (
+      node: LogicAST.FunctionCallExpressionExpression,
+      ...args: U
+    ) => T | undefined
+    'FontWeight.medium': (
+      node: LogicAST.FunctionCallExpressionExpression,
+      ...args: U
+    ) => T | undefined
+    'FontWeight.semibold': (
+      node: LogicAST.FunctionCallExpressionExpression,
+      ...args: U
+    ) => T | undefined
+    'FontWeight.bold': (
+      node: LogicAST.FunctionCallExpressionExpression,
+      ...args: U
+    ) => T | undefined
+    'FontWeight.heavy': (
+      node: LogicAST.FunctionCallExpressionExpression,
+      ...args: U
+    ) => T | undefined
+    'FontWeight.black': (
       node: LogicAST.FunctionCallExpressionExpression,
       ...args: U
     ) => T | undefined
@@ -59,46 +99,6 @@ export type HardcodedMap<T, U extends any[]> = {
     ) => T | undefined
   }
   memberExpression: {
-    'Optional.none': (
-      node: LogicAST.MemberExpressionExpression,
-      ...args: U
-    ) => T | undefined
-    'FontWeight.ultraLight': (
-      node: LogicAST.MemberExpressionExpression,
-      ...args: U
-    ) => T | undefined
-    'FontWeight.thin': (
-      node: LogicAST.MemberExpressionExpression,
-      ...args: U
-    ) => T | undefined
-    'FontWeight.light': (
-      node: LogicAST.MemberExpressionExpression,
-      ...args: U
-    ) => T | undefined
-    'FontWeight.regular': (
-      node: LogicAST.MemberExpressionExpression,
-      ...args: U
-    ) => T | undefined
-    'FontWeight.medium': (
-      node: LogicAST.MemberExpressionExpression,
-      ...args: U
-    ) => T | undefined
-    'FontWeight.semibold': (
-      node: LogicAST.MemberExpressionExpression,
-      ...args: U
-    ) => T | undefined
-    'FontWeight.bold': (
-      node: LogicAST.MemberExpressionExpression,
-      ...args: U
-    ) => T | undefined
-    'FontWeight.heavy': (
-      node: LogicAST.MemberExpressionExpression,
-      ...args: U
-    ) => T | undefined
-    'FontWeight.black': (
-      node: LogicAST.MemberExpressionExpression,
-      ...args: U
-    ) => T | undefined
     'FontWeight.w100': (
       node: LogicAST.MemberExpressionExpression,
       ...args: U

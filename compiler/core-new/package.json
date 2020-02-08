@@ -13,7 +13,8 @@
     "snapshot": "npm run snapshot:tokens",
     "snapshot:tokens": "ts-node src/bin.ts convert ../../examples/FlatTokens --format=tokens > ../../examples/generated/FlatTokens/output.json",
     "snapshot:documentation": "ts-node src/bin.ts convert ../../examples/FlatTokens --format=documentation > ../../examples/generated/tokens/documentation.json",
-    "snapshot:swift": "ts-node src/bin.ts convert ../../examples/FlatTokens --format=swift --output=../../examples/generated/tokens/swift"
+    "snapshot:swift": "ts-node src/bin.ts convert ../../examples/FlatTokens --format=swift --output=../../examples/generated/tokens/swift",
+    "snapshot:js": "ts-node src/bin.ts convert ../../examples/FlatTokens --format=js --output=../../examples/generated/tokens/react-dom"
   },
   "repository": "https://github.com/airbnb/Lona",
   "author": "Mathieu Dutour",

@@ -235,8 +235,6 @@ const hardcoded: HardcodedMap<JSAST.JSNode, [LogicGenerationContext]> = {
       // polyfilled
       return undefined
     },
-  },
-  memberExpression: {
     'Optional.none': () => ({
       type: 'Literal',
       data: { type: 'Undefined', data: undefined },
@@ -250,6 +248,8 @@ const hardcoded: HardcodedMap<JSAST.JSNode, [LogicGenerationContext]> = {
     'FontWeight.bold': () => fontWeight(700),
     'FontWeight.heavy': () => fontWeight(800),
     'FontWeight.black': () => fontWeight(900),
+  },
+  memberExpression: {
     'FontWeight.w100': () => fontWeight(100),
     'FontWeight.w200': () => fontWeight(200),
     'FontWeight.w300': () => fontWeight(300),
@@ -334,10 +334,13 @@ const declaration = (
         false,
         node.data.name.name.toLowerCase(),
         {
-          type: 'ObjectLiteral',
-          data: node.data.declarations
-            .filter(x => x.type !== 'placeholder')
-            .map(x => declaration(x, newContext)),
+          type: 'Literal',
+          data: {
+            type: 'Object',
+            data: node.data.declarations
+              .filter(x => x.type !== 'placeholder')
+              .map(x => declaration(x, newContext)),
+          },
         }
       )
 
@@ -414,26 +417,32 @@ const declaration = (
           data: {
             left: { type: 'Identifier', data: [enumName(node.data.name.name)] },
             right: {
-              type: 'ObjectLiteral',
-              data: node.data.cases
-                .map<JSAST.JSNode | undefined>(x => {
-                  if (x.type === 'placeholder') {
-                    return undefined
-                  }
-                  /* TODO: Handle enums with associated data */
+              type: 'Literal',
+              data: {
+                type: 'Object',
+                data: node.data.cases
+                  .map<JSAST.JSNode | undefined>(x => {
+                    if (x.type === 'placeholder') {
+                      return undefined
+                    }
+                    /* TODO: Handle enums with associated data */
 
-                  return {
-                    type: 'Property',
-                    data: {
-                      key: {
-                        type: 'Identifier',
-                        data: [enumName(x.data.name.name)],
+                    return {
+                      type: 'Property',
+                      data: {
+                        key: {
+                          type: 'Identifier',
+                          data: [enumName(x.data.name.name)],
+                        },
+                        value: {
+                          type: 'Literal',
+                          data: { type: 'String', data: x.data.name.name },
+                        },
                       },
-                      value: { type: 'StringLiteral', data: x.data.name.name },
-                    },
-                  }
-                })
-                .filter(nonNullable),
+                    }
+                  })
+                  .filter(nonNullable),
+              },
             },
           },
         },
@@ -561,33 +570,36 @@ const expression = (
           .filter(nonNullable)
 
         return {
-          type: 'ObjectLiteral',
-          data: recordDefinition.map(x => {
-            const found = validArguments.find(
-              arg =>
-                arg.type !== 'placeholder' &&
-                arg.data.label &&
-                arg.data.label === x.name
-            )
+          type: 'Literal',
+          data: {
+            type: 'Object',
+            data: recordDefinition.map(x => {
+              const found = validArguments.find(
+                arg =>
+                  arg.type !== 'placeholder' &&
+                  arg.data.label &&
+                  arg.data.label === x.name
+              )
 
-            if (found && found.type === 'argument') {
+              if (found && found.type === 'argument') {
+                return {
+                  type: 'Property',
+                  data: {
+                    key: { type: 'Identifier', data: [x.name] },
+                    value: expression(found.data.expression, context),
+                  },
+                }
+              }
+
               return {
                 type: 'Property',
                 data: {
                   key: { type: 'Identifier', data: [x.name] },
-                  value: expression(found.data.expression, context),
+                  value: expression(x.defaultValue, context),
                 },
               }
-            }
-
-            return {
-              type: 'Property',
-              data: {
-                key: { type: 'Identifier', data: [x.name] },
-                value: expression(x.defaultValue, context),
-              },
-            }
-          }),
+            }),
+          },
         }
       }
 
@@ -607,8 +619,11 @@ const expression = (
           enumeration.type === 'enumerationCase'
         ) {
           return {
-            type: 'StringLiteral',
-            data: enumeration.data.name.name,
+            type: 'Literal',
+            data: {
+              type: 'String',
+              data: enumeration.data.name.name,
+            },
           }
         }
       }
@@ -682,21 +697,3 @@ const literal = (
     }
   }
 }
-
-// and literal =
-//     (context: LogicGenerationContext.t, node: LogicAst.literal)
-//     : JavaScriptAst.node =>
-//   switch (node) {
-//   | None(_) => Identifier(["null"])
-//   | Boolean({value}) => Literal(LonaValue.boolean(value))
-//   | Number({value}) => Literal(LonaValue.number(value))
-//   | String({value}) => StringLiteral(value)
-//   | Color({value}) => StringLiteral(value)
-//   | Array({value}) =>
-//     ArrayLiteral(
-//       value
-//       |> unfoldPairs
-//       |> Sequence.rejectWhere(isPlaceholderExpression)
-//       |> List.map(expression(context)),
-//     )
-//   };

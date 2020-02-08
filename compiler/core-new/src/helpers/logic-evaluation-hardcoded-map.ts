@@ -336,8 +336,6 @@ export const hardcoded: HardcodedMap<Value, (Value | void)[]> = {
       // polyfilled
       return undefined
     },
-  },
-  memberExpression: {
     'Optional.none': () => ({
       type: unit,
       memory: { type: 'unit' },
@@ -351,6 +349,8 @@ export const hardcoded: HardcodedMap<Value, (Value | void)[]> = {
     'FontWeight.bold': () => undefined,
     'FontWeight.heavy': () => undefined,
     'FontWeight.black': () => undefined,
+  },
+  memberExpression: {
     'FontWeight.w100': () => undefined,
     'FontWeight.w200': () => undefined,
     'FontWeight.w300': () => undefined,

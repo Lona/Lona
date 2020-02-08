@@ -12,3 +12,4 @@ public let small: Shadow = Shadow(
   blur: 2,
   radius: 0,
   color: #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1))
+
