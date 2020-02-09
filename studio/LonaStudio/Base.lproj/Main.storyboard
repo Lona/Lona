@@ -406,6 +406,23 @@
                                     </items>
                                 </menu>
                             </menuItem>
+                            <menuItem title="History" id="Fay-fF-OlF" userLabel="History">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="History" id="ABf-1R-9QX">
+                                    <items>
+                                        <menuItem title="Back" keyEquivalent="[" id="tiA-AB-VZQ">
+                                            <connections>
+                                                <action selector="goBack:" target="Ady-hI-5gd" id="lUr-rS-rb3"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Forward" keyEquivalent="]" id="V08-cY-NZR">
+                                            <connections>
+                                                <action selector="goForward:" target="Ady-hI-5gd" id="lQd-Ss-Hmc"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
                             <menuItem title="Export" id="141-o3-mro" userLabel="Export">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Export" id="Ki8-fK-Jec">

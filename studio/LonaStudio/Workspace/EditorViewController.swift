@@ -83,7 +83,7 @@ class EditorViewController: NSViewController {
         breadcrumbView.menuForBackItem = {
             return NSMenu(items: history.back.enumerated().map({ index, url in
                 let item = NSMenuItem(title: url.lastPathComponent, onClick: {
-                    _ = DocumentController.shared.goBack(offset: index)
+                    _ = DocumentController.shared.navigateBack(offset: index)
                 })
                 let icon = NSWorkspace.shared.icon(forFile: url.path)
                 icon.size = .init(width: 16, height: 16)
@@ -95,7 +95,7 @@ class EditorViewController: NSViewController {
         breadcrumbView.menuForForwardItem = {
             return NSMenu(items: history.forward.enumerated().map({ index, url in
                 let item = NSMenuItem(title: url.lastPathComponent, onClick: {
-                    _ = DocumentController.shared.goForward(offset: index)
+                    _ = DocumentController.shared.navigateForward(offset: index)
                 })
                 let icon = NSWorkspace.shared.icon(forFile: url.path)
                 icon.size = .init(width: 16, height: 16)
@@ -105,11 +105,11 @@ class EditorViewController: NSViewController {
         }
 
         breadcrumbView.onClickBack = {
-            _ = DocumentController.shared.goBack()
+            _ = DocumentController.shared.navigateBack()
         }
 
         breadcrumbView.onClickForward = {
-            _ = DocumentController.shared.goForward()
+            _ = DocumentController.shared.navigateForward()
         }
     }
 

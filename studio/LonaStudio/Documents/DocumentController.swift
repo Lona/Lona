@@ -17,6 +17,24 @@ enum DocumentError: Error {
 
 class DocumentController: NSDocumentController {
 
+    override func validateUserInterfaceItem(_ item: NSValidatedUserInterfaceItem) -> Bool {
+        if item.action == #selector(goBack) {
+            return history.canGoBack()
+        } else if item.action == #selector(goForward) {
+            return history.canGoForward()
+        }
+
+        return super.validateUserInterfaceItem(item)
+    }
+
+    @objc public func goBack(_ sender: AnyObject) {
+        _ = navigateBack()
+    }
+
+    @objc public func goForward(_ sender: AnyObject) {
+        _ = navigateForward()
+    }
+
     public var history = History() {
         didSet {
             historyEmitter.emit(history)
@@ -49,7 +67,7 @@ class DocumentController: NSDocumentController {
         })
     }
 
-    public func goBack(offset: Int = 0) -> Promise<NSDocument, NSError> {
+    public func navigateBack(offset: Int = 0) -> Promise<NSDocument, NSError> {
         guard history.canGoBack(offset: offset) else { return .failure(NSError()) }
 
         let url = history.back[offset]
@@ -66,7 +84,7 @@ class DocumentController: NSDocumentController {
         }
     }
 
-    public func goForward(offset: Int = 0) -> Promise<NSDocument, NSError> {
+    public func navigateForward(offset: Int = 0) -> Promise<NSDocument, NSError> {
         guard history.canGoForward(offset: offset) else { return .failure(NSError()) }
 
         let url = history.forward[offset]
