@@ -286,6 +286,7 @@
 		6BC60632223F194E003E616B /* Logic.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6BC60630223F1947003E616B /* Logic.framework.dSYM */; };
 		6BCCE31123E27034004C482E /* BreadcrumbBar in Frameworks */ = {isa = PBXBuildFile; productRef = 6BCCE31023E27034004C482E /* BreadcrumbBar */; };
 		6BCCE31423E762EB004C482E /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE31323E762EB004C482E /* History.swift */; };
+		6BCCE33223F322D7004C482E /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33123F322D7004C482E /* PrimaryButton.swift */; };
 		6BCE162722D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCE162622D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift */; };
 		6BD4976121E42EC400BC3970 /* AccessibilityInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */; };
 		6BD4976321E53F2000BC3970 /* Accessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976221E53F2000BC3970 /* Accessibility.swift */; };
@@ -641,6 +642,7 @@
 		6BC60626223F1878003E616B /* Logic.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Logic.framework; path = Carthage/Build/Mac/Logic.framework; sourceTree = "<group>"; };
 		6BC60630223F1947003E616B /* Logic.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Logic.framework.dSYM; path = Carthage/Build/Mac/Logic.framework.dSYM; sourceTree = "<group>"; };
 		6BCCE31323E762EB004C482E /* History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = History.swift; sourceTree = "<group>"; };
+		6BCCE33123F322D7004C482E /* PrimaryButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
 		6BCE162622D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CustomParametersEditorSheet+Present.swift"; sourceTree = "<group>"; };
 		6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessibilityInspector.swift; sourceTree = "<group>"; };
 		6BD4976221E53F2000BC3970 /* Accessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accessibility.swift; sourceTree = "<group>"; };
@@ -1058,6 +1060,7 @@
 				6BC605CC21F78F240087311A /* LabeledDropdownRow.swift */,
 				6B5A6AC722FB860900CA004E /* LogicPreviewCard.swift */,
 				303C3FED20A396C3008E1541 /* OpenProjectButton.swift */,
+				6BCCE33123F322D7004C482E /* PrimaryButton.swift */,
 				6B4DFCEE20A795070048BB43 /* RecentProjectItem.swift */,
 				307D440E2097DC17004B57F5 /* TabIcon.swift */,
 				6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */,
@@ -1693,6 +1696,7 @@
 				6B25041821E5510900AE7F97 /* ImageDocument.swift in Sources */,
 				6BD4976321E53F2000BC3970 /* Accessibility.swift in Sources */,
 				30B5B1A71EC3BF4F002068CE /* ColorPickerButton.swift in Sources */,
+				6BCCE33223F322D7004C482E /* PrimaryButton.swift in Sources */,
 				6B3414A822596AA300CC65D1 /* LGCTypeAnnotation+CSType.swift in Sources */,
 				BACCB42B1FEFA26E00B58E32 /* ShadowStyleRowView.swift in Sources */,
 				306D2FF01F847DCB00907B4E /* NSImageExtensions.swift in Sources */,
