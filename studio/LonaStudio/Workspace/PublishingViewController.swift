@@ -20,6 +20,7 @@ class PublishingViewController: NSViewController {
 
     private enum State {
         case needsAuth
+        case needsOrg
     }
 
     // MARK: Lifecycle
@@ -47,10 +48,14 @@ class PublishingViewController: NSViewController {
     public var image: NSImage? { didSet { update() } }
 
     public func initializeState() {
-
+        workspaceName = CSWorkspacePreferences.workspaceName
+        state = .needsAuth
+        update()
     }
 
     // MARK: Private
+
+    private var workspaceName: String = ""
 
     private let containerView = NSBox()
 
@@ -83,7 +88,16 @@ class PublishingViewController: NSViewController {
     private func makeContentView() -> NSView {
         switch state {
         case .needsAuth:
-            let screen = PublishNeedsAuth(workspaceName: "Test")
+            let screen = PublishNeedsAuth(workspaceName: workspaceName)
+            screen.onClickGithubButton = { [unowned self] in
+                self.state = .needsOrg
+            }
+            return screen
+        case .needsOrg:
+            let screen = PublishNeedsOrg(workspaceName: workspaceName, organizationName: "")
+            screen.onChangeTextValue = { value in
+                screen.organizationName = value
+            }
             return screen
         }
     }
@@ -93,12 +107,14 @@ class PublishingViewController: NSViewController {
         containerView.borderType = .noBorder
         containerView.contentViewMargins = .zero
 
-        containerView.widthAnchor.constraint(equalToConstant: 720).isActive = true
-
         self.view = containerView
     }
 
-    private func setUpConstraints() {}
+    private func setUpConstraints() {
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+
+        containerView.widthAnchor.constraint(equalToConstant: 720).isActive = true
+    }
 
     private func update() {
         contentView = makeContentView()

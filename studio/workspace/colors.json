@@ -26,6 +26,16 @@
       "value" : "rgba(0,0,0,0.1)"
     },
     {
+      "id" : "controlBackground",
+      "metadata" : {
+        "shouldGenerateCode" : {
+          "macos" : false
+        }
+      },
+      "name" : "Control Background",
+      "value" : "white"
+    },
+    {
       "comment" : "Should be rgba(216,216,216,0.25) on white",
       "id" : "headerBackground",
       "metadata" : {

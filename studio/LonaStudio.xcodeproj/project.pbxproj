@@ -289,6 +289,7 @@
 		6BCCE33223F322D7004C482E /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33123F322D7004C482E /* PrimaryButton.swift */; };
 		6BCCE33423F34BEF004C482E /* PublishNeedsAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33323F34BEE004C482E /* PublishNeedsAuth.swift */; };
 		6BCCE33623F35699004C482E /* PublishingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33523F35699004C482E /* PublishingViewController.swift */; };
+		6BCCE33823F36559004C482E /* PublishNeedsOrg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33723F36559004C482E /* PublishNeedsOrg.swift */; };
 		6BCE162722D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCE162622D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift */; };
 		6BD4976121E42EC400BC3970 /* AccessibilityInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */; };
 		6BD4976321E53F2000BC3970 /* Accessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976221E53F2000BC3970 /* Accessibility.swift */; };
@@ -647,6 +648,7 @@
 		6BCCE33123F322D7004C482E /* PrimaryButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
 		6BCCE33323F34BEE004C482E /* PublishNeedsAuth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishNeedsAuth.swift; sourceTree = "<group>"; };
 		6BCCE33523F35699004C482E /* PublishingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishingViewController.swift; sourceTree = "<group>"; };
+		6BCCE33723F36559004C482E /* PublishNeedsOrg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishNeedsOrg.swift; sourceTree = "<group>"; };
 		6BCE162622D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CustomParametersEditorSheet+Present.swift"; sourceTree = "<group>"; };
 		6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessibilityInspector.swift; sourceTree = "<group>"; };
 		6BD4976221E53F2000BC3970 /* Accessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accessibility.swift; sourceTree = "<group>"; };
@@ -1045,6 +1047,7 @@
 				036A4E8F21E0F6AA00948DBD /* ImageViewer.swift */,
 				6B14C7BE23C5109900EF85FA /* NoDocument.swift */,
 				6BCCE33323F34BEE004C482E /* PublishNeedsAuth.swift */,
+				6BCCE33723F36559004C482E /* PublishNeedsOrg.swift */,
 				6B73809322C66E59007534A0 /* TemplateBrowser.swift */,
 				30C203DC20BF5910007C3FE0 /* TextStyleBrowser.swift */,
 				30F870C020865858007ADA5B /* Welcome.swift */,
@@ -1607,6 +1610,7 @@
 				6B4DFCE920A75B320048BB43 /* ColorPreviewCollection.swift in Sources */,
 				036A4E9C21E1FC6500948DBD /* TextStyleInspector.swift in Sources */,
 				30F870D920865859007ADA5B /* Colors.swift in Sources */,
+				6BCCE33823F36559004C482E /* PublishNeedsOrg.swift in Sources */,
 				30C203DB20BF5908007C3FE0 /* TextStylePreviewCard.swift in Sources */,
 				6BA6E89F21324207009CD33C /* ForeignTypes.swift in Sources */,
 				6B0F5B8A213877E1007DBBB2 /* Color+Conversions.swift in Sources */,

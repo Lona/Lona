@@ -33,6 +33,14 @@ extension Colors {
         }
     }()
 
+    public static let controlBackground: NSColor = {
+        if #available(OSX 10.13, *) {
+            return NSColor(named: "controlBackgroundColor")!
+        } else {
+            return NSColor.white
+        }
+    }()
+
     public static let contentHeaderBackground: NSColor = {
         if #available(OSX 10.14, *) {
             switch NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) {

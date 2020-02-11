@@ -3,7 +3,7 @@ import AppKit
 class TextStyles {
   public static let title = TextStyle(weight: NSFont.Weight.semibold, size: 32, color: Colors.textColor)
   public static let titleBlack = TextStyle(weight: NSFont.Weight.semibold, size: 32, color: Colors.black)
-  public static let subtitle = TextStyle(weight: NSFont.Weight.semibold, size: 24, color: Colors.black)
+  public static let subtitle = TextStyle(weight: NSFont.Weight.semibold, size: 24)
   public static let versionInfo = TextStyle(size: 20, color: #colorLiteral(red: 0.509803921569, green: 0.509803921569, blue: 0.509803921569, alpha: 1))
   public static let largeSemibold = TextStyle(weight: NSFont.Weight.medium, size: 15, color: Colors.black)
   public static let large = TextStyle(size: 15, color: Colors.textColor)
