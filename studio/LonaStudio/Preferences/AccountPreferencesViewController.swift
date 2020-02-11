@@ -51,7 +51,7 @@ class AccountPreferencesViewController: NSViewController, MASPreferencesViewCont
       stackView.addArrangedSubview(tokenView)
     } else {
       let signInWithGitHubView = NSButton(title: "Sign In With GitHub", target: self, action: #selector(openGitHubSigninURL))
-      let signInWithGoogleView = NSButton(title: "Sign In With Google", target: nil, action: nil)
+      let signInWithGoogleView = NSButton(title: "Sign In With Google", target: self, action: #selector(openGoogleSigninURL))
       stackView.addArrangedSubview(signInWithGitHubView)
       stackView.addArrangedSubview(signInWithGoogleView)
     }
@@ -85,6 +85,13 @@ class AccountPreferencesViewController: NSViewController, MASPreferencesViewCont
 
   @objc func openGitHubSigninURL() {
     let url = URL(string: "https://github.com/login/oauth/authorize?scope=user:email&client_id=\(GITHUB_CLIENT_ID)&redirect_uri=\(encodeURIComponent("\(API_BASE_URL)/oauth/github/\(encodeURIComponent("lonastudio://oauth-callback"))"))")!
+    if !NSWorkspace.shared.open(url) {
+      print("couldn't open the  browser")
+    }
+  }
+
+  @objc func openGoogleSigninURL() {
+    let url = URL(string: "https://accounts.google.com/o/oauth2/v2/auth?client_id=\(GITHUB_CLIENT_ID)&response_type=code&scope=openid%20email%20profile&redirect_uri=\(encodeURIComponent("\(API_BASE_URL)/oauth/github/\(encodeURIComponent("lonastudio://oauth-callback"))"))")!
     if !NSWorkspace.shared.open(url) {
       print("couldn't open the  browser")
     }
