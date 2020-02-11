@@ -50,7 +50,7 @@ let renderDeclarationModifier = node =>
   | MutationModifier(v) => renderMutationModifier(v)
   };
 
-let rec render = ast: Prettier.Doc.t('a) =>
+let rec render = (ast): Prettier.Doc.t('a) =>
   switch (ast) {
   | SwiftAst.SwiftIdentifier(v) => s(v)
   | LiteralExpression(v) => renderLiteral(v)
@@ -114,12 +114,12 @@ let rec render = ast: Prettier.Doc.t('a) =>
   | ClassDeclaration(o) =>
     let maybeFinal = o##isFinal ? s("final") <+> line : empty;
     let maybeModifier =
-      o##modifier != None ?
-        concat([
-          o##modifier |> Render.renderOptional(renderAccessLevelModifier),
-          line,
-        ]) :
-        empty;
+      o##modifier != None
+        ? concat([
+            o##modifier |> Render.renderOptional(renderAccessLevelModifier),
+            line,
+          ])
+        : empty;
     let maybeInherits =
       switch (o##inherits) {
       | [] => empty
@@ -151,12 +151,12 @@ let rec render = ast: Prettier.Doc.t('a) =>
   /* Copied from ClassDeclaration */
   | StructDeclaration(o) =>
     let maybeModifier =
-      o##modifier != None ?
-        concat([
-          o##modifier |> Render.renderOptional(renderAccessLevelModifier),
-          line,
-        ]) :
-        empty;
+      o##modifier != None
+        ? concat([
+            o##modifier |> Render.renderOptional(renderAccessLevelModifier),
+            line,
+          ])
+        : empty;
     let maybeInherits =
       switch (o##inherits) {
       | [] => empty
@@ -187,12 +187,12 @@ let rec render = ast: Prettier.Doc.t('a) =>
   | ExtensionDeclaration(o) =>
     /* TODO: Where */
     let maybeModifier =
-      o##modifier != None ?
-        concat([
-          o##modifier |> Render.renderOptional(renderAccessLevelModifier),
-          line,
-        ]) :
-        empty;
+      o##modifier != None
+        ? concat([
+            o##modifier |> Render.renderOptional(renderAccessLevelModifier),
+            line,
+          ])
+        : empty;
     let maybeProtocols =
       switch (o##protocols) {
       | [] => empty
@@ -224,12 +224,12 @@ let rec render = ast: Prettier.Doc.t('a) =>
     let maybeIndirect =
       o##isIndirect ? concat([s("indirect"), line]) : empty;
     let maybeModifier =
-      o##modifier != None ?
-        concat([
-          o##modifier |> Render.renderOptional(renderAccessLevelModifier),
-          line,
-        ]) :
-        empty;
+      o##modifier != None
+        ? concat([
+            o##modifier |> Render.renderOptional(renderAccessLevelModifier),
+            line,
+          ])
+        : empty;
     let maybeInherits =
       switch (o##inherits) {
       | [] => empty
@@ -260,12 +260,12 @@ let rec render = ast: Prettier.Doc.t('a) =>
     ]);
   | TypealiasDeclaration(o) =>
     let maybeModifier =
-      o##modifier != None ?
-        concat([
-          o##modifier |> Render.renderOptional(renderAccessLevelModifier),
-          line,
-        ]) :
-        empty;
+      o##modifier != None
+        ? concat([
+            o##modifier |> Render.renderOptional(renderAccessLevelModifier),
+            line,
+          ])
+        : empty;
     group(
       maybeModifier
       <+> s("typealias")
@@ -280,8 +280,9 @@ let rec render = ast: Prettier.Doc.t('a) =>
     let modifiers =
       o##modifiers |> List.map(renderDeclarationModifier) |> join(s(" "));
     let maybeInit =
-      o##init == None ?
-        empty : concat([s(" = "), o##init |> Render.renderOptional(render)]);
+      o##init == None
+        ? empty
+        : concat([s(" = "), o##init |> Render.renderOptional(render)]);
     let parts = [
       modifiers,
       List.length(o##modifiers) > 0 ? s(" ") : empty,
@@ -294,8 +295,9 @@ let rec render = ast: Prettier.Doc.t('a) =>
     let modifiers =
       o##modifiers |> List.map(renderDeclarationModifier) |> join(s(" "));
     let maybeInit =
-      o##init == None ?
-        empty : concat([s(" = "), o##init |> Render.renderOptional(render)]);
+      o##init == None
+        ? empty
+        : concat([s(" = "), o##init |> Render.renderOptional(render)]);
     let maybeBlock =
       o##block
       |> Render.renderOptional(block =>
@@ -547,11 +549,15 @@ and renderLiteral = (node: SwiftAst.literal) =>
   | Integer(value) => s(string_of_int(value))
   | FloatingPoint(value) => renderFloat(value)
   | String(value) =>
-    concat([
-      s("\""),
-      s(value |> Js.String.replaceByRe([%re "/\"/g"], "\\\"")),
-      s("\""),
-    ])
+    if (value |> Js.String.includes("\n")) {
+      concat([s("\"\"\"\n"), s(value), s("\n\"\"\"")]);
+    } else {
+      concat([
+        s("\""),
+        s(value |> Js.String.replaceByRe([%re "/\"/g"], "\\\"")),
+        s("\""),
+      ]);
+    }
   | Color(value) =>
     let rgba = Css.parseColorDefault("black", value);
     let values = [
