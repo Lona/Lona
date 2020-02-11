@@ -24,6 +24,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         #else
             PFMoveToApplicationsFolderIfNecessary()
         #endif
+
+        NSAppleEventManager.shared().setEventHandler(
+            self,
+            andSelector: #selector(AppDelegate.handleURLEvent(_:withReply:)),
+            forEventClass: AEEventClass(kInternetEventClass),
+            andEventID: AEEventID(kAEGetURL)
+        )
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -33,6 +40,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> Bool {
         return false
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        NSAppleEventManager.shared().removeEventHandler(
+            forEventClass: AEEventClass(kInternetEventClass),
+            andEventID: AEEventID(kAEGetURL)
+        )
     }
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
@@ -58,6 +72,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if let workspacePreferences = viewController as? WorkspacePreferencesViewController {
                 workspacePreferences.render()
             }
+            if let accountPreferences = viewController as? AccountPreferencesViewController {
+                accountPreferences.render()
+            }
         }
     }
 
@@ -66,7 +83,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let workspace = WorkspacePreferencesViewController()
             workspace.viewDidLoad()
 
-            AppDelegate.preferencesWindow = MASPreferencesWindowController(viewControllers: [workspace], title: "Preferences")
+            let account = AccountPreferencesViewController()
+            account.viewDidLoad()
+
+            AppDelegate.preferencesWindow = MASPreferencesWindowController(viewControllers: [workspace, account], title: "Preferences")
         }
 
         AppDelegate.reloadPreferencesWindow()
@@ -127,5 +147,32 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         CSShadows.reload()
 
         LonaPlugins.current.trigger(eventType: .onReloadWorkspace)
+    }
+
+    /** Gets called when the App launches/opens via URL. */
+    @objc func handleURLEvent(_ event: NSAppleEventDescriptor, withReply reply: NSAppleEventDescriptor) {
+        guard let appleEventDescription = event.paramDescriptor(forKeyword: AEKeyword(keyDirectObject)) else {
+            return
+        }
+
+        guard let appleEventURLString = appleEventDescription.stringValue else {
+            return
+        }
+
+        guard let appleEventURL = URL(string: appleEventURLString) else {
+            return
+        }
+
+        if "lonastudio" == appleEventURL.scheme && "oauth-callback" == appleEventURL.host {
+            guard
+              let urlComponents = URLComponents(string: appleEventURLString),
+              let token = urlComponents.queryItems?.first(where: { $0.name == "token" })?.value
+            else {
+              return
+            }
+
+            Account.token = token
+            AppDelegate.reloadPreferencesWindow()
+        }
     }
 }

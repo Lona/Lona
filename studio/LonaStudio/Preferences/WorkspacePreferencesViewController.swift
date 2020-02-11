@@ -10,7 +10,7 @@ import Foundation
 import AppKit
 import MASPreferences
 
-let LABEL = "Workspace"
+private let LABEL = "Workspace"
 
 class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewController {
 

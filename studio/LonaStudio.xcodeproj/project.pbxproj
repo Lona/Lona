@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		0310D107220B13D5007B3546 /* RPCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0310D106220B13D5007B3546 /* RPCService.swift */; };
 		0310D109220B9DE8007B3546 /* PluginAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0310D108220B9DE8007B3546 /* PluginAPI.swift */; };
+		0314F4B323F2A910009CE468 /* AccountPreferencesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0314F4B223F2A910009CE468 /* AccountPreferencesViewController.swift */; };
+		0314F4B523F2B335009CE468 /* LonaAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0314F4B423F2B335009CE468 /* LonaAccount.swift */; };
 		036A4E8A21E0DFE700948DBD /* LonaFileIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E8921E0DFE700948DBD /* LonaFileIcon.swift */; };
 		036A4E8E21E0EF0100948DBD /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E8D21E0EF0100948DBD /* ImageViewController.swift */; };
 		036A4E9021E0F6AA00948DBD /* ImageViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E8F21E0F6AA00948DBD /* ImageViewer.swift */; };
@@ -367,6 +369,8 @@
 /* Begin PBXFileReference section */
 		0310D106220B13D5007B3546 /* RPCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RPCService.swift; sourceTree = "<group>"; };
 		0310D108220B9DE8007B3546 /* PluginAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginAPI.swift; sourceTree = "<group>"; };
+		0314F4B223F2A910009CE468 /* AccountPreferencesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountPreferencesViewController.swift; sourceTree = "<group>"; };
+		0314F4B423F2B335009CE468 /* LonaAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LonaAccount.swift; sourceTree = "<group>"; };
 		036A4E8921E0DFE700948DBD /* LonaFileIcon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaFileIcon.swift; sourceTree = "<group>"; };
 		036A4E8D21E0EF0100948DBD /* ImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
 		036A4E8F21E0F6AA00948DBD /* ImageViewer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageViewer.swift; sourceTree = "<group>"; };
@@ -914,6 +918,8 @@
 				306672C11F7D4C6400941554 /* CSGradients.swift */,
 				30990AAF1FA4043600BC0CCE /* CSUserTypes.swift */,
 				3080AD3F1FBCE21600B485DC /* CSShadows.swift */,
+				0314F4B223F2A910009CE468 /* AccountPreferencesViewController.swift */,
+				0314F4B423F2B335009CE468 /* LonaAccount.swift */,
 			);
 			path = Preferences;
 			sourceTree = "<group>";
@@ -1625,6 +1631,7 @@
 				304ADD52209D2A66001B9A43 /* PluginMenu.swift in Sources */,
 				6B7DBF6422A885350062031E /* LogicNumberInput.swift in Sources */,
 				6BD9664F217E9D980012F173 /* ColorsFileIcon.swift in Sources */,
+				0314F4B523F2B335009CE468 /* LonaAccount.swift in Sources */,
 				30F870D520865859007ADA5B /* TextStyles.swift in Sources */,
 				6B4DFCEF20A795080048BB43 /* RecentProjectItem.swift in Sources */,
 				6B59893F21B86B27004DD3B1 /* RenderableElement.swift in Sources */,
@@ -1797,6 +1804,7 @@
 				3090D78D1F01B050009277E7 /* CSParameter.swift in Sources */,
 				6B6F19D12307222200E5AC60 /* TemplateFileCard.swift in Sources */,
 				305ED04620530257000D07C3 /* LonaModule.swift in Sources */,
+				0314F4B323F2A910009CE468 /* AccountPreferencesViewController.swift in Sources */,
 				6B0AEFBC1EBF74D800F35BBF /* ComponentDocument.swift in Sources */,
 				303C3FF920A4F894008E1541 /* ComponentPreview.swift in Sources */,
 				306D2FEE1F84735900907B4E /* LayerThumbnail.swift in Sources */,
@@ -1981,6 +1989,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DCCCCF4DF09F5DFEA7FB404D /* Pods-LonaStudio.debug.xcconfig */;
 			buildSettings = {
+				API_BASE_URL = "https://te1fv8l2wh.execute-api.eu-west-1.amazonaws.com/dev";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = LonaStudio/LonaStudio.entitlements;
 				CODE_SIGN_IDENTITY = "";
@@ -1993,6 +2002,7 @@
 					"$(PROJECT_DIR)/Pods/Sparkle",
 					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
+				GITHUB_CLIENT_ID = 47895007495ec2ed6366;
 				INFOPLIST_FILE = LonaStudio/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2010,6 +2020,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = ABA583EA99B83FD52B085CE5 /* Pods-LonaStudio.release.xcconfig */;
 			buildSettings = {
+				API_BASE_URL = "https://te1fv8l2wh.execute-api.eu-west-1.amazonaws.com/dev";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = LonaStudio/LonaStudio.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
@@ -2022,6 +2033,7 @@
 					"$(PROJECT_DIR)/Pods/Sparkle",
 					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
+				GITHUB_CLIENT_ID = 47895007495ec2ed6366;
 				INFOPLIST_FILE = LonaStudio/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
