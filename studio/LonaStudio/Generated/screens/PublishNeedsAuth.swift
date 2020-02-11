@@ -80,7 +80,7 @@ public class PublishNeedsAuth: NSBox {
   private var googleButtonView = PrimaryButton()
 
   private var publishTextViewTextStyle = TextStyles.title
-  private var workspaceTitleViewTextStyle = TextStyles.titleBlack
+  private var workspaceTitleViewTextStyle = TextStyles.title
   private var bodyTextViewTextStyle = TextStyles.body
 
   private func setUpViews() {
@@ -120,7 +120,7 @@ public class PublishNeedsAuth: NSBox {
     publishTextView.attributedStringValue = publishTextViewTextStyle.apply(to: "Publish ")
     publishTextViewTextStyle = TextStyles.title
     publishTextView.attributedStringValue = publishTextViewTextStyle.apply(to: publishTextView.attributedStringValue)
-    workspaceTitleViewTextStyle = TextStyles.titleBlack
+    workspaceTitleViewTextStyle = TextStyles.title
     workspaceTitleView.attributedStringValue =
       workspaceTitleViewTextStyle.apply(to: workspaceTitleView.attributedStringValue)
     vSpacerView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)

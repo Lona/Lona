@@ -116,7 +116,7 @@ public class PrimaryButton: NSBox {
   }
 
   private func update() {
-    fillColor = Colors.white
+    fillColor = Colors.contentBackground
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleText)
     onPress = handleOnClick
     if hovered {

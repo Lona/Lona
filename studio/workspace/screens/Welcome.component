@@ -86,7 +86,8 @@
               {
                 "id" : "Title",
                 "params" : {
-                  "font" : "titleBlack",
+                  "font" : "title",
+                  "marginBottom" : 4,
                   "text" : "Welcome to Lona"
                 },
                 "type" : "Lona:Text"
@@ -94,7 +95,7 @@
               {
                 "id" : "Version",
                 "params" : {
-                  "font" : "versionInfo",
+                  "font" : "large",
                   "text" : "Developer Preview"
                 },
                 "type" : "Lona:Text"
@@ -156,7 +157,7 @@
         "id" : "Divider",
         "params" : {
           "alignSelf" : "stretch",
-          "backgroundColor" : "grey200",
+          "backgroundColor" : "dividerSubtle",
           "width" : 1
         },
         "type" : "Lona:View"
@@ -174,7 +175,7 @@
         "id" : "Projects",
         "params" : {
           "alignSelf" : "stretch",
-          "backgroundColor" : "grey50",
+          "backgroundColor" : "headerBackground",
           "flex" : 1
         },
         "type" : "Lona:View"

@@ -87,7 +87,7 @@
           {
             "id" : "WorkspaceTitle",
             "params" : {
-              "font" : "titleBlack",
+              "font" : "title",
               "text" : "Workspace Name"
             },
             "type" : "Lona:Text"

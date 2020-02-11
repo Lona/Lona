@@ -78,8 +78,8 @@ public class Welcome: NSBox {
   private var projectsView = NSBox()
   private var recentProjectsListView = RecentProjectsList()
 
-  private var titleViewTextStyle = TextStyles.titleBlack
-  private var versionViewTextStyle = TextStyles.versionInfo
+  private var titleViewTextStyle = TextStyles.title
+  private var versionViewTextStyle = TextStyles.large
 
   private func setUpViews() {
     boxType = .custom
@@ -121,15 +121,15 @@ public class Welcome: NSBox {
 
     imageView.image = #imageLiteral(resourceName: "LonaIcon_128x128")
     titleView.attributedStringValue = titleViewTextStyle.apply(to: "Welcome to Lona")
-    titleViewTextStyle = TextStyles.titleBlack
+    titleViewTextStyle = TextStyles.title
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
     versionView.attributedStringValue = versionViewTextStyle.apply(to: "Developer Preview")
-    versionViewTextStyle = TextStyles.versionInfo
+    versionViewTextStyle = TextStyles.large
     versionView.attributedStringValue = versionViewTextStyle.apply(to: versionView.attributedStringValue)
     newWorkspaceView.titleText = "New workspace"
     openWorkspaceButtonView.titleText = "Open existing workspace"
-    dividerView.fillColor = Colors.grey200
-    projectsView.fillColor = Colors.grey50
+    dividerView.fillColor = Colors.dividerSubtle
+    projectsView.fillColor = Colors.headerBackground
   }
 
   private func setUpConstraints() {
@@ -192,7 +192,7 @@ public class Welcome: NSBox {
     let titleViewTrailingAnchorConstraint = titleView
       .trailingAnchor
       .constraint(lessThanOrEqualTo: bannerView.trailingAnchor)
-    let versionViewTopAnchorConstraint = versionView.topAnchor.constraint(equalTo: titleView.bottomAnchor)
+    let versionViewTopAnchorConstraint = versionView.topAnchor.constraint(equalTo: titleView.bottomAnchor, constant: 4)
     let versionViewLeadingAnchorConstraint = versionView
       .leadingAnchor
       .constraint(greaterThanOrEqualTo: bannerView.leadingAnchor)

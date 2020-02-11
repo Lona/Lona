@@ -125,7 +125,7 @@
         "id" : "ProjectName",
         "params" : {
           "alignSelf" : "stretch",
-          "font" : "regularBlack",
+          "font" : "regular",
           "numberOfLines" : 1,
           "text" : "Airbnb"
         },

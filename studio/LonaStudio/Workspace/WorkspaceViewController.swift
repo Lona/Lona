@@ -614,6 +614,10 @@ class WorkspaceViewController: NSSplitViewController {
 
         editorViewController.showsHeaderDivider = false
 
+        editorViewController.onClickPublish = {
+            self.presentAsSheet(PublishingViewController.shared)
+        }
+
         if document is ComponentDocument {
             editorViewController.showsHeaderDivider = true
             inspectorViewVisible = true

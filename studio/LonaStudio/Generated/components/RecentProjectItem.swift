@@ -79,7 +79,7 @@ public class RecentProjectItem: NSBox {
   private var projectNameView = LNATextField(labelWithString: "")
   private var projectDirectoryPathView = LNATextField(labelWithString: "")
 
-  private var projectNameViewTextStyle = TextStyles.regularBlack
+  private var projectNameViewTextStyle = TextStyles.regular
   private var projectDirectoryPathViewTextStyle = TextStyles.regularMuted
 
   private func setUpViews() {
@@ -134,7 +134,7 @@ public class RecentProjectItem: NSBox {
     projectDirectoryPathViewTextStyle = TextStyles.regularMuted
     projectDirectoryPathView.attributedStringValue =
       projectDirectoryPathViewTextStyle.apply(to: projectDirectoryPathView.attributedStringValue)
-    projectNameViewTextStyle = TextStyles.regularBlack
+    projectNameViewTextStyle = TextStyles.regular
     projectNameView.attributedStringValue = projectNameViewTextStyle.apply(to: projectNameView.attributedStringValue)
     projectNameView.attributedStringValue = projectNameViewTextStyle.apply(to: projectName)
     projectDirectoryPathView.attributedStringValue = projectDirectoryPathViewTextStyle.apply(to: projectDirectoryPath)
