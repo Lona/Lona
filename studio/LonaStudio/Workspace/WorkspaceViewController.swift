@@ -612,7 +612,10 @@ class WorkspaceViewController: NSSplitViewController {
             ]
         }
 
+        editorViewController.showsHeaderDivider = false
+
         if document is ComponentDocument {
+            editorViewController.showsHeaderDivider = true
             inspectorViewVisible = true
             editorViewController.contentView = componentEditorViewController.view
 

@@ -36,6 +36,14 @@ class EditorViewController: NSViewController {
 
     // MARK: Public
 
+    public var showsHeaderDivider: Bool = false {
+        didSet {
+            if showsHeaderDivider != oldValue {
+                update()
+            }
+        }
+    }
+
     public var breadcrumbs: [Breadcrumb] {
         get { return breadcrumbView.breadcrumbs }
         set { breadcrumbView.breadcrumbs = newValue }
@@ -57,7 +65,9 @@ class EditorViewController: NSViewController {
                     contentContainerView.addSubview(contentView)
 
                     contentView.translatesAutoresizingMaskIntoConstraints = false
-                    contentView.topAnchor.constraint(equalTo: breadcrumbView.bottomAnchor).isActive = true
+
+                    contentView.topAnchor.constraint(equalTo: dividerView.bottomAnchor).isActive = true
+
                     contentView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor).isActive = true
                     contentView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor).isActive = true
                     contentView.bottomAnchor.constraint(equalTo: contentContainerView.bottomAnchor).isActive = true
@@ -75,6 +85,8 @@ class EditorViewController: NSViewController {
     private let contentContainerView = NSBox(frame: .zero)
 
     private let breadcrumbView = NavigationBar()
+
+    private let dividerView = NSBox()
 
     private func updateHistory(_ history: History) {
         breadcrumbView.isBackEnabled = history.canGoBack()
@@ -119,6 +131,13 @@ class EditorViewController: NSViewController {
         contentContainerView.borderType = .noBorder
         contentContainerView.contentViewMargins = .zero
 
+        dividerView.boxType = .custom
+        dividerView.borderType = .noBorder
+        dividerView.contentViewMargins = .zero
+
+        contentContainerView.addSubview(dividerView)
+        contentContainerView.addSubview(breadcrumbView)
+
         DocumentController.shared.historyEmitter.addListener { [unowned self] history in self.updateHistory(history) }
 
         self.view = contentContainerView
@@ -127,14 +146,25 @@ class EditorViewController: NSViewController {
     private func setUpConstraints() {
         contentContainerView.translatesAutoresizingMaskIntoConstraints = false
         breadcrumbView.translatesAutoresizingMaskIntoConstraints = false
-
-        contentContainerView.addSubview(breadcrumbView)
+        dividerView.translatesAutoresizingMaskIntoConstraints = false
 
         breadcrumbView.topAnchor.constraint(equalTo: contentContainerView.topAnchor).isActive = true
         breadcrumbView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 8).isActive = true
         breadcrumbView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor, constant: -8).isActive = true
         breadcrumbView.heightAnchor.constraint(equalToConstant: 38).isActive = true
+
+        dividerView.topAnchor.constraint(equalTo: breadcrumbView.bottomAnchor).isActive = true
+
+        dividerView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor).isActive = true
+        dividerView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor).isActive = true
+        dividerView.heightAnchor.constraint(equalToConstant: 1).isActive = true
     }
 
-    private func update() {}
+    private func update() {
+        if showsHeaderDivider {
+            dividerView.fillColor = NSSplitView.defaultDividerColor
+        } else {
+            dividerView.fillColor = .clear
+        }
+    }
 }
