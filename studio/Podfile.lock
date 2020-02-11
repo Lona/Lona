@@ -2,8 +2,8 @@ PODS:
   - LetsMove (1.24)
   - lottie-ios (2.1.3)
   - MASPreferences (1.3)
-  - Sparkle (1.21.3)
-  - SwiftLint (0.24.2)
+  - Sparkle (1.22.0)
+  - SwiftLint (0.38.2)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -13,6 +13,14 @@ DEPENDENCIES:
   - Sparkle
   - SwiftLint
   - Yoga (~> 1.14)
+
+SPEC REPOS:
+  trunk:
+    - LetsMove
+    - MASPreferences
+    - Sparkle
+    - SwiftLint
+    - Yoga
 
 EXTERNAL SOURCES:
   lottie-ios:
@@ -28,10 +36,10 @@ SPEC CHECKSUMS:
   LetsMove: fefe56bc7bc7fb7d37049e28a14f297961229fc5
   lottie-ios: 8c150606598931621e927377f1426d2d3e99282d
   MASPreferences: c08b8622dd17b47da87669e741efd7c92e970e8c
-  Sparkle: 3f75576db8b0265adef36c43249d747f22d0b708
-  SwiftLint: 2aa21b96c8d13396a051bc1cb659d2ce1e0075b0
+  Sparkle: 593ac2e677c07bcb6c3b22d621240e7cbedaab57
+  SwiftLint: 8f5d2f903e1c9bcbc832fd16771e80a263ac6cbb
   Yoga: cff67a400f6b74dc38eb0bad4f156673d9aa980c
 
-PODFILE CHECKSUM: 8fa6bc273ec8c80414f4f128a2b7ee935d4103cc
+PODFILE CHECKSUM: 16da7082ec28bbdb5fd3137b5cf6decee09324df
 
-COCOAPODS: 1.4.0
+COCOAPODS: 1.9.0.beta.2

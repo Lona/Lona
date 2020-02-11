@@ -517,7 +517,7 @@ class CSPDFDocument {
         context().transformation.prepend(AffineTransform(scale: scale))
         context().lineWidth *= scale
 
-        loop: for op in operations {
+        for op in operations {
             Swift.print(op.toString())
 
             switch op.type {

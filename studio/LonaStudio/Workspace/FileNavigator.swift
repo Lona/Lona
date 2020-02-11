@@ -11,11 +11,23 @@ import FileTree
 import Foundation
 import Logic
 
-private class FileTreeCellView: NSTableCellView {
+private class FileTreeCellView: NSTableCellView, NSTextFieldDelegate {
     public var onChangeBackgroundStyle: ((NSView.BackgroundStyle) -> Void)?
 
     override var backgroundStyle: NSView.BackgroundStyle {
         didSet { onChangeBackgroundStyle?(backgroundStyle) }
+    }
+
+    public var onBeginRenaming: (() -> Void)?
+
+    public var onEndRenaming: ((FileTree.Path) -> Void)?
+
+    public func controlTextDidEndEditing(_ obj: Notification) {
+        guard let textView = obj.object as? NSTextField else { return }
+
+        if let cellView = textView.superview as? FileTreeCellView {
+            cellView.onEndRenaming?(textView.stringValue)
+        }
     }
 }
 
@@ -69,6 +81,11 @@ class FileNavigator: NSBox {
         set { fileTree.onAction = newValue }
     }
 
+    public var onSelect: ((FileTree.Path?) -> Void)? {
+        get { return fileTree.onSelect }
+        set { fileTree.onSelect = newValue }
+    }
+
     public var onCreateFile: ((FileTree.Path, FileTree.FileEventOptions) -> Void)? {
         get { return fileTree.onCreateFile }
         set { fileTree.onCreateFile = newValue}
@@ -89,11 +106,16 @@ class FileNavigator: NSBox {
         set { fileTree.performMoveFile = newValue }
     }
 
+    public var selectedFile: FileTree.Path? {
+        get { return fileTree.selectedFile }
+        set { fileTree.selectedFile = newValue }
+    }
+
+    public var performDeleteFile: ((FileTree.Path) -> Void)?
+
     public var performCreateComponent: ((FileTree.Path) -> Bool)?
 
-    public var performCreateLogicFile: ((FileTree.Path) -> Bool)?
-
-    public var performCreateMarkdownFile: ((FileTree.Path) -> Bool)?
+    public var performCreatePage: ((String, FileTree.Path) -> Void)?
 
     // MARK: - Private
 
@@ -110,7 +132,7 @@ class FileNavigator: NSBox {
 
         fileTree.showRootFile = true
         fileTree.rowHeightForFile = { [unowned self] path in self.rowHeightForFile(atPath: path) }
-        fileTree.rowViewForFile = { [unowned self] path, _ in self.rowViewForFile(atPath: path) }
+        fileTree.rowViewForFile = { [unowned self] path, options in self.rowViewForFile(atPath: path, options: options) }
         fileTree.imageForFile = { [unowned self] path, size in self.imageForFile(atPath: path, size: size) }
         fileTree.displayNameForFile = { [unowned self] path in self.displayNameForFile(atPath: path) }
         fileTree.menuForFile = { [unowned self] path in self.menuForFile(atPath: path) }
@@ -131,23 +153,34 @@ class FileNavigator: NSBox {
         let fileURL = URL(fileURLWithPath: path)
         let fileName = fileURL.lastPathComponent
 
-        let alert = NSAlert()
-        alert.messageText = "Are you sure you want to delete \(fileName)?"
-        alert.addButton(withTitle: "Delete")
-        alert.addButton(withTitle: "Cancel")
+        let response = Alert(
+            items: ["Cancel", "Delete"],
+            messageText: "Are you sure you want to delete \(fileName)?"
+        ).run()
 
-        let response = alert.runModal()
-
-        if response == NSApplication.ModalResponse.alertFirstButtonReturn {
-            do {
-                try FileManager.default.removeItem(at: fileURL)
-            } catch {
-                Swift.print("Failed to delete \(fileURL.path)")
-            }
+        if response == "Delete" {
+            self.performDeleteFile?(path)
         }
     }
 
+    private func handleRenameFile(atPath path: String) {
+        if let cellView = fileTree.beginRenamingFile(atPath: path) as? FileTreeCellView {
+            cellView.onBeginRenaming?()
+        }
+    }
+
+    // Allow the user to enter a file name with or without a path extension
+    private static func normalizeInputPath(parentPath path: String, filename: String, withExtension pathExtension: String) -> String {
+        let newFileURL = URL(fileURLWithPath: path).appendingPathComponent(filename)
+        let newFilePath = newFileURL.pathExtension == pathExtension ?
+            newFileURL.path : newFileURL.appendingPathExtension(pathExtension).path
+        return newFilePath
+    }
+
     private func menuForFile(atPath path: String) -> NSMenu {
+
+        let url = URL(fileURLWithPath: path)
+
         let menu = NSMenu(title: "Menu")
 
         menu.addItem(NSMenuItem(title: "Reveal in Finder", onClick: {
@@ -160,45 +193,24 @@ class FileNavigator: NSBox {
                 menu.addItem(NSMenuItem.separator())
             }
 
-            func makePath(filename: String, withExtension pathExtension: String) -> String {
-                let newFileURL = URL(fileURLWithPath: path).appendingPathComponent(filename)
-                let newFilePath = newFileURL.pathExtension == pathExtension ?
-                    newFileURL.path : newFileURL.appendingPathExtension(pathExtension).path
-                return newFilePath
-            }
-
             if CSUserPreferences.useExperimentalFeatures {
                 menu.addItem(NSMenuItem(title: "New Component", onClick: { [unowned self] in
-                    guard let newFileName = self.promptForName(
+                    guard let newFileName = Alert.runTextInputAlert(
                         messageText: "Enter a new component name",
                         placeholderText: "Component name") else { return }
-
-                    _ = self.performCreateComponent?(makePath(filename: newFileName, withExtension: "component"))
+                    let newPath = FileNavigator.normalizeInputPath(parentPath: path, filename: newFileName, withExtension: "component")
+                    _ = self.performCreateComponent?(newPath)
                 }))
             }
 
-            menu.addItem(NSMenuItem(title: "New Document", onClick: { [unowned self] in
-                guard let newFileName = self.promptForName(
-                    messageText: "Enter a new document name",
-                    placeholderText: "File name") else { return }
-
-                _ = self.performCreateMarkdownFile?(makePath(filename: newFileName, withExtension: "md"))
-            }))
-
             menu.addItem(NSMenuItem(title: "New Folder", onClick: { [unowned self] in
-                guard let newFileName = self.promptForName(
+                guard let newFileName = Alert.runTextInputAlert(
                     messageText: "Enter a new folder name",
                     placeholderText: "Folder name") else { return }
 
                 let parentURL = URL(fileURLWithPath: path)
 
-                let newDirectory = VirtualDirectory(name: newFileName) {
-                    [
-                        VirtualFile(name: "README.md") {
-                            "# \(newFileName)".data(using: .utf8)!
-                        }
-                    ]
-                }
+                let newDirectory = VirtualDirectory(name: newFileName)
 
                 do {
                     try VirtualFileSystem.write(node: newDirectory, relativeTo: parentURL)
@@ -207,6 +219,18 @@ class FileNavigator: NSBox {
                 } catch {
                     Swift.print("Failed to create directory \(newFileName)")
                 }
+            }))
+        }
+
+        if url.isLonaPage() {
+            menu.addItem(NSMenuItem(title: "New Page", onClick: { [unowned self] in
+                guard var pageName = Alert.runTextInputAlert(
+                    messageText: "Enter a new page name",
+                    placeholderText: "Page name") else { return }
+                if pageName.hasSuffix(".md") {
+                    pageName.removeLast(3)
+                }
+                self.performCreatePage?(pageName, path)
             }))
         }
 
@@ -236,10 +260,7 @@ class FileNavigator: NSBox {
                     do {
                         try FileManager.default.copyItem(atPath: path, toPath: url.path)
                     } catch {
-                        let alert = NSAlert()
-                        alert.messageText = "Couldn't copy component to \(url.path)"
-                        alert.addButton(withTitle: "OK")
-                        alert.runModal()
+                        Alert(items: ["OK"], messageText: "Couldn't copy component to \(url.path)").run()
                         return
                     }
 
@@ -249,6 +270,10 @@ class FileNavigator: NSBox {
 
             menu.addItem(NSMenuItem(title: "Delete", onClick: {
                 self.deleteAlertForFile(atPath: path)
+            }))
+
+            menu.addItem(NSMenuItem(title: "Rename", onClick: {
+                self.handleRenameFile(atPath: path)
             }))
         }
 
@@ -266,28 +291,6 @@ class FileNavigator: NSBox {
     }
 
     private func update() {}
-
-    private func promptForName(messageText: String, placeholderText: String) -> String? {
-        let alert = NSAlert()
-        alert.messageText = messageText
-        alert.addButton(withTitle: "OK")
-        alert.addButton(withTitle: "Cancel")
-        let textView = NSTextField(frame: NSRect(x: 0, y: 0, width: 300, height: 20))
-        textView.stringValue = ""
-        textView.placeholderString = placeholderText
-        alert.accessoryView = textView
-        alert.window.initialFirstResponder = textView
-
-        alert.layout()
-
-        let response = alert.runModal()
-
-        if response == NSApplication.ModalResponse.alertFirstButtonReturn {
-            return textView.stringValue
-        } else {
-            return nil
-        }
-    }
 
     private func imageForFile(atPath path: String, size: NSSize) -> NSImage {
         let url = URL(fileURLWithPath: path)
@@ -345,7 +348,7 @@ class FileNavigator: NSBox {
         return path == rootPath ? 38 : fileTree.defaultRowHeight
     }
 
-    private func rowViewForFile(atPath path: String) -> NSView {
+    private func rowViewForFile(atPath path: String, options: FileTree.RowViewOptions) -> NSView {
         let thumbnailSize = fileTree.defaultThumbnailSize
         let thumbnailMargin = fileTree.defaultThumbnailMargin
         let name = displayNameForFile(atPath: path)
@@ -355,13 +358,19 @@ class FileNavigator: NSBox {
         let textView = NSTextField(labelWithString: name)
         let iconView: NSView
 
+        if options.contains(.editable) {
+            textView.isEditable = true
+            textView.isEnabled = true
+        }
+
         if FileManager.default.isDirectory(path: path) {
             if path == rootPath {
                 let image = NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
-                image.size = .init(width: 20, height: 20)
                 let imageView = NSImageView(image: image)
                 imageView.imageScaling = .scaleProportionallyUpOrDown
                 iconView = imageView
+            } else if URL(fileURLWithPath: path).isLonaMarkdownDirectory() {
+                iconView = FileIcon()
             } else {
                 iconView = FolderIcon()
             }
@@ -379,6 +388,8 @@ class FileNavigator: NSBox {
 
         view.addSubview(textView)
         view.addSubview(iconView)
+
+        view.textField = textView
 
         iconView.translatesAutoresizingMaskIntoConstraints = false
         iconView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: thumbnailMargin).isActive = true
@@ -433,9 +444,37 @@ class FileNavigator: NSBox {
                 } else if let iconView = iconView as? FileIcon {
                     iconView.selected = true
                 }
-                textView.textColor = .white
+
+                if options.contains(.editable) {
+                    textView.textColor = NSColor.controlTextColor
+                } else {
+                    textView.textColor = .white
+                }
             default:
                 break
+            }
+        }
+
+        view.onBeginRenaming = { [unowned self] in
+            textView.delegate = view
+            NSApp.activate(ignoringOtherApps: true)
+            self.fileTree.window?.makeFirstResponder(textView)
+        }
+
+        view.onEndRenaming = { [unowned self] newName in
+            Swift.print("End renaming", newName)
+
+            textView.delegate = nil
+
+            self.fileTree.endRenamingFile()
+
+            if newName != name {
+                let url = URL(fileURLWithPath: path)
+                let parentPath = url.deletingLastPathComponent().path
+                let newPath = url.hasMarkdownExtension()
+                    ? FileNavigator.normalizeInputPath(parentPath: parentPath, filename: newName, withExtension: "md")
+                    : URL(fileURLWithPath: parentPath).appendingPathComponent(newName).path
+                _ = self.fileTree.performMoveFile?(path, newPath)
             }
         }
 

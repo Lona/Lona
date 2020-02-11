@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -17,7 +17,6 @@
 		036A4EA021E1FCD200948DBD /* CSTextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E9F21E1FCD100948DBD /* CSTextStyle.swift */; };
 		036A4EA221E1FD3B00948DBD /* KeyHandlingCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA121E1FD3B00948DBD /* KeyHandlingCollectionView.swift */; };
 		036A4EA421E21DA500948DBD /* AddTextStyleSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA321E21DA400948DBD /* AddTextStyleSheet.swift */; };
-		036A4EA721E23F9100948DBD /* DirectoryDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA621E23F9100948DBD /* DirectoryDocument.swift */; };
 		036A4EA921E2469D00948DBD /* DirectoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA821E2469D00948DBD /* DirectoryViewController.swift */; };
 		039952C721E50D31008310DB /* MarkdownEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039952C621E50D31008310DB /* MarkdownEditor.swift */; };
 		300302741EDC7FA90085E140 /* CSStatementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300302731EDC7FA90085E140 /* CSStatementView.swift */; };
@@ -227,6 +226,7 @@
 		6B5D4DA1213F05AF004F8AC3 /* CodeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5D4DA0213F05AF004F8AC3 /* CodeEditor.swift */; };
 		6B6017D01EBF9EFA001E02C1 /* LayerListOutlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6017CF1EBF9EFA001E02C1 /* LayerListOutlineView.swift */; };
 		6B64358221FA3BD700CB1CB1 /* AccessibilityOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B64358121FA3BD700CB1CB1 /* AccessibilityOverlay.swift */; };
+		6B68CA8123C918B70045D009 /* WelcomeWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B68CA8023C918B70045D009 /* WelcomeWindow.swift */; };
 		6B6D441D218B6BBE0016262C /* LNATextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D441C218B6BBE0016262C /* LNATextField.swift */; };
 		6B6D4427218F55B50016262C /* CGSize+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4426218F55B50016262C /* CGSize+Resizing.swift */; };
 		6B6D4434218F6B070016262C /* NSImage+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4432218F6B070016262C /* NSImage+Resizing.swift */; };
@@ -282,6 +282,8 @@
 		6BC6062C223F191A003E616B /* Logic.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BC60626223F1878003E616B /* Logic.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6BC60631223F1947003E616B /* Logic.framework.dSYM in Resources */ = {isa = PBXBuildFile; fileRef = 6BC60630223F1947003E616B /* Logic.framework.dSYM */; };
 		6BC60632223F194E003E616B /* Logic.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6BC60630223F1947003E616B /* Logic.framework.dSYM */; };
+		6BCCE31123E27034004C482E /* BreadcrumbBar in Frameworks */ = {isa = PBXBuildFile; productRef = 6BCCE31023E27034004C482E /* BreadcrumbBar */; };
+		6BCCE31423E762EB004C482E /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE31323E762EB004C482E /* History.swift */; };
 		6BCE162722D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCE162622D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift */; };
 		6BD4976121E42EC400BC3970 /* AccessibilityInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */; };
 		6BD4976321E53F2000BC3970 /* Accessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976221E53F2000BC3970 /* Accessibility.swift */; };
@@ -293,6 +295,9 @@
 		6BD96653217FB0DB0012F173 /* default-workspace-thumbnail@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6BD96651217FB0DB0012F173 /* default-workspace-thumbnail@2x.png */; };
 		6BDF4D2E20A67272006E99C4 /* BrowserToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDF4D2D20A67272006E99C4 /* BrowserToolbar.swift */; };
 		6BE89BBC21B7452800F35AC3 /* LonaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE89BBB21B7452800F35AC3 /* LonaViewModel.swift */; };
+		6BE99D7423CD1F6800E35E35 /* Emitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE99D7323CD1F6800E35E35 /* Emitter.swift */; };
+		6BE99D7823CD2F4300E35E35 /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE99D7723CD2F4300E35E35 /* Promise.swift */; };
+		6BE99D7A23CE50CC00E35E35 /* Promise+AppKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE99D7923CE50CC00E35E35 /* Promise+AppKit.swift */; };
 		6BEA1A76233AE8E00008FF7E /* SubtleSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEA1A75233AE8E00008FF7E /* SubtleSplitView.swift */; };
 		6BF4EF45235A695F00548F61 /* WorkspaceWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF4EF44235A695F00548F61 /* WorkspaceWindow.swift */; };
 		6BF4EF5D235CF8DD00548F61 /* ShadowSuggestionEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF4EF5C235CF8DC00548F61 /* ShadowSuggestionEditor.swift */; };
@@ -370,7 +375,6 @@
 		036A4E9F21E1FCD100948DBD /* CSTextStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSTextStyle.swift; sourceTree = "<group>"; };
 		036A4EA121E1FD3B00948DBD /* KeyHandlingCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyHandlingCollectionView.swift; sourceTree = "<group>"; };
 		036A4EA321E21DA400948DBD /* AddTextStyleSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddTextStyleSheet.swift; sourceTree = "<group>"; };
-		036A4EA621E23F9100948DBD /* DirectoryDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectoryDocument.swift; sourceTree = "<group>"; };
 		036A4EA821E2469D00948DBD /* DirectoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectoryViewController.swift; sourceTree = "<group>"; };
 		039952C621E50D31008310DB /* MarkdownEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownEditor.swift; sourceTree = "<group>"; };
 		300302731EDC7FA90085E140 /* CSStatementView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSStatementView.swift; sourceTree = "<group>"; };
@@ -580,6 +584,7 @@
 		6B5D4DA0213F05AF004F8AC3 /* CodeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeEditor.swift; sourceTree = "<group>"; };
 		6B6017CF1EBF9EFA001E02C1 /* LayerListOutlineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayerListOutlineView.swift; sourceTree = "<group>"; };
 		6B64358121FA3BD700CB1CB1 /* AccessibilityOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityOverlay.swift; sourceTree = "<group>"; };
+		6B68CA8023C918B70045D009 /* WelcomeWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeWindow.swift; sourceTree = "<group>"; };
 		6B6D441C218B6BBE0016262C /* LNATextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNATextField.swift; sourceTree = "<group>"; };
 		6B6D4426218F55B50016262C /* CGSize+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Resizing.swift"; sourceTree = "<group>"; };
 		6B6D4432218F6B070016262C /* NSImage+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSImage+Resizing.swift"; sourceTree = "<group>"; };
@@ -631,6 +636,7 @@
 		6BC605CC21F78F240087311A /* LabeledDropdownRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LabeledDropdownRow.swift; sourceTree = "<group>"; };
 		6BC60626223F1878003E616B /* Logic.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Logic.framework; path = Carthage/Build/Mac/Logic.framework; sourceTree = "<group>"; };
 		6BC60630223F1947003E616B /* Logic.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Logic.framework.dSYM; path = Carthage/Build/Mac/Logic.framework.dSYM; sourceTree = "<group>"; };
+		6BCCE31323E762EB004C482E /* History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = History.swift; sourceTree = "<group>"; };
 		6BCE162622D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CustomParametersEditorSheet+Present.swift"; sourceTree = "<group>"; };
 		6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessibilityInspector.swift; sourceTree = "<group>"; };
 		6BD4976221E53F2000BC3970 /* Accessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accessibility.swift; sourceTree = "<group>"; };
@@ -642,6 +648,9 @@
 		6BD96651217FB0DB0012F173 /* default-workspace-thumbnail@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default-workspace-thumbnail@2x.png"; sourceTree = "<group>"; };
 		6BDF4D2D20A67272006E99C4 /* BrowserToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserToolbar.swift; sourceTree = "<group>"; };
 		6BE89BBB21B7452800F35AC3 /* LonaViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaViewModel.swift; sourceTree = "<group>"; };
+		6BE99D7323CD1F6800E35E35 /* Emitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emitter.swift; sourceTree = "<group>"; };
+		6BE99D7723CD2F4300E35E35 /* Promise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
+		6BE99D7923CE50CC00E35E35 /* Promise+AppKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Promise+AppKit.swift"; sourceTree = "<group>"; };
 		6BEA1A75233AE8E00008FF7E /* SubtleSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtleSplitView.swift; sourceTree = "<group>"; };
 		6BF4EF44235A695F00548F61 /* WorkspaceWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceWindow.swift; sourceTree = "<group>"; };
 		6BF4EF5C235CF8DC00548F61 /* ShadowSuggestionEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShadowSuggestionEditor.swift; sourceTree = "<group>"; };
@@ -680,6 +689,7 @@
 				6BA6E895212F92B0009CD33C /* Witness.framework in Frameworks */,
 				6BC6062B223F191A003E616B /* Logic.framework in Frameworks */,
 				6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */,
+				6BCCE31123E27034004C482E /* BreadcrumbBar in Frameworks */,
 				6B5886862134D6BB00CCA69F /* ControlledComponents.framework in Frameworks */,
 				6B2DC1AB21361C4700679668 /* ColorPicker.framework in Frameworks */,
 				6BF894D32214E3DD000CD863 /* Differ.framework in Frameworks */,
@@ -704,7 +714,6 @@
 			isa = PBXGroup;
 			children = (
 				6B0AEFBB1EBF74D800F35BBF /* ComponentDocument.swift */,
-				036A4EA621E23F9100948DBD /* DirectoryDocument.swift */,
 				6B23A84621E6CC080001009E /* DocumentController.swift */,
 				6B25041621E5510900AE7F97 /* ImageDocument.swift */,
 				6B25041721E5510900AE7F97 /* JSONDocument.swift */,
@@ -774,11 +783,12 @@
 				6BA5BBDE2176D93D00F086A7 /* TextStyleEditorViewController.swift */,
 				30C203DE20BF5955007C3FE0 /* TextStylePreviewCollection.swift */,
 				6B39E6F2212DB3AD0012DA4C /* UtilitiesView.swift */,
+				6B68CA8023C918B70045D009 /* WelcomeWindow.swift */,
 				6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */,
 				6B39E6F4212DEF120012DA4C /* WorkspaceViewController.swift */,
+				6BF4EF44235A695F00548F61 /* WorkspaceWindow.swift */,
 				6BA6E89821307D65009CD33C /* WorkspaceWindowController.swift */,
 				BAC24A8E203576730005B16F /* InspectorView */,
-				6BF4EF44235A695F00548F61 /* WorkspaceWindow.swift */,
 			);
 			path = Workspace;
 			sourceTree = "<group>";
@@ -809,14 +819,18 @@
 				30F4FD521F76ADC70048691C /* AnimationUtils.swift */,
 				3056275D1FBA0C0700026796 /* CSConstraint.swift */,
 				305BDA201F648F6400AD2AA3 /* CSPDFDocument.swift */,
+				6BE99D7323CD1F6800E35E35 /* Emitter.swift */,
 				30F870EA20869644007ADA5B /* Fetch.swift */,
 				6B558A3F222B1FD1000C22FE /* FileSearch.swift */,
 				6B4DFCEC20A77C650048BB43 /* FileUtils.swift */,
 				6B56ECB221BC5B6D005F43C5 /* FlippedView.swift */,
+				6BCCE31323E762EB004C482E /* History.swift */,
 				3094DFE71F6ACF1E00E5C7F0 /* ImageCache.swift */,
 				6B1086FC217A38110024AE56 /* LRUCache.swift */,
 				3040EFC71F2FAC9C007C5368 /* Operators.swift */,
 				3069E0991F3243780005E9A8 /* parseCSSColor.swift */,
+				6BE99D7723CD2F4300E35E35 /* Promise.swift */,
+				6BE99D7923CE50CC00E35E35 /* Promise+AppKit.swift */,
 				30ACB4E41F663D0A00EEFED6 /* Sketch.swift */,
 				303BDE6C1F76E61300B4CE5A /* VideoUtils.swift */,
 				303C3FE720A375E8008E1541 /* VirtualFileSystem.swift */,
@@ -1312,14 +1326,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6B0AEFC51EBF74D800F35BBF /* Build configuration list for PBXNativeTarget "LonaStudio" */;
 			buildPhases = (
-				6BA89858232717D400AA8F78 /* ShellScript */,
 				0D07092F8B9DD494FF4F76C4 /* [CP] Check Pods Manifest.lock */,
+				6BA89858232717D400AA8F78 /* ShellScript */,
 				6B0AEFB01EBF74D700F35BBF /* Sources */,
 				6B0AEFB11EBF74D700F35BBF /* Frameworks */,
 				6B0AEFB21EBF74D700F35BBF /* Resources */,
 				E55D09A4201468E2000B193E /* Run SwiftLint */,
 				D6D720124C85F4014A8A455D /* [CP] Embed Pods Frameworks */,
-				BD7A127D0A69517D19686FB2 /* [CP] Copy Pods Resources */,
 				6BBE0F6C212B26C900CEE8C1 /* Embed Frameworks */,
 				6BC6062D223F192B003E616B /* CopyFiles */,
 			);
@@ -1328,6 +1341,9 @@
 			dependencies = (
 			);
 			name = LonaStudio;
+			packageProductDependencies = (
+				6BCCE31023E27034004C482E /* BreadcrumbBar */,
+			);
 			productName = ComponentStudio;
 			productReference = 6B0AEFB41EBF74D800F35BBF /* LonaStudio.app */;
 			productType = "com.apple.product-type.application";
@@ -1341,7 +1357,6 @@
 				BA9BDC5020132C29004C4D9D /* Frameworks */,
 				BA9BDC5120132C29004C4D9D /* Resources */,
 				AE944FBCF020B00505E3912C /* [CP] Embed Pods Frameworks */,
-				E41946CE6B0F50D17DF3B505 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1391,6 +1406,9 @@
 				Base,
 			);
 			mainGroup = 6B0AEFAB1EBF74D700F35BBF;
+			packageReferences = (
+				6BCCE30F23E27034004C482E /* XCRemoteSwiftPackageReference "BreadcrumbBar" */,
+			);
 			productRefGroup = 6B0AEFB51EBF74D800F35BBF /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1492,27 +1510,16 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-LonaStudioTests/Pods-LonaStudioTests-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/LetsMove/LetsMove.framework",
-				"${BUILT_PRODUCTS_DIR}/MASPreferences/MASPreferences.framework",
-				"${PODS_ROOT}/Sparkle/Sparkle.framework",
-				"${PODS_ROOT}/Sparkle/Sparkle.framework.dSYM",
-				"${BUILT_PRODUCTS_DIR}/Yoga/yoga.framework",
-				"${BUILT_PRODUCTS_DIR}/lottie-ios/Lottie.framework",
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LonaStudioTests/Pods-LonaStudioTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LetsMove.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MASPreferences.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sparkle.framework",
-				"${DWARF_DSYM_FOLDER_PATH}/Sparkle.framework.dSYM",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/yoga.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Lottie.framework",
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LonaStudioTests/Pods-LonaStudioTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-LonaStudioTests/Pods-LonaStudioTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LonaStudioTests/Pods-LonaStudioTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		B496C84364791A567CA0DECC /* [CP] Check Pods Manifest.lock */ = {
@@ -1533,62 +1540,21 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		BD7A127D0A69517D19686FB2 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		D6D720124C85F4014A8A455D /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/LetsMove/LetsMove.framework",
-				"${BUILT_PRODUCTS_DIR}/MASPreferences/MASPreferences.framework",
-				"${PODS_ROOT}/Sparkle/Sparkle.framework",
-				"${PODS_ROOT}/Sparkle/Sparkle.framework.dSYM",
-				"${BUILT_PRODUCTS_DIR}/Yoga/yoga.framework",
-				"${BUILT_PRODUCTS_DIR}/lottie-ios/Lottie.framework",
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LonaStudio/Pods-LonaStudio-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LetsMove.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MASPreferences.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sparkle.framework",
-				"${DWARF_DSYM_FOLDER_PATH}/Sparkle.framework.dSYM",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/yoga.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Lottie.framework",
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LonaStudio/Pods-LonaStudio-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E41946CE6B0F50D17DF3B505 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-LonaStudioTests/Pods-LonaStudioTests-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LonaStudio/Pods-LonaStudio-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E55D09A4201468E2000B193E /* Run SwiftLint */ = {
@@ -1619,6 +1585,7 @@
 				303C3FF320A4E396008E1541 /* ComponentBrowser.swift in Sources */,
 				6B3414B4225D29AC00CC65D1 /* LogicEditor+Suggestions.swift in Sources */,
 				6B4E25FC22E160C100F0076A /* ColorSuggestionEditor.swift in Sources */,
+				6BE99D7A23CE50CC00E35E35 /* Promise+AppKit.swift in Sources */,
 				30D799821F2BE90E00EF12D7 /* SettingRow.swift in Sources */,
 				6B892C6022CAB81600D0AEDA /* GeneratedOutputPreview.swift in Sources */,
 				6B0F5B9021389A8B007DBBB2 /* NSSplitView+DividerColor.swift in Sources */,
@@ -1663,7 +1630,6 @@
 				6B59893F21B86B27004DD3B1 /* RenderableElement.swift in Sources */,
 				6BC2D43F226245F9003A9F63 /* LogicInput.swift in Sources */,
 				6BD9664D217E8FCF0012F173 /* FileIcon.swift in Sources */,
-				036A4EA721E23F9100948DBD /* DirectoryDocument.swift in Sources */,
 				30F870D720865859007ADA5B /* Welcome.swift in Sources */,
 				30990AB01FA4043600BC0CCE /* CSUserTypes.swift in Sources */,
 				3043A0CC1F46653B00EF31EF /* Label.swift in Sources */,
@@ -1702,6 +1668,7 @@
 				039952C721E50D31008310DB /* MarkdownEditor.swift in Sources */,
 				BA153BCA202B2D1F002A83A5 /* UndoManager.swift in Sources */,
 				6B5D4DA1213F05AF004F8AC3 /* CodeEditor.swift in Sources */,
+				6BCCE31423E762EB004C482E /* History.swift in Sources */,
 				3005A5381FA00FE000ABC5C2 /* CustomPopupField.swift in Sources */,
 				6BA5BBDF2176D93D00F086A7 /* TextStyleEditorViewController.swift in Sources */,
 				6BF4EF45235A695F00548F61 /* WorkspaceWindow.swift in Sources */,
@@ -1739,8 +1706,10 @@
 				036A4E8E21E0EF0100948DBD /* ImageViewController.swift in Sources */,
 				6B56ECB321BC5B6D005F43C5 /* FlippedView.swift in Sources */,
 				307D4422209B75C0004B57F5 /* LonaWebView.swift in Sources */,
+				6B68CA8123C918B70045D009 /* WelcomeWindow.swift in Sources */,
 				6B56ECB521BC6645005F43C5 /* ConfiguredLayer.swift in Sources */,
 				6B9733CE2236E602005967E8 /* LonaJS.swift in Sources */,
+				6BE99D7823CD2F4300E35E35 /* Promise.swift in Sources */,
 				6B5D4D2D213E1CB0004F8AC3 /* EditorHeader.swift in Sources */,
 				300302761EDCDA030085E140 /* LogicListView.swift in Sources */,
 				304478BC1F32923700FD06E0 /* NSPointExtensions.swift in Sources */,
@@ -1800,6 +1769,7 @@
 				6B7DBF5E22A877F50062031E /* LogicDocument.swift in Sources */,
 				301C262420C1C3B500F18F73 /* TextStyle.swift in Sources */,
 				306DA4F61F34E42F002772DC /* DimensionSizingRule.swift in Sources */,
+				6BE99D7423CD1F6800E35E35 /* Emitter.swift in Sources */,
 				6B7DBF6022A87B050062031E /* LogicViewController.swift in Sources */,
 				30516B491F43C46200940B3B /* SequenceExtensions.swift in Sources */,
 				6B5A6AC822FB860A00CA004E /* LogicPreviewCard.swift in Sources */,
@@ -2002,7 +1972,8 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
 			name = Release;
 		};
@@ -2023,7 +1994,10 @@
 					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
 				INFOPLIST_FILE = LonaStudio/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_BUNDLE_IDENTIFIER = com.devinabbott.LonaStudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2049,7 +2023,10 @@
 					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
 				INFOPLIST_FILE = LonaStudio/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_BUNDLE_IDENTIFIER = com.devinabbott.LonaStudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2070,7 +2047,11 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = LonaStudioTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.devinabbott.ComponentStudioTests.LonaStudioTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -2090,7 +2071,11 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = LonaStudioTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.devinabbott.ComponentStudioTests.LonaStudioTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -2129,6 +2114,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6BCCE30F23E27034004C482E /* XCRemoteSwiftPackageReference "BreadcrumbBar" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/dabbott/BreadcrumbBar.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6BCCE31023E27034004C482E /* BreadcrumbBar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6BCCE30F23E27034004C482E /* XCRemoteSwiftPackageReference "BreadcrumbBar" */;
+			productName = BreadcrumbBar;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 6B0AEFAC1EBF74D700F35BBF /* Project object */;
 }

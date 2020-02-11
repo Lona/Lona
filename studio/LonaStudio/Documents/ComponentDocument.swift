@@ -34,7 +34,8 @@ class ComponentDocument: NSDocument {
     }
 
     var name: String = "Component"
-    var component: CSComponent?
+
+    var component: CSComponent = CSComponent.makeDefaultComponent()
 
     var viewController: WorkspaceViewController? {
         return windowControllers[0].contentViewController as? WorkspaceViewController
@@ -48,13 +49,13 @@ class ComponentDocument: NSDocument {
     }
 
     override func makeWindowControllers() {
+        // We manage window controllers in `showWindows`
+    }
 
-        // This is a new document, so we need to initialize a component
-        if component == nil {
-            component = CSComponent.makeDefaultComponent()
-        }
+    override func showWindows() {
+        DocumentController.shared.createOrFindWorkspaceWindowController(for: self)
 
-        WorkspaceWindowController.create(andAttachTo: self)
+        super.showWindows()
     }
 
     override func duplicate() throws -> NSDocument {
@@ -71,7 +72,7 @@ class ComponentDocument: NSDocument {
     }
 
     override func data(ofType typeName: String) throws -> Data {
-        if let file = component, let json = file.toData(), let data = json.toData() {
+        if let json = component.toData(), let data = json.toData() {
             return data
         }
 

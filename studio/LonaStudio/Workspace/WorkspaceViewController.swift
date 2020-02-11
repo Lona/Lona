@@ -7,9 +7,11 @@
 //
 
 import AppKit
+import BreadcrumbBar
 import FileTree
 import Foundation
 import Logic
+import Differ
 
 private func getDirectory() -> URL? {
     let dialog = NSOpenPanel()
@@ -68,21 +70,6 @@ class WorkspaceViewController: NSSplitViewController {
 
     // MARK: Public
 
-    public var codeViewVisible: Bool {
-        get {
-            return splitViewItems.contains(codeItem)
-        }
-        set {
-            if newValue && !codeViewVisible {
-                let mainIndex = splitViewItems.firstIndex(of: mainItem)!
-                insertSplitViewItem(codeItem, at: mainIndex + 1)
-            } else if !newValue && codeViewVisible {
-                removeSplitViewItem(codeItem)
-            }
-        }
-    }
-    public var onChangeCodeViewVisible: ((Bool) -> Void)?
-
     public var activePanes: [WorkspacePane] {
         get {
             return WorkspacePane.all.filter {
@@ -102,7 +89,29 @@ class WorkspaceViewController: NSSplitViewController {
 
     public var onChangeActivePanes: (([WorkspacePane]) -> Void)?
 
-    public var document: NSDocument? { didSet { update() } }
+    public var removeDocumentChangeListener: (() -> Void)?
+
+    public var document: NSDocument? {
+        didSet {
+            if document !== oldValue {
+                update()
+
+                self.inspectedContent = nil
+
+                if let document = document as? MarkdownDocument {
+                    let key = document.addChangeListener { _ in
+                        self.update()
+                    }
+
+                    removeDocumentChangeListener = {
+                        document.removeChangeListener(forKey: key)
+                    }
+                } else {
+                    removeDocumentChangeListener?()
+                }
+            }
+        }
+    }
 
     // Called from the ComponentMenu
     public func addLayer(_ layer: CSLayer) {
@@ -118,7 +127,7 @@ class WorkspaceViewController: NSSplitViewController {
         return (document as? ComponentDocument)?.component
     }
 
-    private var inspectedContent: InspectorView.Content?
+    var inspectedContent: InspectorView.Content?
 
     private lazy var fileNavigator: FileNavigator = {
         return FileNavigator(rootPath: LonaModule.current.url.path)
@@ -129,20 +138,6 @@ class WorkspaceViewController: NSSplitViewController {
     }()
 
     private lazy var editorViewController = EditorViewController()
-
-    private lazy var companionViewController = EditorViewController()
-
-    func updateEditorHeader(parameters: EditorHeader.Parameters) {
-        editorViewController.titleText = parameters.titleText
-        editorViewController.subtitleText = parameters.subtitleText
-        editorViewController.fileIcon = parameters.fileIcon
-    }
-
-    func updateCompanionHeader(parameters: EditorHeader.Parameters) {
-        companionViewController.titleText = parameters.titleText
-        companionViewController.subtitleText = parameters.subtitleText
-        companionViewController.fileIcon = parameters.fileIcon
-    }
 
     private lazy var componentEditorViewController: ComponentEditorViewController = {
         let controller = ComponentEditorViewController()
@@ -309,8 +304,6 @@ class WorkspaceViewController: NSSplitViewController {
         }
     }
 
-    private lazy var directoryViewController = DirectoryViewController()
-
     // A document's window controllers are deallocated if there are no associated documents.
     // This ViewController can contain a reference.
     private var windowController: NSWindowController?
@@ -345,43 +338,10 @@ class WorkspaceViewController: NSSplitViewController {
     override func viewDidAppear() {
         windowController = view.window?.windowController
         onChangeActivePanes?(activePanes)
-        onChangeCodeViewVisible?(codeViewVisible)
     }
 
     override func viewDidDisappear() {
         windowController = nil
-    }
-
-    func performCreateFile(path: String, document: NSDocument, ofType documentType: String) -> Bool {
-        if let document = self.document {
-            guard self.close(document: document, discardingUnsavedChanges: false) else { return false }
-        }
-
-        guard let windowController = self.view.window?.windowController else { return false }
-
-        let url = URL(fileURLWithPath: path)
-        let newDocument = document
-        newDocument.fileURL = url
-        newDocument.save(
-            to: url,
-            ofType: documentType,
-            for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
-                if let error = error {
-                    Swift.print("Failed to save \(url): \(error)")
-                }
-        })
-
-        NSDocumentController.shared.addDocument(newDocument)
-        newDocument.addWindowController(windowController)
-        windowController.document = newDocument
-
-        self.document = newDocument
-
-        // Set this after updating the document (which calls update)
-        // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
-        self.inspectedContent = nil
-
-        return true
     }
 
     private func setUpViews() {
@@ -393,80 +353,124 @@ class WorkspaceViewController: NSSplitViewController {
             LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
         }
 
-        fileNavigator.onDeleteFile = { path, options in
-            NSDocumentController.shared.documents.forEach { document in
-                let url = URL(fileURLWithPath: path)
-                // TODO: If deleting a directory, close all files that are descendants
-                if let fileURL = document.fileURL, fileURL == url || fileURL == url.appendingPathComponent("README.md") {
-                    self.close(document: document, discardingUnsavedChanges: true)
+        fileNavigator.performDeleteFile = { path in
+            let fileURL = URL(fileURLWithPath: path)
+
+            // Attempt to delete the file specially a document, falling back to deleting the file
+            DocumentController.shared.openDocument(withContentsOf: fileURL, display: false).finalResult { result in
+                switch result {
+                case .success(let document):
+                    _ = DocumentController.shared.delete(document: document)
+                case .failure:
+                    do {
+                        try FileManager.default.removeItem(at: fileURL)
+                    } catch {
+                        Alert.runInformationalAlert(
+                            messageText: "Couldn't delete file",
+                            informativeText: "The file \(fileURL.lastPathComponent) could not be deleted"
+                        )
+                    }
                 }
+
+                LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
             }
-            LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
         }
 
-        // Don't allow moving these json files within Lona Studio.
-        // The lona.json file needs to be in the workspace root directory.
-        // The other config files can be moved, but we'll need to handle updating the preference file paths before we allow it.
-        let unmovableFiles = ["colors.json", "textStyles.json", "gradients.json", "shadows.json", "lona.json", "types.json"]
-        fileNavigator.validateProposedMove = { prev, next in
-            let name = URL(fileURLWithPath: prev).lastPathComponent
-            let result = !unmovableFiles.contains(name)
-            return result
+        // Handle files being removed from the filesystem (e.g. via Finder)
+        fileNavigator.onDeleteFile = { path, options in
+            if options.contains(.ownEvent) { return }
+
+            let fileURL = URL(fileURLWithPath: path)
+
+            if let document = DocumentController.shared.findOpenDocument(for: fileURL) {
+                DocumentController.shared.close(document: document)
+
+                LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
+            }
         }
+
+        // TODO: Add moving files back in, adjusting page links as needed
+        fileNavigator.validateProposedMove = { prev, next in false }
 
         fileNavigator.performMoveFile = { prev, next in
-            do {
-                try FileManager.default.moveItem(atPath: prev, toPath: next)
-                LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
+            Swift.print("Move", prev, "=>", next)
+
+            let prevURL = URL(fileURLWithPath: prev)
+            let nextURL = URL(fileURLWithPath: next)
+
+            if prevURL.isLonaPage() {
+                DocumentController.shared.openDocument(withContentsOf: prevURL, display: false)
+                    // Save this page to its new location
+                    .onSuccess({ document in
+                        return (document as! MarkdownDocument).movePage(to: nextURL, display: true)
+                    })
                 return true
-            } catch {
-                Swift.print("Failed to move \(prev) to \(next)")
-                return false
+            } else {
+                do {
+                    try FileManager.default.moveItem(atPath: prev, toPath: next)
+                    return true
+                } catch {
+                    Swift.print("Failed to move \(prev) to \(next)")
+                    return false
+                }
             }
-        }
-
-        fileNavigator.performCreateLogicFile = { path in
-            let document = LogicDocument()
-
-            let name = URL(fileURLWithPath: path).deletingPathExtension().lastPathComponent
-
-            document.content = .topLevelDeclarations(
-                .init(
-                    id: UUID(),
-                    declarations: .init(
-                        [
-                            WorkspaceTemplate.makeImport(name: "Color"),
-                            WorkspaceTemplate.makeNamespace(name: name, declarations:
-                                [
-                                    .placeholder(id: UUID())
-                                ]
-                            ),
-                            .placeholder(id: UUID())
-                        ]
-                    )
-                )
-            )
-
-            return self.performCreateFile(path: path, document: document, ofType: "Logic")
         }
 
         fileNavigator.performCreateComponent = { path in
             let document = ComponentDocument()
-            document.component = CSComponent.makeDefaultComponent()
-            return self.performCreateFile(path: path, document: document, ofType: "DocumentType")
+
+            let fileURL = URL(fileURLWithPath: path)
+
+            document
+                .save(to: fileURL, ofType: "DocumentType", for: .saveOperation)
+                .onSuccess({ document in
+                    DocumentController.shared.openDocument(withContentsOf: fileURL, display: true)
+                })
+
+            return true
         }
 
-        fileNavigator.performCreateMarkdownFile = { path in
-            return self.performCreateFile(path: path, document: MarkdownDocument(), ofType: "Markdown")
+        // The parent may be a directory or .md file. The `pageName` does not end in ".md".
+        fileNavigator.performCreatePage = { pageName, parentPath in
+            let parentURL = URL(fileURLWithPath: parentPath)
+
+            if FileManager.default.isDirectory(path: parentPath) {
+                let fileURL = parentURL.appendingPathComponent(pageName + ".md")
+
+                _ = DocumentController.shared.makeAndOpenMarkdownDocument(withTitle: pageName, savedTo: fileURL)
+            } else {
+                DocumentController.shared.openDocument(withContentsOf: parentURL, display: false)
+                .onSuccess({ parentDocument -> Promise<MarkdownDocument, NSError> in
+                    if let parentDocument = parentDocument as? MarkdownDocument {
+                        return .success(parentDocument)
+                    } else {
+                        return .failure(NSError.init())
+                    }
+                })
+                // First, convert the parent to a directory
+                .onSuccess({ parentDocument in parentDocument.convertToDirectory() })
+                .onSuccess({ directoryURL in
+                    DocumentController.shared.makeAndOpenMarkdownDocument(
+                        withTitle: pageName,
+                        savedTo: directoryURL.appendingPathComponent(pageName + ".md")
+                    )
+                })
+            }
         }
 
-        fileNavigator.onAction = self.openDocument
-        directoryViewController.onSelectComponent = self.openDocument
+        fileNavigator.onSelect = { path in
+            if let path = path {
+                let fileURL = URL(fileURLWithPath: path)
+                DocumentController.shared.openDocument(withContentsOf: fileURL, display: true).finalFailure { [unowned self] error in
+                    self.fileNavigator.selectedFile = path
+                    self.update()
+                }
+            }
+        }
     }
 
     private lazy var contentListItem = NSSplitViewItem(contentListWithViewController: fileNavigatorViewController)
     private lazy var mainItem = NSSplitViewItem(viewController: editorViewController)
-    private lazy var codeItem = NSSplitViewItem(viewController: companionViewController)
     private lazy var sidebarItem = NSSplitViewItem(viewController: inspectorViewController)
 
     private func setUpLayout() {
@@ -486,11 +490,6 @@ class WorkspaceViewController: NSSplitViewController {
         mainItem.preferredThicknessFraction = 0.5
         addSplitViewItem(mainItem)
 
-        // The codeItem is added to the splitview dynamically, based on saved preference
-        codeItem.minimumThickness = 180
-        codeItem.preferredThicknessFraction = 0.5
-        codeItem.holdingPriority = .dragThatCannotResizeWindow - 1
-
         sidebarItem.collapseBehavior = .preferResizingSiblingsWithFixedSplitView
         sidebarItem.canCollapse = false
         sidebarItem.minimumThickness = 280
@@ -498,28 +497,81 @@ class WorkspaceViewController: NSSplitViewController {
         addSplitViewItem(sidebarItem)
     }
 
+    private static func makeBreadcrumbs(for selectedFileURL: URL) -> (breadcrumbs: [Breadcrumb], handler: (UUID) -> Void) {
+        let relativePathComponents = selectedFileURL.pathComponents.dropFirst(CSUserPreferences.workspaceURL.pathComponents.count)
+
+        let workspaceBreadcrumb = Breadcrumb(
+            id: UUID(),
+            title: CSWorkspacePreferences.workspaceName,
+            icon: NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
+        )
+
+        var breadcrumbURLs: [UUID: URL] = [workspaceBreadcrumb.id: CSUserPreferences.workspaceURL]
+
+        let pageBreadcrumbs: [Breadcrumb] = relativePathComponents.enumerated().map { index, component in
+            let url = relativePathComponents.dropLast(relativePathComponents.count - index - 1).reduce(CSUserPreferences.workspaceURL, { (result, item) in
+                result.appendingPathComponent(item)
+            })
+
+            let id = UUID()
+
+            breadcrumbURLs[id] = url
+
+            let icon = url.isLonaMarkdownDirectory()
+                ? NSWorkspace.shared.icon(forFile: url.appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME).path)
+                : NSWorkspace.shared.icon(forFile: url.path)
+
+            let title = component.hasSuffix(".md") ? String(component.dropLast(3)) : component
+
+            return Breadcrumb(id: id, title: title, icon: icon)
+        }
+
+        let breadcrumbs = [workspaceBreadcrumb] + pageBreadcrumbs
+
+        let handler: (UUID) -> Void = { uuid in
+            guard let url = breadcrumbURLs[uuid] else { return }
+            DocumentController.shared.openDocument(withContentsOf: url, display: true)
+        }
+
+        return (breadcrumbs, handler)
+    }
+
     func update() {
         inspectorView.content = inspectedContent
 
-        companionViewController.contentView = codeEditorViewController.contentView
         codeEditorViewController.document = document
 
         guard let document = document else {
-            if let path = lastOpenedDocumentPath, FileManager.default.isDirectory(path: path) {
+            if let path = fileNavigator.selectedFile, FileManager.default.isDirectory(path: path) {
                 let contentView = NoDocument(
                     titleText: "This folder has no index page (README.md)",
                     buttonTitleText: "Create index page"
                 )
 
                 contentView.onClick = {
-                    _ = self.performCreateFile(
-                        path: URL(fileURLWithPath: path).appendingPathComponent("README.md").path,
-                        document: MarkdownDocument(),
-                        ofType: "Markdown"
-                    )
+                    let fileURL = URL(fileURLWithPath: path)
+                    let title = fileURL.lastPathComponent
+                    let document = MarkdownDocument(title: title)
+                    let pageURL = fileURL.appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)
+
+                    // Create a README.md file
+                    document.save(to: pageURL, for: .saveOperation)
+                        .onSuccess({ _ in document.ensureParentLink(customTitle: title) })
+                        // Attempt to convert to a plain file, in case there's nothing else in this folder
+                        .onSuccess({ _ in document.convertToFile() })
+                        .finalResult({ result in
+                            switch result {
+                            case .success(let convertedURL):
+                                DocumentController.shared.openDocument(withContentsOf: convertedURL, display: true)
+                            case .failure:
+                                DocumentController.shared.openDocument(withContentsOf: pageURL, display: true)
+                            }
+                        })
                 }
 
                 editorViewController.contentView = contentView
+
+                fileNavigator.selectedFile = path
             } else {
                 let contentView = NSBox()
                 contentView.boxType = .custom
@@ -527,51 +579,38 @@ class WorkspaceViewController: NSSplitViewController {
                 contentView.fillColor = Colors.contentBackground
 
                 editorViewController.contentView = contentView
+
+                fileNavigator.selectedFile = nil
             }
 
             inspectorViewVisible = false
 
-            let titleText = "No document"
-            let subtitleText = ""
-            let fileIcon: NSImage? = nil
-
-            editorViewController.titleText = titleText
-            editorViewController.subtitleText = subtitleText
-            editorViewController.fileIcon = fileIcon
-
-            companionViewController.titleText = titleText
-            companionViewController.subtitleText = subtitleText
-            companionViewController.fileIcon = fileIcon
+            editorViewController.breadcrumbs = [
+                .init(id: UUID(), title: "No document", icon: nil)
+            ]
 
             return
         }
 
-        codeEditorViewController.updateEditorHeader = { [weak self] parameters in
-            guard let self = self else { return }
-            self.updateCompanionHeader(parameters: parameters)
-        }
-
-        var titleText = document.fileURL?.lastPathComponent ?? "Untitled"
-        let subtitleText = document.isDocumentEdited == true ? " — Edited" : ""
-        let fileIcon: NSImage?
         if let fileURL = document.fileURL {
-            fileIcon = NSWorkspace.shared.icon(forFile: fileURL.path)
+            let selectedFileURL = fileURL.lastPathComponent == MarkdownDocument.INDEX_PAGE_NAME
+                ? fileURL.deletingLastPathComponent()
+                : fileURL
 
-            // When editing a README, display the name of the directory as the title
-            if fileURL.lastPathComponent == "README.md" {
-                titleText = fileURL.deletingLastPathComponent().lastPathComponent
-            }
+            fileNavigator.selectedFile = selectedFileURL.path
+
+            let (breadcrumbs, handler) = WorkspaceViewController.makeBreadcrumbs(for: selectedFileURL)
+
+            editorViewController.breadcrumbs = breadcrumbs
+            editorViewController.onClickBreadcrumb = handler
         } else {
-            fileIcon = NSImage()
+            let titleText = document.fileURL?.lastPathComponent ?? "Untitled"
+            let subtitleText = document.isDocumentEdited == true ? " — Edited" : ""
+
+            editorViewController.breadcrumbs = [
+                .init(id: UUID(), title: titleText + subtitleText, icon: nil)
+            ]
         }
-
-        editorViewController.titleText = titleText
-        editorViewController.subtitleText = subtitleText
-        editorViewController.fileIcon = fileIcon
-
-        companionViewController.titleText = titleText
-        companionViewController.subtitleText = subtitleText
-        companionViewController.fileIcon = fileIcon
 
         if document is ComponentDocument {
             inspectorViewVisible = true
@@ -623,7 +662,6 @@ class WorkspaceViewController: NSSplitViewController {
             inspectorViewVisible = false
 
             editorViewController.contentView = logicViewController.view
-            updateCompanionHeader(parameters: codeEditorViewController.headerParameters)
 
             logicViewController.rootNode = document.content
             logicViewController.onChangeRootNode = { rootNode in
@@ -735,215 +773,49 @@ class WorkspaceViewController: NSSplitViewController {
         } else if let document = document as? MarkdownDocument {
             inspectorViewVisible = false
 
+            markdownViewController.content = document.content
+
             editorViewController.contentView = markdownViewController.view
 
-            markdownViewController.onNavigateToPage = { [unowned self] page in
+            markdownViewController.onNavigateToPage = { [unowned document] page in
                 guard let fileURL = document.fileURL else { return false }
-                self.openDocument(fileURL.deletingLastPathComponent().appendingPathComponent(page).path)
-                return true
-            }
-            markdownViewController.content = document.content
-            markdownViewController.onChange = { [unowned self] value in
-                let value = value.isEmpty ? [BlockEditor.Block.makeDefaultEmptyBlock()] : value
+                let pageURL = fileURL.deletingLastPathComponent().appendingPathComponent(page)
 
-                document.content = value
-                self.markdownViewController.content = value
-
-                document.updateChangeCount(.changeDone)
-                self.editorViewController.subtitleText = " — Edited"
-                return true
-            }
-        } else if let document = document as? DirectoryDocument {
-            inspectorViewVisible = false
-            if let content = document.content {
-                editorViewController.contentView = directoryViewController.view
-
-                directoryViewController.componentNames = content.componentNames
-                directoryViewController.logicFileNames = content.logicFileNames
-                directoryViewController.readme = content.readme
-                directoryViewController.folderName = content.folderName
-            } else {
-                editorViewController.contentView = nil
-            }
-        }
-    }
-
-    // We keep track of the last opened document path so that if it fails to open,
-    // we can show the correct placeholder content. However, there are probably other
-    // ways a document can be presented, so this is not perfect.
-    private var lastOpenedDocumentPath: String?
-
-    func openDocument(_ path: String) {
-        lastOpenedDocumentPath = path
-
-        guard let previousDocument = self.document else {
-            if FileUtils.fileExists(atPath: path) == .none {
-                return
-            }
-
-            let url = URL(fileURLWithPath: path)
-
-            if FileUtils.fileExists(atPath: path) == .directory {
-                guard let newDocument = try? NSDocumentController.shared.makeDocument(withContentsOf: url, ofType: "DirectoryDocument") else {
-                    Swift.print("Failed to open", url)
-                    return
-                }
-
-                NSDocumentController.shared.addDocument(newDocument)
-
-                guard let windowController = self.view.window?.windowController else { return }
-
-                newDocument.addWindowController(windowController)
-                windowController.document = newDocument
-                self.document = newDocument
-
-                // Set this after updating the document (which calls update)
-                // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
-                self.inspectedContent = nil
-                return
-            }
-
-            NSDocumentController.shared.openDocument(withContentsOf: url, display: false, completionHandler: { newDocument, documentWasAlreadyOpen, error in
-
-                guard let newDocument = newDocument else {
-                    Swift.print("Failed to open", url, error as Any)
-                    return
-                }
-
-                if documentWasAlreadyOpen {
-                    newDocument.showWindows()
-                    return
-                }
-
-                guard let windowController = self.view.window?.windowController else { return }
-
-                newDocument.addWindowController(windowController)
-                windowController.document = newDocument
-                self.document = newDocument
-
-                // Set this after updating the document (which calls update)
-                // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
-                self.inspectedContent = nil
-            })
-
-            return
-        }
-
-        if previousDocument.fileURL?.path == path { return }
-
-        if previousDocument.isDocumentEdited {
-            let name = previousDocument.fileURL?.lastPathComponent ?? "Untitled"
-            guard let result = Alert(
-                items: [
-                    DocumentAction.cancel,
-                    DocumentAction.discardChanges,
-                    DocumentAction.saveChanges],
-                messageText: "Save changes to \(name)",
-                informativeText: "The document \(name) has unsaved changes. Save them now?").run()
-                else { return }
-            switch result {
-            case .saveChanges:
-                var saveURL: URL
-
-                if let url = previousDocument.fileURL {
-                    saveURL = url
-                } else {
-                    let dialog = NSSavePanel()
-
-                    dialog.title                   = "Save .component file"
-                    dialog.showsResizeIndicator    = true
-                    dialog.showsHiddenFiles        = false
-                    dialog.canCreateDirectories    = true
-                    dialog.allowedFileTypes        = ["component"]
-
-                    // User canceled the save. Don't swap out the document.
-                    if dialog.runModal() != NSApplication.ModalResponse.OK {
-                        return
+                // Attempt to open the document without displaying it
+                DocumentController.shared.openDocument(withContentsOf: pageURL, display: false).finalResult { result in
+                    switch result {
+                    case .success:
+                        // Display the document once we know it exists on the filesystem
+                        DocumentController.shared.openDocument(withContentsOf: pageURL, display: true)
+                    case .failure:
+                        if Alert.runConfirmationAlert(
+                            confirmationText: "Delete link",
+                            messageText: "Page \(page) not found",
+                            informativeText: [
+                                "The page \(page) doesn't seem to exist on your filesystem.",
+                                "It may have been deleted by another author."
+                                ].joined(separator: " ")) {
+                            let updated = MarkdownDocument.removePageLink(blocks: document.content, target: page)
+                            document.setContent(updated, userInitiated: false)
+                        }
                     }
-
-                    guard let url = dialog.url else { return }
-
-                    saveURL = url
                 }
 
-                previousDocument.save(to: saveURL, ofType: previousDocument.fileType ?? "DocumentType", for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
-                    // TODO: We should not close the document if it fails to save
-                    Swift.print("Failed to save", saveURL, error as Any)
-                })
-
-                LonaPlugins.current.trigger(eventType: .onSaveComponent)
-            case .cancel:
-                return
-            case .discardChanges:
-                break
+                return true
+            }
+            markdownViewController.onRequestCreatePage = { [unowned document] index, shouldReplace in
+                guard let pageName = Alert.runTextInputAlert(
+                    messageText: "Enter the name of your new page",
+                    placeholderText: "Page name")
+                    else { return }
+                document.makeAndOpenChildPage(pageName: pageName, blockIndex: index, shouldReplaceBlock: shouldReplace)
+            }
+            markdownViewController.onChange = { [unowned document] blocks in
+                document.setContent(blocks, userInitiated: true)
+                document.scheduleAutosaving()
+                return true
             }
         }
-
-        if FileUtils.fileExists(atPath: path) == .none {
-            return
-        }
-
-        let url = URL(fileURLWithPath: path)
-
-        if FileUtils.fileExists(atPath: path) == .directory {
-            guard let newDocument = try? NSDocumentController.shared.makeDocument(withContentsOf: url, ofType: "DirectoryDocument") else {
-                Swift.print("Failed to open", url)
-                NSDocumentController.shared.removeDocument(previousDocument)
-                let windowController = previousDocument.windowControllers[0]
-                windowController.document = nil
-                previousDocument.removeWindowController(windowController)
-                self.document = nil
-                self.inspectedContent = nil
-                return
-            }
-
-            NSDocumentController.shared.addDocument(newDocument)
-
-            guard let windowController = self.view.window?.windowController else { return }
-
-            newDocument.addWindowController(windowController)
-            windowController.document = newDocument
-            self.document = newDocument
-
-            // Set this after updating the document (which calls update)
-            // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
-            self.inspectedContent = nil
-            return
-        }
-
-        NSDocumentController.shared.openDocument(withContentsOf: url, display: false, completionHandler: { newDocument, documentWasAlreadyOpen, error in
-
-            guard let newDocument = newDocument else {
-                Swift.print("Failed to open", url, error as Any)
-                NSDocumentController.shared.removeDocument(previousDocument)
-                let windowController = previousDocument.windowControllers[0]
-                windowController.document = nil
-                previousDocument.removeWindowController(windowController)
-                self.document = nil
-                self.inspectedContent = nil
-
-                return
-            }
-
-            // TODO: This improves the UX of opening files (particularly components), since we can preserve the
-            // window state of a document when switching between files. However, it causes some files to be unopenable
-            // after double clicking in the directory view, so we've disabled it for now.
-//            if documentWasAlreadyOpen && previousDocument.className == newDocument.className {
-//                newDocument.showWindows()
-//                return
-//            }
-
-            NSDocumentController.shared.removeDocument(previousDocument)
-
-            let windowController = previousDocument.windowControllers[0]
-            newDocument.addWindowController(windowController)
-            windowController.document = newDocument
-            self.document = newDocument
-
-            // Set this after updating the document (which calls update)
-            // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
-            self.inspectedContent = nil
-        })
     }
 
     // Subscriptions
@@ -988,114 +860,25 @@ class WorkspaceViewController: NSSplitViewController {
 
         super.keyUp(with: event)
     }
-
-    // Documents
-
-    private func createAndShowNewDocument(in windowController: NSWindowController) {
-        let newDocument = ComponentDocument()
-        newDocument.component = CSComponent.makeDefaultComponent()
-
-        NSDocumentController.shared.addDocument(newDocument)
-        newDocument.addWindowController(windowController)
-        windowController.document = newDocument
-
-        self.document = newDocument
-
-        // Set this after updating the document (which calls update)
-        // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
-        self.inspectedContent = nil
-    }
-
-    @discardableResult private func close(document: NSDocument, discardingUnsavedChanges: Bool) -> Bool {
-        if !discardingUnsavedChanges && document.isDocumentEdited {
-            let name = document.fileURL?.lastPathComponent ?? "Untitled"
-            guard let result = Alert(
-                items: [
-                    DocumentAction.cancel,
-                    DocumentAction.discardChanges,
-                    DocumentAction.saveChanges],
-                messageText: "Save changes to \(name)",
-                informativeText: "The document \(name) has unsaved changes. Save them now?").run()
-                else { return false }
-            switch result {
-            case .saveChanges:
-                var saveURL: URL
-
-                if let url = document.fileURL {
-                    saveURL = url
-                } else {
-                    let dialog = NSSavePanel()
-
-                    dialog.title                   = "Save .component file"
-                    dialog.showsResizeIndicator    = true
-                    dialog.showsHiddenFiles        = false
-                    dialog.canCreateDirectories    = true
-                    dialog.allowedFileTypes        = ["component"]
-
-                    // User canceled the save. Don't swap out the document.
-                    if dialog.runModal() != NSApplication.ModalResponse.OK {
-                        return false
-                    }
-
-                    guard let url = dialog.url else { return false }
-
-                    saveURL = url
-                }
-
-                document.save(to: saveURL, ofType: document.fileType ?? "DocumentType", for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
-                    // TODO: We should not close the document if it fails to save
-                    Swift.print("Failed to save", saveURL, error as Any)
-                })
-
-                LonaPlugins.current.trigger(eventType: .onSaveComponent)
-            case .cancel:
-                return false
-            case .discardChanges:
-                break
-            }
-        }
-
-        NSDocumentController.shared.removeDocument(document)
-
-        if let windowController = document.windowControllers.first {
-            windowController.document = nil
-            document.removeWindowController(windowController)
-        }
-
-        self.document = nil
-
-        // Set this after updating the document (which calls update)
-        // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
-        self.inspectedContent = nil
-
-        return true
-    }
 }
 
 // MARK: - IBActions
 
 extension WorkspaceViewController {
     @IBAction func newDocument(_ sender: AnyObject) {
-        if let document = self.document {
-            guard close(document: document, discardingUnsavedChanges: false) else { return }
+        guard var pageName = Alert.runTextInputAlert(
+            messageText: "Create a new page in this workspace",
+            placeholderText: "Page name") else { return }
+        if pageName.hasSuffix(".md") {
+            pageName.removeLast(3)
         }
-
-        guard let windowController = self.view.window?.windowController else { return }
-
-        createAndShowNewDocument(in: windowController)
+        _ = DocumentController.shared.makeAndOpenMarkdownDocument(
+            withTitle: pageName,
+            savedTo: CSUserPreferences.workspaceURL.appendingPathComponent(pageName + ".md")
+        )
     }
 
     @objc func document(_ doc: NSDocument?, didSave: Bool, contextInfo: UnsafeMutableRawPointer?) {
-        update()
-        fileNavigator.reloadData()
-    }
-
-    @objc func documentDidSaveAs(_ doc: NSDocument?, didSave: Bool, contextInfo: UnsafeMutableRawPointer?) {
-        update()
-        fileNavigator.reloadData()
-    }
-
-    @objc func document(_ doc: NSDocument?, didDuplicate: Bool, contextInfo: UnsafeMutableRawPointer?) {
         update()
         fileNavigator.reloadData()
     }
@@ -1104,25 +887,6 @@ extension WorkspaceViewController {
         document?.save(
             withDelegate: self,
             didSave: #selector(document(_:didSave:contextInfo:)),
-            contextInfo: nil)
-    }
-
-    // https://developer.apple.com/documentation/appkit/nsdocument/1515171-saveas
-    // The default implementation runs the modal Save panel to get the file location under which
-    // to save the document. It writes the document to this file, sets the document’s file location
-    // and document type (if a native type), and clears the document’s edited status.
-    @IBAction func saveDocumentAs(_ sender: AnyObject) {
-        document?.runModalSavePanel(
-            for: .saveAsOperation,
-            delegate: self,
-            didSave: #selector(documentDidSaveAs(_:didSave:contextInfo:)),
-            contextInfo: nil)
-    }
-
-    @IBAction func duplicate(_ sender: AnyObject) {
-        document?.duplicate(
-            withDelegate: self,
-            didDuplicate: #selector(document(_:didDuplicate:contextInfo:)),
             contextInfo: nil)
     }
 

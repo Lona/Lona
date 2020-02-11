@@ -350,7 +350,7 @@ class CSValueField: CSControl {
                 defaultChangeHandler(value.with(tag: tag).data)
             }
 
-            var valueField: CSValueField? = nil
+            var valueField: CSValueField?
 
             // If we have a valid variant case
             if let unwrapped = value.unwrapVariant() {

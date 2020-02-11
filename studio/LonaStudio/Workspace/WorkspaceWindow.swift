@@ -11,8 +11,8 @@ import AppKit
 public class WorkspaceWindow: NSWindow {
 
     public override var isMovableByWindowBackground: Bool {
-        get { return true }
-        set {}
+        get { return false }
+        set { _ = newValue }
     }
 
     public override var acceptsFirstResponder: Bool {

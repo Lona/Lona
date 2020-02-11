@@ -356,7 +356,7 @@ extension LayerListOutlineView {
 
         NSDocumentController.shared.openDocument(
             withContentsOf: url, display: true, completionHandler: { (document, _, _) in
-            layer.component = (document as! ComponentDocument).component!
+            layer.component = (document as! ComponentDocument).component
             layer.name = CSComponent.componentName(from: url)
             layer.type = CSLayer.LayerType.custom(url.deletingPathExtension().lastPathComponent)
             self.onChange?()

@@ -337,6 +337,7 @@ extension NSView {
             return true
         }
         set {
+            _ = newValue
             ygNode = detectYogaLayout()
         }
     }

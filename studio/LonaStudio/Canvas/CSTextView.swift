@@ -15,9 +15,7 @@ class CSTextView: NSTextView, CSRendering {
     }
 
     override var alphaValue: CGFloat {
-        get {
-            return multipliedAlpha
-        }
-        set {}
+        get { return multipliedAlpha }
+        set { _ = newValue }
     }
 }

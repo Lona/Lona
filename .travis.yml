@@ -1,5 +1,5 @@
 language: objective-c
-osx_image: xcode10.2
+osx_image: xcode11.3
 cache:
   - bundler
   - cocoapods
@@ -11,7 +11,7 @@ env:
     - WORKSPACE="LonaStudio.xcworkspace"
     - SCHEME="LonaStudio"
     - DESTINATION="arch=x86_64"
-    - SDK=macosx10.14
+    - SDK=macosx10.15
   matrix:
     - BUILD_EXAMPLE="YES"
     - RUN_TESTS="YES"
@@ -42,9 +42,16 @@ script:
 
   - cd studio
   - carthage build --platform macOS
+    
+    # https://stackoverflow.com/a/58186048
+  - for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts
+  
   - xcodebuild -version
   - xcodebuild -showsdks
   - xcodebuild -list
+
+    # Download Swift packages
+  - xcodebuild -resolvePackageDependencies -workspace "$WORKSPACE" -scheme "$SCHEME" 
 
     # Build Lona
   - if [ $BUILD_EXAMPLE == "YES" ]; then

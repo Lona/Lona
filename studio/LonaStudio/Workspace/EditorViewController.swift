@@ -7,6 +7,7 @@
 //
 
 import AppKit
+import BreadcrumbBar
 import Foundation
 
 // MARK: - EditorViewController
@@ -35,10 +36,20 @@ class EditorViewController: NSViewController {
 
     // MARK: Public
 
+    public var breadcrumbs: [Breadcrumb] {
+        get { return breadcrumbView.breadcrumbs }
+        set { breadcrumbView.breadcrumbs = newValue }
+    }
+
+    public var onClickBreadcrumb: ((UUID) -> Void)? {
+        get { return breadcrumbView.onClickBreadcrumb }
+        set { breadcrumbView.onClickBreadcrumb = newValue }
+    }
+
     public var contentView: NSView? {
         didSet {
             if let contentView = contentView {
-                if contentView.superview != contentContainerView {
+                if contentView != oldValue {
                     oldValue?.removeFromSuperview()
 
                     contentView.removeFromSuperview()
@@ -46,7 +57,7 @@ class EditorViewController: NSViewController {
                     contentContainerView.addSubview(contentView)
 
                     contentView.translatesAutoresizingMaskIntoConstraints = false
-                    contentView.topAnchor.constraint(equalTo: editorHeaderView.bottomAnchor).isActive = true
+                    contentView.topAnchor.constraint(equalTo: breadcrumbView.bottomAnchor).isActive = true
                     contentView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor).isActive = true
                     contentView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor).isActive = true
                     contentView.bottomAnchor.constraint(equalTo: contentContainerView.bottomAnchor).isActive = true
@@ -61,40 +72,68 @@ class EditorViewController: NSViewController {
 
     // MARK: Private
 
-    private let contentContainerView = NSView(frame: .zero)
-    private let editorHeaderView = EditorHeader()
+    private let contentContainerView = NSBox(frame: .zero)
 
-    public var titleText: String {
-        get { return editorHeaderView.titleText }
-        set { editorHeaderView.titleText = newValue }
-    }
+    private let breadcrumbView = NavigationBar()
 
-    public var subtitleText: String {
-        get { return editorHeaderView.subtitleText }
-        set { editorHeaderView.subtitleText = newValue }
-    }
+    private func updateHistory(_ history: History) {
+        breadcrumbView.isBackEnabled = history.canGoBack()
+        breadcrumbView.isForwardEnabled = history.canGoForward()
 
-    public var fileIcon: NSImage? {
-        get { return editorHeaderView.fileIcon }
-        set { editorHeaderView.fileIcon = newValue }
+        breadcrumbView.menuForBackItem = {
+            return NSMenu(items: history.back.enumerated().map({ index, url in
+                let item = NSMenuItem(title: url.lastPathComponent, onClick: {
+                    _ = DocumentController.shared.navigateBack(offset: index)
+                })
+                let icon = NSWorkspace.shared.icon(forFile: url.path)
+                icon.size = .init(width: 16, height: 16)
+                item.image = icon
+                return item
+            }))
+        }
+
+        breadcrumbView.menuForForwardItem = {
+            return NSMenu(items: history.forward.enumerated().map({ index, url in
+                let item = NSMenuItem(title: url.lastPathComponent, onClick: {
+                    _ = DocumentController.shared.navigateForward(offset: index)
+                })
+                let icon = NSWorkspace.shared.icon(forFile: url.path)
+                icon.size = .init(width: 16, height: 16)
+                item.image = icon
+                return item
+            }))
+        }
+
+        breadcrumbView.onClickBack = {
+            _ = DocumentController.shared.navigateBack()
+        }
+
+        breadcrumbView.onClickForward = {
+            _ = DocumentController.shared.navigateForward()
+        }
     }
 
     private func setUpViews() {
-        self.view = contentContainerView
+        contentContainerView.fillColor = Colors.contentBackground
+        contentContainerView.boxType = .custom
+        contentContainerView.borderType = .noBorder
+        contentContainerView.contentViewMargins = .zero
 
-        editorHeaderView.fillColor = Colors.contentBackground
+        DocumentController.shared.historyEmitter.addListener { [unowned self] history in self.updateHistory(history) }
+
+        self.view = contentContainerView
     }
 
     private func setUpConstraints() {
         contentContainerView.translatesAutoresizingMaskIntoConstraints = false
-        editorHeaderView.translatesAutoresizingMaskIntoConstraints = false
+        breadcrumbView.translatesAutoresizingMaskIntoConstraints = false
 
-        contentContainerView.addSubview(editorHeaderView)
+        contentContainerView.addSubview(breadcrumbView)
 
-        editorHeaderView.topAnchor.constraint(equalTo: contentContainerView.topAnchor).isActive = true
-        editorHeaderView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor).isActive = true
-        editorHeaderView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor).isActive = true
-        editorHeaderView.heightAnchor.constraint(equalToConstant: 38).isActive = true
+        breadcrumbView.topAnchor.constraint(equalTo: contentContainerView.topAnchor).isActive = true
+        breadcrumbView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 8).isActive = true
+        breadcrumbView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor, constant: -8).isActive = true
+        breadcrumbView.heightAnchor.constraint(equalToConstant: 38).isActive = true
     }
 
     private func update() {}

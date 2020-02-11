@@ -139,15 +139,6 @@ class LonaModule {
         return files
     }
 
-    static func createWorkspace(at url: URL, using template: WorkspaceTemplate) throws {
-        let workspaceName = url.lastPathComponent
-        let workspaceParent = url.deletingLastPathComponent()
-
-        let root = template.make(workspaceName: workspaceName)
-
-        try VirtualFileSystem.write(node: root, relativeTo: workspaceParent)
-    }
-
     static func findNearestWorkspace(containing url: URL) -> URL? {
         let isDirectory = (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory ?? false) ?? false
 

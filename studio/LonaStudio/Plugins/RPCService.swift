@@ -194,7 +194,7 @@ class RPCService {
     /// a response to a synchronous RPC may be delivered before it.
     func sendRpc(_ method: String, params: Any) -> RpcResult {
         let semaphore = DispatchSemaphore(value: 0)
-        var result: RpcResult? = nil
+        var result: RpcResult?
 
         sendRpcAsync(method, params: params) { (r) in
             result = r
