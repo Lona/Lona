@@ -138,6 +138,7 @@ class PublishingViewController: NSViewController {
                 updateSubmitButtonTitle()
             }
             screen.onClickSubmitButton = { [unowned self] in
+                // TODO: Actually create everything
                 self.history = .init(.done)
             }
             updateSubmitButtonTitle()

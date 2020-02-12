@@ -64,6 +64,21 @@
         "onClickSubmit"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "OrganizationNameInput",
+        "placeholderString"
+      ],
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "Organization name",
+          "type" : "String"
+        }
+      },
+      "type" : "AssignExpr"
     }
   ],
   "params" : [

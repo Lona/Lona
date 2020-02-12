@@ -162,7 +162,6 @@ If your team or company already has a Lona organization, an organization owner c
     textViewTextStyle = TextStyles.subtitle
     textView.attributedStringValue = textViewTextStyle.apply(to: textView.attributedStringValue)
     vSpacer3View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    organizationNameInputView.placeholderString = "Text"
     vSpacer2View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     submitButtonView.titleText = "Create"
   }
@@ -322,6 +321,7 @@ If your team or company already has a Lona organization, an organization owner c
     organizationNameInputView.textValue = organizationName
     organizationNameInputView.onChangeTextValue = handleOnChangeTextValue
     submitButtonView.onClick = handleOnClickSubmit
+    organizationNameInputView.placeholderString = "Organization name"
   }
 
   private func handleOnClickSubmit() {

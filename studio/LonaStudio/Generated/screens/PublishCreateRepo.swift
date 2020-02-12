@@ -237,7 +237,6 @@ public class PublishCreateRepo: NSBox {
     textViewTextStyle = TextStyles.subtitle
     textView.attributedStringValue = textViewTextStyle.apply(to: textView.attributedStringValue)
     vSpacer3View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    repositoryNameInputView.placeholderString = "Text"
     vSpacer2View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
   }
 
@@ -480,6 +479,7 @@ public class PublishCreateRepo: NSBox {
     repositoryNameInputView.onChangeTextValue = handleOnChangeRepositoryName
     submitButtonView.titleText = submitButtonTitle
     submitButtonView.onClick = handleOnClickSubmitButton
+    repositoryNameInputView.placeholderString = "Repository name"
   }
 
   private func handleOnChangeGithubOrganizationsIndex(_ arg0: Int) {

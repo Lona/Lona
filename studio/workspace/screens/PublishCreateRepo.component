@@ -124,6 +124,21 @@
         "onClickSubmitButton"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "RepositoryNameInput",
+        "placeholderString"
+      ],
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "Repository name",
+          "type" : "String"
+        }
+      },
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
