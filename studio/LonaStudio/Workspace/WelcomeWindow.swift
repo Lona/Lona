@@ -32,6 +32,7 @@ public class WelcomeWindow: NSWindow {
         window.hasShadow = true
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden
+        window.backgroundColor = Colors.windowBackground
         window.standardWindowButton(.miniaturizeButton)?.isHidden = true
         window.standardWindowButton(.zoomButton)?.isHidden = true
         window.standardWindowButton(.closeButton)?.backgroundFill = CGColor.clear

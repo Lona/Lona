@@ -25,6 +25,14 @@ extension Colors {
         }
     }()
 
+    public static let windowBackground: NSColor = {
+        if #available(OSX 10.13, *) {
+            return NSColor(named: "windowBackgroundColor")!
+        } else {
+            return NSColor.white
+        }
+    }()
+
     public static let headerBackground: NSColor = {
         if #available(OSX 10.13, *) {
             return NSColor(named: "headerBackgroundColor")!

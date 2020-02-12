@@ -106,6 +106,7 @@ class PublishingViewController: NSViewController {
         containerView.boxType = .custom
         containerView.borderType = .noBorder
         containerView.contentViewMargins = .zero
+        containerView.fillColor = Colors.windowBackground
 
         self.view = containerView
     }
