@@ -97,7 +97,7 @@
           {
             "id" : "PublishText",
             "params" : {
-              "font" : "title",
+              "font" : "titleLight",
               "text" : "Publish "
             },
             "type" : "Lona:Text"

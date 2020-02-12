@@ -290,6 +290,7 @@
 		6BCCE33423F34BEF004C482E /* PublishNeedsAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33323F34BEE004C482E /* PublishNeedsAuth.swift */; };
 		6BCCE33623F35699004C482E /* PublishingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33523F35699004C482E /* PublishingViewController.swift */; };
 		6BCCE33823F36559004C482E /* PublishNeedsOrg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33723F36559004C482E /* PublishNeedsOrg.swift */; };
+		6BCCE33A23F39417004C482E /* PublishNeedsRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33923F39417004C482E /* PublishNeedsRepo.swift */; };
 		6BCE162722D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCE162622D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift */; };
 		6BD4976121E42EC400BC3970 /* AccessibilityInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */; };
 		6BD4976321E53F2000BC3970 /* Accessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976221E53F2000BC3970 /* Accessibility.swift */; };
@@ -649,6 +650,7 @@
 		6BCCE33323F34BEE004C482E /* PublishNeedsAuth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishNeedsAuth.swift; sourceTree = "<group>"; };
 		6BCCE33523F35699004C482E /* PublishingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishingViewController.swift; sourceTree = "<group>"; };
 		6BCCE33723F36559004C482E /* PublishNeedsOrg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishNeedsOrg.swift; sourceTree = "<group>"; };
+		6BCCE33923F39417004C482E /* PublishNeedsRepo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishNeedsRepo.swift; sourceTree = "<group>"; };
 		6BCE162622D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CustomParametersEditorSheet+Present.swift"; sourceTree = "<group>"; };
 		6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessibilityInspector.swift; sourceTree = "<group>"; };
 		6BD4976221E53F2000BC3970 /* Accessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accessibility.swift; sourceTree = "<group>"; };
@@ -1048,6 +1050,7 @@
 				6B14C7BE23C5109900EF85FA /* NoDocument.swift */,
 				6BCCE33323F34BEE004C482E /* PublishNeedsAuth.swift */,
 				6BCCE33723F36559004C482E /* PublishNeedsOrg.swift */,
+				6BCCE33923F39417004C482E /* PublishNeedsRepo.swift */,
 				6B73809322C66E59007534A0 /* TemplateBrowser.swift */,
 				30C203DC20BF5910007C3FE0 /* TextStyleBrowser.swift */,
 				30F870C020865858007ADA5B /* Welcome.swift */,
@@ -1754,6 +1757,7 @@
 				6BCCE33623F35699004C482E /* PublishingViewController.swift in Sources */,
 				3084164D1EDB2A5B00A1CA6D /* Button+Init.swift in Sources */,
 				6BFAE60423009AB700B150E2 /* LogicModule.swift in Sources */,
+				6BCCE33A23F39417004C482E /* PublishNeedsRepo.swift in Sources */,
 				6BA6E89B213080CE009CD33C /* ComponentEditorViewController.swift in Sources */,
 				036A4EA221E1FD3B00948DBD /* KeyHandlingCollectionView.swift in Sources */,
 				307B7B4F1F9A71C5001A62D9 /* MetadataEditorView.swift in Sources */,

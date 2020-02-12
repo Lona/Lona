@@ -157,7 +157,7 @@
         "id" : "Divider",
         "params" : {
           "alignSelf" : "stretch",
-          "backgroundColor" : "dividerSubtle",
+          "backgroundColor" : "divider",
           "width" : 1
         },
         "type" : "Lona:View"

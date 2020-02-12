@@ -91,7 +91,7 @@ public class PublishNeedsOrg: NSBox {
   private var viewView = NSBox()
   private var submitButtonView = PrimaryButton()
 
-  private var publishTextViewTextStyle = TextStyles.title
+  private var publishTextViewTextStyle = TextStyles.titleLight
   private var workspaceTitleViewTextStyle = TextStyles.title
   private var bodyTextViewTextStyle = TextStyles.body
   private var textViewTextStyle = TextStyles.subtitle
@@ -141,7 +141,7 @@ public class PublishNeedsOrg: NSBox {
     viewView.addSubview(submitButtonView)
 
     publishTextView.attributedStringValue = publishTextViewTextStyle.apply(to: "Publish ")
-    publishTextViewTextStyle = TextStyles.title
+    publishTextViewTextStyle = TextStyles.titleLight
     publishTextView.attributedStringValue = publishTextViewTextStyle.apply(to: publishTextView.attributedStringValue)
     workspaceTitleViewTextStyle = TextStyles.title
     workspaceTitleView.attributedStringValue =

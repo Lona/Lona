@@ -9,10 +9,11 @@
       "name" : "Title"
     },
     {
-      "color" : "black",
+      "color" : "textColor",
       "extends" : "title",
-      "id" : "titleBlack",
-      "name" : "Title Black"
+      "fontWeight" : "300",
+      "id" : "titleLight",
+      "name" : "Title Light"
     },
     {
       "fontSize" : 24,

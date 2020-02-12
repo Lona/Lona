@@ -19,9 +19,10 @@ class PublishingViewController: NSViewController {
 
     // MARK: Types
 
-    private enum State {
+    private enum State: Equatable {
         case needsAuth
         case needsOrg
+        case needsRepo(organizationName: String)
     }
 
     // MARK: Lifecycle
@@ -98,9 +99,15 @@ class PublishingViewController: NSViewController {
             return screen
         case .needsOrg:
             let screen = PublishNeedsOrg(workspaceName: workspaceName, organizationName: "")
-            screen.onChangeTextValue = { value in
+            screen.onChangeTextValue = { [unowned screen] value in
                 screen.organizationName = value
             }
+            screen.onClickSubmit = { [unowned self] in
+                self.state = .needsRepo(organizationName: screen.organizationName)
+            }
+            return screen
+        case .needsRepo(let organizationName):
+            let screen = PublishNeedsRepo(workspaceName: workspaceName, organizationName: organizationName)
             return screen
         }
     }

@@ -128,7 +128,7 @@ public class Welcome: NSBox {
     versionView.attributedStringValue = versionViewTextStyle.apply(to: versionView.attributedStringValue)
     newWorkspaceView.titleText = "New workspace"
     openWorkspaceButtonView.titleText = "Open existing workspace"
-    dividerView.fillColor = Colors.dividerSubtle
+    dividerView.fillColor = Colors.divider
     projectsView.fillColor = Colors.headerBackground
   }
 

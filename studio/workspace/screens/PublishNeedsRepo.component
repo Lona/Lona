@@ -32,24 +32,36 @@
     {
       "assignee" : [
         "layers",
-        "GitHubButton",
-        "onClick"
+        "OrgTitle",
+        "text"
       ],
       "content" : [
         "parameters",
-        "onClickGithubButton"
+        "organizationName"
       ],
       "type" : "AssignExpr"
     },
     {
       "assignee" : [
         "layers",
-        "GoogleButton",
+        "CreateButton",
         "onClick"
       ],
       "content" : [
         "parameters",
-        "onClickGoogleButton"
+        "onClickCreateRepository"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "UseExistingButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickUseExistingRepository"
       ],
       "type" : "AssignExpr"
     }
@@ -60,13 +72,17 @@
       "type" : "String"
     },
     {
-      "name" : "onClickGithubButton",
+      "name" : "organizationName",
+      "type" : "String"
+    },
+    {
+      "name" : "onClickCreateRepository",
       "type" : {
         "name" : "Function"
       }
     },
     {
-      "name" : "onClickGoogleButton",
+      "name" : "onClickUseExistingRepository",
       "type" : {
         "name" : "Function"
       }
@@ -91,6 +107,22 @@
               "text" : "Workspace Name"
             },
             "type" : "Lona:Text"
+          },
+          {
+            "id" : "PublishText 1",
+            "params" : {
+              "font" : "titleLight",
+              "text" : " to "
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "OrgTitle",
+            "params" : {
+              "font" : "title",
+              "text" : "LonaTeam"
+            },
+            "type" : "Lona:Text"
           }
         ],
         "id" : "TitleContainer",
@@ -113,7 +145,7 @@
         "id" : "BodyText",
         "params" : {
           "font" : "body",
-          "text" : "Lona can automatically generate a website and design\/code libraries from your workspace. In order to do this, you’ll need to connect a Github or Google account."
+          "text" : "Next, you’ll need to choose a git repository to store your workspace files. \n\nWe can create a new one automatically for you on GitHub (we’ll need permission to access your GitHub repositories), or you can choose an existing Git repository."
         },
         "type" : "Lona:Text"
       },
@@ -129,9 +161,9 @@
       {
         "children" : [
           {
-            "id" : "GitHubButton",
+            "id" : "CreateButton",
             "params" : {
-              "titleText" : "Sign in with GitHub"
+              "titleText" : "Create new GitHub repository"
             },
             "type" : "PrimaryButton"
           },
@@ -145,9 +177,9 @@
             "type" : "Lona:View"
           },
           {
-            "id" : "GoogleButton",
+            "id" : "UseExistingButton",
             "params" : {
-              "titleText" : "Sign in with Google"
+              "titleText" : "Use an existing git repository"
             },
             "type" : "PrimaryButton"
           }

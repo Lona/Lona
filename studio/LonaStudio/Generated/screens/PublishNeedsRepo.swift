@@ -1,9 +1,9 @@
 import AppKit
 import Foundation
 
-// MARK: - PublishNeedsAuth
+// MARK: - PublishNeedsRepo
 
-public class PublishNeedsAuth: NSBox {
+public class PublishNeedsRepo: NSBox {
 
   // MARK: Lifecycle
 
@@ -18,8 +18,8 @@ public class PublishNeedsAuth: NSBox {
     update()
   }
 
-  public convenience init(workspaceName: String) {
-    self.init(Parameters(workspaceName: workspaceName))
+  public convenience init(workspaceName: String, organizationName: String) {
+    self.init(Parameters(workspaceName: workspaceName, organizationName: organizationName))
   }
 
   public convenience init() {
@@ -48,14 +48,23 @@ public class PublishNeedsAuth: NSBox {
     }
   }
 
-  public var onClickGithubButton: (() -> Void)? {
-    get { return parameters.onClickGithubButton }
-    set { parameters.onClickGithubButton = newValue }
+  public var organizationName: String {
+    get { return parameters.organizationName }
+    set {
+      if parameters.organizationName != newValue {
+        parameters.organizationName = newValue
+      }
+    }
   }
 
-  public var onClickGoogleButton: (() -> Void)? {
-    get { return parameters.onClickGoogleButton }
-    set { parameters.onClickGoogleButton = newValue }
+  public var onClickCreateRepository: (() -> Void)? {
+    get { return parameters.onClickCreateRepository }
+    set { parameters.onClickCreateRepository = newValue }
+  }
+
+  public var onClickUseExistingRepository: (() -> Void)? {
+    get { return parameters.onClickUseExistingRepository }
+    set { parameters.onClickUseExistingRepository = newValue }
   }
 
   public var parameters: Parameters {
@@ -71,16 +80,20 @@ public class PublishNeedsAuth: NSBox {
   private var titleContainerView = NSBox()
   private var publishTextView = LNATextField(labelWithString: "")
   private var workspaceTitleView = LNATextField(labelWithString: "")
+  private var publishText1View = LNATextField(labelWithString: "")
+  private var orgTitleView = LNATextField(labelWithString: "")
   private var vSpacerView = NSBox()
   private var bodyTextView = LNATextField(labelWithString: "")
   private var vSpacer1View = NSBox()
   private var viewView = NSBox()
-  private var gitHubButtonView = PrimaryButton()
+  private var createButtonView = PrimaryButton()
   private var vSpacer2View = NSBox()
-  private var googleButtonView = PrimaryButton()
+  private var useExistingButtonView = PrimaryButton()
 
   private var publishTextViewTextStyle = TextStyles.titleLight
   private var workspaceTitleViewTextStyle = TextStyles.title
+  private var publishText1ViewTextStyle = TextStyles.titleLight
+  private var orgTitleViewTextStyle = TextStyles.title
   private var bodyTextViewTextStyle = TextStyles.body
 
   private func setUpViews() {
@@ -102,6 +115,8 @@ public class PublishNeedsAuth: NSBox {
     viewView.contentViewMargins = .zero
     publishTextView.lineBreakMode = .byWordWrapping
     workspaceTitleView.lineBreakMode = .byWordWrapping
+    publishText1View.lineBreakMode = .byWordWrapping
+    orgTitleView.lineBreakMode = .byWordWrapping
     vSpacer2View.boxType = .custom
     vSpacer2View.borderType = .noBorder
     vSpacer2View.contentViewMargins = .zero
@@ -113,9 +128,11 @@ public class PublishNeedsAuth: NSBox {
     addSubview(viewView)
     titleContainerView.addSubview(publishTextView)
     titleContainerView.addSubview(workspaceTitleView)
-    viewView.addSubview(gitHubButtonView)
+    titleContainerView.addSubview(publishText1View)
+    titleContainerView.addSubview(orgTitleView)
+    viewView.addSubview(createButtonView)
     viewView.addSubview(vSpacer2View)
-    viewView.addSubview(googleButtonView)
+    viewView.addSubview(useExistingButtonView)
 
     publishTextView.attributedStringValue = publishTextViewTextStyle.apply(to: "Publish ")
     publishTextViewTextStyle = TextStyles.titleLight
@@ -123,17 +140,26 @@ public class PublishNeedsAuth: NSBox {
     workspaceTitleViewTextStyle = TextStyles.title
     workspaceTitleView.attributedStringValue =
       workspaceTitleViewTextStyle.apply(to: workspaceTitleView.attributedStringValue)
+    publishText1View.attributedStringValue = publishText1ViewTextStyle.apply(to: " to ")
+    publishText1ViewTextStyle = TextStyles.titleLight
+    publishText1View.attributedStringValue = publishText1ViewTextStyle.apply(to: publishText1View.attributedStringValue)
+    orgTitleViewTextStyle = TextStyles.title
+    orgTitleView.attributedStringValue = orgTitleViewTextStyle.apply(to: orgTitleView.attributedStringValue)
     vSpacerView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     bodyTextView.attributedStringValue =
       bodyTextViewTextStyle
         .apply(to:
-        "Lona can automatically generate a website and design/code libraries from your workspace. In order to do this, you’ll need to connect a Github or Google account.")
+        """
+Next, you’ll need to choose a git repository to store your workspace files. 
+
+We can create a new one automatically for you on GitHub (we’ll need permission to access your GitHub repositories), or you can choose an existing Git repository.
+""")
     bodyTextViewTextStyle = TextStyles.body
     bodyTextView.attributedStringValue = bodyTextViewTextStyle.apply(to: bodyTextView.attributedStringValue)
     vSpacer1View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    gitHubButtonView.titleText = "Sign in with GitHub"
+    createButtonView.titleText = "Create new GitHub repository"
     vSpacer2View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    googleButtonView.titleText = "Sign in with Google"
+    useExistingButtonView.titleText = "Use an existing git repository"
   }
 
   private func setUpConstraints() {
@@ -145,9 +171,11 @@ public class PublishNeedsAuth: NSBox {
     viewView.translatesAutoresizingMaskIntoConstraints = false
     publishTextView.translatesAutoresizingMaskIntoConstraints = false
     workspaceTitleView.translatesAutoresizingMaskIntoConstraints = false
-    gitHubButtonView.translatesAutoresizingMaskIntoConstraints = false
+    publishText1View.translatesAutoresizingMaskIntoConstraints = false
+    orgTitleView.translatesAutoresizingMaskIntoConstraints = false
+    createButtonView.translatesAutoresizingMaskIntoConstraints = false
     vSpacer2View.translatesAutoresizingMaskIntoConstraints = false
-    googleButtonView.translatesAutoresizingMaskIntoConstraints = false
+    useExistingButtonView.translatesAutoresizingMaskIntoConstraints = false
 
     let titleContainerViewTopAnchorConstraint = titleContainerView.topAnchor.constraint(equalTo: topAnchor)
     let titleContainerViewLeadingAnchorConstraint = titleContainerView.leadingAnchor.constraint(equalTo: leadingAnchor)
@@ -170,6 +198,12 @@ public class PublishNeedsAuth: NSBox {
     let workspaceTitleViewHeightAnchorParentConstraint = workspaceTitleView
       .heightAnchor
       .constraint(lessThanOrEqualTo: titleContainerView.heightAnchor)
+    let publishText1ViewHeightAnchorParentConstraint = publishText1View
+      .heightAnchor
+      .constraint(lessThanOrEqualTo: titleContainerView.heightAnchor)
+    let orgTitleViewHeightAnchorParentConstraint = orgTitleView
+      .heightAnchor
+      .constraint(lessThanOrEqualTo: titleContainerView.heightAnchor)
     let publishTextViewLeadingAnchorConstraint = publishTextView
       .leadingAnchor
       .constraint(equalTo: titleContainerView.leadingAnchor)
@@ -186,28 +220,46 @@ public class PublishNeedsAuth: NSBox {
     let workspaceTitleViewBottomAnchorConstraint = workspaceTitleView
       .bottomAnchor
       .constraint(equalTo: titleContainerView.bottomAnchor)
+    let publishText1ViewLeadingAnchorConstraint = publishText1View
+      .leadingAnchor
+      .constraint(equalTo: workspaceTitleView.trailingAnchor)
+    let publishText1ViewTopAnchorConstraint = publishText1View
+      .topAnchor
+      .constraint(equalTo: titleContainerView.topAnchor)
+    let publishText1ViewBottomAnchorConstraint = publishText1View
+      .bottomAnchor
+      .constraint(equalTo: titleContainerView.bottomAnchor)
+    let orgTitleViewLeadingAnchorConstraint = orgTitleView
+      .leadingAnchor
+      .constraint(equalTo: publishText1View.trailingAnchor)
+    let orgTitleViewTopAnchorConstraint = orgTitleView.topAnchor.constraint(equalTo: titleContainerView.topAnchor)
+    let orgTitleViewBottomAnchorConstraint = orgTitleView
+      .bottomAnchor
+      .constraint(equalTo: titleContainerView.bottomAnchor)
     let vSpacerViewHeightAnchorConstraint = vSpacerView.heightAnchor.constraint(equalToConstant: 32)
     let vSpacerViewWidthAnchorConstraint = vSpacerView.widthAnchor.constraint(equalToConstant: 0)
     let vSpacer1ViewHeightAnchorConstraint = vSpacer1View.heightAnchor.constraint(equalToConstant: 72)
     let vSpacer1ViewWidthAnchorConstraint = vSpacer1View.widthAnchor.constraint(equalToConstant: 0)
     let viewViewWidthAnchorConstraint = viewView.widthAnchor.constraint(equalToConstant: 250)
-    let gitHubButtonViewTopAnchorConstraint = gitHubButtonView.topAnchor.constraint(equalTo: viewView.topAnchor)
-    let gitHubButtonViewLeadingAnchorConstraint = gitHubButtonView
+    let createButtonViewTopAnchorConstraint = createButtonView.topAnchor.constraint(equalTo: viewView.topAnchor)
+    let createButtonViewLeadingAnchorConstraint = createButtonView
       .leadingAnchor
       .constraint(equalTo: viewView.leadingAnchor)
-    let gitHubButtonViewTrailingAnchorConstraint = gitHubButtonView
+    let createButtonViewTrailingAnchorConstraint = createButtonView
       .trailingAnchor
       .constraint(equalTo: viewView.trailingAnchor)
-    let vSpacer2ViewTopAnchorConstraint = vSpacer2View.topAnchor.constraint(equalTo: gitHubButtonView.bottomAnchor)
+    let vSpacer2ViewTopAnchorConstraint = vSpacer2View.topAnchor.constraint(equalTo: createButtonView.bottomAnchor)
     let vSpacer2ViewLeadingAnchorConstraint = vSpacer2View.leadingAnchor.constraint(equalTo: viewView.leadingAnchor)
-    let googleButtonViewBottomAnchorConstraint = googleButtonView
+    let useExistingButtonViewBottomAnchorConstraint = useExistingButtonView
       .bottomAnchor
       .constraint(equalTo: viewView.bottomAnchor)
-    let googleButtonViewTopAnchorConstraint = googleButtonView.topAnchor.constraint(equalTo: vSpacer2View.bottomAnchor)
-    let googleButtonViewLeadingAnchorConstraint = googleButtonView
+    let useExistingButtonViewTopAnchorConstraint = useExistingButtonView
+      .topAnchor
+      .constraint(equalTo: vSpacer2View.bottomAnchor)
+    let useExistingButtonViewLeadingAnchorConstraint = useExistingButtonView
       .leadingAnchor
       .constraint(equalTo: viewView.leadingAnchor)
-    let googleButtonViewTrailingAnchorConstraint = googleButtonView
+    let useExistingButtonViewTrailingAnchorConstraint = useExistingButtonView
       .trailingAnchor
       .constraint(equalTo: viewView.trailingAnchor)
     let vSpacer2ViewHeightAnchorConstraint = vSpacer2View.heightAnchor.constraint(equalToConstant: 8)
@@ -215,6 +267,8 @@ public class PublishNeedsAuth: NSBox {
 
     publishTextViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     workspaceTitleViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
+    publishText1ViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
+    orgTitleViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 
     NSLayoutConstraint.activate([
       titleContainerViewTopAnchorConstraint,
@@ -232,26 +286,34 @@ public class PublishNeedsAuth: NSBox {
       viewViewLeadingAnchorConstraint,
       publishTextViewHeightAnchorParentConstraint,
       workspaceTitleViewHeightAnchorParentConstraint,
+      publishText1ViewHeightAnchorParentConstraint,
+      orgTitleViewHeightAnchorParentConstraint,
       publishTextViewLeadingAnchorConstraint,
       publishTextViewTopAnchorConstraint,
       publishTextViewBottomAnchorConstraint,
       workspaceTitleViewLeadingAnchorConstraint,
       workspaceTitleViewTopAnchorConstraint,
       workspaceTitleViewBottomAnchorConstraint,
+      publishText1ViewLeadingAnchorConstraint,
+      publishText1ViewTopAnchorConstraint,
+      publishText1ViewBottomAnchorConstraint,
+      orgTitleViewLeadingAnchorConstraint,
+      orgTitleViewTopAnchorConstraint,
+      orgTitleViewBottomAnchorConstraint,
       vSpacerViewHeightAnchorConstraint,
       vSpacerViewWidthAnchorConstraint,
       vSpacer1ViewHeightAnchorConstraint,
       vSpacer1ViewWidthAnchorConstraint,
       viewViewWidthAnchorConstraint,
-      gitHubButtonViewTopAnchorConstraint,
-      gitHubButtonViewLeadingAnchorConstraint,
-      gitHubButtonViewTrailingAnchorConstraint,
+      createButtonViewTopAnchorConstraint,
+      createButtonViewLeadingAnchorConstraint,
+      createButtonViewTrailingAnchorConstraint,
       vSpacer2ViewTopAnchorConstraint,
       vSpacer2ViewLeadingAnchorConstraint,
-      googleButtonViewBottomAnchorConstraint,
-      googleButtonViewTopAnchorConstraint,
-      googleButtonViewLeadingAnchorConstraint,
-      googleButtonViewTrailingAnchorConstraint,
+      useExistingButtonViewBottomAnchorConstraint,
+      useExistingButtonViewTopAnchorConstraint,
+      useExistingButtonViewLeadingAnchorConstraint,
+      useExistingButtonViewTrailingAnchorConstraint,
       vSpacer2ViewHeightAnchorConstraint,
       vSpacer2ViewWidthAnchorConstraint
     ])
@@ -259,55 +321,59 @@ public class PublishNeedsAuth: NSBox {
 
   private func update() {
     workspaceTitleView.attributedStringValue = workspaceTitleViewTextStyle.apply(to: workspaceName)
-    gitHubButtonView.onClick = handleOnClickGithubButton
-    googleButtonView.onClick = handleOnClickGoogleButton
+    orgTitleView.attributedStringValue = orgTitleViewTextStyle.apply(to: organizationName)
+    createButtonView.onClick = handleOnClickCreateRepository
+    useExistingButtonView.onClick = handleOnClickUseExistingRepository
   }
 
-  private func handleOnClickGithubButton() {
-    onClickGithubButton?()
+  private func handleOnClickCreateRepository() {
+    onClickCreateRepository?()
   }
 
-  private func handleOnClickGoogleButton() {
-    onClickGoogleButton?()
+  private func handleOnClickUseExistingRepository() {
+    onClickUseExistingRepository?()
   }
 }
 
 // MARK: - Parameters
 
-extension PublishNeedsAuth {
+extension PublishNeedsRepo {
   public struct Parameters: Equatable {
     public var workspaceName: String
-    public var onClickGithubButton: (() -> Void)?
-    public var onClickGoogleButton: (() -> Void)?
+    public var organizationName: String
+    public var onClickCreateRepository: (() -> Void)?
+    public var onClickUseExistingRepository: (() -> Void)?
 
     public init(
       workspaceName: String,
-      onClickGithubButton: (() -> Void)? = nil,
-      onClickGoogleButton: (() -> Void)? = nil)
+      organizationName: String,
+      onClickCreateRepository: (() -> Void)? = nil,
+      onClickUseExistingRepository: (() -> Void)? = nil)
     {
       self.workspaceName = workspaceName
-      self.onClickGithubButton = onClickGithubButton
-      self.onClickGoogleButton = onClickGoogleButton
+      self.organizationName = organizationName
+      self.onClickCreateRepository = onClickCreateRepository
+      self.onClickUseExistingRepository = onClickUseExistingRepository
     }
 
     public init() {
-      self.init(workspaceName: "")
+      self.init(workspaceName: "", organizationName: "")
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return lhs.workspaceName == rhs.workspaceName
+      return lhs.workspaceName == rhs.workspaceName && lhs.organizationName == rhs.organizationName
     }
   }
 }
 
 // MARK: - Model
 
-extension PublishNeedsAuth {
+extension PublishNeedsRepo {
   public struct Model: LonaViewModel, Equatable {
     public var id: String?
     public var parameters: Parameters
     public var type: String {
-      return "PublishNeedsAuth"
+      return "PublishNeedsRepo"
     }
 
     public init(id: String? = nil, parameters: Parameters) {
@@ -321,19 +387,21 @@ extension PublishNeedsAuth {
 
     public init(
       workspaceName: String,
-      onClickGithubButton: (() -> Void)? = nil,
-      onClickGoogleButton: (() -> Void)? = nil)
+      organizationName: String,
+      onClickCreateRepository: (() -> Void)? = nil,
+      onClickUseExistingRepository: (() -> Void)? = nil)
     {
       self
         .init(
           Parameters(
             workspaceName: workspaceName,
-            onClickGithubButton: onClickGithubButton,
-            onClickGoogleButton: onClickGoogleButton))
+            organizationName: organizationName,
+            onClickCreateRepository: onClickCreateRepository,
+            onClickUseExistingRepository: onClickUseExistingRepository))
     }
 
     public init() {
-      self.init(workspaceName: "")
+      self.init(workspaceName: "", organizationName: "")
     }
   }
 }
