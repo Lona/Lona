@@ -7,6 +7,7 @@
 //
 
 import AppKit
+import BreadcrumbBar
 
 // MARK: - PublishingViewController
 
@@ -59,6 +60,8 @@ class PublishingViewController: NSViewController {
 
     private let containerView = NSBox()
 
+    private let navigationControl = NavigationControl()
+
     private var contentView: NSView? {
         didSet {
             if oldValue != contentView {
@@ -68,7 +71,7 @@ class PublishingViewController: NSViewController {
                     containerView.addSubview(contentView)
 
                     contentView.translatesAutoresizingMaskIntoConstraints = false
-                    contentView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 40).isActive = true
+                    contentView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 80).isActive = true
                     contentView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 40).isActive = true
                     contentView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -40).isActive = true
                     contentView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -40).isActive = true
@@ -108,16 +111,27 @@ class PublishingViewController: NSViewController {
         containerView.contentViewMargins = .zero
         containerView.fillColor = Colors.windowBackground
 
+        containerView.addSubview(navigationControl)
+
         self.view = containerView
     }
 
     private func setUpConstraints() {
         containerView.translatesAutoresizingMaskIntoConstraints = false
+        navigationControl.translatesAutoresizingMaskIntoConstraints = false
 
         containerView.widthAnchor.constraint(equalToConstant: 720).isActive = true
+
+        navigationControl.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 40).isActive = true
+        navigationControl.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 32).isActive = true
     }
 
     private func update() {
         contentView = makeContentView()
     }
+
+    override func viewDidAppear() {
+        contentView?.window?.title = "Publishing"
+    }
 }
+
