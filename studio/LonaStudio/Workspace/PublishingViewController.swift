@@ -117,7 +117,22 @@ class PublishingViewController: NSViewController {
                 screen.organizationName = value
             }
             screen.onClickSubmit = { [unowned self] in
-                self.history.navigateTo(.needsRepo(organizationName: screen.organizationName))
+                Network.shared.apollo.perform(mutation: CreateOrganisationMutation(name: screen.organizationName)) { [weak self] result in
+                    guard let self = self else {
+                        return
+                    }
+                    switch result {
+                    case .success(let graphQLResult):
+                      if let errors = graphQLResult.errors {
+                        print(errors)
+                        return
+                      }
+
+                      self.history.navigateTo(.needsRepo(organizationName: screen.organizationName))
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                    }
+                }
             }
             return screen
         case .needsRepo(let organizationName):

@@ -1,0 +1,15 @@
+query getMe {
+  getMe {
+    id
+    username
+    token
+    organisations {
+      id
+      name
+      repos {
+        url
+        activated
+      }
+    }
+  }
+}

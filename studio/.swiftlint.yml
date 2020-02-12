@@ -44,6 +44,7 @@ excluded:
   - LonaStudio/Generated
   - LonaStudio/Carthage
   - LonaStudio/Pods
+  - LonaStudio/GraphQL
 
 colon:
   apply_to_dictionaries: false

@@ -10,7 +10,6 @@ import Foundation
 import AppKit
 import MASPreferences
 
-let API_BASE_URL = Bundle.main.infoDictionary?["API_BASE_URL"] as! String
 let GITHUB_CLIENT_ID = Bundle.main.infoDictionary?["GITHUB_CLIENT_ID"] as! String
 
 func encodeURIComponent(_ string: String) -> String {

@@ -7,10 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0304A71023F4208F009A1E82 /* schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 0304A70F23F4208E009A1E82 /* schema.json */; };
+		0304A71323F421F4009A1E82 /* getMe.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 0304A71223F421F4009A1E82 /* getMe.graphql */; };
+		0304A71523F42293009A1E82 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A71423F42293009A1E82 /* API.swift */; };
+		0304A71723F424B1009A1E82 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A71623F424B1009A1E82 /* Network.swift */; };
+		0304A71923F425B4009A1E82 /* createOrganisation.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 0304A71823F425B4009A1E82 /* createOrganisation.graphql */; };
 		0310D107220B13D5007B3546 /* RPCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0310D106220B13D5007B3546 /* RPCService.swift */; };
 		0310D109220B9DE8007B3546 /* PluginAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0310D108220B9DE8007B3546 /* PluginAPI.swift */; };
 		0314F4B323F2A910009CE468 /* AccountPreferencesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0314F4B223F2A910009CE468 /* AccountPreferencesViewController.swift */; };
 		0314F4B523F2B335009CE468 /* LonaAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0314F4B423F2B335009CE468 /* LonaAccount.swift */; };
+		0314F4B823F41C54009CE468 /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 0314F4B723F41C54009CE468 /* Apollo */; };
 		036A4E8A21E0DFE700948DBD /* LonaFileIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E8921E0DFE700948DBD /* LonaFileIcon.swift */; };
 		036A4E8E21E0EF0100948DBD /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E8D21E0EF0100948DBD /* ImageViewController.swift */; };
 		036A4E9021E0F6AA00948DBD /* ImageViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E8F21E0F6AA00948DBD /* ImageViewer.swift */; };
@@ -374,6 +380,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0304A70F23F4208E009A1E82 /* schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
+		0304A71223F421F4009A1E82 /* getMe.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = getMe.graphql; sourceTree = "<group>"; };
+		0304A71423F42293009A1E82 /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
+		0304A71623F424B1009A1E82 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
+		0304A71823F425B4009A1E82 /* createOrganisation.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = createOrganisation.graphql; sourceTree = "<group>"; };
 		0310D106220B13D5007B3546 /* RPCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RPCService.swift; sourceTree = "<group>"; };
 		0310D108220B9DE8007B3546 /* PluginAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginAPI.swift; sourceTree = "<group>"; };
 		0314F4B223F2A910009CE468 /* AccountPreferencesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountPreferencesViewController.swift; sourceTree = "<group>"; };
@@ -704,6 +715,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0314F4B823F41C54009CE468 /* Apollo in Frameworks */,
 				6BA6E895212F92B0009CD33C /* Witness.framework in Frameworks */,
 				6BC6062B223F191A003E616B /* Logic.framework in Frameworks */,
 				6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */,
@@ -728,6 +740,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0304A71123F421C0009A1E82 /* GraphQL */ = {
+			isa = PBXGroup;
+			children = (
+				0304A71623F424B1009A1E82 /* Network.swift */,
+				0304A71423F42293009A1E82 /* API.swift */,
+				0304A71223F421F4009A1E82 /* getMe.graphql */,
+				0304A71823F425B4009A1E82 /* createOrganisation.graphql */,
+			);
+			path = GraphQL;
+			sourceTree = "<group>";
+		};
 		036A4EA521E23F3A00948DBD /* Documents */ = {
 			isa = PBXGroup;
 			children = (
@@ -1179,6 +1202,7 @@
 				6BA8985923271BE800AA8F78 /* LonaStudio.entitlements */,
 				307D441F209B6CE9004B57F5 /* Web */,
 				6B0AEFC21EBF74D800F35BBF /* Info.plist */,
+				0304A70F23F4208E009A1E82 /* schema.json */,
 				6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */,
 				6B3A563C21DEA7040012C44F /* Colors+Appearance.swift */,
 				300302731EDC7FA90085E140 /* CSStatementView.swift */,
@@ -1191,6 +1215,7 @@
 				036A4EA521E23F3A00948DBD /* Documents */,
 				30C8BC291EDB640500B99F1B /* Extensions */,
 				30F870BC20865858007ADA5B /* Generated */,
+				0304A71123F421C0009A1E82 /* GraphQL */,
 				301433791F5C7AD100525DB1 /* ListEditors */,
 				6B34149C225803F500CC65D1 /* Logic */,
 				3030311D1F34E6A70078086F /* LogicList */,
@@ -1354,7 +1379,8 @@
 			buildConfigurationList = 6B0AEFC51EBF74D800F35BBF /* Build configuration list for PBXNativeTarget "LonaStudio" */;
 			buildPhases = (
 				0D07092F8B9DD494FF4F76C4 /* [CP] Check Pods Manifest.lock */,
-				6BA89858232717D400AA8F78 /* ShellScript */,
+				0304A70E23F41E39009A1E82 /* Download GraphQL schema */,
+				6BA89858232717D400AA8F78 /* Code sign Autoupdate */,
 				6B0AEFB01EBF74D700F35BBF /* Sources */,
 				6B0AEFB11EBF74D700F35BBF /* Frameworks */,
 				6B0AEFB21EBF74D700F35BBF /* Resources */,
@@ -1370,6 +1396,7 @@
 			name = LonaStudio;
 			packageProductDependencies = (
 				6BCCE31023E27034004C482E /* BreadcrumbBar */,
+				0314F4B723F41C54009CE468 /* Apollo */,
 			);
 			productName = ComponentStudio;
 			productReference = 6B0AEFB41EBF74D800F35BBF /* LonaStudio.app */;
@@ -1435,6 +1462,7 @@
 			mainGroup = 6B0AEFAB1EBF74D700F35BBF;
 			packageReferences = (
 				6BCCE30F23E27034004C482E /* XCRemoteSwiftPackageReference "BreadcrumbBar" */,
+				0314F4B623F41C54009CE468 /* XCRemoteSwiftPackageReference "apollo-ios" */,
 			);
 			productRefGroup = 6B0AEFB51EBF74D800F35BBF /* Products */;
 			projectDirPath = "";
@@ -1460,6 +1488,7 @@
 				6BC60631223F1947003E616B /* Logic.framework.dSYM in Resources */,
 				307D44182097DDAB004B57F5 /* icon-tab-docs@2x.png in Resources */,
 				307D44152097DDAB004B57F5 /* icon-tab-docs.png in Resources */,
+				0304A71323F421F4009A1E82 /* getMe.graphql in Resources */,
 				6B73809D22C7B3BF007534A0 /* tokens-list@2x.png in Resources */,
 				301D7EDC1F47A29D0098AB0D /* Modules in Resources */,
 				6B73809E22C7B3BF007534A0 /* tokens-list.png in Resources */,
@@ -1469,11 +1498,13 @@
 				30F870E420865859007ADA5B /* icon-documentation.png in Resources */,
 				30F870DE20865859007ADA5B /* LonaIcon_32x32.png in Resources */,
 				6B7380A022C7B3BF007534A0 /* themed-tokens-list@2x.png in Resources */,
+				0304A71023F4208F009A1E82 /* schema.json in Resources */,
 				303C3FEB20A396BB008E1541 /* icon-plus.png in Resources */,
 				30F870E720865859007ADA5B /* icon-material-design-example@2x.png in Resources */,
 				30DDEE8A1F479280001D41AB /* node in Resources */,
 				30F870E120865859007ADA5B /* LonaIcon_128x128@2x.png in Resources */,
 				30F870E520865859007ADA5B /* LonaIcon_256x256@2x.png in Resources */,
+				0304A71923F425B4009A1E82 /* createOrganisation.graphql in Resources */,
 				30F870DB20865859007ADA5B /* icon-blank-document.png in Resources */,
 				30F870E220865859007ADA5B /* icon-documentation@2x.png in Resources */,
 				6BD96653217FB0DB0012F173 /* default-workspace-thumbnail@2x.png in Resources */,
@@ -1501,6 +1532,26 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		0304A70E23F41E39009A1E82 /* Download GraphQL schema */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/LonaStudio/**/*.graphql",
+			);
+			name = "Download GraphQL schema";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SRCROOT)/LonaStudio/GraphQL/API.swift",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Go to the build root and search up the chain to find the Derived Data Path where the source packages are checked out.\nDERIVED_DATA_CANDIDATE=\"${BUILD_ROOT}\"\n\nwhile ! [ -d \"${DERIVED_DATA_CANDIDATE}/SourcePackages\" ]; do\n  if [ \"${DERIVED_DATA_CANDIDATE}\" = / ]; then\n    echo >&2 \"error: Unable to locate SourcePackages directory from BUILD_ROOT: '${BUILD_ROOT}'\"\n    exit 1\n  fi\n\n  DERIVED_DATA_CANDIDATE=\"$(dirname \"${DERIVED_DATA_CANDIDATE}\")\"\ndone\n\n# Grab a reference to the directory where scripts are checked out\nSCRIPT_PATH=\"${DERIVED_DATA_CANDIDATE}/SourcePackages/checkouts/apollo-ios/scripts\"\n\nif [ -z \"${SCRIPT_PATH}\" ]; then\n    echo >&2 \"error: Couldn't find the CLI script in your checked out SPM packages; make sure to add the framework to your project.\"\n    exit 1\nfi\n\ncd \"${SRCROOT}/${TARGET_NAME}\"\n\n# Download the schema\n\"${SCRIPT_PATH}\"/run-bundled-codegen.sh schema:download --endpoint=$API_BASE_URL/graphql GraphQL/schema.json\n\n# Generate GraphQL API code\n\"${SCRIPT_PATH}\"/run-bundled-codegen.sh codegen:generate --target=swift --includes=./**/*.graphql --localSchemaFile=\"schema.json\" GraphQL/API.swift\n";
+		};
 		0D07092F8B9DD494FF4F76C4 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1519,18 +1570,20 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		6BA89858232717D400AA8F78 /* ShellScript */ = {
+		6BA89858232717D400AA8F78 /* Code sign Autoupdate */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 8;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Code sign Autoupdate";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "codesign --force -o runtime -s \"Developer ID Application\" \"${PODS_ROOT}/Sparkle/Sparkle.framework/Resources/Autoupdate.app/Contents/MacOS/Autoupdate\"\ncodesign --force -o runtime -s \"Developer ID Application\" \"${PODS_ROOT}/Sparkle/Sparkle.framework/Resources/Autoupdate.app/Contents/MacOS/fileop\"\n";
+			showEnvVarsInLog = 0;
 		};
 		AE944FBCF020B00505E3912C /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1625,6 +1678,7 @@
 				6B0F5B8A213877E1007DBBB2 /* Color+Conversions.swift in Sources */,
 				305ED1BD20548CA7000D07C3 /* LonaLogic.swift in Sources */,
 				6B1DE3E622D7B1C100FC565E /* LogicCompilerConfigurationInput.swift in Sources */,
+				0304A71523F42293009A1E82 /* API.swift in Sources */,
 				30C8BC321EDB758C00B99F1B /* Canvas.swift in Sources */,
 				3003027C1EDCE0880085E140 /* CSComponent.swift in Sources */,
 				3056275E1FBA0C0700026796 /* CSConstraint.swift in Sources */,
@@ -1729,6 +1783,7 @@
 				301433781F5B525100525DB1 /* ListEditor.swift in Sources */,
 				BA3001761FDB97260003E7D2 /* ShadowStylePickerButton.swift in Sources */,
 				6B4203E321BAD71800D59317 /* CanvasTableHeaderView.swift in Sources */,
+				0304A71723F424B1009A1E82 /* Network.swift in Sources */,
 				6BC2D45622640BA9003A9F63 /* LogicInput+CSURLType.swift in Sources */,
 				3069E09C1F324C550005E9A8 /* CSWorkspacePreferences.swift in Sources */,
 				6B4203E721BC495B00D59317 /* NSTableColumn+Init.swift in Sources */,
@@ -2156,6 +2211,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0314F4B623F41C54009CE468 /* XCRemoteSwiftPackageReference "apollo-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apollographql/apollo-ios.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.21.0;
+			};
+		};
 		6BCCE30F23E27034004C482E /* XCRemoteSwiftPackageReference "BreadcrumbBar" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/dabbott/BreadcrumbBar.git";
@@ -2167,6 +2230,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0314F4B723F41C54009CE468 /* Apollo */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0314F4B623F41C54009CE468 /* XCRemoteSwiftPackageReference "apollo-ios" */;
+			productName = Apollo;
+		};
 		6BCCE31023E27034004C482E /* BreadcrumbBar */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 6BCCE30F23E27034004C482E /* XCRemoteSwiftPackageReference "BreadcrumbBar" */;
