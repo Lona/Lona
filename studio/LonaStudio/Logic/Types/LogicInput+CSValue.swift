@@ -69,6 +69,8 @@ extension LogicInput {
             default:
                 return CSValue(type: .unit, data: .Null)
             }
+        case (.function, _):
+            return CSUndefinedValue
         default:
             fatalError("Not supported")
         }

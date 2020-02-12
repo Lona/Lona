@@ -18,8 +18,23 @@ public class PublishCreateRepo: NSBox {
     update()
   }
 
-  public convenience init(workspaceName: String, organizationName: String) {
-    self.init(Parameters(workspaceName: workspaceName, organizationName: organizationName))
+  public convenience init(
+    workspaceName: String,
+    organizationName: String,
+    githubOrganizations: [String],
+    githubOrganizationIndex: Int,
+    repositoryName: String,
+    submitButtonTitle: String)
+  {
+    self
+      .init(
+        Parameters(
+          workspaceName: workspaceName,
+          organizationName: organizationName,
+          githubOrganizations: githubOrganizations,
+          githubOrganizationIndex: githubOrganizationIndex,
+          repositoryName: repositoryName,
+          submitButtonTitle: submitButtonTitle))
   }
 
   public convenience init() {
@@ -57,6 +72,52 @@ public class PublishCreateRepo: NSBox {
     }
   }
 
+  public var githubOrganizations: [String] {
+    get { return parameters.githubOrganizations }
+    set {
+      if parameters.githubOrganizations != newValue {
+        parameters.githubOrganizations = newValue
+      }
+    }
+  }
+
+  public var githubOrganizationIndex: Int {
+    get { return parameters.githubOrganizationIndex }
+    set {
+      if parameters.githubOrganizationIndex != newValue {
+        parameters.githubOrganizationIndex = newValue
+      }
+    }
+  }
+
+  public var onChangeGithubOrganizationsIndex: ((Int) -> Void)? {
+    get { return parameters.onChangeGithubOrganizationsIndex }
+    set { parameters.onChangeGithubOrganizationsIndex = newValue }
+  }
+
+  public var repositoryName: String {
+    get { return parameters.repositoryName }
+    set {
+      if parameters.repositoryName != newValue {
+        parameters.repositoryName = newValue
+      }
+    }
+  }
+
+  public var onChangeRepositoryName: StringHandler {
+    get { return parameters.onChangeRepositoryName }
+    set { parameters.onChangeRepositoryName = newValue }
+  }
+
+  public var submitButtonTitle: String {
+    get { return parameters.submitButtonTitle }
+    set {
+      if parameters.submitButtonTitle != newValue {
+        parameters.submitButtonTitle = newValue
+      }
+    }
+  }
+
   public var parameters: Parameters {
     didSet {
       if parameters != oldValue {
@@ -80,11 +141,11 @@ public class PublishCreateRepo: NSBox {
   private var view1View = NSBox()
   private var view2View = NSBox()
   private var view3View = NSBox()
-  private var controlledDropdownView = ControlledDropdown()
-  private var coreTextInputView = CoreTextInput()
+  private var githubOrganizationsDropdownView = ControlledDropdown()
+  private var repositoryNameInputView = TextInput()
   private var vSpacer2View = NSBox()
   private var viewView = NSBox()
-  private var useExistingButtonView = PrimaryButton()
+  private var submitButtonView = PrimaryButton()
 
   private var publishTextViewTextStyle = TextStyles.titleLight
   private var workspaceTitleViewTextStyle = TextStyles.title
@@ -146,9 +207,9 @@ public class PublishCreateRepo: NSBox {
     view1View.addSubview(vSpacer2View)
     view1View.addSubview(viewView)
     view2View.addSubview(view3View)
-    view2View.addSubview(coreTextInputView)
-    view3View.addSubview(controlledDropdownView)
-    viewView.addSubview(useExistingButtonView)
+    view2View.addSubview(repositoryNameInputView)
+    view3View.addSubview(githubOrganizationsDropdownView)
+    viewView.addSubview(submitButtonView)
 
     publishTextView.attributedStringValue = publishTextViewTextStyle.apply(to: "Publish ")
     publishTextViewTextStyle = TextStyles.titleLight
@@ -171,11 +232,8 @@ public class PublishCreateRepo: NSBox {
     textViewTextStyle = TextStyles.subtitle
     textView.attributedStringValue = textViewTextStyle.apply(to: textView.attributedStringValue)
     vSpacer3View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    controlledDropdownView.selectedIndex = 0
-    controlledDropdownView.values = []
-    coreTextInputView.textValue = "Text"
+    repositoryNameInputView.placeholderString = "Text"
     vSpacer2View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    useExistingButtonView.titleText = "Create repository"
   }
 
   private func setUpConstraints() {
@@ -195,9 +253,9 @@ public class PublishCreateRepo: NSBox {
     vSpacer2View.translatesAutoresizingMaskIntoConstraints = false
     viewView.translatesAutoresizingMaskIntoConstraints = false
     view3View.translatesAutoresizingMaskIntoConstraints = false
-    coreTextInputView.translatesAutoresizingMaskIntoConstraints = false
-    controlledDropdownView.translatesAutoresizingMaskIntoConstraints = false
-    useExistingButtonView.translatesAutoresizingMaskIntoConstraints = false
+    repositoryNameInputView.translatesAutoresizingMaskIntoConstraints = false
+    githubOrganizationsDropdownView.translatesAutoresizingMaskIntoConstraints = false
+    submitButtonView.translatesAutoresizingMaskIntoConstraints = false
 
     let titleContainerViewTopAnchorConstraint = titleContainerView.topAnchor.constraint(equalTo: topAnchor)
     let titleContainerViewLeadingAnchorConstraint = titleContainerView.leadingAnchor.constraint(equalTo: leadingAnchor)
@@ -281,58 +339,57 @@ public class PublishCreateRepo: NSBox {
     let view3ViewHeightAnchorParentConstraint = view3View
       .heightAnchor
       .constraint(lessThanOrEqualTo: view2View.heightAnchor)
-    let coreTextInputViewHeightAnchorParentConstraint = coreTextInputView
+    let repositoryNameInputViewHeightAnchorParentConstraint = repositoryNameInputView
       .heightAnchor
       .constraint(lessThanOrEqualTo: view2View.heightAnchor)
     let view3ViewLeadingAnchorConstraint = view3View.leadingAnchor.constraint(equalTo: view2View.leadingAnchor)
     let view3ViewTopAnchorConstraint = view3View.topAnchor.constraint(equalTo: view2View.topAnchor)
     let view3ViewBottomAnchorConstraint = view3View.bottomAnchor.constraint(equalTo: view2View.bottomAnchor)
-    let coreTextInputViewTrailingAnchorConstraint = coreTextInputView
+    let repositoryNameInputViewTrailingAnchorConstraint = repositoryNameInputView
       .trailingAnchor
       .constraint(equalTo: view2View.trailingAnchor)
-    let coreTextInputViewLeadingAnchorConstraint = coreTextInputView
+    let repositoryNameInputViewLeadingAnchorConstraint = repositoryNameInputView
       .leadingAnchor
       .constraint(equalTo: view3View.trailingAnchor, constant: 8)
-    let coreTextInputViewTopAnchorConstraint = coreTextInputView.topAnchor.constraint(equalTo: view2View.topAnchor)
-    let coreTextInputViewBottomAnchorConstraint = coreTextInputView
+    let repositoryNameInputViewTopAnchorConstraint = repositoryNameInputView
+      .topAnchor
+      .constraint(equalTo: view2View.topAnchor)
+    let repositoryNameInputViewBottomAnchorConstraint = repositoryNameInputView
       .bottomAnchor
       .constraint(equalTo: view2View.bottomAnchor)
     let vSpacer2ViewHeightAnchorConstraint = vSpacer2View.heightAnchor.constraint(equalToConstant: 8)
     let vSpacer2ViewWidthAnchorConstraint = vSpacer2View.widthAnchor.constraint(equalToConstant: 0)
     let viewViewWidthAnchorConstraint = viewView.widthAnchor.constraint(equalToConstant: 250)
-    let useExistingButtonViewTopAnchorConstraint = useExistingButtonView
-      .topAnchor
-      .constraint(equalTo: viewView.topAnchor)
-    let useExistingButtonViewBottomAnchorConstraint = useExistingButtonView
+    let submitButtonViewTopAnchorConstraint = submitButtonView.topAnchor.constraint(equalTo: viewView.topAnchor)
+    let submitButtonViewBottomAnchorConstraint = submitButtonView
       .bottomAnchor
       .constraint(equalTo: viewView.bottomAnchor)
-    let useExistingButtonViewLeadingAnchorConstraint = useExistingButtonView
+    let submitButtonViewLeadingAnchorConstraint = submitButtonView
       .leadingAnchor
       .constraint(equalTo: viewView.leadingAnchor)
-    let useExistingButtonViewTrailingAnchorConstraint = useExistingButtonView
+    let submitButtonViewTrailingAnchorConstraint = submitButtonView
       .trailingAnchor
       .constraint(equalTo: viewView.trailingAnchor)
     let view3ViewWidthAnchorConstraint = view3View.widthAnchor.constraint(equalToConstant: 100)
-    let controlledDropdownViewTopAnchorConstraint = controlledDropdownView
+    let githubOrganizationsDropdownViewTopAnchorConstraint = githubOrganizationsDropdownView
       .topAnchor
       .constraint(equalTo: view3View.topAnchor)
-    let controlledDropdownViewBottomAnchorConstraint = controlledDropdownView
+    let githubOrganizationsDropdownViewBottomAnchorConstraint = githubOrganizationsDropdownView
       .bottomAnchor
       .constraint(equalTo: view3View.bottomAnchor)
-    let controlledDropdownViewLeadingAnchorConstraint = controlledDropdownView
+    let githubOrganizationsDropdownViewLeadingAnchorConstraint = githubOrganizationsDropdownView
       .leadingAnchor
       .constraint(equalTo: view3View.leadingAnchor)
-    let controlledDropdownViewTrailingAnchorConstraint = controlledDropdownView
+    let githubOrganizationsDropdownViewTrailingAnchorConstraint = githubOrganizationsDropdownView
       .trailingAnchor
       .constraint(equalTo: view3View.trailingAnchor)
-    let coreTextInputViewHeightAnchorConstraint = coreTextInputView.heightAnchor.constraint(equalToConstant: 21)
 
     publishTextViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     workspaceTitleViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     publishText1ViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     orgTitleViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     view3ViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
-    coreTextInputViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
+    repositoryNameInputViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 
     NSLayoutConstraint.activate([
       titleContainerViewTopAnchorConstraint,
@@ -385,33 +442,46 @@ public class PublishCreateRepo: NSBox {
       viewViewTopAnchorConstraint,
       viewViewTrailingAnchorConstraint,
       view3ViewHeightAnchorParentConstraint,
-      coreTextInputViewHeightAnchorParentConstraint,
+      repositoryNameInputViewHeightAnchorParentConstraint,
       view3ViewLeadingAnchorConstraint,
       view3ViewTopAnchorConstraint,
       view3ViewBottomAnchorConstraint,
-      coreTextInputViewTrailingAnchorConstraint,
-      coreTextInputViewLeadingAnchorConstraint,
-      coreTextInputViewTopAnchorConstraint,
-      coreTextInputViewBottomAnchorConstraint,
+      repositoryNameInputViewTrailingAnchorConstraint,
+      repositoryNameInputViewLeadingAnchorConstraint,
+      repositoryNameInputViewTopAnchorConstraint,
+      repositoryNameInputViewBottomAnchorConstraint,
       vSpacer2ViewHeightAnchorConstraint,
       vSpacer2ViewWidthAnchorConstraint,
       viewViewWidthAnchorConstraint,
-      useExistingButtonViewTopAnchorConstraint,
-      useExistingButtonViewBottomAnchorConstraint,
-      useExistingButtonViewLeadingAnchorConstraint,
-      useExistingButtonViewTrailingAnchorConstraint,
+      submitButtonViewTopAnchorConstraint,
+      submitButtonViewBottomAnchorConstraint,
+      submitButtonViewLeadingAnchorConstraint,
+      submitButtonViewTrailingAnchorConstraint,
       view3ViewWidthAnchorConstraint,
-      controlledDropdownViewTopAnchorConstraint,
-      controlledDropdownViewBottomAnchorConstraint,
-      controlledDropdownViewLeadingAnchorConstraint,
-      controlledDropdownViewTrailingAnchorConstraint,
-      coreTextInputViewHeightAnchorConstraint
+      githubOrganizationsDropdownViewTopAnchorConstraint,
+      githubOrganizationsDropdownViewBottomAnchorConstraint,
+      githubOrganizationsDropdownViewLeadingAnchorConstraint,
+      githubOrganizationsDropdownViewTrailingAnchorConstraint
     ])
   }
 
   private func update() {
     workspaceTitleView.attributedStringValue = workspaceTitleViewTextStyle.apply(to: workspaceName)
     orgTitleView.attributedStringValue = orgTitleViewTextStyle.apply(to: organizationName)
+    githubOrganizationsDropdownView.values = githubOrganizations
+    githubOrganizationsDropdownView.selectedIndex = githubOrganizationIndex
+    githubOrganizationsDropdownView.onChangeIndex = handleOnChangeGithubOrganizationsIndex
+    repositoryNameInputView.textValue = repositoryName
+    repositoryNameInputView.onChangeTextValue = handleOnChangeRepositoryName
+    submitButtonView.titleText = submitButtonTitle
+  }
+
+  private func handleOnChangeGithubOrganizationsIndex(_ arg0: Int) {
+    onChangeGithubOrganizationsIndex?(arg0)
+  }
+
+  private func handleOnChangeRepositoryName(_ arg0: String) {
+    onChangeRepositoryName?(arg0)
   }
 }
 
@@ -421,18 +491,50 @@ extension PublishCreateRepo {
   public struct Parameters: Equatable {
     public var workspaceName: String
     public var organizationName: String
+    public var githubOrganizations: [String]
+    public var githubOrganizationIndex: Int
+    public var repositoryName: String
+    public var submitButtonTitle: String
+    public var onChangeGithubOrganizationsIndex: ((Int) -> Void)?
+    public var onChangeRepositoryName: StringHandler
 
-    public init(workspaceName: String, organizationName: String) {
+    public init(
+      workspaceName: String,
+      organizationName: String,
+      githubOrganizations: [String],
+      githubOrganizationIndex: Int,
+      repositoryName: String,
+      submitButtonTitle: String,
+      onChangeGithubOrganizationsIndex: ((Int) -> Void)? = nil,
+      onChangeRepositoryName: StringHandler = nil)
+    {
       self.workspaceName = workspaceName
       self.organizationName = organizationName
+      self.githubOrganizations = githubOrganizations
+      self.githubOrganizationIndex = githubOrganizationIndex
+      self.repositoryName = repositoryName
+      self.submitButtonTitle = submitButtonTitle
+      self.onChangeGithubOrganizationsIndex = onChangeGithubOrganizationsIndex
+      self.onChangeRepositoryName = onChangeRepositoryName
     }
 
     public init() {
-      self.init(workspaceName: "", organizationName: "")
+      self
+        .init(
+          workspaceName: "",
+          organizationName: "",
+          githubOrganizations: [],
+          githubOrganizationIndex: 0,
+          repositoryName: "",
+          submitButtonTitle: "")
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return lhs.workspaceName == rhs.workspaceName && lhs.organizationName == rhs.organizationName
+      return lhs.workspaceName == rhs.workspaceName &&
+        lhs.organizationName == rhs.organizationName &&
+          lhs.githubOrganizations == rhs.githubOrganizations &&
+            lhs.githubOrganizationIndex == rhs.githubOrganizationIndex &&
+              lhs.repositoryName == rhs.repositoryName && lhs.submitButtonTitle == rhs.submitButtonTitle
     }
   }
 }
@@ -456,12 +558,38 @@ extension PublishCreateRepo {
       self.parameters = parameters
     }
 
-    public init(workspaceName: String, organizationName: String) {
-      self.init(Parameters(workspaceName: workspaceName, organizationName: organizationName))
+    public init(
+      workspaceName: String,
+      organizationName: String,
+      githubOrganizations: [String],
+      githubOrganizationIndex: Int,
+      repositoryName: String,
+      submitButtonTitle: String,
+      onChangeGithubOrganizationsIndex: ((Int) -> Void)? = nil,
+      onChangeRepositoryName: StringHandler = nil)
+    {
+      self
+        .init(
+          Parameters(
+            workspaceName: workspaceName,
+            organizationName: organizationName,
+            githubOrganizations: githubOrganizations,
+            githubOrganizationIndex: githubOrganizationIndex,
+            repositoryName: repositoryName,
+            submitButtonTitle: submitButtonTitle,
+            onChangeGithubOrganizationsIndex: onChangeGithubOrganizationsIndex,
+            onChangeRepositoryName: onChangeRepositoryName))
     }
 
     public init() {
-      self.init(workspaceName: "", organizationName: "")
+      self
+        .init(
+          workspaceName: "",
+          organizationName: "",
+          githubOrganizations: [],
+          githubOrganizationIndex: 0,
+          repositoryName: "",
+          submitButtonTitle: "")
     }
   }
 }

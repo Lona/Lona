@@ -40,6 +40,78 @@
         "organizationName"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "GithubOrganizationsDropdown",
+        "values"
+      ],
+      "content" : [
+        "parameters",
+        "githubOrganizations"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "GithubOrganizationsDropdown",
+        "selectedIndex"
+      ],
+      "content" : [
+        "parameters",
+        "githubOrganizationIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "GithubOrganizationsDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeGithubOrganizationsIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "RepositoryNameInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "repositoryName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "RepositoryNameInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeRepositoryName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "SubmitButton",
+        "titleText"
+      ],
+      "content" : [
+        "parameters",
+        "submitButtonTitle"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -49,6 +121,41 @@
     },
     {
       "name" : "organizationName",
+      "type" : "String"
+    },
+    {
+      "name" : "githubOrganizations",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "githubOrganizationIndex",
+      "type" : "WholeNumber"
+    },
+    {
+      "name" : "onChangeGithubOrganizationsIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "repositoryName",
+      "type" : "String"
+    },
+    {
+      "name" : "onChangeRepositoryName",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "submitButtonTitle",
       "type" : "String"
     }
   ],
@@ -146,7 +253,7 @@
               {
                 "children" : [
                   {
-                    "id" : "ControlledDropdown",
+                    "id" : "GithubOrganizationsDropdown",
                     "params" : {
                       "selectedIndex" : 0,
                       "values" : [
@@ -164,11 +271,12 @@
                 "type" : "Lona:View"
               },
               {
-                "id" : "CoreTextInput",
+                "id" : "RepositoryNameInput",
                 "params" : {
+                  "placeholderString" : "Text",
                   "textValue" : "Text"
                 },
-                "type" : "CoreTextInput"
+                "type" : "TextInput"
               }
             ],
             "id" : "View 2",
@@ -190,7 +298,7 @@
           {
             "children" : [
               {
-                "id" : "UseExistingButton",
+                "id" : "SubmitButton",
                 "params" : {
                   "titleText" : "Create repository"
                 },

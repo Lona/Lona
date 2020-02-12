@@ -23,7 +23,7 @@ class PublishingViewController: NSViewController {
         case needsAuth
         case needsOrg
         case needsRepo(organizationName: String)
-        case createRepo(organizationName: String)
+        case createRepo(organizationName: String, githubOrganizations: [String])
     }
 
     // MARK: Lifecycle
@@ -110,11 +110,29 @@ class PublishingViewController: NSViewController {
         case .needsRepo(let organizationName):
             let screen = PublishNeedsRepo(workspaceName: workspaceName, organizationName: organizationName)
             screen.onClickCreateRepository = { [unowned self] in
-               self.state = .createRepo(organizationName: screen.organizationName)
+                self.state = .createRepo(organizationName: screen.organizationName, githubOrganizations: ["dabbott", "Lona"])
             }
             return screen
-        case .createRepo(let organizationName):
-            let screen = PublishCreateRepo(workspaceName: workspaceName, organizationName: organizationName)
+        case .createRepo(let organizationName, let githubOrganizations):
+            let screen = PublishCreateRepo(
+                workspaceName: workspaceName,
+                organizationName: organizationName,
+                githubOrganizations: githubOrganizations,
+                githubOrganizationIndex: 0,
+                repositoryName: "",
+                submitButtonTitle: "Create"
+            )
+            let updateSubmitButtonTitle: () -> Void = { [unowned screen] in
+                screen.submitButtonTitle = "Create \(githubOrganizations[screen.githubOrganizationIndex])/\(screen.repositoryName)"
+            }
+            screen.onChangeRepositoryName = { [unowned screen] value in
+                screen.repositoryName = value
+                updateSubmitButtonTitle()
+            }
+            screen.onChangeGithubOrganizationsIndex = { [unowned screen] index in
+                screen.githubOrganizationIndex = index
+                updateSubmitButtonTitle()
+            }
             return screen
         }
     }
