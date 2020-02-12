@@ -23,6 +23,7 @@ class PublishingViewController: NSViewController {
         case needsAuth
         case needsOrg
         case needsRepo(organizationName: String)
+        case createRepo(organizationName: String)
     }
 
     // MARK: Lifecycle
@@ -108,6 +109,12 @@ class PublishingViewController: NSViewController {
             return screen
         case .needsRepo(let organizationName):
             let screen = PublishNeedsRepo(workspaceName: workspaceName, organizationName: organizationName)
+            screen.onClickCreateRepository = { [unowned self] in
+               self.state = .createRepo(organizationName: screen.organizationName)
+            }
+            return screen
+        case .createRepo(let organizationName):
+            let screen = PublishCreateRepo(workspaceName: workspaceName, organizationName: organizationName)
             return screen
         }
     }
@@ -138,7 +145,11 @@ class PublishingViewController: NSViewController {
     }
 
     override func viewDidAppear() {
-        contentView?.window?.title = "Publishing"
+        guard let window = contentView?.window else { return }
+
+        window.title = "Publishing"
+        window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+        window.standardWindowButton(.zoomButton)?.isHidden = true
     }
 }
 

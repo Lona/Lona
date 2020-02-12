@@ -76,11 +76,6 @@ class FileNavigator: NSBox {
 
     public var rootPath: String
 
-    public var onAction: ((FileTree.Path) -> Void)? {
-        get { return fileTree.onAction }
-        set { fileTree.onAction = newValue }
-    }
-
     public var onSelect: ((FileTree.Path?) -> Void)? {
         get { return fileTree.onSelect }
         set { fileTree.onSelect = newValue }
@@ -264,7 +259,7 @@ class FileNavigator: NSBox {
                         return
                     }
 
-                    self.onAction?(url.path)
+                    self.onSelect?(url.path)
                 }))
             }
 

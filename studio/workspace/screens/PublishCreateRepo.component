@@ -1,0 +1,222 @@
+{
+  "devices" : [
+    {
+      "height" : 1,
+      "heightMode" : "At Least",
+      "name" : "Desktop",
+      "width" : 640
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "WorkspaceTitle",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "workspaceName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "OrgTitle",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "organizationName"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "workspaceName",
+      "type" : "String"
+    },
+    {
+      "name" : "organizationName",
+      "type" : "String"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "PublishText",
+            "params" : {
+              "font" : "titleLight",
+              "text" : "Publish "
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "WorkspaceTitle",
+            "params" : {
+              "font" : "title",
+              "text" : "Workspace Name"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "PublishText 1",
+            "params" : {
+              "font" : "titleLight",
+              "text" : " to "
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "OrgTitle",
+            "params" : {
+              "font" : "title",
+              "text" : "LonaTeam"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "TitleContainer",
+        "params" : {
+          "alignSelf" : "stretch",
+          "flexDirection" : "row"
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "VSpacer",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 32,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "BodyText",
+        "params" : {
+          "font" : "body",
+          "text" : "Great! Let’s create a new Github repository now."
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "VSpacer 1",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 72,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Text",
+        "params" : {
+          "font" : "subtitle",
+          "text" : "Create new repository"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "VSpacer 3",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 32,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "children" : [
+              {
+                "children" : [
+                  {
+                    "id" : "ControlledDropdown",
+                    "params" : {
+                      "selectedIndex" : 0,
+                      "values" : [
+
+                      ]
+                    },
+                    "type" : "ControlledDropdown"
+                  }
+                ],
+                "id" : "View 3",
+                "params" : {
+                  "marginRight" : 8,
+                  "width" : 100
+                },
+                "type" : "Lona:View"
+              },
+              {
+                "id" : "CoreTextInput",
+                "params" : {
+                  "textValue" : "Text"
+                },
+                "type" : "CoreTextInput"
+              }
+            ],
+            "id" : "View 2",
+            "params" : {
+              "alignSelf" : "stretch",
+              "flexDirection" : "row"
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "VSpacer 2",
+            "params" : {
+              "backgroundColor" : "#D8D8D8",
+              "height" : 8,
+              "width" : 0
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "children" : [
+              {
+                "id" : "UseExistingButton",
+                "params" : {
+                  "titleText" : "Create repository"
+                },
+                "type" : "PrimaryButton"
+              }
+            ],
+            "id" : "View",
+            "params" : {
+              "alignItems" : "flex-end",
+              "width" : 250
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "View 1",
+        "params" : {
+          "alignItems" : "flex-end",
+          "alignSelf" : "stretch"
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}
