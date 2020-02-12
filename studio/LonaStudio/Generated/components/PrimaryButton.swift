@@ -92,7 +92,7 @@ public class PrimaryButton: NSBox {
 
     addSubview(titleView)
 
-    borderColor = Colors.darkTransparentOutline
+    borderColor = Colors.divider
     cornerRadius = 2
     borderWidth = 1
     titleView.maximumNumberOfLines = 1

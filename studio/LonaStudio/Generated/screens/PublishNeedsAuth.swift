@@ -127,7 +127,7 @@ public class PublishNeedsAuth: NSBox {
     bodyTextView.attributedStringValue =
       bodyTextViewTextStyle
         .apply(to:
-        "Lona can automatically generate a website and design/code libraries from your workspace. In order to do this, you’ll need to connect a Github or Google account.")
+        "Lona can automatically generate a website and design/code libraries from your workspace. In order to do this, you’ll need to connect a GitHub or Google account.")
     bodyTextViewTextStyle = TextStyles.body
     bodyTextView.attributedStringValue = bodyTextViewTextStyle.apply(to: bodyTextView.attributedStringValue)
     vSpacer1View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)

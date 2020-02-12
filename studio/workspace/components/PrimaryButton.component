@@ -109,7 +109,7 @@
     "params" : {
       "alignSelf" : "stretch",
       "backgroundColor" : "controlBackground",
-      "borderColor" : "darkTransparentOutline",
+      "borderColor" : "divider",
       "borderRadius" : 2,
       "borderWidth" : 1,
       "paddingBottom" : 8,

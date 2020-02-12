@@ -113,7 +113,7 @@
         "id" : "BodyText",
         "params" : {
           "font" : "body",
-          "text" : "Lona can automatically generate a website and design\/code libraries from your workspace. In order to do this, you’ll need to connect a Github or Google account."
+          "text" : "Lona can automatically generate a website and design\/code libraries from your workspace. In order to do this, you’ll need to connect a GitHub or Google account."
         },
         "type" : "Lona:Text"
       },
