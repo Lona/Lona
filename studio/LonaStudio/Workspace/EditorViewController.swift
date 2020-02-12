@@ -97,7 +97,7 @@ class EditorViewController: NSViewController {
 
     private let accessoryButtonContainer = NSStackView()
 
-    private func updateHistory(_ history: History) {
+    private func updateHistory(_ history: History<URL>) {
         navigationBar.isBackEnabled = history.canGoBack()
         navigationBar.isForwardEnabled = history.canGoForward()
 

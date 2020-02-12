@@ -35,13 +35,13 @@ class DocumentController: NSDocumentController {
         _ = navigateForward()
     }
 
-    public var history = History() {
+    public var history = History<URL>() {
         didSet {
             historyEmitter.emit(history)
         }
     }
 
-    public var historyEmitter = Emitter<History>()
+    public var historyEmitter = Emitter<History<URL>>()
 
     override public static var shared: DocumentController {
         return NSDocumentController.shared as! DocumentController
@@ -61,7 +61,7 @@ class DocumentController: NSDocumentController {
         self._openDocument(withContentsOf: url, display: displayDocument, completionHandler: {
             document, documentWasAlreadyOpen, error in
             if displayDocument {
-                self.history.navigateTo(url: url)
+                self.history.navigateTo(url)
             }
             completionHandler(document, documentWasAlreadyOpen, error)
         })
@@ -142,7 +142,7 @@ class DocumentController: NSDocumentController {
                 if let _ = error {
                     self.removeAllDocumentsFromWorkspaceWindowControllers()
                 } else {
-                    self.history.navigateTo(url: contentsURL)
+                    self.history.navigateTo(contentsURL)
                 }
             }
             completionHandler(document, documentWasAlreadyOpen, error)

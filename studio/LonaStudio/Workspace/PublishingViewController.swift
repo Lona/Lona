@@ -51,12 +51,19 @@ class PublishingViewController: NSViewController {
     public var image: NSImage? { didSet { update() } }
 
     public func initializeState() {
+        history = .init()
+        history.navigateTo(.needsAuth)
         workspaceName = CSWorkspacePreferences.workspaceName
-        state = .needsAuth
         update()
     }
 
     // MARK: Private
+
+    private var history = History<State>() {
+        didSet {
+            update()
+        }
+    }
 
     private var workspaceName: String = ""
 
@@ -82,20 +89,14 @@ class PublishingViewController: NSViewController {
         }
     }
 
-    private var state: State = .needsAuth {
-        didSet {
-            if oldValue != state {
-                update()
-            }
-        }
-    }
-
     private func makeContentView() -> NSView {
+        guard let state = history.current else { return NSView() }
+
         switch state {
         case .needsAuth:
             let screen = PublishNeedsAuth(workspaceName: workspaceName)
             screen.onClickGithubButton = { [unowned self] in
-                self.state = .needsOrg
+                self.history = .init(.needsOrg)
             }
             return screen
         case .needsOrg:
@@ -104,13 +105,13 @@ class PublishingViewController: NSViewController {
                 screen.organizationName = value
             }
             screen.onClickSubmit = { [unowned self] in
-                self.state = .needsRepo(organizationName: screen.organizationName)
+                self.history.navigateTo(.needsRepo(organizationName: screen.organizationName))
             }
             return screen
         case .needsRepo(let organizationName):
             let screen = PublishNeedsRepo(workspaceName: workspaceName, organizationName: organizationName)
             screen.onClickCreateRepository = { [unowned self] in
-                self.state = .createRepo(organizationName: screen.organizationName, githubOrganizations: ["dabbott", "Lona"])
+                self.history.navigateTo(.createRepo(organizationName: screen.organizationName, githubOrganizations: ["dabbott", "Lona"]))
             }
             return screen
         case .createRepo(let organizationName, let githubOrganizations):
@@ -145,6 +146,9 @@ class PublishingViewController: NSViewController {
 
         containerView.addSubview(navigationControl)
 
+        navigationControl.onClickBack = { [unowned self] in self.history.goBack() }
+        navigationControl.onClickForward = { [unowned self] in self.history.goForward() }
+
         self.view = containerView
     }
 
@@ -160,6 +164,18 @@ class PublishingViewController: NSViewController {
 
     private func update() {
         contentView = makeContentView()
+
+        navigationControl.isBackEnabled = history.canGoBack()
+        navigationControl.isForwardEnabled = history.canGoForward()
+
+        if let state = history.current {
+            switch state {
+            case .needsAuth:
+                navigationControl.isHidden = true
+            default:
+                navigationControl.isHidden = false
+            }
+        }
     }
 
     override func viewDidAppear() {
