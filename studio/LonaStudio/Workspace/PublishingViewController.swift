@@ -24,6 +24,7 @@ class PublishingViewController: NSViewController {
         case needsOrg
         case needsRepo(organizationName: String)
         case createRepo(organizationName: String, githubOrganizations: [String])
+        case done
     }
 
     // MARK: Lifecycle
@@ -71,6 +72,8 @@ class PublishingViewController: NSViewController {
 
     private let navigationControl = NavigationControl()
 
+    private var contentViewTopAnchor: NSLayoutConstraint?
+
     private var contentView: NSView? {
         didSet {
             if oldValue != contentView {
@@ -80,7 +83,7 @@ class PublishingViewController: NSViewController {
                     containerView.addSubview(contentView)
 
                     contentView.translatesAutoresizingMaskIntoConstraints = false
-                    contentView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 80).isActive = true
+                    contentView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: showNavigationControl ? 80 : 40).isActive = true
                     contentView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 40).isActive = true
                     contentView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -40).isActive = true
                     contentView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -40).isActive = true
@@ -121,7 +124,7 @@ class PublishingViewController: NSViewController {
                 githubOrganizations: githubOrganizations,
                 githubOrganizationIndex: 0,
                 repositoryName: "",
-                submitButtonTitle: "Create"
+                submitButtonTitle: ""
             )
             let updateSubmitButtonTitle: () -> Void = { [unowned screen] in
                 screen.submitButtonTitle = "Create \(githubOrganizations[screen.githubOrganizationIndex])/\(screen.repositoryName)"
@@ -133,6 +136,16 @@ class PublishingViewController: NSViewController {
             screen.onChangeGithubOrganizationsIndex = { [unowned screen] index in
                 screen.githubOrganizationIndex = index
                 updateSubmitButtonTitle()
+            }
+            screen.onClickSubmitButton = { [unowned self] in
+                self.history = .init(.done)
+            }
+            updateSubmitButtonTitle()
+            return screen
+        case .done:
+            let screen = PublishDone(workspaceName: workspaceName)
+            screen.onClickDoneButton = { [unowned self] in
+                self.dismiss(nil)
             }
             return screen
         }
@@ -167,14 +180,17 @@ class PublishingViewController: NSViewController {
 
         navigationControl.isBackEnabled = history.canGoBack()
         navigationControl.isForwardEnabled = history.canGoForward()
+        navigationControl.isHidden = !showNavigationControl
+    }
 
-        if let state = history.current {
-            switch state {
-            case .needsAuth:
-                navigationControl.isHidden = true
-            default:
-                navigationControl.isHidden = false
-            }
+    private var showNavigationControl: Bool {
+        guard let state = history.current else { return false }
+
+        switch state {
+        case .needsAuth, .done:
+            return false
+        default:
+            return true
         }
     }
 

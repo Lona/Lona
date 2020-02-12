@@ -118,6 +118,11 @@ public class PublishCreateRepo: NSBox {
     }
   }
 
+  public var onClickSubmitButton: (() -> Void)? {
+    get { return parameters.onClickSubmitButton }
+    set { parameters.onClickSubmitButton = newValue }
+  }
+
   public var parameters: Parameters {
     didSet {
       if parameters != oldValue {
@@ -474,6 +479,7 @@ public class PublishCreateRepo: NSBox {
     repositoryNameInputView.textValue = repositoryName
     repositoryNameInputView.onChangeTextValue = handleOnChangeRepositoryName
     submitButtonView.titleText = submitButtonTitle
+    submitButtonView.onClick = handleOnClickSubmitButton
   }
 
   private func handleOnChangeGithubOrganizationsIndex(_ arg0: Int) {
@@ -482,6 +488,10 @@ public class PublishCreateRepo: NSBox {
 
   private func handleOnChangeRepositoryName(_ arg0: String) {
     onChangeRepositoryName?(arg0)
+  }
+
+  private func handleOnClickSubmitButton() {
+    onClickSubmitButton?()
   }
 }
 
@@ -497,6 +507,7 @@ extension PublishCreateRepo {
     public var submitButtonTitle: String
     public var onChangeGithubOrganizationsIndex: ((Int) -> Void)?
     public var onChangeRepositoryName: StringHandler
+    public var onClickSubmitButton: (() -> Void)?
 
     public init(
       workspaceName: String,
@@ -506,7 +517,8 @@ extension PublishCreateRepo {
       repositoryName: String,
       submitButtonTitle: String,
       onChangeGithubOrganizationsIndex: ((Int) -> Void)? = nil,
-      onChangeRepositoryName: StringHandler = nil)
+      onChangeRepositoryName: StringHandler = nil,
+      onClickSubmitButton: (() -> Void)? = nil)
     {
       self.workspaceName = workspaceName
       self.organizationName = organizationName
@@ -516,6 +528,7 @@ extension PublishCreateRepo {
       self.submitButtonTitle = submitButtonTitle
       self.onChangeGithubOrganizationsIndex = onChangeGithubOrganizationsIndex
       self.onChangeRepositoryName = onChangeRepositoryName
+      self.onClickSubmitButton = onClickSubmitButton
     }
 
     public init() {
@@ -566,7 +579,8 @@ extension PublishCreateRepo {
       repositoryName: String,
       submitButtonTitle: String,
       onChangeGithubOrganizationsIndex: ((Int) -> Void)? = nil,
-      onChangeRepositoryName: StringHandler = nil)
+      onChangeRepositoryName: StringHandler = nil,
+      onClickSubmitButton: (() -> Void)? = nil)
     {
       self
         .init(
@@ -578,7 +592,8 @@ extension PublishCreateRepo {
             repositoryName: repositoryName,
             submitButtonTitle: submitButtonTitle,
             onChangeGithubOrganizationsIndex: onChangeGithubOrganizationsIndex,
-            onChangeRepositoryName: onChangeRepositoryName))
+            onChangeRepositoryName: onChangeRepositoryName,
+            onClickSubmitButton: onClickSubmitButton))
     }
 
     public init() {

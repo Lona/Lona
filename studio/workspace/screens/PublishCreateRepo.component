@@ -112,6 +112,18 @@
         "submitButtonTitle"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "SubmitButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickSubmitButton"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -157,6 +169,12 @@
     {
       "name" : "submitButtonTitle",
       "type" : "String"
+    },
+    {
+      "name" : "onClickSubmitButton",
+      "type" : {
+        "name" : "Function"
+      }
     }
   ],
   "root" : {

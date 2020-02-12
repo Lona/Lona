@@ -1,0 +1,144 @@
+{
+  "devices" : [
+    {
+      "height" : 1,
+      "heightMode" : "At Least",
+      "name" : "Desktop",
+      "width" : 640
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "WorkspaceTitle",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "workspaceName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "DoneButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickDoneButton"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "workspaceName",
+      "type" : "String"
+    },
+    {
+      "name" : "onClickDoneButton",
+      "type" : {
+        "name" : "Function"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "PublishText",
+            "params" : {
+              "font" : "titleLight",
+              "text" : "Done! Published "
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "WorkspaceTitle",
+            "params" : {
+              "font" : "title",
+              "text" : "Workspace Name"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "TitleContainer",
+        "params" : {
+          "alignSelf" : "stretch",
+          "flexDirection" : "row"
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "VSpacer",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 32,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "BodyText",
+        "params" : {
+          "font" : "body",
+          "text" : "Your Lona workspace is now live!"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "VSpacer 1",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 72,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "children" : [
+              {
+                "id" : "DoneButton",
+                "params" : {
+                  "titleText" : "OK"
+                },
+                "type" : "PrimaryButton"
+              }
+            ],
+            "id" : "View",
+            "params" : {
+              "width" : 250
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "View 1",
+        "params" : {
+          "alignItems" : "flex-end",
+          "alignSelf" : "stretch"
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}
