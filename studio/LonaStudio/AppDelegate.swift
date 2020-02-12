@@ -165,14 +165,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         if "lonastudio" == appleEventURL.scheme && "oauth-callback" == appleEventURL.host {
             guard
-              let urlComponents = URLComponents(string: appleEventURLString),
-              let token = urlComponents.queryItems?.first(where: { $0.name == "token" })?.value
+                let urlComponents = URLComponents(string: appleEventURLString),
+                let token = urlComponents.queryItems?.first(where: { $0.name == "token" })?.value
             else {
-              return
+                return
             }
 
             Account.token = token
             AppDelegate.reloadPreferencesWindow()
+            PublishingViewController.shared.initializeState()
         }
     }
 }
