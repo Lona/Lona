@@ -72,6 +72,11 @@ public class WelcomeWindow: NSWindow {
                 DocumentController.shared.openDocument(withContentsOf: url, display: true, completionHandler: { document, _, _ in
                     if let _ = document {
                         window.close()
+
+                        // We update recent projects here, rather than in DocumentController.noteNewRecentDocumentURL,
+                        // since we don't want the list to update immediately after clicking a project and before the document opens.
+                        // We also don't rearrange the list until the application restarts, to avoid things shifting around.
+                        DocumentController.shared.recentProjectsEmitter.emit(DocumentController.shared.recentDocumentURLs)
                     }
                 })
             }

@@ -9,6 +9,8 @@
 import Foundation
 import AppKit
 
+private let HOME_DIRECTORY_PATH = FileManager.default.homeDirectoryForCurrentUser.path
+
 class RecentProjectsTableCellView: NSTableCellView {
 
     // MARK: - Lifecycle
@@ -72,8 +74,12 @@ class RecentProjectsTableCellView: NSTableCellView {
         let projectName = CSData.from(fileAtPath: project.appendingPathComponent("lona.json").path)?
             .get(key: "workspaceName").string ?? project.lastPathComponent
 
+        let normalizedPath = project.deletingTrailingSlash().deletingLastPathComponent().path
+
         recentProjectView.projectName = projectName
-        recentProjectView.projectDirectoryPath = project.deletingLastPathComponent().path
+        recentProjectView.projectDirectoryPath = normalizedPath.starts(with: HOME_DIRECTORY_PATH)
+            ? normalizedPath.replacingOccurrences(of: HOME_DIRECTORY_PATH, with: "~")
+            : normalizedPath
         recentProjectView.selected = selected
     }
 }
@@ -216,15 +222,15 @@ class RecentProjectsList: NSBox {
         borderType = .noBorder
         contentViewMargins = .zero
 
-        let projects = NSDocumentController.shared.recentDocumentURLs.filter({ url in
-            return FileUtils.fileExists(atPath: url.path) == FileUtils.FileExistsType.directory
-        })
-
-        recentProjectsTableView.projects = projects
+        recentProjectsTableView.projects = DocumentController.shared.recentDocumentURLs
         recentProjectsTableView.onOpenProject = { filename in
             let application = NSApplication.shared
             let appDelegate = application.delegate as? AppDelegate
             _ = appDelegate?.application(application, openFile: filename.path)
+        }
+
+        DocumentController.shared.recentProjectsEmitter.addListener { [unowned self] projects in
+            self.recentProjectsTableView.projects = projects
         }
 
         addSubview(recentProjectsTableView)

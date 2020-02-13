@@ -43,6 +43,8 @@ class DocumentController: NSDocumentController {
 
     public var historyEmitter = Emitter<History<URL>>()
 
+    public var recentProjectsEmitter = Emitter<[URL]>()
+
     override public static var shared: DocumentController {
         return NSDocumentController.shared as! DocumentController
     }
@@ -315,7 +317,7 @@ extension DocumentController {
         }
 
         // If opening a file in a different workspaces, attempt to switch workspaces
-        if LonaModule.current.url != workspaceURL {
+        if !URL.equal(LonaModule.current.url, workspaceURL, ignoringTrailingSlash: true) {
             if hasEditedDocuments {
                 if Alert.runConfirmationAlert(
                 confirmationText: "Save all and switch",

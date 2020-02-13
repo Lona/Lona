@@ -45,4 +45,24 @@ extension URL {
     func isLonaPage() -> Bool {
         return isLonaMarkdownDirectory() || hasMarkdownExtension()
     }
+
+    func deletingTrailingSlash() -> URL {
+        if hasDirectoryPath {
+            let lastComponent = lastPathComponent
+            return self.deletingLastPathComponent().appendingPathComponent(lastComponent)
+        } else {
+            return self
+        }
+    }
+
+    static func equal(_ a: URL, _ b: URL, ignoringTrailingSlash ignore: Bool = false) -> Bool {
+        if ignore && a.hasDirectoryPath != b.hasDirectoryPath {
+            let aString = a.absoluteString
+            let bString = b.absoluteString
+
+            return (aString + "/" == bString) || (aString == bString + "/")
+        }
+
+        return a == b
+    }
 }
