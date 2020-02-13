@@ -1,8 +1,9 @@
 {
   "name": "@lona/serialization",
-  "version": "0.0.17",
+  "version": "0.0.18-pre-10",
   "description": "Convert Lona files between serialization formats",
   "main": "build/index.js",
+  "types": "build/index.d.ts",
   "bin": "./bin.js",
   "browser": "dist/lona-serialization.umd.js",
   "files": [
@@ -20,7 +21,7 @@
     "build:web": "webpack",
     "build:node": "npm run build:babel && npm run build:copyPegjs",
     "build:copyPegjs": "cp src/convert/swift/pegjs/logic.swift.pegjs build/convert/swift/pegjs/logic.swift.pegjs",
-    "build:babel": "babel src --out-dir build --extensions=.ts,.js",
+    "build:babel": "rm -rf ./build && tsc --declaration",
     "prepublishOnly": "npm run build"
   },
   "author": "Devin Abbott",
@@ -48,9 +49,7 @@
     "yargs": "^14.2.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
-    "@babel/node": "^7.2.2",
     "@babel/preset-env": "^7.3.1",
     "@babel/preset-typescript": "^7.7.7",
     "@types/json-stable-stringify": "^1.0.32",
@@ -62,6 +61,7 @@
     "jest": "^24.8.0",
     "pegjs-loader": "^0.5.5",
     "prettier": "^1.19.1",
+    "typescript": "^3.7.4",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3"
   },

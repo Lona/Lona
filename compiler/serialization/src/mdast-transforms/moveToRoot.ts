@@ -1,6 +1,6 @@
 import flatMap from 'unist-util-flatmap'
 
-import { MDAST } from 'mdx-ast'
+import * as MDAST from '../types/mdx-ast'
 
 export default function moveToRoot(targetType: MDAST.Content['type'] | 'page') {
   return (ast: MDAST.Root) => {

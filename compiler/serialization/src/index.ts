@@ -8,34 +8,36 @@ import {
   normalizeFormat,
   detectFormat,
 } from './lona-format'
-import { convertTokens, decodeTokens, encodeTokens } from './lona-tokens'
+import { convertLogic, decodeLogic, encodeLogic } from './lona-logic'
 import { convertTypes, decodeTypes, encodeTypes } from './lona-types'
 
-import { AST } from 'lona-ast'
+import * as MDXAST from './types/lona-ast'
+import * as LogicAST from './types/logic-ast'
 
 // Document
 
 function decodeDocument(
   contents: string,
-  format: SERIALIZATION_FORMAT
-): { children: AST.Content[] } {
+  format?: SERIALIZATION_FORMAT
+): { children: MDXAST.Content[] } {
+  const sourceFormat = normalizeFormat(contents, format)
   try {
-    switch (format) {
+    switch (sourceFormat) {
       case SERIALIZATION_FORMAT.JSON:
         return JSON.parse(contents)
       case SERIALIZATION_FORMAT.SOURCE:
-        return mdx.parse(contents, convertTokens)
+        return mdx.parse(contents, convertLogic)
       default:
-        throw new Error(`Unknown decoding format ${format}`)
+        throw new Error(`Unknown decoding format ${sourceFormat}`)
     }
   } catch (e) {
     console.error(e)
-    throw new Error(`Failed to decode document as ${format}.`)
+    throw new Error(`Failed to decode document as ${sourceFormat}.`)
   }
 }
 
 function encodeDocument(
-  ast: { children: AST.Content[] },
+  ast: { children: MDXAST.Content[] },
   format: SERIALIZATION_FORMAT,
   options: {} = {}
 ) {
@@ -44,7 +46,7 @@ function encodeDocument(
       case SERIALIZATION_FORMAT.JSON:
         return stringify(ast, { space: '  ' })
       case SERIALIZATION_FORMAT.SOURCE:
-        return mdx.print(ast, convertTokens, options)
+        return mdx.print(ast, convertLogic, options)
       default:
         throw new Error(`Unknown encoding format ${format}`)
     }
@@ -70,6 +72,29 @@ function convertDocument(
   return encodeDocument(ast, targetFormat, options)
 }
 
+function extractProgramFromAST(ast: { children: MDXAST.Content[] }) {
+  const { children } = ast
+
+  const declarations = children
+    .filter(child => child.type === 'code' && child.data.lang === 'tokens')
+    // Get Logic syntax node
+    .map((child: MDXAST.LonaTokens) => child.data.parsed)
+    // Get declarations
+    .map(node => node.data.declarations)
+
+  const flattened: LogicAST.Declaration[] = [].concat(...declarations)
+
+  const topLevelDeclarations: LogicAST.TopLevelDeclarations = {
+    data: {
+      declarations: flattened,
+      id: uuid().toUpperCase(),
+    },
+    type: 'topLevelDeclarations',
+  }
+
+  return topLevelDeclarations
+}
+
 function extractProgram(
   contents: string,
   options: { sourceFormat?: SERIALIZATION_FORMAT } = {}
@@ -78,40 +103,28 @@ function extractProgram(
 
   const ast = decodeDocument(contents, sourceFormat)
 
-  const { children } = ast
+  const program = extractProgramFromAST(ast)
 
-  const declarations = children
-    .filter(child => child.type === 'code' && child.data.lang === 'tokens')
-    // Get Logic syntax node
-    .map((child: AST.LonaTokens) => child.data.parsed)
-    // Get declarations
-    .map(node => node.data.declarations)
-
-  const flattened = [].concat(...declarations)
-
-  const topLevelDeclarations = {
-    data: {
-      declarations: flattened,
-      id: uuid().toUpperCase(),
-    },
-    type: 'topLevelDeclarations',
-  }
-
-  return stringify(topLevelDeclarations, { space: '  ' })
+  return stringify(program, { space: '  ' })
 }
 
-module.exports = {
+const printMdxNode = mdx.printNode
+
+export {
+  MDXAST,
+  LogicAST,
   SERIALIZATION_FORMAT,
   convertTypes,
-  convertLogic: convertTokens,
+  convertLogic,
   convertDocument,
   decodeTypes,
-  decodeLogic: decodeTokens,
+  decodeLogic,
   decodeDocument,
   encodeTypes,
-  encodeLogic: encodeTokens,
+  encodeLogic,
   encodeDocument,
   extractProgram,
   detectFormat,
-  printMdxNode: mdx.printNode,
+  printMdxNode,
+  extractProgramFromAST,
 }

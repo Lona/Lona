@@ -3,7 +3,7 @@ import { convertLogic } from '../../src/index'
 import {
   parse as parseSwift,
   print as printSwift,
-} from '../../src/convert/swift/tokens'
+} from '../../src/convert/swift/logic'
 
 jest.mock('uuid/v4', () => () => `0`)
 

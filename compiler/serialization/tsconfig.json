@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2016",
     "module": "commonjs",
-    "outDir": "./lib",
+    "outDir": "./build",
     "rootDir": "./src",
 
     "noImplicitUseStrict": true,
@@ -11,8 +11,7 @@
     "esModuleInterop": true,
 
     "types": ["node"],
-    "typeRoots": ["node_modules/@types", "src/types"],
-    "jsx": "react"
+    "typeRoots": ["node_modules/@types", "src/types"]
   },
   "exclude": ["node_modules", "**/*.test.ts"]
 }

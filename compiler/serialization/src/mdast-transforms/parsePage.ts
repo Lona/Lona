@@ -2,7 +2,7 @@ import visit from 'unist-util-visit'
 import unified from 'unified'
 import rehypeParse from 'rehype-parse'
 
-import { MDAST } from 'mdx-ast'
+import * as MDAST from '../types/mdx-ast'
 
 const htmlParser = unified().use(rehypeParse, { fragment: true })
 
@@ -22,11 +22,10 @@ export default function parsePage() {
         Array.isArray(className) &&
         className.includes('page')
       ) {
-        return {
-          type: 'page',
-          url: href,
-          value: (children[0] && children[0].value) || href,
-        }
+        // @ts-ignore
+        node.type = 'page'
+        node.url = href
+        node.value = (children[0] && children[0].value) || href
       }
 
       return node
