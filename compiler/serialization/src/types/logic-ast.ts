@@ -1,12 +1,17 @@
-export type Placeholder = {
-  type: 'placeholder'
-  data: { id: string }
-}
-
 export type Identifier = {
   id: string
   string: string
   isPlaceholder: boolean
+}
+
+export type Pattern = {
+  id: string
+  name: string
+}
+
+export type Placeholder = {
+  type: 'placeholder'
+  data: { id: string }
 }
 
 export type VariableDeclaration = {
@@ -65,7 +70,7 @@ export type RecordDeclaration = {
   }
 }
 
-export type ImportDeclarationDeclaration = {
+export type ImportDeclaration = {
   type: 'importDeclaration'
   data: {
     id: string
@@ -80,7 +85,7 @@ export type Declaration =
   | NamespaceDeclaration
   | Placeholder
   | RecordDeclaration
-  | ImportDeclarationDeclaration
+  | ImportDeclaration
 
 export type EnumerationCase =
   | Placeholder
@@ -93,11 +98,6 @@ export type EnumerationCase =
         comment?: CommentNode
       }
     }
-
-export type Pattern = {
-  id: string
-  name: string
-}
 
 export type IsEqualToBinaryOperator = {
   type: 'isEqualTo'
@@ -248,14 +248,6 @@ export type Statement =
   | ExpressionStatement
   | Placeholder
 
-export type Program = {
-  type: 'program'
-  data: {
-    id: string
-    block: Statement[]
-  }
-}
-
 export type FunctionParameter =
   | Placeholder
   | {
@@ -378,6 +370,14 @@ export type GenericParameter =
       }
     }
 
+export type CommentNode = {
+  type: 'comment'
+  data: {
+    id: string
+    string: string
+  }
+}
+
 export type TopLevelDeclarations = {
   type: 'topLevelDeclarations'
   data: {
@@ -386,11 +386,11 @@ export type TopLevelDeclarations = {
   }
 }
 
-export type CommentNode = {
-  type: 'comment'
+export type Program = {
+  type: 'program'
   data: {
     id: string
-    string: string
+    block: Statement[]
   }
 }
 
@@ -410,3 +410,58 @@ export type SyntaxNode =
   | TopLevelDeclarations
   | CommentNode
   | FunctionCallArgument
+
+/**
+ * Typescript type predicates
+ */
+
+export function isStatement(
+  node: SyntaxNode | Pattern | Identifier
+): node is Statement {
+  return (
+    'type' in node &&
+    (node.type === 'loop' ||
+      node.type === 'branch' ||
+      node.type === 'declaration' ||
+      node.type === 'expression')
+  )
+}
+
+export function isDeclaration(
+  node: SyntaxNode | Pattern | Identifier
+): node is Declaration {
+  return (
+    'type' in node &&
+    (node.type === 'variable' ||
+      node.type === 'function' ||
+      node.type === 'enumeration' ||
+      node.type === 'namespace' ||
+      node.type === 'placeholder' ||
+      node.type === 'record' ||
+      node.type === 'importDeclaration')
+  )
+}
+
+export function isExpression(
+  node: SyntaxNode | Pattern | Identifier
+): node is Expression {
+  return (
+    'type' in node &&
+    (node.type === 'binaryExpression' ||
+      node.type === 'functionCallExpression' ||
+      node.type === 'identifierExpression' ||
+      node.type === 'literalExpression' ||
+      node.type === 'memberExpression')
+  )
+}
+
+export function isTypeAnnotation(
+  node: SyntaxNode | Pattern | Identifier
+): node is TypeAnnotation {
+  return (
+    'type' in node &&
+    (node.type === 'typeIdentifier' ||
+      node.type === 'functionType' ||
+      node.type === 'placeholder')
+  )
+}
