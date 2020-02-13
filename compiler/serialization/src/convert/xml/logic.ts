@@ -354,7 +354,7 @@ export function parse(root: string): AST.SyntaxNode {
             content: processStandardNode({
               ...node,
               name: 'ImportDeclaration',
-            }) as AST.ImportDeclarationDeclaration,
+            }) as AST.ImportDeclaration,
           },
         }
       case 'Declaration.Namespace':
