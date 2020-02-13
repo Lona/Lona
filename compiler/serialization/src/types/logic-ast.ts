@@ -1,3 +1,8 @@
+export type Placeholder = {
+  type: 'placeholder'
+  data: { id: string }
+}
+
 export type Identifier = {
   id: string
   string: string
@@ -49,11 +54,6 @@ export type NamespaceDeclaration = {
   }
 }
 
-export type PlaceholderDeclaration = {
-  type: 'placeholder'
-  data: { id: string }
-}
-
 export type RecordDeclaration = {
   type: 'record'
   data: {
@@ -78,28 +78,21 @@ export type Declaration =
   | FunctionDeclaration
   | EnumerationDeclaration
   | NamespaceDeclaration
-  | PlaceholderDeclaration
+  | Placeholder
   | RecordDeclaration
   | ImportDeclarationDeclaration
 
-export type PlaceholderEnumerationCase = {
-  type: 'placeholder'
-  data: { id: string }
-}
-
-export type EnumerationCaseEnumerationCase = {
-  type: 'enumerationCase'
-  data: {
-    id: string
-    name: Pattern
-    associatedValueTypes: TypeAnnotation[]
-    comment?: CommentNode
-  }
-}
-
 export type EnumerationCase =
-  | PlaceholderEnumerationCase
-  | EnumerationCaseEnumerationCase
+  | Placeholder
+  | {
+      type: 'enumerationCase'
+      data: {
+        id: string
+        name: Pattern
+        associatedValueTypes: TypeAnnotation[]
+        comment?: CommentNode
+      }
+    }
 
 export type Pattern = {
   id: string
@@ -150,25 +143,18 @@ export type BinaryOperator =
   | IsGreaterThanOrEqualToBinaryOperator
   | SetEqualToBinaryOperator
 
-export type ArgumentFunctionCallArgument = {
-  type: 'argument'
-  data: {
-    id: string
-    label?: string
-    expression: Expression
-  }
-}
-
-export type PlaceholderFunctionCallArgument = {
-  type: 'placeholder'
-  data: { id: string }
-}
-
 export type FunctionCallArgument =
-  | ArgumentFunctionCallArgument
-  | PlaceholderFunctionCallArgument
+  | Placeholder
+  | {
+      type: 'argument'
+      data: {
+        id: string
+        label?: string
+        expression: Expression
+      }
+    }
 
-export type BinaryExpressionExpression = {
+export type BinaryExpression = {
   type: 'binaryExpression'
   data: {
     left: Expression
@@ -178,7 +164,7 @@ export type BinaryExpressionExpression = {
   }
 }
 
-export type IdentifierExpressionExpression = {
+export type IdentifierExpression = {
   type: 'identifierExpression'
   data: {
     id: string
@@ -186,7 +172,7 @@ export type IdentifierExpressionExpression = {
   }
 }
 
-export type FunctionCallExpressionExpression = {
+export type FunctionCallExpression = {
   type: 'functionCallExpression'
   data: {
     id: string
@@ -195,7 +181,7 @@ export type FunctionCallExpressionExpression = {
   }
 }
 
-export type LiteralExpressionExpression = {
+export type LiteralExpression = {
   type: 'literalExpression'
   data: {
     id: string
@@ -203,7 +189,7 @@ export type LiteralExpressionExpression = {
   }
 }
 
-export type MemberExpressionExpression = {
+export type MemberExpression = {
   type: 'memberExpression'
   data: {
     id: string
@@ -212,18 +198,13 @@ export type MemberExpressionExpression = {
   }
 }
 
-export type PlaceholderExpression = {
-  type: 'placeholder'
-  data: { id: string }
-}
-
 export type Expression =
-  | BinaryExpressionExpression
-  | IdentifierExpressionExpression
-  | FunctionCallExpressionExpression
-  | LiteralExpressionExpression
-  | MemberExpressionExpression
-  | PlaceholderExpression
+  | BinaryExpression
+  | IdentifierExpression
+  | FunctionCallExpression
+  | LiteralExpression
+  | MemberExpression
+  | Placeholder
 
 export type LoopStatement = {
   type: 'loop'
@@ -252,7 +233,7 @@ export type DeclarationStatement = {
   }
 }
 
-export type ExpressionStatementStatement = {
+export type ExpressionStatement = {
   type: 'expression'
   data: {
     id: string
@@ -260,14 +241,12 @@ export type ExpressionStatementStatement = {
   }
 }
 
-export type PlaceholderStatement = { type: 'placeholder'; data: { id: string } }
-
 export type Statement =
   | LoopStatement
   | BranchStatement
   | DeclarationStatement
-  | ExpressionStatementStatement
-  | PlaceholderStatement
+  | ExpressionStatement
+  | Placeholder
 
 export type Program = {
   type: 'program'
@@ -277,26 +256,19 @@ export type Program = {
   }
 }
 
-export type ParameterFunctionParameter = {
-  type: 'parameter'
-  data: {
-    id: string
-    externalName?: string
-    localName: Pattern
-    annotation: TypeAnnotation
-    defaultValue: FunctionParameterDefaultValue
-    comment?: CommentNode
-  }
-}
-
-export type PlaceholderFunctionParameter = {
-  type: 'placeholder'
-  data: { id: string }
-}
-
 export type FunctionParameter =
-  | ParameterFunctionParameter
-  | PlaceholderFunctionParameter
+  | Placeholder
+  | {
+      type: 'parameter'
+      data: {
+        id: string
+        externalName?: string
+        localName: Pattern
+        annotation: TypeAnnotation
+        defaultValue: FunctionParameterDefaultValue
+        comment?: CommentNode
+      }
+    }
 
 export type NoneFunctionParameterDefaultValue = {
   type: 'none'
@@ -333,15 +305,10 @@ export type FunctionTypeTypeAnnotation = {
   }
 }
 
-export type PlaceholderTypeAnnotation = {
-  type: 'placeholder'
-  data: { id: string }
-}
-
 export type TypeAnnotation =
   | TypeIdentifierTypeAnnotation
   | FunctionTypeTypeAnnotation
-  | PlaceholderTypeAnnotation
+  | Placeholder
 
 export type NoneLiteral = { type: 'none'; data: { id: string } }
 
@@ -393,41 +360,30 @@ export type Literal =
   | ColorLiteral
   | ArrayLiteral
 
-export type TopLevelParametersTopLevelParameters = {
-  id: string
-  parameters: FunctionParameter[]
-}
-
 export type TopLevelParameters = {
   type: 'topLevelParameters'
-  data: TopLevelParametersTopLevelParameters
-}
-
-export type ParameterGenericParameter = {
-  type: 'parameter'
   data: {
     id: string
-    name: Pattern
+    parameters: FunctionParameter[]
   }
 }
 
-export type PlaceholderGenericParameter = {
-  type: 'placeholder'
-  data: { id: string }
-}
-
 export type GenericParameter =
-  | ParameterGenericParameter
-  | PlaceholderGenericParameter
-
-export type TopLevelDeclarationsTopLevelDeclarations = {
-  id: string
-  declarations: Declaration[]
-}
+  | Placeholder
+  | {
+      type: 'parameter'
+      data: {
+        id: string
+        name: Pattern
+      }
+    }
 
 export type TopLevelDeclarations = {
   type: 'topLevelDeclarations'
-  data: TopLevelDeclarationsTopLevelDeclarations
+  data: {
+    id: string
+    declarations: Declaration[]
+  }
 }
 
 export type CommentNode = {
