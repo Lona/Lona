@@ -14,6 +14,7 @@ export default function parsePage() {
         tagName,
         properties: { className, href },
         children = [],
+        // @ts-ignore
       } = htmlParser.parse(node.value).children[0]
 
       if (

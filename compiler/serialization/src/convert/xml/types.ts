@@ -1,120 +1,107 @@
 import { parseXML, buildXML } from './utils'
+import * as AST from '../../types/types-ast'
 
-export function print(typesJson) {
-  const types = typesJson.types
-    .map(type => {
-      const {
-        case: kind,
-        data: { name: typeName, ...rest },
-      } = type
-
-      switch (kind) {
-        case 'native':
-          return {
-            name: 'NativeType',
-            attributes: { name: typeName },
-            children: rest.parameters.map(param => ({
-              name: 'NativeType.GenericParam',
-              attributes: { type: param.name },
-            })),
-          }
-        case 'type':
-          return {
-            name: 'Type',
-            attributes: { name: typeName },
-            children: rest.cases.map(caseObj => {
-              const { name: caseName, params } = caseObj
-
-              switch (caseObj.case) {
-                case 'normal':
-                  return {
-                    name: 'Case',
-                    attributes: { name: caseName },
-                    children: params.map(param => {
-                      const {
-                        value: { case: caseType, name, substitutions = [] },
-                      } = param
-                      switch (caseType) {
-                        case 'generic':
-                          return {
-                            name: 'Case.GenericParam',
-                            attributes: { type: name },
-                          }
-                        case 'type':
-                          return {
-                            name: 'Case.Param',
-                            attributes: { type: name },
-                            children: substitutions.map(s => {
-                              return {
-                                name: 'Case.Substitution',
-                                attributes: {
-                                  generic: s.generic,
-                                  instance: s.instance,
-                                },
-                              }
-                            }),
-                          }
-                        default:
-                          throw new Error(`Invalid case param type ${caseType}`)
-                      }
-                    }),
-                  }
-                case 'record':
-                  return {
-                    name: 'Record',
-                    attributes: { name: caseName },
-                    children: params.map(param => {
-                      const {
-                        key,
-                        value: { case: caseType, name, substitutions = [] },
-                      } = param
-                      switch (caseType) {
-                        case 'generic':
-                          return {
-                            name: 'Record.GenericParam',
-                            attributes: { name: key, type: name },
-                          }
-                        case 'type':
-                          return {
-                            name: 'Record.Param',
-                            attributes: { name: key, type: name },
-                            children: substitutions.map(s => {
-                              return {
-                                name: 'Record.Substitution',
-                                attributes: {
-                                  generic: s.generic,
-                                  instance: s.instance,
-                                },
-                              }
-                            }),
-                          }
-                        default:
-                          throw new Error(
-                            `Invalid record param type ${caseType}`
-                          )
-                      }
-                    }),
-                  }
-                default:
-                  throw new Error(`Invalid type ${caseObj.case}`)
-              }
-            }),
-          }
-        default:
-          throw new Error(`Invalid type ${kind}`)
-      }
-    })
-    .filter(x => !!x)
-
-  return buildXML({ name: 'root', children: types })
+function assertNever(x: never): never {
+  throw new Error('Unknown type: ' + x['case'])
 }
 
-export function parse(typesDefinition) {
-  const { children: definitions } = parseXML(typesDefinition)
+export function print(typesJson: AST.Root) {
+  const types = typesJson.types.map(type => {
+    switch (type.case) {
+      case 'native':
+        return {
+          name: 'NativeType',
+          attributes: { name: type.data.name },
+          children: type.data.parameters.map(param => ({
+            name: 'NativeType.GenericParam',
+            attributes: { type: param.name },
+          })),
+        }
+      case 'type':
+        return {
+          name: 'Type',
+          attributes: { name: type.data.name },
+          children: type.data.cases.map(caseObj => {
+            switch (caseObj.case) {
+              case 'normal':
+                return {
+                  name: 'Case',
+                  attributes: { name: caseObj.name },
+                  children: caseObj.params.map(param => {
+                    switch (param.value.case) {
+                      case 'generic':
+                        return {
+                          name: 'Case.GenericParam',
+                          attributes: { type: param.value.name },
+                        }
+                      case 'type':
+                        return {
+                          name: 'Case.Param',
+                          attributes: { type: param.value.name },
+                          children: param.value.substitutions.map(s => {
+                            return {
+                              name: 'Case.Substitution',
+                              attributes: {
+                                generic: s.generic,
+                                instance: s.instance,
+                              },
+                            }
+                          }),
+                        }
+                      default:
+                        assertNever(param.value)
+                    }
+                  }),
+                }
+              case 'record':
+                return {
+                  name: 'Record',
+                  attributes: { name: caseObj.name },
+                  children: caseObj.params.map(param => {
+                    switch (param.value.case) {
+                      case 'generic':
+                        return {
+                          name: 'Record.GenericParam',
+                          attributes: { name: param.key, type: name },
+                        }
+                      case 'type':
+                        return {
+                          name: 'Record.Param',
+                          attributes: { name: param.key, type: name },
+                          children: param.value.substitutions.map(s => {
+                            return {
+                              name: 'Record.Substitution',
+                              attributes: {
+                                generic: s.generic,
+                                instance: s.instance,
+                              },
+                            }
+                          }),
+                        }
+                      default:
+                        assertNever(param.value)
+                    }
+                  }),
+                }
+              default:
+                assertNever(caseObj)
+            }
+          }),
+        }
+      default:
+        assertNever(type)
+    }
+  })
+
+  return buildXML({ name: 'root', attributes: {}, children: types })
+}
+
+export function parse(typesDefinition: string): AST.Root {
+  const { children: definitions = [] } = parseXML(typesDefinition)
 
   return {
     types: definitions.map(definition => {
-      const { name, attributes, children = [] } = definition
+      const { name, attributes = {}, children = [] } = definition
 
       switch (name) {
         case 'NativeType':
@@ -124,7 +111,7 @@ export function parse(typesDefinition) {
               name: attributes.name,
               parameters: children.map(child => {
                 return {
-                  name: child.attributes.type,
+                  name: (child.attributes || {}).type,
                 }
               }),
             },
@@ -140,7 +127,7 @@ export function parse(typesDefinition) {
                     return {
                       case: 'normal',
                       name: typeCase.attributes.name,
-                      params: typeCase.children.map(param => {
+                      params: (typeCase.children || []).map(param => {
                         switch (param.name) {
                           case 'Case.GenericParam':
                             return {
@@ -154,11 +141,12 @@ export function parse(typesDefinition) {
                               value: {
                                 case: 'type',
                                 name: param.attributes.type,
-                                substitutions: param.children.map(
+                                substitutions: (param.children || []).map(
                                   substitution => {
                                     const {
-                                      attributes: { generic, instance },
-                                    } = substitution
+                                      generic,
+                                      instance,
+                                    } = substitution.attributes
 
                                     return { generic, instance }
                                   }
@@ -174,7 +162,7 @@ export function parse(typesDefinition) {
                     return {
                       case: 'record',
                       name: typeCase.attributes.name,
-                      params: typeCase.children.map(param => {
+                      params: (typeCase.children || []).map(param => {
                         switch (param.name) {
                           case 'Record.GenericParam':
                             return {
@@ -190,11 +178,12 @@ export function parse(typesDefinition) {
                               value: {
                                 case: 'type',
                                 name: param.attributes.type,
-                                substitutions: param.children.map(
+                                substitutions: (param.children || []).map(
                                   substitution => {
                                     const {
-                                      attributes: { generic, instance },
-                                    } = substitution
+                                      generic,
+                                      instance,
+                                    } = substitution.attributes
 
                                     return { generic, instance }
                                   }

@@ -13,6 +13,7 @@ import { convertTypes, decodeTypes, encodeTypes } from './lona-types'
 
 import * as MDXAST from './types/lona-ast'
 import * as LogicAST from './types/logic-ast'
+import * as TypesAST from './types/types-ast'
 
 // Document
 
@@ -76,13 +77,13 @@ function extractProgramFromAST(ast: { children: MDXAST.Content[] }) {
   const { children } = ast
 
   const declarations = children
-    .filter(child => child.type === 'code' && child.data.lang === 'tokens')
+    .filter(MDXAST.isLonaTokens)
     // Get Logic syntax node
-    .map((child: MDXAST.LonaTokens) => child.data.parsed)
+    .map(child => child.data.parsed)
     // Get declarations
     .map(node => node.data.declarations)
 
-  const flattened: LogicAST.Declaration[] = [].concat(...declarations)
+  const flattened = declarations.reduce((prev, x) => prev.concat(x), [])
 
   const topLevelDeclarations: LogicAST.TopLevelDeclarations = {
     data: {
@@ -113,6 +114,7 @@ const printMdxNode = mdx.printNode
 export {
   MDXAST,
   LogicAST,
+  TypesAST,
   SERIALIZATION_FORMAT,
   convertTypes,
   convertLogic,

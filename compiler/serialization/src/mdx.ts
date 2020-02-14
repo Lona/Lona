@@ -15,7 +15,7 @@ import * as AST from './types/lona-ast'
 const flattenImageParagraphs = FlattenImageParagraphs()
 
 const getOutputs = (src: string) => {
-  let mdast: MDAST.Root
+  let mdast: MDAST.Root | undefined
   let hast: any = {}
 
   let jsx = mdx.sync(src, {
@@ -103,9 +103,9 @@ function toMdast(node: AST.Content): MDAST.Content {
     }
   }
 
-  if (data['children'] && Array.isArray(data['children'])) {
+  if ('children' in data && Array.isArray(data.children)) {
     // @ts-ignore
-    return { type, ...data, children: data['children'].map(toMdast) }
+    return { type, ...data, children: data.children.map(toMdast) }
   }
 
   // @ts-ignore

@@ -1,3 +1,5 @@
+import * as AST from './types/types-ast'
+
 import * as json from './convert/json/types'
 import * as xml from './convert/xml/types'
 
@@ -20,7 +22,7 @@ export function decodeTypes(contents: string, format?: SERIALIZATION_FORMAT) {
   }
 }
 
-export function encodeTypes(ast: Object, format: SERIALIZATION_FORMAT) {
+export function encodeTypes(ast: AST.Root, format: SERIALIZATION_FORMAT) {
   try {
     switch (format) {
       case SERIALIZATION_FORMAT.JSON:

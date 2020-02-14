@@ -1,5 +1,5 @@
 import uuid from 'uuid/v4'
-import { parseXML, buildXML } from './utils'
+import { parseXML, buildXML, XMLNode } from './utils'
 import * as AST from '../../types/logic-ast'
 
 function createUUID() {
@@ -17,53 +17,53 @@ const typeToLiteralMapping = Object.entries(literalToTypeMapping).reduce(
     result[value] = key
     return result
   },
-  {}
+  {} as { [key: string]: string }
 )
 
-enum singleChildMapping {
-  declaration = 'content',
-  variable = 'initializer',
-  literalExpression = 'literal',
-  argument = 'expression',
-  memberExpression = 'expression',
+const singleChildMapping: { [key: string]: string } = {
+  declaration: 'content',
+  variable: 'initializer',
+  literalExpression: 'literal',
+  argument: 'expression',
+  memberExpression: 'expression',
 }
 
-enum multipleChildMapping {
-  program = 'block',
-  namespace = 'declarations',
-  topLevelDeclarations = 'declarations',
-  record = 'declarations',
-  functionCallExpression = 'arguments',
+const multipleChildMapping: { [key: string]: string } = {
+  program: 'block',
+  namespace: 'declarations',
+  topLevelDeclarations: 'declarations',
+  record: 'declarations',
+  functionCallExpression: 'arguments',
 }
 
-enum implicitPlaceholderMapping {
-  program = 'block',
-  namespace = 'declarations',
-  topLevelDeclarations = 'declarations',
-  record = 'declarations',
-  functionCallExpression = 'arguments',
+const implicitPlaceholderMapping: { [key: string]: string } = {
+  program: 'block',
+  namespace: 'declarations',
+  topLevelDeclarations: 'declarations',
+  record: 'declarations',
+  functionCallExpression: 'arguments',
 }
 
-enum nodeRenaming {
-  topLevelDeclarations = 'Declarations',
+const nodeRenaming: { [key: string]: string } = {
+  topLevelDeclarations: 'Declarations',
 }
 
-enum reverseNodeRenaming {
-  Declarations = 'topLevelDeclarations',
+const reverseNodeRenaming: { [key: string]: string } = {
+  Declarations: 'topLevelDeclarations',
 }
 
-enum patternNodeMapping {
-  importDeclaration = 'name',
-  variable = 'name',
-  namespace = 'name',
+const patternNodeMapping: { [key: string]: string } = {
+  importDeclaration: 'name',
+  variable: 'name',
+  namespace: 'name',
 }
 
-enum identifierNodeMapping {
-  memberExpression = 'memberName',
+const identifierNodeMapping: { [key: string]: string } = {
+  memberExpression: 'memberName',
 }
 
-enum annotationNodeMapping {
-  variable = 'annotation',
+const annotationNodeMapping: { [key: string]: string } = {
+  variable: 'annotation',
 }
 
 const upperFirst = (string: string) =>
@@ -72,7 +72,7 @@ const lowerFirst = (string: string) =>
   string.slice(0, 1).toLowerCase() + string.slice(1)
 
 export function print(logicJson: AST.SyntaxNode): string {
-  function isPlaceholder(
+  function isNotPlaceholder(
     item: AST.SyntaxNode,
     index: number,
     list: AST.SyntaxNode[]
@@ -85,34 +85,6 @@ export function print(logicJson: AST.SyntaxNode): string {
       return false
     }
     return true
-  }
-
-  function getChildren(node: AST.SyntaxNode): AST.SyntaxNode[] {
-    if (!('type' in node)) {
-      // pattern or identifier
-      return []
-    }
-    switch (node.type) {
-      case 'functionCallExpression': {
-        const { expression, arguments: args } = node.data
-
-        return [expression, ...args.filter(isPlaceholder)]
-      }
-      default:
-        break
-    }
-
-    if ('data' in node && singleChildMapping[node.type]) {
-      return [node.data[singleChildMapping[node.type]]]
-    }
-    if ('data' in node && multipleChildMapping[node.type]) {
-      const children = implicitPlaceholderMapping[node.type]
-        ? node.data[multipleChildMapping[node.type]].filter(isPlaceholder)
-        : node.data[multipleChildMapping[node.type]]
-      return children
-    }
-
-    return []
   }
 
   function serializeAnnotationNode(node: AST.TypeAnnotation): string {
@@ -134,12 +106,7 @@ export function print(logicJson: AST.SyntaxNode): string {
     }
   }
 
-  function processStandardNode(node: AST.SyntaxNode) {
-    if (!('type' in node)) {
-      // pattern or identifier
-      return
-    }
-
+  function processStandardNode(node: AST.SyntaxNode): XMLNode {
     const nodeName = nodeRenaming[node.type] || upperFirst(node.type)
 
     const attributes: {
@@ -150,15 +117,18 @@ export function print(logicJson: AST.SyntaxNode): string {
     } = {}
 
     if ('data' in node && patternNodeMapping[node.type]) {
+      // @ts-ignore
       attributes.name = node.data[patternNodeMapping[node.type]].name
     }
 
     if ('data' in node && identifierNodeMapping[node.type]) {
+      // @ts-ignore
       attributes.name = node.data[identifierNodeMapping[node.type]].string
     }
 
     if ('data' in node && annotationNodeMapping[node.type]) {
       attributes.type = serializeAnnotationNode(
+        // @ts-ignore
         node.data[annotationNodeMapping[node.type]]
       )
     }
@@ -172,14 +142,19 @@ export function print(logicJson: AST.SyntaxNode): string {
       case 'variable': {
         const compactLiteralTypes = ['boolean', 'number', 'string', 'color']
 
-        if (node.data.initializer.type === 'literalExpression') {
+        if (
+          node.data.initializer &&
+          node.data.initializer.type === 'literalExpression'
+        ) {
           const literal = node.data.initializer.data.literal
-          if (compactLiteralTypes.includes(literal.type)) {
+          if (
+            compactLiteralTypes.includes(literal.type) &&
+            'value' in literal.data
+          ) {
             return {
               name: nodeName,
               attributes: {
                 ...attributes,
-                // @ts-ignore
                 value: literal.data.value,
               },
               children: [],
@@ -192,7 +167,7 @@ export function print(logicJson: AST.SyntaxNode): string {
                 ...attributes,
               },
               children: literal.data.value
-                .filter(isPlaceholder)
+                .filter(isNotPlaceholder)
                 .map(processStandardNode),
             }
           }
@@ -244,7 +219,7 @@ export function print(logicJson: AST.SyntaxNode): string {
         break
     }
 
-    const children = getChildren(node).map(processStandardNode)
+    const children = AST.subNodes(node).map(processStandardNode)
 
     return {
       name: nodeName,
@@ -261,12 +236,12 @@ export function parse(root: string): AST.SyntaxNode {
     return {
       data: { id: createUUID() },
       type: 'placeholder',
-    }
+    } as { type: 'placeholder'; data: { id: string } }
   }
 
   const compactLiteralTypes = ['Boolean', 'Number', 'String', 'Color']
 
-  function decodeLiteralValue(type, value) {
+  function decodeLiteralValue(type: string, value: any) {
     switch (type) {
       case 'Boolean':
         return value === 'true'
@@ -288,7 +263,7 @@ export function parse(root: string): AST.SyntaxNode {
     const startParens = string.indexOf('(')
     const endParens = string.lastIndexOf(')')
 
-    let genericArguments = []
+    let genericArguments = [] as AST.TypeAnnotation[]
 
     const name = startParens >= 0 ? string.slice(0, startParens) : string
     if (startParens !== -1 && endParens !== -1) {
@@ -311,8 +286,8 @@ export function parse(root: string): AST.SyntaxNode {
     }
   }
 
-  function processStandardNode(node): AST.SyntaxNode {
-    const { name, attributes = {}, children } = node
+  function processStandardNode(node: XMLNode): AST.SyntaxNode {
+    const { name, attributes = {}, children = [] } = node
 
     switch (name) {
       case 'IdentifierExpression':
@@ -331,7 +306,7 @@ export function parse(root: string): AST.SyntaxNode {
         return {
           data: {
             declarations: [
-              ...children.map(processStandardNode),
+              ...children.map(processStandardNode).filter(AST.isDeclaration),
               {
                 data: { id: createUUID() },
                 type: 'placeholder',
@@ -432,7 +407,9 @@ export function parse(root: string): AST.SyntaxNode {
                     data: {
                       id: createUUID(),
                       value: [
-                        ...children.map(processStandardNode),
+                        ...children
+                          .map(processStandardNode)
+                          .filter(AST.isExpression),
                         makePlaceholder(),
                       ],
                     },
@@ -498,7 +475,7 @@ export function parse(root: string): AST.SyntaxNode {
     const nodeName = reverseNodeRenaming[name] || lowerFirst(name)
 
     // We implicitly transfer any single-value nodes to the data object
-    const data = {
+    const data: { [key: string]: any } = {
       id: createUUID(),
       ...attributes,
     }
@@ -554,7 +531,9 @@ export function parse(root: string): AST.SyntaxNode {
     }
 
     return {
+      // @ts-ignore
       type: nodeName,
+      // @ts-ignore
       data,
     }
   }

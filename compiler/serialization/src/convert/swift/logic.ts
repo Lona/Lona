@@ -10,10 +10,6 @@ export function print(node: AST.SyntaxNode, options: { indent?: number } = {}) {
   const { indent = 2 } = options
 
   function printNode(node: AST.SyntaxNode): string {
-    if (!('type' in node)) {
-      // pattern or identifier
-      return
-    }
     switch (node.type) {
       case 'program': {
         const { block } = node.data
@@ -46,16 +42,16 @@ export function print(node: AST.SyntaxNode, options: { indent?: number } = {}) {
       case 'namespace': {
         const { name, declarations } = node.data
 
-        const normalizedDeclarations = declarations.map(declaration => {
-          return {
-            ...declaration,
-            data: { ...declaration.data, declarationModifier: 'static' },
-          }
-        })
+        const normalizedDeclarations = declarations
+          .filter(declaration => declaration.type !== 'placeholder')
+          .map(declaration => {
+            return {
+              ...declaration,
+              data: { ...declaration.data, declarationModifier: 'static' },
+            } as AST.Declaration
+          })
 
         const printedDeclarations = normalizedDeclarations
-          .filter(declaration => declaration.type !== 'placeholder')
-          // @ts-ignore
           .map(x => printNode(x))
           .map(x => indentBlock(x, indent))
           .join('\n')
@@ -81,12 +77,14 @@ ${printedDeclarations}
         const { annotation, initializer, name, declarationModifier } = node.data
 
         const printedDeclarationModifier = declarationModifier
-          ? declarationModifier + ' '
+          ? `${declarationModifier} `
+          : ''
+        const printedAnnotation = annotation ? `: ${printNode(annotation)}` : ''
+        const printedInitializer = initializer
+          ? ` = ${printNode(initializer)}`
           : ''
 
-        return `${printedDeclarationModifier}let ${name.name}: ${printNode(
-          annotation
-        )} = ${printNode(initializer)}`
+        return `${printedDeclarationModifier}let ${name.name}${printedAnnotation}${printedInitializer}`
       }
       case 'typeIdentifier': {
         const { genericArguments, identifier } = node.data
@@ -158,10 +156,8 @@ ${printedDeclarations}
 ${printedExpressions}
 ]`
       }
-      default: {
-        return ''
-      }
     }
+    return ''
   }
 
   return printNode(node)

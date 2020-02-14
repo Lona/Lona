@@ -113,6 +113,10 @@ export interface LonaTokens extends Code {
   }
 }
 
+export function isLonaTokens(node: Content): node is LonaTokens {
+  return node.type === 'code' && node.data.lang === 'tokens'
+}
+
 export interface YAML extends Literal {
   type: 'yaml'
 }
