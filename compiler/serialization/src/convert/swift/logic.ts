@@ -1,19 +1,18 @@
+import * as AST from '../../types/logic-ast'
 import { indentBlock } from '../../formatting'
 import parser from './pegjs/logicSwiftParser'
 
-export function parse(code: string, options?: {}) {
+export function parse(code: string, options?: {}): AST.SyntaxNode {
   return parser.parse(code, options)
 }
 
-export function print(node, options: { indent?: number } = {}) {
+export function print(node: AST.SyntaxNode, options: { indent?: number } = {}) {
   const { indent = 2 } = options
 
-  function printNode(node) {
-    const { data } = node
-
+  function printNode(node: AST.SyntaxNode): string {
     switch (node.type) {
       case 'program': {
-        const { block } = data
+        const { block } = node.data
 
         return block
           .filter(node => node.type !== 'placeholder')
@@ -21,7 +20,7 @@ export function print(node, options: { indent?: number } = {}) {
           .join('\n\n')
       }
       case 'topLevelDeclarations': {
-        const { declarations } = data
+        const { declarations } = node.data
 
         return declarations
           .filter(node => node.type !== 'placeholder')
@@ -30,45 +29,39 @@ export function print(node, options: { indent?: number } = {}) {
       }
       // Declaration statement
       case 'declaration': {
-        const { content } = data
-
-        return printNode(content)
+        if ('content' in node.data) {
+          return printNode(node.data.content)
+        }
+        break
       }
       case 'importDeclaration': {
-        const {
-          name: { name },
-        } = data
+        const { name } = node.data
 
-        return `import ${name}`
+        return `import ${name.name}`
       }
       case 'namespace': {
-        const {
-          name: { name },
-          declarations,
-        } = data
+        const { name, declarations } = node.data
 
-        const normalizedDeclarations = declarations.map(declaration => {
-          return {
-            ...declaration,
-            data: { ...declaration.data, declarationModifier: 'static' },
-          }
-        })
+        const normalizedDeclarations = declarations
+          .filter(declaration => declaration.type !== 'placeholder')
+          .map(declaration => {
+            return {
+              ...declaration,
+              data: { ...declaration.data, declarationModifier: 'static' },
+            } as AST.Declaration
+          })
 
         const printedDeclarations = normalizedDeclarations
-          .filter(declaration => declaration.type !== 'placeholder')
           .map(x => printNode(x))
           .map(x => indentBlock(x, indent))
           .join('\n')
 
-        return `enum ${name} {
+        return `enum ${name.name} {
 ${printedDeclarations}
 }`
       }
       case 'record': {
-        const {
-          name: { name },
-          declarations,
-        } = data
+        const { name, declarations } = node.data
 
         const printedDeclarations = declarations
           .filter(declaration => declaration.type !== 'placeholder')
@@ -76,40 +69,36 @@ ${printedDeclarations}
           .map(x => indentBlock(x, indent))
           .join('\n')
 
-        return `struct ${name} {
+        return `struct ${name.name} {
 ${printedDeclarations}
 }`
       }
       case 'variable': {
-        const {
-          annotation,
-          initializer,
-          name: { name },
-          declarationModifier,
-        } = data
+        const { annotation, initializer, name, declarationModifier } = node.data
 
         const printedDeclarationModifier = declarationModifier
-          ? declarationModifier + ' '
+          ? `${declarationModifier} `
+          : ''
+        const printedAnnotation = annotation ? `: ${printNode(annotation)}` : ''
+        const printedInitializer = initializer
+          ? ` = ${printNode(initializer)}`
           : ''
 
-        return `${printedDeclarationModifier}let ${name}: ${printNode(
-          annotation
-        )} = ${printNode(initializer)}`
+        return `${printedDeclarationModifier}let ${name.name}${printedAnnotation}${printedInitializer}`
       }
       case 'typeIdentifier': {
-        const {
-          genericArguments,
-          identifier: { string },
-        } = data
+        const { genericArguments, identifier } = node.data
 
         return genericArguments.length > 0
-          ? `${string}<${genericArguments.map(printNode).join(', ')}>`
-          : string
+          ? `${identifier.string}<${genericArguments
+              .map(printNode)
+              .join(', ')}>`
+          : identifier.string
       }
       case 'functionCallExpression': {
-        const { expression } = data
+        const { expression } = node.data
 
-        const printedArguments = data.arguments
+        const printedArguments = node.data.arguments
           .filter(node => node.type !== 'placeholder')
           .map(printNode)
           .join(', ')
@@ -117,50 +106,45 @@ ${printedDeclarations}
         return `${printNode(expression)}(${printedArguments})`
       }
       case 'argument': {
-        const { expression, label } = data
+        const { expression, label } = node.data
 
         return label
           ? `${label}: ${printNode(expression)}`
           : printNode(expression)
       }
       case 'memberExpression': {
-        const {
-          expression,
-          memberName: { string },
-        } = data
+        const { expression, memberName } = node.data
 
-        return printNode(expression) + '.' + string
+        return printNode(expression) + '.' + memberName.string
       }
       case 'identifierExpression': {
-        const {
-          identifier: { string },
-        } = data
+        const { identifier } = node.data
 
-        return string
+        return identifier.string
       }
       case 'literalExpression': {
-        const { literal } = data
+        const { literal } = node.data
 
         return printNode(literal)
       }
       case 'boolean':
       case 'number': {
-        const { value } = data
+        const { value } = node.data
 
         return value.toString()
       }
       case 'string': {
-        const { value } = data
+        const { value } = node.data
 
         return JSON.stringify(value)
       }
       case 'color': {
-        const { value } = data
+        const { value } = node.data
 
         return `#color(css: ${JSON.stringify(value)})`
       }
       case 'array': {
-        const { value } = data
+        const { value } = node.data
 
         const printedExpressions = value
           .filter(node => node.type !== 'placeholder')
@@ -173,6 +157,7 @@ ${printedExpressions}
 ]`
       }
     }
+    return ''
   }
 
   return printNode(node)

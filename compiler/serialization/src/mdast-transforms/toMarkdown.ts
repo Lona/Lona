@@ -1,5 +1,5 @@
 import { indentBlockWithFirstLinePrefix } from '../formatting'
-import { MDAST } from 'mdx-ast'
+import * as MDAST from '../types/mdx-ast'
 
 function assertNever(x: never): never {
   throw new Error('Unknown mdx node: ' + x['type'])

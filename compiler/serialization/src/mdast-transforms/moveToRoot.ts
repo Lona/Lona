@@ -1,6 +1,6 @@
 import flatMap from 'unist-util-flatmap'
 
-import { MDAST } from 'mdx-ast'
+import * as MDAST from '../types/mdx-ast'
 
 export default function moveToRoot(targetType: MDAST.Content['type'] | 'page') {
   return (ast: MDAST.Root) => {
@@ -9,7 +9,7 @@ export default function moveToRoot(targetType: MDAST.Content['type'] | 'page') {
       if (!node.children || !Array.isArray(node.children)) return [node]
       if (node.children.every(child => child.type !== targetType)) return [node]
       const out = []
-      let latestContiguous = Object.assign({}, node, { children: [] })
+      let latestContiguous = Object.assign({}, node, { children: [] as any[] })
       for (let child of node.children) {
         if (child.type !== targetType) {
           latestContiguous.children.push(child)

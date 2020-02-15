@@ -1,19 +1,30 @@
 import xmlbuilder from 'xmlbuilder'
 import { parseString } from 'xml2js'
 
-export function buildXML(root): string {
-  function processChildren(builder, children) {
-    // eslint-disable-next-line no-use-before-define
+export type XMLNode = {
+  name: string
+  attributes: { [key: string]: any }
+  children?: XMLNode[]
+}
+
+export function buildXML(root: XMLNode): string {
+  function processChildren(
+    builder: xmlbuilder.XMLElementOrXMLNode,
+    children: XMLNode[]
+  ): xmlbuilder.XMLElementOrXMLNode {
     return children.reduce(process, builder).up()
   }
 
-  function process(builder, item) {
+  function process(
+    builder: xmlbuilder.XMLElementOrXMLNode,
+    item: XMLNode
+  ): xmlbuilder.XMLElementOrXMLNode {
     const { name, attributes = {}, children = [] } = item
 
     return processChildren(builder.ele(name, attributes), children)
   }
 
-  function createRoot(item) {
+  function createRoot(item: XMLNode) {
     const { name, attributes = {}, children = [] } = item
 
     const builder = xmlbuilder.create(name)
@@ -36,7 +47,7 @@ export function buildXML(root): string {
 
 export function parseXML(xmlString: string) {
   let parsed: any
-  let error: Error
+  let error: Error | undefined
 
   parseString(
     xmlString,
@@ -51,13 +62,21 @@ export function parseXML(xmlString: string) {
     throw error
   }
 
-  function unwrap(xmlNodeDescription) {
-    const { '#name': name, $: attributes, $$: children } = xmlNodeDescription
+  if (!parsed) {
+    throw new Error('Cannot parse the xml')
+  }
+
+  function unwrap(xmlNodeDescription: any): XMLNode {
+    const {
+      '#name': name,
+      $: attributes = {},
+      $$: children = [],
+    } = xmlNodeDescription
 
     return {
       name,
       attributes,
-      children: children ? children.map(unwrap) : [],
+      children: children.map(unwrap),
     }
   }
 

@@ -9,13 +9,13 @@ import parseTokens from './mdast-transforms/parseTokens'
 
 import { SERIALIZATION_FORMAT } from './lona-format'
 
-import { MDAST } from 'mdx-ast'
-import { AST } from 'lona-ast'
+import * as MDAST from './types/mdx-ast'
+import * as AST from './types/lona-ast'
 
 const flattenImageParagraphs = FlattenImageParagraphs()
 
 const getOutputs = (src: string) => {
-  let mdast: MDAST.Root
+  let mdast: MDAST.Root | undefined
   let hast: any = {}
 
   let jsx = mdx.sync(src, {
@@ -56,10 +56,7 @@ function removeExtras(ast: MDAST.Root) {
 
 export function parse(
   src: string,
-  convertTokens: (
-    contents: string,
-    targetFormat: SERIALIZATION_FORMAT
-  ) => string
+  convertLogic: (contents: string, targetFormat: SERIALIZATION_FORMAT) => string
 ) {
   const mdast = getOutputs(src).mdast
 
@@ -70,7 +67,7 @@ export function parse(
     moveToRoot('blockquote'),
     removeExtras,
     parsePage(),
-    parseTokens(convertTokens),
+    parseTokens(convertLogic),
     moveToRoot('page'),
   ]
 
@@ -106,9 +103,9 @@ function toMdast(node: AST.Content): MDAST.Content {
     }
   }
 
-  if (data['children'] && Array.isArray(data['children'])) {
+  if ('children' in data && Array.isArray(data.children)) {
     // @ts-ignore
-    return { type, ...data, children: data['children'].map(toMdast) }
+    return { type, ...data, children: data.children.map(toMdast) }
   }
 
   // @ts-ignore
@@ -122,7 +119,7 @@ export function printNode(mdxBlockNode: AST.Content) {
 
 export function print(
   normalizedFormat: { children: AST.Content[] },
-  convertTokens: (
+  convertLogic: (
     contents: string,
     targetFormat: SERIALIZATION_FORMAT
   ) => string,
@@ -133,7 +130,7 @@ export function print(
   const encodedTokensAst = map<MDAST.Root>(ast, node => {
     if (node.type === 'code' && node.lang === 'tokens') {
       const embeddedFormat = options.embeddedFormat || SERIALIZATION_FORMAT.XML
-      let value = convertTokens(JSON.stringify(node.parsed), embeddedFormat)
+      let value = convertLogic(JSON.stringify(node.parsed), embeddedFormat)
       // Prettify embedded JSON
       if (embeddedFormat === 'json') {
         value = JSON.stringify(JSON.parse(value), null, 2)
