@@ -99,14 +99,12 @@ class PublishingViewController: NSViewController {
         case .needsAuth:
             let screen = PublishNeedsAuth(workspaceName: workspaceName)
             screen.onClickGithubButton = {
-                let url = URL(string: "https://github.com/login/oauth/authorize?scope=user:email&client_id=\(GITHUB_CLIENT_ID)&redirect_uri=\(encodeURIComponent("\(API_BASE_URL)/oauth/github/\(encodeURIComponent("lonastudio://oauth-callback"))"))")!
-                if !NSWorkspace.shared.open(url) {
+                if !NSWorkspace.shared.open(GITHUB_SIGNIN_URL) {
                     print("couldn't open the  browser")
                 }
             }
             screen.onClickGoogleButton = {
-                let url = URL(string: "https://accounts.google.com/o/oauth2/v2/auth?client_id=\(GITHUB_CLIENT_ID)&response_type=code&scope=openid%20email%20profile&redirect_uri=\(encodeURIComponent("\(API_BASE_URL)/oauth/github/\(encodeURIComponent("lonastudio://oauth-callback"))"))")!
-                if !NSWorkspace.shared.open(url) {
+                if !NSWorkspace.shared.open(GOOGLE_SIGNIN_URL) {
                     print("couldn't open the  browser")
                 }
             }

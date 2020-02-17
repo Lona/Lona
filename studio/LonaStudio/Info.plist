@@ -118,6 +118,8 @@
 	<string>1.0.11</string>
 	<key>GITHUB_CLIENT_ID</key>
 	<string>$(GITHUB_CLIENT_ID)</string>
+	<key>GOOGLE_CLIENT_ID</key>
+	<string>$(GOOGLE_CLIENT_ID)</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.developer-tools</string>
 	<key>LSMinimumSystemVersion</key>

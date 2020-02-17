@@ -2086,6 +2086,7 @@
 					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
 				GITHUB_CLIENT_ID = 47895007495ec2ed6366;
+				GOOGLE_CLIENT_ID = "546773951334-iaqahhpbofeno5t3t72espkhc81ttlev.apps.googleusercontent.com";
 				INFOPLIST_FILE = LonaStudio/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2117,6 +2118,7 @@
 					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
 				GITHUB_CLIENT_ID = 47895007495ec2ed6366;
+				GOOGLE_CLIENT_ID = "546773951334-iaqahhpbofeno5t3t72espkhc81ttlev.apps.googleusercontent.com";
 				INFOPLIST_FILE = LonaStudio/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

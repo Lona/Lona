@@ -11,6 +11,9 @@ import AppKit
 import MASPreferences
 
 let GITHUB_CLIENT_ID = Bundle.main.infoDictionary?["GITHUB_CLIENT_ID"] as! String
+let GOOGLE_CLIENT_ID = Bundle.main.infoDictionary?["GOOGLE_CLIENT_ID"] as! String
+let GITHUB_SIGNIN_URL = URL(string: "https://github.com/login/oauth/authorize?scope=user:email&client_id=\(GITHUB_CLIENT_ID)&redirect_uri=\(encodeURIComponent("\(API_BASE_URL)/oauth/github/\(encodeURIComponent("lonastudio://oauth-callback"))"))")!
+let GOOGLE_SIGNIN_URL = URL(string: "https://accounts.google.com/o/oauth2/v2/auth?client_id=\(GOOGLE_CLIENT_ID)&response_type=code&scope=openid%20email%20profile&redirect_uri=\(encodeURIComponent("\(API_BASE_URL)/oauth/github/\(encodeURIComponent("lonastudio://oauth-callback"))"))")!
 
 func encodeURIComponent(_ string: String) -> String {
   var characterSet = CharacterSet.alphanumerics
@@ -83,15 +86,13 @@ class AccountPreferencesViewController: NSViewController, MASPreferencesViewCont
   }
 
   @objc func openGitHubSigninURL() {
-    let url = URL(string: "https://github.com/login/oauth/authorize?scope=user:email&client_id=\(GITHUB_CLIENT_ID)&redirect_uri=\(encodeURIComponent("\(API_BASE_URL)/oauth/github/\(encodeURIComponent("lonastudio://oauth-callback"))"))")!
-    if !NSWorkspace.shared.open(url) {
+    if !NSWorkspace.shared.open(GITHUB_SIGNIN_URL) {
       print("couldn't open the  browser")
     }
   }
 
   @objc func openGoogleSigninURL() {
-    let url = URL(string: "https://accounts.google.com/o/oauth2/v2/auth?client_id=\(GITHUB_CLIENT_ID)&response_type=code&scope=openid%20email%20profile&redirect_uri=\(encodeURIComponent("\(API_BASE_URL)/oauth/github/\(encodeURIComponent("lonastudio://oauth-callback"))"))")!
-    if !NSWorkspace.shared.open(url) {
+    if !NSWorkspace.shared.open(GOOGLE_SIGNIN_URL) {
       print("couldn't open the  browser")
     }
   }
