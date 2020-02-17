@@ -8,6 +8,7 @@
 
 import AppKit
 import BreadcrumbBar
+import Apollo
 
 // MARK: - PublishingViewController
 
@@ -22,8 +23,8 @@ class PublishingViewController: NSViewController {
     private enum State: Equatable {
         case needsAuth
         case needsOrg
-        case needsRepo(organizationName: String)
-        case createRepo(organizationName: String, githubOrganizations: [String])
+        case needsRepo(organizationName: String, organizationId: GraphQLID)
+        case createRepo(organizationName: String, organizationId: GraphQLID, githubOrganizations: [String])
         case done
     }
 
@@ -126,20 +127,28 @@ class PublishingViewController: NSViewController {
                         return
                       }
 
-                      self.history.navigateTo(.needsRepo(organizationName: screen.organizationName))
+                      guard
+                        let organizationName = graphQLResult.data?.createOrganisation.organisation?.name,
+                        let organizationId = graphQLResult.data?.createOrganisation.organisation?.id
+                      else {
+                        print("Missing name or id")
+                        return
+                      }
+
+                      self.history.navigateTo(.needsRepo(organizationName: organizationName, organizationId: organizationId))
                     case .failure(let error):
                         print(error.localizedDescription)
                     }
                 }
             }
             return screen
-        case .needsRepo(let organizationName):
+        case .needsRepo(let organizationName, let organizationId):
             let screen = PublishNeedsRepo(workspaceName: workspaceName, organizationName: organizationName)
             screen.onClickCreateRepository = { [unowned self] in
-                self.history.navigateTo(.createRepo(organizationName: screen.organizationName, githubOrganizations: ["dabbott", "Lona"]))
+              self.history.navigateTo(.createRepo(organizationName: organizationName, organizationId: organizationId, githubOrganizations: ["dabbott", "Lona"]))
             }
             return screen
-        case .createRepo(let organizationName, let githubOrganizations):
+        case .createRepo(let organizationName, let organizationId, let githubOrganizations):
             let screen = PublishCreateRepo(
                 workspaceName: workspaceName,
                 organizationName: organizationName,
@@ -161,6 +170,22 @@ class PublishingViewController: NSViewController {
             }
             screen.onClickSubmitButton = { [unowned self] in
                 // TODO: Actually create everything
+                Network.shared.apollo.perform(mutation: AddRepoMutation(organisationId: organizationId, url: "https://github.com/\(githubOrganizations[screen.githubOrganizationIndex])/\(screen.repositoryName)")) { [weak self] result in
+                    guard let self = self else {
+                        return
+                    }
+                    switch result {
+                    case .success(let graphQLResult):
+                      if let errors = graphQLResult.errors {
+                        print(errors)
+                        return
+                      }
+
+                      self.history = .init(.done)
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                    }
+                }
                 self.history = .init(.done)
             }
             updateSubmitButtonTitle()
