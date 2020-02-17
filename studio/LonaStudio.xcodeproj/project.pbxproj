@@ -12,6 +12,7 @@
 		0304A71523F42293009A1E82 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A71423F42293009A1E82 /* API.swift */; };
 		0304A71723F424B1009A1E82 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A71623F424B1009A1E82 /* Network.swift */; };
 		0304A71923F425B4009A1E82 /* createOrganisation.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 0304A71823F425B4009A1E82 /* createOrganisation.graphql */; };
+		0304A71B23FA8B18009A1E82 /* addRepo.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 0304A71A23FA8B18009A1E82 /* addRepo.graphql */; };
 		0310D107220B13D5007B3546 /* RPCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0310D106220B13D5007B3546 /* RPCService.swift */; };
 		0310D109220B9DE8007B3546 /* PluginAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0310D108220B9DE8007B3546 /* PluginAPI.swift */; };
 		0314F4B323F2A910009CE468 /* AccountPreferencesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0314F4B223F2A910009CE468 /* AccountPreferencesViewController.swift */; };
@@ -385,6 +386,7 @@
 		0304A71423F42293009A1E82 /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		0304A71623F424B1009A1E82 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		0304A71823F425B4009A1E82 /* createOrganisation.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = createOrganisation.graphql; sourceTree = "<group>"; };
+		0304A71A23FA8B18009A1E82 /* addRepo.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = addRepo.graphql; sourceTree = "<group>"; };
 		0310D106220B13D5007B3546 /* RPCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RPCService.swift; sourceTree = "<group>"; };
 		0310D108220B9DE8007B3546 /* PluginAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginAPI.swift; sourceTree = "<group>"; };
 		0314F4B223F2A910009CE468 /* AccountPreferencesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountPreferencesViewController.swift; sourceTree = "<group>"; };
@@ -748,6 +750,7 @@
 				0304A71423F42293009A1E82 /* API.swift */,
 				0304A71223F421F4009A1E82 /* getMe.graphql */,
 				0304A71823F425B4009A1E82 /* createOrganisation.graphql */,
+				0304A71A23FA8B18009A1E82 /* addRepo.graphql */,
 			);
 			path = GraphQL;
 			sourceTree = "<group>";
@@ -1496,6 +1499,7 @@
 				30F870DF20865859007ADA5B /* LonaIcon_256x256.png in Resources */,
 				6B0AEFBE1EBF74D800F35BBF /* Assets.xcassets in Resources */,
 				30F870E420865859007ADA5B /* icon-documentation.png in Resources */,
+				0304A71B23FA8B18009A1E82 /* addRepo.graphql in Resources */,
 				30F870DE20865859007ADA5B /* LonaIcon_32x32.png in Resources */,
 				6B7380A022C7B3BF007534A0 /* themed-tokens-list@2x.png in Resources */,
 				0304A71023F4208F009A1E82 /* schema.json in Resources */,

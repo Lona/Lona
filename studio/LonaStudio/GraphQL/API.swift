@@ -3,6 +3,226 @@
 import Apollo
 import Foundation
 
+public enum RepoOrigin: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  case gitHub
+  case gitHubEnterprise
+  case other
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "GitHub": self = .gitHub
+      case "GitHubEnterprise": self = .gitHubEnterprise
+      case "Other": self = .other
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .gitHub: return "GitHub"
+      case .gitHubEnterprise: return "GitHubEnterprise"
+      case .other: return "Other"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: RepoOrigin, rhs: RepoOrigin) -> Bool {
+    switch (lhs, rhs) {
+      case (.gitHub, .gitHub): return true
+      case (.gitHubEnterprise, .gitHubEnterprise): return true
+      case (.other, .other): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [RepoOrigin] {
+    return [
+      .gitHub,
+      .gitHubEnterprise,
+      .other,
+    ]
+  }
+}
+
+public final class AddRepoMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition =
+    """
+    mutation addRepo($organisationId: ID!, $url: String!) {
+      addRepo(organisationId: $organisationId, url: $url) {
+        __typename
+        success
+        message
+        repo {
+          __typename
+          url
+          activated
+          origin
+        }
+      }
+    }
+    """
+
+  public let operationName = "addRepo"
+
+  public var organisationId: GraphQLID
+  public var url: String
+
+  public init(organisationId: GraphQLID, url: String) {
+    self.organisationId = organisationId
+    self.url = url
+  }
+
+  public var variables: GraphQLMap? {
+    return ["organisationId": organisationId, "url": url]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes = ["Mutation"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("addRepo", arguments: ["organisationId": GraphQLVariable("organisationId"), "url": GraphQLVariable("url")], type: .object(AddRepo.selections)),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(addRepo: AddRepo? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "addRepo": addRepo.flatMap { (value: AddRepo) -> ResultMap in value.resultMap }])
+    }
+
+    public var addRepo: AddRepo? {
+      get {
+        return (resultMap["addRepo"] as? ResultMap).flatMap { AddRepo(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "addRepo")
+      }
+    }
+
+    public struct AddRepo: GraphQLSelectionSet {
+      public static let possibleTypes = ["AddRepoMutationResponse"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("success", type: .nonNull(.scalar(Bool.self))),
+        GraphQLField("message", type: .nonNull(.scalar(String.self))),
+        GraphQLField("repo", type: .object(Repo.selections)),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(success: Bool, message: String, repo: Repo? = nil) {
+        self.init(unsafeResultMap: ["__typename": "AddRepoMutationResponse", "success": success, "message": message, "repo": repo.flatMap { (value: Repo) -> ResultMap in value.resultMap }])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var success: Bool {
+        get {
+          return resultMap["success"]! as! Bool
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "success")
+        }
+      }
+
+      public var message: String {
+        get {
+          return resultMap["message"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "message")
+        }
+      }
+
+      public var repo: Repo? {
+        get {
+          return (resultMap["repo"] as? ResultMap).flatMap { Repo(unsafeResultMap: $0) }
+        }
+        set {
+          resultMap.updateValue(newValue?.resultMap, forKey: "repo")
+        }
+      }
+
+      public struct Repo: GraphQLSelectionSet {
+        public static let possibleTypes = ["Repo"]
+
+        public static let selections: [GraphQLSelection] = [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("url", type: .nonNull(.scalar(String.self))),
+          GraphQLField("activated", type: .nonNull(.scalar(Bool.self))),
+          GraphQLField("origin", type: .nonNull(.scalar(RepoOrigin.self))),
+        ]
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(url: String, activated: Bool, origin: RepoOrigin) {
+          self.init(unsafeResultMap: ["__typename": "Repo", "url": url, "activated": activated, "origin": origin])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var url: String {
+          get {
+            return resultMap["url"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "url")
+          }
+        }
+
+        public var activated: Bool {
+          get {
+            return resultMap["activated"]! as! Bool
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "activated")
+          }
+        }
+
+        public var origin: RepoOrigin {
+          get {
+            return resultMap["origin"]! as! RepoOrigin
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "origin")
+          }
+        }
+      }
+    }
+  }
+}
+
 public final class CreateOrganisationMutation: GraphQLMutation {
   /// The raw GraphQL definition of this operation.
   public let operationDefinition =
