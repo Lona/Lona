@@ -14,6 +14,11 @@ import Apollo
 
 class PublishingViewController: NSViewController {
 
+    public struct Organization: Equatable {
+        let id: GraphQLID
+        let name: String
+    }
+
     // MARK: Static
 
     static var shared = PublishingViewController()
@@ -23,6 +28,7 @@ class PublishingViewController: NSViewController {
     private enum State: Equatable {
         case needsAuth
         case needsOrg
+        case chooseOrg(organizations: [Organization])
         case needsRepo(organizationName: String, organizationId: GraphQLID)
         case createRepo(organizationName: String, organizationId: GraphQLID, githubOrganizations: [String])
         case done
@@ -54,9 +60,33 @@ class PublishingViewController: NSViewController {
 
     public func initializeState() {
         history = .init()
-        history.navigateTo(Account.token != nil ? State.needsOrg : State.needsAuth)
         workspaceName = CSWorkspacePreferences.workspaceName
         update()
+
+        if let _ = Account.token {
+            Network.shared.apollo.fetch(query: GetMeQuery()) { [weak self] result in
+                guard let self = self else { return }
+
+                switch result {
+                case .success(let graphQLResult):
+                    if let errors = graphQLResult.errors {
+                        print(errors)
+                        return
+                    }
+
+                    guard let organizations = graphQLResult.data?.getMe?.organisations, organizations.count > 0 else {
+                        self.history.navigateTo(.needsOrg)
+                        return
+                    }
+
+                    self.history.navigateTo(.chooseOrg(organizations: organizations.map { Organization(id: $0.id, name: $0.name) }))
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+        } else {
+            history.navigateTo(State.needsAuth)
+        }
     }
 
     // MARK: Private
@@ -122,20 +152,20 @@ class PublishingViewController: NSViewController {
                     }
                     switch result {
                     case .success(let graphQLResult):
-                      if let errors = graphQLResult.errors {
-                        print(errors)
-                        return
-                      }
+                        if let errors = graphQLResult.errors {
+                            print(errors)
+                            return
+                        }
 
-                      guard
-                        let organizationName = graphQLResult.data?.createOrganisation.organisation?.name,
-                        let organizationId = graphQLResult.data?.createOrganisation.organisation?.id
-                      else {
-                        print("Missing name or id")
-                        return
-                      }
+                        guard
+                            let organizationName = graphQLResult.data?.createOrganisation.organisation?.name,
+                            let organizationId = graphQLResult.data?.createOrganisation.organisation?.id
+                            else {
+                                print("Missing name or id")
+                                return
+                        }
 
-                      self.history.navigateTo(.needsRepo(organizationName: organizationName, organizationId: organizationId))
+                        self.history.navigateTo(.needsRepo(organizationName: organizationName, organizationId: organizationId))
                     case .failure(let error):
                         print(error.localizedDescription)
                     }
@@ -189,6 +219,18 @@ class PublishingViewController: NSViewController {
                 self.history = .init(.done)
             }
             updateSubmitButtonTitle()
+            return screen
+        case .chooseOrg(let organizations):
+            let organizationIds = organizations.map { $0.id }
+            let screen = PublishChooseOrg(workspaceName: workspaceName, organizationName: "", organizationIds: organizationIds)
+            screen.onSelectOrganizationId = { [unowned self] id in
+                guard let organization = organizations.first(where: { $0.id == id }) else { return }
+
+                self.history.navigateTo(.needsRepo(organizationName: organization.name, organizationId: organization.id))
+            }
+            screen.onClickSubmit = { [unowned self] in
+                self.dismiss(nil)
+            }
             return screen
         case .done:
             let screen = PublishDone(workspaceName: workspaceName)

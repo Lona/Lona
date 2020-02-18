@@ -300,6 +300,8 @@
 		6BCCE33A23F39417004C482E /* PublishNeedsRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33923F39417004C482E /* PublishNeedsRepo.swift */; };
 		6BCCE33C23F39CD3004C482E /* PublishCreateRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33B23F39CD3004C482E /* PublishCreateRepo.swift */; };
 		6BCCE33E23F3AAC2004C482E /* PublishDone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33D23F3AAC2004C482E /* PublishDone.swift */; };
+		6BCCE34023FCA769004C482E /* PublishChooseOrg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33F23FCA769004C482E /* PublishChooseOrg.swift */; };
+		6BCCE34223FCA78B004C482E /* OrganizationList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE34123FCA78B004C482E /* OrganizationList.swift */; };
 		6BCE162722D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCE162622D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift */; };
 		6BD4976121E42EC400BC3970 /* AccessibilityInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */; };
 		6BD4976321E53F2000BC3970 /* Accessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976221E53F2000BC3970 /* Accessibility.swift */; };
@@ -668,6 +670,8 @@
 		6BCCE33923F39417004C482E /* PublishNeedsRepo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishNeedsRepo.swift; sourceTree = "<group>"; };
 		6BCCE33B23F39CD3004C482E /* PublishCreateRepo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishCreateRepo.swift; sourceTree = "<group>"; };
 		6BCCE33D23F3AAC2004C482E /* PublishDone.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishDone.swift; sourceTree = "<group>"; };
+		6BCCE33F23FCA769004C482E /* PublishChooseOrg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishChooseOrg.swift; sourceTree = "<group>"; };
+		6BCCE34123FCA78B004C482E /* OrganizationList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationList.swift; sourceTree = "<group>"; };
 		6BCE162622D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CustomParametersEditorSheet+Present.swift"; sourceTree = "<group>"; };
 		6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessibilityInspector.swift; sourceTree = "<group>"; };
 		6BD4976221E53F2000BC3970 /* Accessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accessibility.swift; sourceTree = "<group>"; };
@@ -822,6 +826,7 @@
 				039952C621E50D31008310DB /* MarkdownEditor.swift */,
 				6B7380A322C7CE7B007534A0 /* MarkdownViewController.swift */,
 				307B7B4E1F9A71C5001A62D9 /* MetadataEditorView.swift */,
+				6BCCE34123FCA78B004C482E /* OrganizationList.swift */,
 				6BCCE33523F35699004C482E /* PublishingViewController.swift */,
 				303C3FEF20A3A05D008E1541 /* RecentProjectsList.swift */,
 				300A0AFB1EDA0CBC00704DB7 /* SectionSplitter.swift */,
@@ -1071,6 +1076,7 @@
 		30F870BF20865858007ADA5B /* screens */ = {
 			isa = PBXGroup;
 			children = (
+				6BCCE33F23FCA769004C482E /* PublishChooseOrg.swift */,
 				6B0F5B8721386CAE007DBBB2 /* AddColorSheet.swift */,
 				036A4EA321E21DA400948DBD /* AddTextStyleSheet.swift */,
 				6B4DFCE620A7581E0048BB43 /* ColorBrowser.swift */,
@@ -1663,10 +1669,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				6BE89BBC21B7452800F35AC3 /* LonaViewModel.swift in Sources */,
+				6BCCE34223FCA78B004C482E /* OrganizationList.swift in Sources */,
 				6BA5BBD72173A7F600F086A7 /* Shadows.swift in Sources */,
 				6B4DFCED20A77C650048BB43 /* FileUtils.swift in Sources */,
 				305029C320643EC7002D9EE1 /* ComponentMenu.swift in Sources */,
 				303C3FF320A4E396008E1541 /* ComponentBrowser.swift in Sources */,
+				6BCCE34023FCA769004C482E /* PublishChooseOrg.swift in Sources */,
 				6B3414B4225D29AC00CC65D1 /* LogicEditor+Suggestions.swift in Sources */,
 				6B4E25FC22E160C100F0076A /* ColorSuggestionEditor.swift in Sources */,
 				6BE99D7A23CE50CC00E35E35 /* Promise+AppKit.swift in Sources */,
