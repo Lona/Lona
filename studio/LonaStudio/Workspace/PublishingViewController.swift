@@ -140,7 +140,7 @@ class PublishingViewController: NSViewController {
         case .needsAuth:
             let screen = PublishNeedsAuth(workspaceName: workspaceName)
             screen.onClickGithubButton = {
-                if !NSWorkspace.shared.open(GITHUB_SIGNIN_URL(scopes: ["user:email", "read:org"])) {
+                if !NSWorkspace.shared.open(GITHUB_SIGNIN_URL(scopes: ["user:email", "read:org", "repo"])) {
                     print("couldn't open the  browser")
                 }
             }
