@@ -29,8 +29,8 @@ class PublishingViewController: NSViewController {
         case needsAuth
         case needsOrg
         case chooseOrg(organizations: [Organization])
-        case needsRepo(organizationName: String, organizationId: GraphQLID)
-        case createRepo(organizationName: String, organizationId: GraphQLID, githubOrganizations: [String])
+        case needsRepo(organization: Organization)
+        case createRepo(organization: Organization, githubOrganizations: [String])
         case done
     }
 
@@ -157,20 +157,20 @@ class PublishingViewController: NSViewController {
             }
             screen.onClickSubmit = { [unowned self] in
                 self.createOrganization(name: screen.organizationName).finalSuccess({ [weak self] organization in
-                    self?.history.navigateTo(.needsRepo(organizationName: organization.name, organizationId: organization.id))
+                    self?.history.navigateTo(.needsRepo(organization: organization))
                 })
             }
             return screen
-        case .needsRepo(let organizationName, let organizationId):
-            let screen = PublishNeedsRepo(workspaceName: workspaceName, organizationName: organizationName)
+        case .needsRepo(let organization):
+            let screen = PublishNeedsRepo(workspaceName: workspaceName, organizationName: organization.name)
             screen.onClickCreateRepository = { [unowned self] in
-              self.history.navigateTo(.createRepo(organizationName: organizationName, organizationId: organizationId, githubOrganizations: ["dabbott", "Lona"]))
+                self.history.navigateTo(.createRepo(organization: organization, githubOrganizations: ["dabbott", "Lona"]))
             }
             return screen
-        case .createRepo(let organizationName, let organizationId, let githubOrganizations):
+        case .createRepo(let organization, let githubOrganizations):
             let screen = PublishCreateRepo(
                 workspaceName: workspaceName,
-                organizationName: organizationName,
+                organizationName: organization.name,
                 githubOrganizations: githubOrganizations,
                 githubOrganizationIndex: 0,
                 repositoryName: "",
@@ -191,9 +191,9 @@ class PublishingViewController: NSViewController {
                 self.showsProgressIndicator = true
 
                 self.addRepo(
-                    organizationId: organizationId,
-                    organizationName: githubOrganizations[screen.githubOrganizationIndex],
-                    repositoryName: screen.repositoryName
+                    organizationId: organization.id,
+                    githubOrganizationName: githubOrganizations[screen.githubOrganizationIndex],
+                    githubRepositoryName: screen.repositoryName
                 ).finalResult({ [weak self] result in
                     guard let self = self else { return }
 
@@ -219,7 +219,7 @@ class PublishingViewController: NSViewController {
 
                     switch result {
                     case .success(let organization):
-                        self.history.navigateTo(.needsRepo(organizationName: organization.name, organizationId: organization.id))
+                        self.history.navigateTo(.needsRepo(organization: organization))
                     case .failure(let error):
                         Swift.print("Failed to create organization:", error)
                     }
@@ -228,7 +228,7 @@ class PublishingViewController: NSViewController {
             screen.onSelectOrganizationId = { [unowned self] id in
                 guard let organization = organizations.first(where: { $0.id == id }) else { return }
 
-                self.history.navigateTo(.needsRepo(organizationName: organization.name, organizationId: organization.id))
+                self.history.navigateTo(.needsRepo(organization: organization))
             }
             return screen
         case .done:
@@ -338,13 +338,13 @@ extension PublishingViewController {
         }
     }
 
-    private func addRepo(organizationId: String, organizationName: String, repositoryName: String) -> Promise<Void, NSError> {
+    private func addRepo(organizationId: String, githubOrganizationName: String, githubRepositoryName: String) -> Promise<Void, NSError> {
         return .result { complete in
             self.showsProgressIndicator = true
 
             let mutation = AddRepoMutation(
                 organisationId: organizationId,
-                url: "https://github.com/\(organizationName)/\(repositoryName)"
+                url: "https://github.com/\(githubOrganizationName)/\(githubRepositoryName)"
             )
 
             Network.shared.apollo.perform(mutation: mutation) { [weak self] result in
