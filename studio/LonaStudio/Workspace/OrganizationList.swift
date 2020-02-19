@@ -88,7 +88,7 @@ public class OrganizationList: NSBox {
 
         addSubview(stackView)
 
-        Network.shared.apollo.fetch(query: GetMeQuery()) { [weak self] result in
+        Network.shared.lona.fetch(query: GetMeQuery()) { [weak self] result in
             guard let self = self else { return }
 
             switch result {

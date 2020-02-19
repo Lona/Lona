@@ -171,7 +171,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 return
             }
 
-            Account.token = token
+            Account.shared.signin(token: token)
             AppDelegate.reloadPreferencesWindow()
             PublishingViewController.shared.initializeState()
         }

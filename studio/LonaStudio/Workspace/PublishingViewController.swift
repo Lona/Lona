@@ -30,7 +30,7 @@ class PublishingViewController: NSViewController {
         case needsOrg
         case chooseOrg(organizations: [Organization])
         case needsRepo(organization: Organization)
-        case createRepo(organization: Organization, githubOrganizations: [String])
+        case createRepo(organization: Organization, githubOrganizations: [Organization])
         case done
     }
 
@@ -63,7 +63,7 @@ class PublishingViewController: NSViewController {
         workspaceName = CSWorkspacePreferences.workspaceName
         update()
 
-        if let _ = Account.token {
+        if Account.shared.signedIn {
             fetchOrganizations().finalResult({ [weak self] result in
                 guard let self = self else { return }
 
@@ -140,12 +140,12 @@ class PublishingViewController: NSViewController {
         case .needsAuth:
             let screen = PublishNeedsAuth(workspaceName: workspaceName)
             screen.onClickGithubButton = {
-                if !NSWorkspace.shared.open(GITHUB_SIGNIN_URL) {
+                if !NSWorkspace.shared.open(GITHUB_SIGNIN_URL(scopes: ["user:email", "read:org"])) {
                     print("couldn't open the  browser")
                 }
             }
             screen.onClickGoogleButton = {
-                if !NSWorkspace.shared.open(GOOGLE_SIGNIN_URL) {
+                if !NSWorkspace.shared.open(GOOGLE_SIGNIN_URL()) {
                     print("couldn't open the  browser")
                 }
             }
@@ -164,20 +164,22 @@ class PublishingViewController: NSViewController {
         case .needsRepo(let organization):
             let screen = PublishNeedsRepo(workspaceName: workspaceName, organizationName: organization.name)
             screen.onClickCreateRepository = { [unowned self] in
-                self.history.navigateTo(.createRepo(organization: organization, githubOrganizations: ["dabbott", "Lona"]))
+                self.fetchGitHubOrganizations().finalSuccess({ [weak self] organizations in
+                    self?.history.navigateTo(.createRepo(organization: organization, githubOrganizations: organizations))
+                })
             }
             return screen
         case .createRepo(let organization, let githubOrganizations):
             let screen = PublishCreateRepo(
                 workspaceName: workspaceName,
                 organizationName: organization.name,
-                githubOrganizations: githubOrganizations,
+                githubOrganizations: githubOrganizations.map { $0.name },
                 githubOrganizationIndex: 0,
                 repositoryName: "",
                 submitButtonTitle: ""
             )
             let updateSubmitButtonTitle: () -> Void = { [unowned screen] in
-                screen.submitButtonTitle = "Create \(githubOrganizations[screen.githubOrganizationIndex])/\(screen.repositoryName)"
+                screen.submitButtonTitle = "Create \(githubOrganizations[screen.githubOrganizationIndex].name)/\(screen.repositoryName)"
             }
             screen.onChangeRepositoryName = { [unowned screen] value in
                 screen.repositoryName = value
@@ -192,7 +194,7 @@ class PublishingViewController: NSViewController {
 
                 self.addRepo(
                     organizationId: organization.id,
-                    githubOrganizationName: githubOrganizations[screen.githubOrganizationIndex],
+                    githubOrganization: githubOrganizations[screen.githubOrganizationIndex],
                     githubRepositoryName: screen.repositoryName
                 ).finalResult({ [weak self] result in
                     guard let self = self else { return }
@@ -310,10 +312,21 @@ class PublishingViewController: NSViewController {
 extension PublishingViewController {
 
     private func fetchOrganizations() -> Promise<[Organization], NSError> {
+        self.showsProgressIndicator = true
+        return Account.shared.me().onSuccess { [weak self] result in
+            guard let self = self else { return .failure(NSError("Missing self")) }
+
+            self.showsProgressIndicator = false
+
+            return .success(result.organisations.map { Organization(id: $0.id, name: $0.name) })
+        }
+    }
+
+    private func fetchGitHubOrganizations() -> Promise<[Organization], NSError> {
         return .result { complete in
             self.showsProgressIndicator = true
 
-            Network.shared.apollo.fetch(query: GetMeQuery()) { [weak self] result in
+            Network.shared.github.fetch(query: GetOrganizationsQuery()) { [weak self] result in
                 guard let self = self else { return }
 
                 self.showsProgressIndicator = false
@@ -325,12 +338,20 @@ extension PublishingViewController {
                         return
                     }
 
-                    guard let organizations = graphQLResult.data?.getMe?.organisations else {
-                        complete(.success([]))
-                        return
+                    guard let data = graphQLResult.data?.viewer else {
+                      complete(.failure(NSError("Missing result")))
+                      return
                     }
 
-                    complete(.success(organizations.map { Organization(id: $0.id, name: $0.name) }))
+                    var organisations = [Organization(id: data.id, name: data.login)]
+
+                    data.organizations.nodes?.forEach { org in
+                      if let org = org {
+                        organisations.append(Organization(id: org.id, name: org.login))
+                      }
+                    }
+
+                    complete(.success(organisations))
                 case .failure(let error):
                     complete(.failure(NSError(error.localizedDescription)))
                 }
@@ -338,16 +359,16 @@ extension PublishingViewController {
         }
     }
 
-    private func addRepo(organizationId: String, githubOrganizationName: String, githubRepositoryName: String) -> Promise<Void, NSError> {
+    private func addRepo(organizationId: String, githubOrganization: Organization, githubRepositoryName: String) -> Promise<Void, NSError> {
         return .result { complete in
             self.showsProgressIndicator = true
 
             let mutation = AddRepoMutation(
                 organisationId: organizationId,
-                url: "https://github.com/\(githubOrganizationName)/\(githubRepositoryName)"
+                url: "https://github.com/\(githubOrganization.name)/\(githubRepositoryName)"
             )
 
-            Network.shared.apollo.perform(mutation: mutation) { [weak self] result in
+            Network.shared.lona.perform(mutation: mutation) { [weak self] result in
                 guard let self = self else { return }
 
                 self.showsProgressIndicator = false
@@ -371,7 +392,7 @@ extension PublishingViewController {
         return .result { complete in
             self.showsProgressIndicator = true
 
-            Network.shared.apollo.perform(mutation: CreateOrganisationMutation(name: organizationName)) { [weak self] result in
+            Network.shared.lona.perform(mutation: CreateOrganisationMutation(name: organizationName)) { [weak self] result in
                 guard let self = self else { return }
 
                 self.showsProgressIndicator = false

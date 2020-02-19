@@ -3,6 +3,7 @@ query getMe {
     id
     username
     token
+    githubAccessToken
     organisations {
       id
       name

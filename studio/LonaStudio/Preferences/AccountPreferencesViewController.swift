@@ -12,8 +12,12 @@ import MASPreferences
 
 let GITHUB_CLIENT_ID = Bundle.main.infoDictionary?["GITHUB_CLIENT_ID"] as! String
 let GOOGLE_CLIENT_ID = Bundle.main.infoDictionary?["GOOGLE_CLIENT_ID"] as! String
-let GITHUB_SIGNIN_URL = URL(string: "https://github.com/login/oauth/authorize?scope=user:email&client_id=\(GITHUB_CLIENT_ID)&redirect_uri=\(encodeURIComponent("\(API_BASE_URL)/oauth/github/\(encodeURIComponent("lonastudio://oauth-callback"))"))")!
-let GOOGLE_SIGNIN_URL = URL(string: "https://accounts.google.com/o/oauth2/v2/auth?client_id=\(GOOGLE_CLIENT_ID)&response_type=code&scope=openid%20email%20profile&redirect_uri=\(encodeURIComponent("\(API_BASE_URL)/oauth/github/\(encodeURIComponent("lonastudio://oauth-callback"))"))")!
+func GITHUB_SIGNIN_URL(scopes: [String] = ["user:email"]) -> URL {
+  return URL(string: "https://github.com/login/oauth/authorize?scope=\(scopes.joined(separator: "%20"))&client_id=\(GITHUB_CLIENT_ID)&redirect_uri=\(encodeURIComponent("\(API_BASE_URL)/oauth/github/\(encodeURIComponent("lonastudio://oauth-callback"))"))")!
+}
+func GOOGLE_SIGNIN_URL(scopes: [String] = ["openid", "email", "profile"]) -> URL {
+  return URL(string: "https://accounts.google.com/o/oauth2/v2/auth?client_id=\(GOOGLE_CLIENT_ID)&response_type=code&scope=\(scopes.joined(separator: "%20"))&redirect_uri=\(encodeURIComponent("\(API_BASE_URL)/oauth/github/\(encodeURIComponent("lonastudio://oauth-callback"))"))")!
+}
 
 func encodeURIComponent(_ string: String) -> String {
   var characterSet = CharacterSet.alphanumerics
@@ -44,13 +48,13 @@ class AccountPreferencesViewController: NSViewController, MASPreferencesViewCont
   func render() {
     loaded = false
 
-    Account.reload()
+    Account.shared.refreshToken()
 
     stackView.arrangedSubviews.forEach({ $0.removeFromSuperview() })
 
-    if let token = Account.token {
-      let tokenView = TextField(string: token)
-      stackView.addArrangedSubview(tokenView)
+    if Account.shared.signedIn {
+      let logoutButton = NSButton(title: "Log out", target: self, action: #selector(logout))
+      stackView.addArrangedSubview(logoutButton)
     } else {
       let signInWithGitHubView = NSButton(title: "Sign In With GitHub", target: self, action: #selector(openGitHubSigninURL))
       let signInWithGoogleView = NSButton(title: "Sign In With Google", target: self, action: #selector(openGoogleSigninURL))
@@ -86,15 +90,20 @@ class AccountPreferencesViewController: NSViewController, MASPreferencesViewCont
   }
 
   @objc func openGitHubSigninURL() {
-    if !NSWorkspace.shared.open(GITHUB_SIGNIN_URL) {
+    if !NSWorkspace.shared.open(GITHUB_SIGNIN_URL()) {
       print("couldn't open the  browser")
     }
   }
 
   @objc func openGoogleSigninURL() {
-    if !NSWorkspace.shared.open(GOOGLE_SIGNIN_URL) {
+    if !NSWorkspace.shared.open(GOOGLE_SIGNIN_URL()) {
       print("couldn't open the  browser")
     }
+  }
+
+  @objc func logout() {
+    Account.shared.logout()
+    render()
   }
 
   var toolbarItemLabel: String? {

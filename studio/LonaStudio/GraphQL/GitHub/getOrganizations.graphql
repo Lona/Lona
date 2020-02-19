@@ -1,0 +1,13 @@
+query getOrganizations {
+  viewer {
+    id
+    login
+    organizations(first: 100) {
+      nodes {
+        id
+        login
+        viewerCanCreateRepositories
+      }
+    }
+  }
+}

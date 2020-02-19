@@ -395,6 +395,7 @@ public final class GetMeQuery: GraphQLQuery {
         id
         username
         token
+        githubAccessToken
         organisations {
           __typename
           id
@@ -448,6 +449,7 @@ public final class GetMeQuery: GraphQLQuery {
         GraphQLField("id", type: .nonNull(.scalar(GraphQLID.self))),
         GraphQLField("username", type: .scalar(String.self)),
         GraphQLField("token", type: .nonNull(.scalar(String.self))),
+        GraphQLField("githubAccessToken", type: .scalar(String.self)),
         GraphQLField("organisations", type: .nonNull(.list(.nonNull(.object(Organisation.selections))))),
       ]
 
@@ -457,8 +459,8 @@ public final class GetMeQuery: GraphQLQuery {
         self.resultMap = unsafeResultMap
       }
 
-      public init(id: GraphQLID, username: String? = nil, token: String, organisations: [Organisation]) {
-        self.init(unsafeResultMap: ["__typename": "Me", "id": id, "username": username, "token": token, "organisations": organisations.map { (value: Organisation) -> ResultMap in value.resultMap }])
+      public init(id: GraphQLID, username: String? = nil, token: String, githubAccessToken: String? = nil, organisations: [Organisation]) {
+        self.init(unsafeResultMap: ["__typename": "Me", "id": id, "username": username, "token": token, "githubAccessToken": githubAccessToken, "organisations": organisations.map { (value: Organisation) -> ResultMap in value.resultMap }])
       }
 
       public var __typename: String {
@@ -494,6 +496,15 @@ public final class GetMeQuery: GraphQLQuery {
         }
         set {
           resultMap.updateValue(newValue, forKey: "token")
+        }
+      }
+
+      public var githubAccessToken: String? {
+        get {
+          return resultMap["githubAccessToken"] as? String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "githubAccessToken")
         }
       }
 
