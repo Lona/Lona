@@ -3,6 +3,142 @@
 import Apollo
 import Foundation
 
+public final class CreateRepositoryMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition =
+    """
+    mutation createRepository($ownerId: ID!, $name: String!, $description: String!) {
+      createRepository(input: {ownerId: $ownerId, name: $name, description: $description, visibility: PUBLIC}) {
+        __typename
+        repository {
+          __typename
+          url
+        }
+      }
+    }
+    """
+
+  public let operationName = "createRepository"
+
+  public var ownerId: GraphQLID
+  public var name: String
+  public var description: String
+
+  public init(ownerId: GraphQLID, name: String, description: String) {
+    self.ownerId = ownerId
+    self.name = name
+    self.description = description
+  }
+
+  public var variables: GraphQLMap? {
+    return ["ownerId": ownerId, "name": name, "description": description]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes = ["Mutation"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("createRepository", arguments: ["input": ["ownerId": GraphQLVariable("ownerId"), "name": GraphQLVariable("name"), "description": GraphQLVariable("description"), "visibility": "PUBLIC"]], type: .object(CreateRepository.selections)),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(createRepository: CreateRepository? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "createRepository": createRepository.flatMap { (value: CreateRepository) -> ResultMap in value.resultMap }])
+    }
+
+    /// Create a new repository.
+    public var createRepository: CreateRepository? {
+      get {
+        return (resultMap["createRepository"] as? ResultMap).flatMap { CreateRepository(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "createRepository")
+      }
+    }
+
+    public struct CreateRepository: GraphQLSelectionSet {
+      public static let possibleTypes = ["CreateRepositoryPayload"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("repository", type: .object(Repository.selections)),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(repository: Repository? = nil) {
+        self.init(unsafeResultMap: ["__typename": "CreateRepositoryPayload", "repository": repository.flatMap { (value: Repository) -> ResultMap in value.resultMap }])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      /// The new repository.
+      public var repository: Repository? {
+        get {
+          return (resultMap["repository"] as? ResultMap).flatMap { Repository(unsafeResultMap: $0) }
+        }
+        set {
+          resultMap.updateValue(newValue?.resultMap, forKey: "repository")
+        }
+      }
+
+      public struct Repository: GraphQLSelectionSet {
+        public static let possibleTypes = ["Repository"]
+
+        public static let selections: [GraphQLSelection] = [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("url", type: .nonNull(.scalar(String.self))),
+        ]
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(url: String) {
+          self.init(unsafeResultMap: ["__typename": "Repository", "url": url])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// The HTTP URL for this repository
+        public var url: String {
+          get {
+            return resultMap["url"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "url")
+          }
+        }
+      }
+    }
+  }
+}
+
 public final class GetOrganizationsQuery: GraphQLQuery {
   /// The raw GraphQL definition of this operation.
   public let operationDefinition =

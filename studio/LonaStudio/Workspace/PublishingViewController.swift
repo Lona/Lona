@@ -192,7 +192,7 @@ class PublishingViewController: NSViewController {
             screen.onClickSubmitButton = { [unowned self] in
                 self.showsProgressIndicator = true
 
-                self.addRepo(
+                self.createRepo(
                     organizationId: organization.id,
                     githubOrganization: githubOrganizations[screen.githubOrganizationIndex],
                     githubRepositoryName: screen.repositoryName
@@ -359,13 +359,48 @@ extension PublishingViewController {
         }
     }
 
-    private func addRepo(organizationId: String, githubOrganization: Organization, githubRepositoryName: String) -> Promise<Void, NSError> {
+    private func createRepo(organizationId: String, githubOrganization: Organization, githubRepositoryName: String) -> Promise<Void, NSError> {
+        return .result { complete in
+            self.showsProgressIndicator = true
+            let mutation = CreateRepositoryMutation(
+                ownerId: githubOrganization.id,
+                name: githubRepositoryName,
+                description: "Lona Workspace"
+            )
+
+            Network.shared.github.perform(mutation: mutation) { [weak self] result in
+                guard let self = self else { return }
+
+                switch result {
+                case .success(let graphQLResult):
+                    if let errors = graphQLResult.errors {
+                        self.showsProgressIndicator = false
+                        complete(.failure(NSError(errors.description)))
+                        return
+                    }
+
+                    guard let url = graphQLResult.data?.createRepository?.repository?.url else {
+                        self.showsProgressIndicator = false
+                        complete(.failure(NSError("Missing repo url")))
+                        return
+                    }
+
+                    self.addRepo(organizationId: organizationId, githubRepoURL: url).finalResult { complete($0) }
+                case .failure(let error):
+                    self.showsProgressIndicator = false
+                    complete(.failure(NSError(error.localizedDescription)))
+                }
+            }
+        }
+    }
+
+    private func addRepo(organizationId: String, githubRepoURL: String) -> Promise<Void, NSError> {
         return .result { complete in
             self.showsProgressIndicator = true
 
             let mutation = AddRepoMutation(
                 organisationId: organizationId,
-                url: "https://github.com/\(githubOrganization.name)/\(githubRepositoryName)"
+                url: githubRepoURL
             )
 
             Network.shared.lona.perform(mutation: mutation) { [weak self] result in
