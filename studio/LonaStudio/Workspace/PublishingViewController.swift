@@ -64,26 +64,20 @@ class PublishingViewController: NSViewController {
         update()
 
         if let _ = Account.token {
-            Network.shared.apollo.fetch(query: GetMeQuery()) { [weak self] result in
+            fetchOrganizations().finalResult({ [weak self] result in
                 guard let self = self else { return }
 
                 switch result {
-                case .success(let graphQLResult):
-                    if let errors = graphQLResult.errors {
-                        print(errors)
-                        return
-                    }
-
-                    guard let organizations = graphQLResult.data?.getMe?.organisations, organizations.count > 0 else {
+                case .success(let organizations):
+                    if organizations.isEmpty {
                         self.history.navigateTo(.needsOrg)
-                        return
+                    } else {
+                        self.history.navigateTo(.chooseOrg(organizations: organizations))
                     }
-
-                    self.history.navigateTo(.chooseOrg(organizations: organizations.map { Organization(id: $0.id, name: $0.name) }))
                 case .failure(let error):
-                    print(error.localizedDescription)
+                    Swift.print("Failed to fetch organizations:", error)
                 }
-            }
+            })
         } else {
             history.navigateTo(State.needsAuth)
         }
@@ -97,11 +91,27 @@ class PublishingViewController: NSViewController {
         }
     }
 
+    private var showsProgressIndicator = false {
+        didSet {
+            if oldValue != showsProgressIndicator {
+                if showsProgressIndicator {
+                    progressIndicator.startAnimation(nil)
+                } else {
+                    progressIndicator.stopAnimation(nil)
+                }
+
+                update()
+            }
+        }
+    }
+
     private var workspaceName: String = ""
 
     private let containerView = NSBox()
 
     private let navigationControl = NavigationControl()
+
+    private let progressIndicator = NSProgressIndicator()
 
     private var contentViewTopAnchor: NSLayoutConstraint?
 
@@ -146,30 +156,9 @@ class PublishingViewController: NSViewController {
                 screen.organizationName = value
             }
             screen.onClickSubmit = { [unowned self] in
-                Network.shared.apollo.perform(mutation: CreateOrganisationMutation(name: screen.organizationName)) { [weak self] result in
-                    guard let self = self else {
-                        return
-                    }
-                    switch result {
-                    case .success(let graphQLResult):
-                        if let errors = graphQLResult.errors {
-                            print(errors)
-                            return
-                        }
-
-                        guard
-                            let organizationName = graphQLResult.data?.createOrganisation.organisation?.name,
-                            let organizationId = graphQLResult.data?.createOrganisation.organisation?.id
-                            else {
-                                print("Missing name or id")
-                                return
-                        }
-
-                        self.history.navigateTo(.needsRepo(organizationName: organizationName, organizationId: organizationId))
-                    case .failure(let error):
-                        print(error.localizedDescription)
-                    }
-                }
+                self.createOrganization(name: screen.organizationName).finalSuccess({ [weak self] organization in
+                    self?.history.navigateTo(.needsRepo(organizationName: organization.name, organizationId: organization.id))
+                })
             }
             return screen
         case .needsRepo(let organizationName, let organizationId):
@@ -199,37 +188,47 @@ class PublishingViewController: NSViewController {
                 updateSubmitButtonTitle()
             }
             screen.onClickSubmitButton = { [unowned self] in
-                // TODO: Actually create everything
-                Network.shared.apollo.perform(mutation: AddRepoMutation(organisationId: organizationId, url: "https://github.com/\(githubOrganizations[screen.githubOrganizationIndex])/\(screen.repositoryName)")) { [weak self] result in
-                    guard let self = self else {
-                        return
-                    }
-                    switch result {
-                    case .success(let graphQLResult):
-                      if let errors = graphQLResult.errors {
-                        print(errors)
-                        return
-                      }
+                self.showsProgressIndicator = true
 
-                      self.history = .init(.done)
+                self.addRepo(
+                    organizationId: organizationId,
+                    organizationName: githubOrganizations[screen.githubOrganizationIndex],
+                    repositoryName: screen.repositoryName
+                ).finalResult({ [weak self] result in
+                    guard let self = self else { return }
+
+                    switch result {
+                    case .success:
+                        self.history = .init(.done)
                     case .failure(let error):
-                        print(error.localizedDescription)
+                        Swift.print("Failed to add repo:", error)
                     }
-                }
-                self.history = .init(.done)
+                })
             }
             updateSubmitButtonTitle()
             return screen
         case .chooseOrg(let organizations):
             let organizationIds = organizations.map { $0.id }
             let screen = PublishChooseOrg(workspaceName: workspaceName, organizationName: "", organizationIds: organizationIds)
+            screen.onChangeTextValue = { [unowned screen] value in
+                screen.organizationName = value
+            }
+            screen.onClickSubmit = { [unowned self] in
+                self.createOrganization(name: screen.organizationName).finalResult({ [weak self] result in
+                    guard let self = self else { return }
+
+                    switch result {
+                    case .success(let organization):
+                        self.history.navigateTo(.needsRepo(organizationName: organization.name, organizationId: organization.id))
+                    case .failure(let error):
+                        Swift.print("Failed to create organization:", error)
+                    }
+                })
+            }
             screen.onSelectOrganizationId = { [unowned self] id in
                 guard let organization = organizations.first(where: { $0.id == id }) else { return }
 
                 self.history.navigateTo(.needsRepo(organizationName: organization.name, organizationId: organization.id))
-            }
-            screen.onClickSubmit = { [unowned self] in
-                self.dismiss(nil)
             }
             return screen
         case .done:
@@ -249,8 +248,13 @@ class PublishingViewController: NSViewController {
 
         containerView.addSubview(navigationControl)
 
+        containerView.addSubview(progressIndicator)
+
         navigationControl.onClickBack = { [unowned self] in self.history.goBack() }
         navigationControl.onClickForward = { [unowned self] in self.history.goForward() }
+
+        progressIndicator.style = .spinning
+        progressIndicator.isIndeterminate = true
 
         self.view = containerView
     }
@@ -258,15 +262,23 @@ class PublishingViewController: NSViewController {
     private func setUpConstraints() {
         containerView.translatesAutoresizingMaskIntoConstraints = false
         navigationControl.translatesAutoresizingMaskIntoConstraints = false
+        progressIndicator.translatesAutoresizingMaskIntoConstraints = false
 
         containerView.widthAnchor.constraint(equalToConstant: 720).isActive = true
+        containerView.heightAnchor.constraint(greaterThanOrEqualToConstant: 100).isActive = true
 
         navigationControl.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 40).isActive = true
         navigationControl.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 32).isActive = true
+
+        progressIndicator.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 44).isActive = true
+        progressIndicator.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
+        progressIndicator.controlSize = .small
     }
 
     private func update() {
         contentView = makeContentView()
+
+        progressIndicator.isHidden = !showsProgressIndicator
 
         navigationControl.isBackEnabled = history.canGoBack()
         navigationControl.isForwardEnabled = history.canGoForward()
@@ -293,3 +305,97 @@ class PublishingViewController: NSViewController {
     }
 }
 
+// MARK: - API
+
+extension PublishingViewController {
+
+    private func fetchOrganizations() -> Promise<[Organization], NSError> {
+        return .result { complete in
+            self.showsProgressIndicator = true
+
+            Network.shared.apollo.fetch(query: GetMeQuery()) { [weak self] result in
+                guard let self = self else { return }
+
+                self.showsProgressIndicator = false
+
+                switch result {
+                case .success(let graphQLResult):
+                    if let errors = graphQLResult.errors {
+                        complete(.failure(NSError(errors.description)))
+                        return
+                    }
+
+                    guard let organizations = graphQLResult.data?.getMe?.organisations else {
+                        complete(.success([]))
+                        return
+                    }
+
+                    complete(.success(organizations.map { Organization(id: $0.id, name: $0.name) }))
+                case .failure(let error):
+                    complete(.failure(NSError(error.localizedDescription)))
+                }
+            }
+        }
+    }
+
+    private func addRepo(organizationId: String, organizationName: String, repositoryName: String) -> Promise<Void, NSError> {
+        return .result { complete in
+            self.showsProgressIndicator = true
+
+            let mutation = AddRepoMutation(
+                organisationId: organizationId,
+                url: "https://github.com/\(organizationName)/\(repositoryName)"
+            )
+
+            Network.shared.apollo.perform(mutation: mutation) { [weak self] result in
+                guard let self = self else { return }
+
+                self.showsProgressIndicator = false
+
+                switch result {
+                case .success(let graphQLResult):
+                    if let errors = graphQLResult.errors {
+                        complete(.failure(NSError(errors.description)))
+                        return
+                    }
+
+                    complete(.success(()))
+                case .failure(let error):
+                    complete(.failure(NSError(error.localizedDescription)))
+                }
+            }
+        }
+    }
+
+    private func createOrganization(name organizationName: String) -> Promise<Organization, NSError> {
+        return .result { complete in
+            self.showsProgressIndicator = true
+
+            Network.shared.apollo.perform(mutation: CreateOrganisationMutation(name: organizationName)) { [weak self] result in
+                guard let self = self else { return }
+
+                self.showsProgressIndicator = false
+
+                switch result {
+                case .success(let graphQLResult):
+                    if let errors = graphQLResult.errors {
+                        complete(.failure(NSError(errors.description)))
+                        return
+                    }
+
+                    guard
+                        let organizationName = graphQLResult.data?.createOrganisation.organisation?.name,
+                        let organizationId = graphQLResult.data?.createOrganisation.organisation?.id
+                        else {
+                            complete(.failure(NSError("Missing name or id")))
+                            return
+                    }
+
+                    complete(.success(Organization(id: organizationId, name: organizationName)))
+                case .failure(let error):
+                    complete(.failure(NSError(error.localizedDescription)))
+                }
+            }
+        }
+    }
+}

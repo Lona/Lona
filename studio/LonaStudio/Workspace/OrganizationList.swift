@@ -115,6 +115,8 @@ public class OrganizationList: NSBox {
         stackView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         stackView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         stackView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+
+        stackView.setHuggingPriority(.defaultHigh, for: .vertical)
     }
 
     private func update() {
