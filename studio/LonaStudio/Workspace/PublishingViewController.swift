@@ -175,7 +175,7 @@ class PublishingViewController: NSViewController {
                 organizationName: organization.name,
                 githubOrganizations: githubOrganizations.map { $0.name },
                 githubOrganizationIndex: 0,
-                repositoryName: "",
+                repositoryName: workspaceName,
                 submitButtonTitle: ""
             )
             let updateSubmitButtonTitle: () -> Void = { [unowned screen] in
