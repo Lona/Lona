@@ -207,7 +207,7 @@ class PublishingViewController: NSViewController {
 
                         let gitResult = Git.client
                             .addRemote(name: "lona", url: sshURL)
-//                            .flatMap({ _ in Git.client.push(repository: "lona", refspec: "HEAD") })
+                            .flatMap({ _ in Git.client.push(repository: "lona", refspec: "HEAD") })
 
                         switch gitResult {
                         case .success:

@@ -15,6 +15,9 @@ public enum Git {
     private static var launchPath: String = "/usr/bin/git"
 
     private static func run(arguments: [String], currentDirectoryPath: String) -> Result<String, NSError> {
+
+        Swift.print("INFO: Running `\(Git.launchPath) \(arguments.joined(separator: " "))`")
+
         let result = Process.runSync(
             configuration: Process.Configuration(
                 launchPath: Git.launchPath,
