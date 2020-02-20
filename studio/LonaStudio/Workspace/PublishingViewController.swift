@@ -63,6 +63,8 @@ class PublishingViewController: NSViewController {
         workspaceName = CSWorkspacePreferences.workspaceName
         update()
 
+//        Git.status()
+
         if Account.shared.signedIn {
             fetchOrganizations().finalResult({ [weak self] result in
                 guard let self = self else { return }
@@ -200,7 +202,20 @@ class PublishingViewController: NSViewController {
                     guard let self = self else { return }
 
                     switch result {
-                    case .success:
+                    case .success(let url):
+                        let sshURL = URL(string: url.appendingPathExtension("git").absoluteString.replacingOccurrences(of: "https://github.com/", with: "git@github.com:"))!
+
+                        let gitResult = Git.client
+                            .addRemote(name: "lona", url: sshURL)
+//                            .flatMap({ _ in Git.client.push(repository: "lona", refspec: "HEAD") })
+
+                        switch gitResult {
+                        case .success:
+                            break
+                        case .failure(let error):
+                            Swift.print("Failed to add git remote", url, error)
+                        }
+
                         self.history = .init(.done)
                     case .failure(let error):
                         Swift.print("Failed to add repo:", error)
@@ -359,9 +374,10 @@ extension PublishingViewController {
         }
     }
 
-    private func createRepo(organizationId: String, githubOrganization: Organization, githubRepositoryName: String) -> Promise<Void, NSError> {
+    private func createRepo(organizationId: String, githubOrganization: Organization, githubRepositoryName: String) -> Promise<URL, NSError> {
         return .result { complete in
             self.showsProgressIndicator = true
+
             let mutation = CreateRepositoryMutation(
                 ownerId: githubOrganization.id,
                 name: githubRepositoryName,
@@ -379,13 +395,20 @@ extension PublishingViewController {
                         return
                     }
 
-                    guard let url = graphQLResult.data?.createRepository?.repository?.url else {
+                    guard let urlString = graphQLResult.data?.createRepository?.repository?.url, let url = URL(string: urlString) else {
                         self.showsProgressIndicator = false
                         complete(.failure(NSError("Missing repo url")))
                         return
                     }
 
-                    self.addRepo(organizationId: organizationId, githubRepoURL: url).finalResult { complete($0) }
+                    self.addRepo(organizationId: organizationId, githubRepoURL: url).finalResult { addRepoResult in
+                        switch addRepoResult {
+                        case .success:
+                            complete(.success(url))
+                        case .failure(let error):
+                            complete(.failure(error))
+                        }
+                    }
                 case .failure(let error):
                     self.showsProgressIndicator = false
                     complete(.failure(NSError(error.localizedDescription)))
@@ -394,13 +417,13 @@ extension PublishingViewController {
         }
     }
 
-    private func addRepo(organizationId: String, githubRepoURL: String) -> Promise<Void, NSError> {
+    private func addRepo(organizationId: String, githubRepoURL: URL) -> Promise<Void, NSError> {
         return .result { complete in
             self.showsProgressIndicator = true
 
             let mutation = AddRepoMutation(
                 organisationId: organizationId,
-                url: githubRepoURL
+                url: githubRepoURL.absoluteString
             )
 
             Network.shared.lona.perform(mutation: mutation) { [weak self] result in

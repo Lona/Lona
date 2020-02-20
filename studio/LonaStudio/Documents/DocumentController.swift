@@ -298,6 +298,18 @@ extension DocumentController {
             return false
         }
 
+        let workspacePath = workspaceParent.appendingPathComponent(root.name).path
+
+        let client = Git.Client(currentDirectoryPath: workspacePath)
+
+        let gitResult = client.initRepo()
+            .flatMap({ _ in client.addAllFiles() })
+            .flatMap({ _ in client.commit(message: "Initial commit" )})
+
+        if case .failure(let error) = gitResult {
+            Swift.print("Failed to initialize git repo with workspace files", error)
+        }
+
         return true
     }
 

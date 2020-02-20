@@ -244,6 +244,8 @@
 		6B6D4427218F55B50016262C /* CGSize+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4426218F55B50016262C /* CGSize+Resizing.swift */; };
 		6B6D4434218F6B070016262C /* NSImage+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4432218F6B070016262C /* NSImage+Resizing.swift */; };
 		6B6D4435218F6B070016262C /* LNAImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4433218F6B070016262C /* LNAImageView.swift */; };
+		6B6E473923FE0BC30067B2FF /* Git.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E473823FE0BC30067B2FF /* Git.swift */; };
+		6B6E473B23FE0D590067B2FF /* Process+Execute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E473A23FE0D590067B2FF /* Process+Execute.swift */; };
 		6B6F19CE2304B49A00E5AC60 /* SwiftGraph.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */; };
 		6B6F19CF2304B49A00E5AC60 /* SwiftGraph.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6B6F19D12307222200E5AC60 /* TemplateFileCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */; };
@@ -624,6 +626,8 @@
 		6B6D4426218F55B50016262C /* CGSize+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Resizing.swift"; sourceTree = "<group>"; };
 		6B6D4432218F6B070016262C /* NSImage+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSImage+Resizing.swift"; sourceTree = "<group>"; };
 		6B6D4433218F6B070016262C /* LNAImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LNAImageView.swift; sourceTree = "<group>"; };
+		6B6E473823FE0BC30067B2FF /* Git.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Git.swift; sourceTree = "<group>"; };
+		6B6E473A23FE0D590067B2FF /* Process+Execute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Process+Execute.swift"; sourceTree = "<group>"; };
 		6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftGraph.framework; path = Carthage/Build/Mac/SwiftGraph.framework; sourceTree = "<group>"; };
 		6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateFileCard.swift; sourceTree = "<group>"; };
 		6B73809322C66E59007534A0 /* TemplateBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateBrowser.swift; sourceTree = "<group>"; };
@@ -1012,6 +1016,7 @@
 				6B14C7BC23C4011B00EF85FA /* FileManager+Directory.swift */,
 				6B56ECB021BC55D9005F43C5 /* NSAttributedString+Measure.swift */,
 				30A3F13D1F300294004C7631 /* NSColorExtensions.swift */,
+				6B8D1E8723FCE9AF00EA6E40 /* NSError+String.swift */,
 				306D2FEF1F847DCB00907B4E /* NSImageExtensions.swift */,
 				30D9B40D1F79BADC00C8A3D4 /* NSMenuExtensions.swift */,
 				3094DFE91F6AECB300E5C7F0 /* NSOutlineViewExtensions.swift */,
@@ -1024,10 +1029,10 @@
 				30DE880A1FBA194F00D62A50 /* NSViewControllerExtensions.swift */,
 				30C8BC2A1EDB641E00B99F1B /* NSViewExtensions.swift */,
 				BA0D85E31FD5AC2000D817C3 /* NSViewHoverExtensions.swift */,
+				6B6E473A23FE0D590067B2FF /* Process+Execute.swift */,
 				30516B481F43C46200940B3B /* SequenceExtensions.swift */,
 				30EFC9551EF1AA0B0087711D /* StringExtensions.swift */,
 				30335A061F5A2878006E507B /* URLExtensions.swift */,
-				6B8D1E8723FCE9AF00EA6E40 /* NSError+String.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1240,8 +1245,8 @@
 		6B0AEFB61EBF74D800F35BBF /* LonaStudio */ = {
 			isa = PBXGroup;
 			children = (
-				6BA8985923271BE800AA8F78 /* LonaStudio.entitlements */,
 				307D441F209B6CE9004B57F5 /* Web */,
+				6BA8985923271BE800AA8F78 /* LonaStudio.entitlements */,
 				6B0AEFC21EBF74D800F35BBF /* Info.plist */,
 				6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */,
 				6B3A563C21DEA7040012C44F /* Colors+Appearance.swift */,
@@ -1268,6 +1273,7 @@
 				30DDEE881F47925C001D41AB /* Scripting */,
 				BA153BC8202B2CBA002A83A5 /* Undo */,
 				3069E0981F32432C0005E9A8 /* Utils */,
+				6B6E473723FE0BAC0067B2FF /* VersionControl */,
 				3030311F1F34E7200078086F /* Workspace */,
 			);
 			path = LonaStudio;
@@ -1294,6 +1300,14 @@
 				6BF4EF5C235CF8DC00548F61 /* ShadowSuggestionEditor.swift */,
 			);
 			path = suggestions;
+			sourceTree = "<group>";
+		};
+		6B6E473723FE0BAC0067B2FF /* VersionControl */ = {
+			isa = PBXGroup;
+			children = (
+				6B6E473823FE0BC30067B2FF /* Git.swift */,
+			);
+			path = VersionControl;
 			sourceTree = "<group>";
 		};
 		6B8D7D9C21BED32E0087A3F7 /* inspector */ = {
@@ -1732,6 +1746,7 @@
 				30C8BC321EDB758C00B99F1B /* Canvas.swift in Sources */,
 				3003027C1EDCE0880085E140 /* CSComponent.swift in Sources */,
 				3056275E1FBA0C0700026796 /* CSConstraint.swift in Sources */,
+				6B6E473B23FE0D590067B2FF /* Process+Execute.swift in Sources */,
 				6B4203E121BAD56500D59317 /* CanvasTableView.swift in Sources */,
 				6BC2D4542263D8F2003A9F63 /* LabeledColorInput.swift in Sources */,
 				30C203DD20BF5910007C3FE0 /* TextStyleBrowser.swift in Sources */,
@@ -1906,6 +1921,7 @@
 				30F4FD531F76ADC70048691C /* AnimationUtils.swift in Sources */,
 				036A4E9A21E1F5FB00948DBD /* ImagePreview.swift in Sources */,
 				6B0F5B86213862A0007DBBB2 /* ColorEditorViewController.swift in Sources */,
+				6B6E473923FE0BC30067B2FF /* Git.swift in Sources */,
 				6BCE162722D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift in Sources */,
 				6B7DBF5E22A877F50062031E /* LogicDocument.swift in Sources */,
 				301C262420C1C3B500F18F73 /* TextStyle.swift in Sources */,
