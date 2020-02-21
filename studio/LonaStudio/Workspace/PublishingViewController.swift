@@ -158,8 +158,15 @@ class PublishingViewController: NSViewController {
                 screen.organizationName = value
             }
             screen.onClickSubmit = { [unowned self] in
-                self.createOrganization(name: screen.organizationName).finalSuccess({ [weak self] organization in
-                    self?.history.navigateTo(.needsRepo(organization: organization))
+                self.createOrganization(name: screen.organizationName).finalResult({ [weak self] result in
+                    guard let self = self else { return }
+
+                    switch result {
+                    case .success(let organization):
+                        self.history.navigateTo(.needsRepo(organization: organization))
+                    case .failure(let error):
+                        Swift.print("Failed to create organization", error)
+                    }
                 })
             }
             return screen
