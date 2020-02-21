@@ -1,5 +1,5 @@
-mutation addRepo($organisationId: ID!, $url: String!) {
-  addRepo(organisationId: $organisationId, url: $url) {
+mutation addRepo($organizationId: ID!, $url: String!) {
+  addRepo(organizationId: $organizationId, url: $url) {
     success
     message
     repo {

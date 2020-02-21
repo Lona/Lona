@@ -26,7 +26,7 @@
             "deprecationReason": null
           },
           {
-            "name": "getOrganisation",
+            "name": "getOrganization",
             "description": "",
             "args": [
               {
@@ -46,7 +46,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "Organisation",
+              "name": "Organization",
               "ofType": null
             },
             "isDeprecated": false,
@@ -183,7 +183,7 @@
             "deprecationReason": null
           },
           {
-            "name": "organisations",
+            "name": "organizations",
             "description": "",
             "args": [],
             "type": {
@@ -197,7 +197,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "Organisation",
+                    "name": "Organization",
                     "ofType": null
                   }
                 }
@@ -234,7 +234,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "Organisation",
+        "name": "Organization",
         "description": "",
         "fields": [
           {
@@ -495,12 +495,12 @@
             "deprecationReason": null
           },
           {
-            "name": "organisation",
+            "name": "organization",
             "description": "",
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "Organisation",
+              "name": "Organization",
               "ofType": null
             },
             "isDeprecated": false,
@@ -623,7 +623,7 @@
         "description": "",
         "fields": [
           {
-            "name": "createOrganisation",
+            "name": "createOrganization",
             "description": "",
             "args": [
               {
@@ -656,7 +656,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "CreateOrganisationMutationResponse",
+                "name": "CreateOrganizationMutationResponse",
                 "ofType": null
               }
             },
@@ -668,7 +668,7 @@
             "description": "",
             "args": [
               {
-                "name": "organisationId",
+                "name": "organizationId",
                 "description": "",
                 "type": {
                   "kind": "NON_NULL",
@@ -712,7 +712,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "CreateOrganisationMutationResponse",
+        "name": "CreateOrganizationMutationResponse",
         "description": "",
         "fields": [
           {
@@ -764,12 +764,12 @@
             "deprecationReason": null
           },
           {
-            "name": "organisation",
+            "name": "organization",
             "description": "",
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "Organisation",
+              "name": "Organization",
               "ofType": null
             },
             "isDeprecated": false,
@@ -847,7 +847,7 @@
         "possibleTypes": [
           {
             "kind": "OBJECT",
-            "name": "CreateOrganisationMutationResponse",
+            "name": "CreateOrganizationMutationResponse",
             "ofType": null
           },
           {

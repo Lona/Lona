@@ -98,7 +98,7 @@ public class OrganizationList: NSBox {
                     return
                 }
 
-                guard let organizations = graphQLResult.data?.getMe?.organisations else { return }
+                guard let organizations = graphQLResult.data?.getMe?.organizations else { return }
 
                 self.organizations = organizations.map { PublishingViewController.Organization(id: $0.id, name: $0.name) }
             case .failure(let error):

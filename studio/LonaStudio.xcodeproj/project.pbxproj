@@ -9,11 +9,10 @@
 /* Begin PBXBuildFile section */
 		0304A71323F421F4009A1E82 /* getMe.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 0304A71223F421F4009A1E82 /* getMe.graphql */; };
 		0304A71723F424B1009A1E82 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A71623F424B1009A1E82 /* Network.swift */; };
-		0304A71923F425B4009A1E82 /* createOrganisation.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 0304A71823F425B4009A1E82 /* createOrganisation.graphql */; };
+		0304A71923F425B4009A1E82 /* createOrganization.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 0304A71823F425B4009A1E82 /* createOrganization.graphql */; };
 		0304A71B23FA8B18009A1E82 /* addRepo.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 0304A71A23FA8B18009A1E82 /* addRepo.graphql */; };
 		0304A72023FD26CF009A1E82 /* github-schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 0304A71D23FD26CE009A1E82 /* github-schema.json */; };
 		0304A72123FD26CF009A1E82 /* LonaAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A71E23FD26CE009A1E82 /* LonaAPI.swift */; };
-		0304A72223FD26CF009A1E82 /* lona-schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 0304A71F23FD26CF009A1E82 /* lona-schema.json */; };
 		0304A72523FD272D009A1E82 /* getOrganizations.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 0304A72423FD272D009A1E82 /* getOrganizations.graphql */; };
 		0304A72723FD28A1009A1E82 /* GitHubAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A72623FD28A1009A1E82 /* GitHubAPI.swift */; };
 		0304A72923FD48AC009A1E82 /* createRepository.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 0304A72823FD48AC009A1E82 /* createRepository.graphql */; };
@@ -31,6 +30,7 @@
 		036A4EA221E1FD3B00948DBD /* KeyHandlingCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA121E1FD3B00948DBD /* KeyHandlingCollectionView.swift */; };
 		036A4EA421E21DA500948DBD /* AddTextStyleSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA321E21DA400948DBD /* AddTextStyleSheet.swift */; };
 		036A4EA921E2469D00948DBD /* DirectoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA821E2469D00948DBD /* DirectoryViewController.swift */; };
+		0383231D2400660F0091C6F5 /* lona-schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 0383231C2400660F0091C6F5 /* lona-schema.json */; };
 		039952C721E50D31008310DB /* MarkdownEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039952C621E50D31008310DB /* MarkdownEditor.swift */; };
 		300302741EDC7FA90085E140 /* CSStatementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300302731EDC7FA90085E140 /* CSStatementView.swift */; };
 		300302761EDCDA030085E140 /* LogicListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300302751EDCDA030085E140 /* LogicListView.swift */; };
@@ -392,11 +392,10 @@
 /* Begin PBXFileReference section */
 		0304A71223F421F4009A1E82 /* getMe.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = getMe.graphql; sourceTree = "<group>"; };
 		0304A71623F424B1009A1E82 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
-		0304A71823F425B4009A1E82 /* createOrganisation.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = createOrganisation.graphql; sourceTree = "<group>"; };
+		0304A71823F425B4009A1E82 /* createOrganization.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = createOrganization.graphql; sourceTree = "<group>"; };
 		0304A71A23FA8B18009A1E82 /* addRepo.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = addRepo.graphql; sourceTree = "<group>"; };
 		0304A71D23FD26CE009A1E82 /* github-schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "github-schema.json"; sourceTree = "<group>"; };
 		0304A71E23FD26CE009A1E82 /* LonaAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaAPI.swift; sourceTree = "<group>"; };
-		0304A71F23FD26CF009A1E82 /* lona-schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "lona-schema.json"; sourceTree = "<group>"; };
 		0304A72423FD272D009A1E82 /* getOrganizations.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = getOrganizations.graphql; sourceTree = "<group>"; };
 		0304A72623FD28A1009A1E82 /* GitHubAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GitHubAPI.swift; sourceTree = "<group>"; };
 		0304A72823FD48AC009A1E82 /* createRepository.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = createRepository.graphql; sourceTree = "<group>"; };
@@ -413,6 +412,7 @@
 		036A4EA121E1FD3B00948DBD /* KeyHandlingCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyHandlingCollectionView.swift; sourceTree = "<group>"; };
 		036A4EA321E21DA400948DBD /* AddTextStyleSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddTextStyleSheet.swift; sourceTree = "<group>"; };
 		036A4EA821E2469D00948DBD /* DirectoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectoryViewController.swift; sourceTree = "<group>"; };
+		0383231C2400660F0091C6F5 /* lona-schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "lona-schema.json"; sourceTree = "<group>"; };
 		039952C621E50D31008310DB /* MarkdownEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownEditor.swift; sourceTree = "<group>"; };
 		300302731EDC7FA90085E140 /* CSStatementView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSStatementView.swift; sourceTree = "<group>"; };
 		300302751EDCDA030085E140 /* LogicListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogicListView.swift; sourceTree = "<group>"; };
@@ -765,7 +765,7 @@
 			children = (
 				0304A71623F424B1009A1E82 /* Network.swift */,
 				0304A71D23FD26CE009A1E82 /* github-schema.json */,
-				0304A71F23FD26CF009A1E82 /* lona-schema.json */,
+				0383231C2400660F0091C6F5 /* lona-schema.json */,
 				0304A72623FD28A1009A1E82 /* GitHubAPI.swift */,
 				0304A71E23FD26CE009A1E82 /* LonaAPI.swift */,
 				0304A72323FD2712009A1E82 /* GitHub */,
@@ -778,7 +778,7 @@
 			isa = PBXGroup;
 			children = (
 				0304A71A23FA8B18009A1E82 /* addRepo.graphql */,
-				0304A71823F425B4009A1E82 /* createOrganisation.graphql */,
+				0304A71823F425B4009A1E82 /* createOrganization.graphql */,
 				0304A71223F421F4009A1E82 /* getMe.graphql */,
 			);
 			path = Lona;
@@ -1553,14 +1553,14 @@
 				0304A72923FD48AC009A1E82 /* createRepository.graphql in Resources */,
 				0304A71B23FA8B18009A1E82 /* addRepo.graphql in Resources */,
 				30F870DE20865859007ADA5B /* LonaIcon_32x32.png in Resources */,
+				0383231D2400660F0091C6F5 /* lona-schema.json in Resources */,
 				6B7380A022C7B3BF007534A0 /* themed-tokens-list@2x.png in Resources */,
 				303C3FEB20A396BB008E1541 /* icon-plus.png in Resources */,
 				30F870E720865859007ADA5B /* icon-material-design-example@2x.png in Resources */,
-				0304A72223FD26CF009A1E82 /* lona-schema.json in Resources */,
 				30DDEE8A1F479280001D41AB /* node in Resources */,
 				30F870E120865859007ADA5B /* LonaIcon_128x128@2x.png in Resources */,
 				30F870E520865859007ADA5B /* LonaIcon_256x256@2x.png in Resources */,
-				0304A71923F425B4009A1E82 /* createOrganisation.graphql in Resources */,
+				0304A71923F425B4009A1E82 /* createOrganization.graphql in Resources */,
 				0304A72023FD26CF009A1E82 /* github-schema.json in Resources */,
 				30F870DB20865859007ADA5B /* icon-blank-document.png in Resources */,
 				30F870E220865859007ADA5B /* icon-documentation@2x.png in Resources */,

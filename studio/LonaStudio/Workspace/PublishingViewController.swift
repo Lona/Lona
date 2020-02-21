@@ -333,7 +333,7 @@ extension PublishingViewController {
 
             self.showsProgressIndicator = false
 
-            return .success(result.organisations.map { Organization(id: $0.id, name: $0.name) })
+            return .success(result.organizations.map { Organization(id: $0.id, name: $0.name) })
         }
     }
 
@@ -358,15 +358,15 @@ extension PublishingViewController {
                       return
                     }
 
-                    var organisations = [Organization(id: data.id, name: data.login)]
+                    var organizations = [Organization(id: data.id, name: data.login)]
 
                     data.organizations.nodes?.forEach { org in
                       if let org = org {
-                        organisations.append(Organization(id: org.id, name: org.login))
+                        organizations.append(Organization(id: org.id, name: org.login))
                       }
                     }
 
-                    complete(.success(organisations))
+                    complete(.success(organizations))
                 case .failure(let error):
                     complete(.failure(NSError(error.localizedDescription)))
                 }
@@ -422,7 +422,7 @@ extension PublishingViewController {
             self.showsProgressIndicator = true
 
             let mutation = AddRepoMutation(
-                organisationId: organizationId,
+                organizationId: organizationId,
                 url: githubRepoURL.absoluteString
             )
 
@@ -450,7 +450,7 @@ extension PublishingViewController {
         return .result { complete in
             self.showsProgressIndicator = true
 
-            Network.shared.lona.perform(mutation: CreateOrganisationMutation(name: organizationName)) { [weak self] result in
+            Network.shared.lona.perform(mutation: CreateOrganizationMutation(name: organizationName)) { [weak self] result in
                 guard let self = self else { return }
 
                 self.showsProgressIndicator = false
@@ -463,8 +463,8 @@ extension PublishingViewController {
                     }
 
                     guard
-                        let organizationName = graphQLResult.data?.createOrganisation.organisation?.name,
-                        let organizationId = graphQLResult.data?.createOrganisation.organisation?.id
+                        let organizationName = graphQLResult.data?.createOrganization.organization?.name,
+                        let organizationId = graphQLResult.data?.createOrganization.organization?.id
                         else {
                             complete(.failure(NSError("Missing name or id")))
                             return

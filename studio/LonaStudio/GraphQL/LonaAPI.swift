@@ -52,8 +52,8 @@ public final class AddRepoMutation: GraphQLMutation {
   /// The raw GraphQL definition of this operation.
   public let operationDefinition =
     """
-    mutation addRepo($organisationId: ID!, $url: String!) {
-      addRepo(organisationId: $organisationId, url: $url) {
+    mutation addRepo($organizationId: ID!, $url: String!) {
+      addRepo(organizationId: $organizationId, url: $url) {
         __typename
         success
         message
@@ -69,23 +69,23 @@ public final class AddRepoMutation: GraphQLMutation {
 
   public let operationName = "addRepo"
 
-  public var organisationId: GraphQLID
+  public var organizationId: GraphQLID
   public var url: String
 
-  public init(organisationId: GraphQLID, url: String) {
-    self.organisationId = organisationId
+  public init(organizationId: GraphQLID, url: String) {
+    self.organizationId = organizationId
     self.url = url
   }
 
   public var variables: GraphQLMap? {
-    return ["organisationId": organisationId, "url": url]
+    return ["organizationId": organizationId, "url": url]
   }
 
   public struct Data: GraphQLSelectionSet {
     public static let possibleTypes = ["Mutation"]
 
     public static let selections: [GraphQLSelection] = [
-      GraphQLField("addRepo", arguments: ["organisationId": GraphQLVariable("organisationId"), "url": GraphQLVariable("url")], type: .object(AddRepo.selections)),
+      GraphQLField("addRepo", arguments: ["organizationId": GraphQLVariable("organizationId"), "url": GraphQLVariable("url")], type: .object(AddRepo.selections)),
     ]
 
     public private(set) var resultMap: ResultMap
@@ -223,16 +223,16 @@ public final class AddRepoMutation: GraphQLMutation {
   }
 }
 
-public final class CreateOrganisationMutation: GraphQLMutation {
+public final class CreateOrganizationMutation: GraphQLMutation {
   /// The raw GraphQL definition of this operation.
   public let operationDefinition =
     """
-    mutation createOrganisation($name: String!) {
-      createOrganisation(name: $name) {
+    mutation createOrganization($name: String!) {
+      createOrganization(name: $name) {
         __typename
         success
         message
-        organisation {
+        organization {
           __typename
           id
           name
@@ -241,7 +241,7 @@ public final class CreateOrganisationMutation: GraphQLMutation {
     }
     """
 
-  public let operationName = "createOrganisation"
+  public let operationName = "createOrganization"
 
   public var name: String
 
@@ -257,7 +257,7 @@ public final class CreateOrganisationMutation: GraphQLMutation {
     public static let possibleTypes = ["Mutation"]
 
     public static let selections: [GraphQLSelection] = [
-      GraphQLField("createOrganisation", arguments: ["name": GraphQLVariable("name")], type: .nonNull(.object(CreateOrganisation.selections))),
+      GraphQLField("createOrganization", arguments: ["name": GraphQLVariable("name")], type: .nonNull(.object(CreateOrganization.selections))),
     ]
 
     public private(set) var resultMap: ResultMap
@@ -266,27 +266,27 @@ public final class CreateOrganisationMutation: GraphQLMutation {
       self.resultMap = unsafeResultMap
     }
 
-    public init(createOrganisation: CreateOrganisation) {
-      self.init(unsafeResultMap: ["__typename": "Mutation", "createOrganisation": createOrganisation.resultMap])
+    public init(createOrganization: CreateOrganization) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "createOrganization": createOrganization.resultMap])
     }
 
-    public var createOrganisation: CreateOrganisation {
+    public var createOrganization: CreateOrganization {
       get {
-        return CreateOrganisation(unsafeResultMap: resultMap["createOrganisation"]! as! ResultMap)
+        return CreateOrganization(unsafeResultMap: resultMap["createOrganization"]! as! ResultMap)
       }
       set {
-        resultMap.updateValue(newValue.resultMap, forKey: "createOrganisation")
+        resultMap.updateValue(newValue.resultMap, forKey: "createOrganization")
       }
     }
 
-    public struct CreateOrganisation: GraphQLSelectionSet {
-      public static let possibleTypes = ["CreateOrganisationMutationResponse"]
+    public struct CreateOrganization: GraphQLSelectionSet {
+      public static let possibleTypes = ["CreateOrganizationMutationResponse"]
 
       public static let selections: [GraphQLSelection] = [
         GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
         GraphQLField("success", type: .nonNull(.scalar(Bool.self))),
         GraphQLField("message", type: .nonNull(.scalar(String.self))),
-        GraphQLField("organisation", type: .object(Organisation.selections)),
+        GraphQLField("organization", type: .object(Organization.selections)),
       ]
 
       public private(set) var resultMap: ResultMap
@@ -295,8 +295,8 @@ public final class CreateOrganisationMutation: GraphQLMutation {
         self.resultMap = unsafeResultMap
       }
 
-      public init(success: Bool, message: String, organisation: Organisation? = nil) {
-        self.init(unsafeResultMap: ["__typename": "CreateOrganisationMutationResponse", "success": success, "message": message, "organisation": organisation.flatMap { (value: Organisation) -> ResultMap in value.resultMap }])
+      public init(success: Bool, message: String, organization: Organization? = nil) {
+        self.init(unsafeResultMap: ["__typename": "CreateOrganizationMutationResponse", "success": success, "message": message, "organization": organization.flatMap { (value: Organization) -> ResultMap in value.resultMap }])
       }
 
       public var __typename: String {
@@ -326,17 +326,17 @@ public final class CreateOrganisationMutation: GraphQLMutation {
         }
       }
 
-      public var organisation: Organisation? {
+      public var organization: Organization? {
         get {
-          return (resultMap["organisation"] as? ResultMap).flatMap { Organisation(unsafeResultMap: $0) }
+          return (resultMap["organization"] as? ResultMap).flatMap { Organization(unsafeResultMap: $0) }
         }
         set {
-          resultMap.updateValue(newValue?.resultMap, forKey: "organisation")
+          resultMap.updateValue(newValue?.resultMap, forKey: "organization")
         }
       }
 
-      public struct Organisation: GraphQLSelectionSet {
-        public static let possibleTypes = ["Organisation"]
+      public struct Organization: GraphQLSelectionSet {
+        public static let possibleTypes = ["Organization"]
 
         public static let selections: [GraphQLSelection] = [
           GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
@@ -351,7 +351,7 @@ public final class CreateOrganisationMutation: GraphQLMutation {
         }
 
         public init(id: GraphQLID, name: String) {
-          self.init(unsafeResultMap: ["__typename": "Organisation", "id": id, "name": name])
+          self.init(unsafeResultMap: ["__typename": "Organization", "id": id, "name": name])
         }
 
         public var __typename: String {
@@ -396,7 +396,7 @@ public final class GetMeQuery: GraphQLQuery {
         username
         token
         githubAccessToken
-        organisations {
+        organizations {
           __typename
           id
           name
@@ -450,7 +450,7 @@ public final class GetMeQuery: GraphQLQuery {
         GraphQLField("username", type: .scalar(String.self)),
         GraphQLField("token", type: .nonNull(.scalar(String.self))),
         GraphQLField("githubAccessToken", type: .scalar(String.self)),
-        GraphQLField("organisations", type: .nonNull(.list(.nonNull(.object(Organisation.selections))))),
+        GraphQLField("organizations", type: .nonNull(.list(.nonNull(.object(Organization.selections))))),
       ]
 
       public private(set) var resultMap: ResultMap
@@ -459,8 +459,8 @@ public final class GetMeQuery: GraphQLQuery {
         self.resultMap = unsafeResultMap
       }
 
-      public init(id: GraphQLID, username: String? = nil, token: String, githubAccessToken: String? = nil, organisations: [Organisation]) {
-        self.init(unsafeResultMap: ["__typename": "Me", "id": id, "username": username, "token": token, "githubAccessToken": githubAccessToken, "organisations": organisations.map { (value: Organisation) -> ResultMap in value.resultMap }])
+      public init(id: GraphQLID, username: String? = nil, token: String, githubAccessToken: String? = nil, organizations: [Organization]) {
+        self.init(unsafeResultMap: ["__typename": "Me", "id": id, "username": username, "token": token, "githubAccessToken": githubAccessToken, "organizations": organizations.map { (value: Organization) -> ResultMap in value.resultMap }])
       }
 
       public var __typename: String {
@@ -508,17 +508,17 @@ public final class GetMeQuery: GraphQLQuery {
         }
       }
 
-      public var organisations: [Organisation] {
+      public var organizations: [Organization] {
         get {
-          return (resultMap["organisations"] as! [ResultMap]).map { (value: ResultMap) -> Organisation in Organisation(unsafeResultMap: value) }
+          return (resultMap["organizations"] as! [ResultMap]).map { (value: ResultMap) -> Organization in Organization(unsafeResultMap: value) }
         }
         set {
-          resultMap.updateValue(newValue.map { (value: Organisation) -> ResultMap in value.resultMap }, forKey: "organisations")
+          resultMap.updateValue(newValue.map { (value: Organization) -> ResultMap in value.resultMap }, forKey: "organizations")
         }
       }
 
-      public struct Organisation: GraphQLSelectionSet {
-        public static let possibleTypes = ["Organisation"]
+      public struct Organization: GraphQLSelectionSet {
+        public static let possibleTypes = ["Organization"]
 
         public static let selections: [GraphQLSelection] = [
           GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
@@ -534,7 +534,7 @@ public final class GetMeQuery: GraphQLQuery {
         }
 
         public init(id: GraphQLID, name: String, repos: [Repo]) {
-          self.init(unsafeResultMap: ["__typename": "Organisation", "id": id, "name": name, "repos": repos.map { (value: Repo) -> ResultMap in value.resultMap }])
+          self.init(unsafeResultMap: ["__typename": "Organization", "id": id, "name": name, "repos": repos.map { (value: Repo) -> ResultMap in value.resultMap }])
         }
 
         public var __typename: String {
