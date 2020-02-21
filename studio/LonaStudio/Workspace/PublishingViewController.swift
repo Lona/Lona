@@ -58,6 +58,16 @@ class PublishingViewController: NSViewController {
 
     public var image: NSImage? { didSet { update() } }
 
+    public func canPublish() -> Bool {
+        switch Git.client.getRootDirectory() {
+        case .success(let path):
+            return path == CSUserPreferences.workspaceURL.path
+        case .failure(let error):
+            Swift.print(error)
+            return false
+        }
+    }
+
     public func initializeState() {
         history = .init()
         workspaceName = CSWorkspacePreferences.workspaceName

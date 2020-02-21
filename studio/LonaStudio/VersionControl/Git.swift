@@ -70,5 +70,11 @@ public enum Git {
         public func push(repository: String, refspec: String) -> Result<String, NSError> {
             return run(arguments: ["push", repository, refspec])
         }
+
+        public func getRootDirectory() -> Result<String, NSError> {
+            return run(arguments: ["rev-parse", "--show-toplevel"]).map({ path in
+                path.trimmingCharacters(in: .whitespacesAndNewlines)
+            })
+        }
     }
 }

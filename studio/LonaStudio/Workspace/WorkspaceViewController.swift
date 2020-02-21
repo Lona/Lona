@@ -615,8 +615,12 @@ class WorkspaceViewController: NSSplitViewController {
         editorViewController.showsHeaderDivider = false
 
         editorViewController.onClickPublish = {
-            PublishingViewController.shared.initializeState()
-            self.presentAsModalWindow(PublishingViewController.shared)
+            if PublishingViewController.shared.canPublish() {
+                PublishingViewController.shared.initializeState()
+                self.presentAsModalWindow(PublishingViewController.shared)
+            } else {
+                Alert.runInformationalAlert(messageText: "Invalid git configuration", informativeText: "There must be a git repository in your workspace root (the same directory as the lona.json) before you can publish.")
+            }
         }
 
         if document is ComponentDocument {
