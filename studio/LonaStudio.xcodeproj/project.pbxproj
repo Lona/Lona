@@ -246,6 +246,9 @@
 		6B6D4435218F6B070016262C /* LNAImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4433218F6B070016262C /* LNAImageView.swift */; };
 		6B6E473923FE0BC30067B2FF /* Git.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E473823FE0BC30067B2FF /* Git.swift */; };
 		6B6E473B23FE0D590067B2FF /* Process+Execute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E473A23FE0D590067B2FF /* Process+Execute.swift */; };
+		6B6E4743240070C20067B2FF /* lona-master.yml in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E4740240070C20067B2FF /* lona-master.yml */; };
+		6B6E4744240070C20067B2FF /* lona-delete.yml in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E4741240070C20067B2FF /* lona-delete.yml */; };
+		6B6E4745240070C20067B2FF /* lona-pr.yml in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E4742240070C20067B2FF /* lona-pr.yml */; };
 		6B6F19CE2304B49A00E5AC60 /* SwiftGraph.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */; };
 		6B6F19CF2304B49A00E5AC60 /* SwiftGraph.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6B6F19D12307222200E5AC60 /* TemplateFileCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */; };
@@ -628,6 +631,9 @@
 		6B6D4433218F6B070016262C /* LNAImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LNAImageView.swift; sourceTree = "<group>"; };
 		6B6E473823FE0BC30067B2FF /* Git.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Git.swift; sourceTree = "<group>"; };
 		6B6E473A23FE0D590067B2FF /* Process+Execute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Process+Execute.swift"; sourceTree = "<group>"; };
+		6B6E4740240070C20067B2FF /* lona-master.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = "lona-master.yml"; sourceTree = "<group>"; };
+		6B6E4741240070C20067B2FF /* lona-delete.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = "lona-delete.yml"; sourceTree = "<group>"; };
+		6B6E4742240070C20067B2FF /* lona-pr.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = "lona-pr.yml"; sourceTree = "<group>"; };
 		6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftGraph.framework; path = Carthage/Build/Mac/SwiftGraph.framework; sourceTree = "<group>"; };
 		6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateFileCard.swift; sourceTree = "<group>"; };
 		6B73809322C66E59007534A0 /* TemplateBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateBrowser.swift; sourceTree = "<group>"; };
@@ -1260,6 +1266,7 @@
 				036A4EA521E23F3A00948DBD /* Documents */,
 				30C8BC291EDB640500B99F1B /* Extensions */,
 				30F870BC20865858007ADA5B /* Generated */,
+				6B6E473F240070300067B2FF /* GithubWorkflow */,
 				0304A71123F421C0009A1E82 /* GraphQL */,
 				301433791F5C7AD100525DB1 /* ListEditors */,
 				6B34149C225803F500CC65D1 /* Logic */,
@@ -1308,6 +1315,16 @@
 				6B6E473823FE0BC30067B2FF /* Git.swift */,
 			);
 			path = VersionControl;
+			sourceTree = "<group>";
+		};
+		6B6E473F240070300067B2FF /* GithubWorkflow */ = {
+			isa = PBXGroup;
+			children = (
+				6B6E4741240070C20067B2FF /* lona-delete.yml */,
+				6B6E4740240070C20067B2FF /* lona-master.yml */,
+				6B6E4742240070C20067B2FF /* lona-pr.yml */,
+			);
+			path = GithubWorkflow;
 			sourceTree = "<group>";
 		};
 		6B8D7D9C21BED32E0087A3F7 /* inspector */ = {
@@ -1563,6 +1580,7 @@
 				0304A71923F425B4009A1E82 /* createOrganization.graphql in Resources */,
 				0304A72023FD26CF009A1E82 /* github-schema.json in Resources */,
 				30F870DB20865859007ADA5B /* icon-blank-document.png in Resources */,
+				6B6E4743240070C20067B2FF /* lona-master.yml in Resources */,
 				30F870E220865859007ADA5B /* icon-documentation@2x.png in Resources */,
 				6BD96653217FB0DB0012F173 /* default-workspace-thumbnail@2x.png in Resources */,
 				6B0AEFC11EBF74D800F35BBF /* Main.storyboard in Resources */,
@@ -1575,6 +1593,8 @@
 				303C3FEC20A396BB008E1541 /* icon-plus@2x.png in Resources */,
 				6B9733D22236F2BF005967E8 /* svg-model.umd.js in Resources */,
 				6BD96652217FB0DB0012F173 /* default-workspace-thumbnail.png in Resources */,
+				6B6E4744240070C20067B2FF /* lona-delete.yml in Resources */,
+				6B6E4745240070C20067B2FF /* lona-pr.yml in Resources */,
 				6BABAFE52139C0EE002B8C8F /* Toolbar.xcassets in Resources */,
 				0304A72523FD272D009A1E82 /* getOrganizations.graphql in Resources */,
 			);

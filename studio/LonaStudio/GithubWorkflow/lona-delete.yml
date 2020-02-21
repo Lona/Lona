@@ -1,0 +1,15 @@
+name: Lona Delete
+
+on: delete
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Delete outdated website documentation
+        uses: Lona/lona-clean-github-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          ref_type: ${{ github.event.ref_type }}
+          ref_name: ${{ github.event.ref }}

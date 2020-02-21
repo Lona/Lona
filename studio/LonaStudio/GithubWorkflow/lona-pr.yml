@@ -1,0 +1,38 @@
+name: Lona PR
+
+on:
+  push:
+    branches-ignore:
+      - master
+
+jobs:
+  documentation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get the latest version of the repository
+        uses: actions/checkout@v1
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+
+      - name: Check if Lona is enabled on this repo
+        id: lona
+        uses: Lona/lona-github-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow_succeeded: ${{ job.status == 'Success' }}
+          ref_name: ${{ github.ref }}
+
+      - name: Restore the dependencies cache
+        uses: actions/cache@preview
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node
+
+      - name: Generate the documentation website
+        uses: Lona/lona-docs-github-action@v1
+        with:
+          output_folder: ${{ steps.lona.outputs.output_folder }}
