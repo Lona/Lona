@@ -81,17 +81,15 @@ class PublishingViewController: NSViewController {
         }
 
         if Account.shared.signedIn {
-            Promise<([Repository], [Organization]), NSError>.parallel(
-                fetchRepositories(),
-                fetchOrganizations()
-            ).finalResult({ result in
+            fetchRepositoriesAndOrganizations().finalResult({ result in
                 switch result {
                 case .failure(let error):
                     self.history = .init(.error(title: "Couldn't publish workspace", body: "Failed to connect to Lona API.\n\(error)"))
                 case .success(let repositories, let organizations):
                     switch Git.client.getRemoteURL() {
-                    case .failure(let error):
-                        self.history = .init(.error(title: "Couldn't publish workspace", body: "Failed to find remote git repository.\n\(error)"))
+                    case .failure:
+                        // We haven't added a remote yet, so this is a new repository
+                        break
                     case .success(let url):
                         // Check if the remote repository URL matches a Lona repository URL
                         if repositories.contains(where: {
@@ -99,6 +97,8 @@ class PublishingViewController: NSViewController {
                         }) {
                             self.showsProgressIndicator = true
 
+                            // If local and remote repo are out of sync, bail out
+                            // TODO: Try to fast-forward local repo
                             Git.client.isLocalBranchUpToDateWithRemote().finalResult({ result in
                                 DispatchQueue.main.sync {
                                     self.showsProgressIndicator = false
@@ -131,13 +131,17 @@ class PublishingViewController: NSViewController {
                                     }
                                 }
                             })
-                        } else {
-                            if organizations.isEmpty {
-                                self.history.navigateTo(.needsOrg)
-                            } else {
-                                self.history.navigateTo(.chooseOrg(organizations: organizations))
-                            }
+
+                            return
                         }
+
+                        // If we don't find a match, then this is a repository not created through Lona Studio
+                    }
+
+                    if organizations.isEmpty {
+                        self.history.navigateTo(.needsOrg)
+                    } else {
+                        self.history.navigateTo(.chooseOrg(organizations: organizations))
                     }
                 }
             })
@@ -398,31 +402,21 @@ class PublishingViewController: NSViewController {
 
 extension PublishingViewController {
 
-    private func fetchRepositories() -> Promise<[Repository], NSError> {
+    private func fetchRepositoriesAndOrganizations() -> Promise<([Repository], [Organization]), NSError> {
         self.showsProgressIndicator = true
 
-        return Account.shared.me().onSuccess { [weak self] result in
+        return Account.shared.me(forceRefresh: true).onSuccess { [weak self] result in
             guard let self = self else { return .failure(NSError("Missing self")) }
 
             self.showsProgressIndicator = false
+
+            let organizations = result.organizations.map { Organization(id: $0.id, name: $0.name) }
 
             let repositories: [Repository] = Array(result.organizations.map({ organization in
                 return organization.repos.map { Repository(url: URL(string: $0.url)!, activated: $0.activated) }
             }).joined())
 
-            return .success(repositories)
-        }
-    }
-
-    private func fetchOrganizations() -> Promise<[Organization], NSError> {
-        self.showsProgressIndicator = true
-
-        return Account.shared.me().onSuccess { [weak self] result in
-            guard let self = self else { return .failure(NSError("Missing self")) }
-
-            self.showsProgressIndicator = false
-
-            return .success(result.organizations.map { Organization(id: $0.id, name: $0.name) })
+            return .success((repositories, organizations))
         }
     }
 

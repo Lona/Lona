@@ -77,8 +77,8 @@ class Account {
       return pendingMePromise
     }
 
-    let promise: Promise<GetMeQuery.Data.GetMe, NSError> = .result { complete in
-      Network.shared.lona.fetch(query: GetMeQuery()) { [weak self] result in
+    let promise: Promise<GetMeQuery.Data.GetMe, NSError> = .result({ complete in
+      Network.shared.lona.fetch(query: GetMeQuery(), cachePolicy: forceRefresh ? .fetchIgnoringCacheData : .returnCacheDataElseFetch) { [weak self] result in
         guard let self = self else { return }
 
         switch result {
@@ -94,12 +94,14 @@ class Account {
           }
 
           self.cachedMe = data
+          self.pendingMePromise = nil
+
           complete(.success(data))
         case .failure(let error):
           complete(.failure(NSError(error.localizedDescription)))
         }
       }
-    }
+    })
 
     pendingMePromise = promise
     return promise
