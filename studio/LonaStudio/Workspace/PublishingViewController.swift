@@ -19,6 +19,11 @@ class PublishingViewController: NSViewController {
         let name: String
     }
 
+    public struct Repository: Equatable {
+        let url: URL
+        let activated: Bool
+    }
+
     // MARK: Static
 
     static var shared = PublishingViewController()
@@ -32,6 +37,7 @@ class PublishingViewController: NSViewController {
         case needsRepo(organization: Organization)
         case createRepo(organization: Organization, githubOrganizations: [Organization])
         case done
+        case error(title: String, body: String)
     }
 
     // MARK: Lifecycle
@@ -58,36 +64,81 @@ class PublishingViewController: NSViewController {
 
     public var image: NSImage? { didSet { update() } }
 
-    public func canPublish() -> Bool {
-        switch Git.client.getRootDirectory() {
-        case .success(let path):
-            return path == CSUserPreferences.workspaceURL.path
-        case .failure(let error):
-            Swift.print(error)
-            return false
-        }
-    }
-
     public func initializeState() {
         history = .init()
         workspaceName = CSWorkspacePreferences.workspaceName
         update()
 
-//        Git.status()
+        switch Git.client.getRootDirectoryPath() {
+        case .success(let path) where path == CSUserPreferences.workspaceURL.path:
+            break
+        case .success:
+            self.history = .init(.error(title: "Couldn't publish workspace", body: "Invalid git configuration: there must be a git repository in your workspace root (the same directory as the lona.json) before you can publish."))
+            return
+        case .failure(let error):
+            self.history = .init(.error(title: "Couldn't publish workspace", body: "Failed to find root git directory.\n\(error)"))
+            return
+        }
 
         if Account.shared.signedIn {
-            fetchOrganizations().finalResult({ [weak self] result in
-                guard let self = self else { return }
-
+            Promise<([Repository], [Organization]), NSError>.parallel(
+                fetchRepositories(),
+                fetchOrganizations()
+            ).finalResult({ result in
                 switch result {
-                case .success(let organizations):
-                    if organizations.isEmpty {
-                        self.history.navigateTo(.needsOrg)
-                    } else {
-                        self.history.navigateTo(.chooseOrg(organizations: organizations))
-                    }
                 case .failure(let error):
-                    Swift.print("Failed to fetch organizations:", error)
+                    self.history = .init(.error(title: "Couldn't publish workspace", body: "Failed to connect to Lona API.\n\(error)"))
+                case .success(let repositories, let organizations):
+                    switch Git.client.getRemoteURL() {
+                    case .failure(let error):
+                        self.history = .init(.error(title: "Couldn't publish workspace", body: "Failed to find remote git repository.\n\(error)"))
+                    case .success(let url):
+                        // Check if the remote repository URL matches a Lona repository URL
+                        if repositories.contains(where: {
+                            $0.url == Git.URL.format(url, as: .ssh) || $0.url == Git.URL.format(url, as: .https)
+                        }) {
+                            self.showsProgressIndicator = true
+
+                            Git.client.isLocalBranchUpToDateWithRemote().finalResult({ result in
+                                DispatchQueue.main.sync {
+                                    self.showsProgressIndicator = false
+
+                                    switch Git.client.hasUncommittedChanges() {
+                                    case .failure(let error):
+                                        self.history = .init(.error(title: "Couldn't publish workspace", body: error.localizedDescription))
+                                    case .success(false):
+                                        self.history = .init(.error(title: "No changes to publish", body: "You haven't made any changes since the last version of the workspace was published!"))
+                                        return
+                                    case .success(true):
+                                        break
+                                    }
+
+                                    switch result {
+                                    case .success(true):
+                                        self.showsProgressIndicator = true
+
+                                        _ = Git.client.addAllFiles()
+                                        _ = Git.client.commit(message: "Updates")
+                                        _ = Git.client.push(repository: Git.defaultOriginName, refspec: "HEAD")
+
+                                        self.showsProgressIndicator = false
+
+                                        self.history = .init(.done)
+                                    case .success(false):
+                                        self.history = .init(.error(title: "Local workspace outdated", body: "Remote changes have been made to your workspace. You must sync them locally before you can publish your local changes."))
+                                    case .failure(let error):
+                                        self.history = .init(.error(title: "Couldn't publish workspace", body: error.localizedDescription))
+                                    }
+                                }
+                            })
+                        } else {
+                            if organizations.isEmpty {
+                                self.history.navigateTo(.needsOrg)
+                            } else {
+                                self.history.navigateTo(.chooseOrg(organizations: organizations))
+                            }
+                        }
+                    }
                 }
             })
         } else {
@@ -220,11 +271,9 @@ class PublishingViewController: NSViewController {
 
                     switch result {
                     case .success(let url):
-                        let sshURL = URL(string: url.appendingPathExtension("git").absoluteString.replacingOccurrences(of: "https://github.com/", with: "git@github.com:"))!
-
                         let gitResult = Git.client
-                            .addRemote(name: "lona", url: sshURL)
-                            .flatMap({ _ in Git.client.push(repository: "lona", refspec: "HEAD") })
+                            .addRemote(name: Git.defaultOriginName, url: Git.URL.format(url, as: .ssh)!)
+                            .flatMap({ _ in Git.client.push(repository: Git.defaultOriginName, refspec: "HEAD") })
 
                         switch gitResult {
                         case .success:
@@ -263,6 +312,12 @@ class PublishingViewController: NSViewController {
                 guard let organization = organizations.first(where: { $0.id == id }) else { return }
 
                 self.history.navigateTo(.needsRepo(organization: organization))
+            }
+            return screen
+        case .error(title: let title, body: let body):
+            let screen = PublishInfo(titleText: title, bodyText: body)
+            screen.onClickDoneButton = { [unowned self] in
+                self.dismiss(nil)
             }
             return screen
         case .done:
@@ -323,7 +378,7 @@ class PublishingViewController: NSViewController {
         guard let state = history.current else { return false }
 
         switch state {
-        case .needsAuth, .done:
+        case .needsAuth, .done, .error:
             return false
         default:
             return true
@@ -343,8 +398,25 @@ class PublishingViewController: NSViewController {
 
 extension PublishingViewController {
 
+    private func fetchRepositories() -> Promise<[Repository], NSError> {
+        self.showsProgressIndicator = true
+
+        return Account.shared.me().onSuccess { [weak self] result in
+            guard let self = self else { return .failure(NSError("Missing self")) }
+
+            self.showsProgressIndicator = false
+
+            let repositories: [Repository] = Array(result.organizations.map({ organization in
+                return organization.repos.map { Repository(url: URL(string: $0.url)!, activated: $0.activated) }
+            }).joined())
+
+            return .success(repositories)
+        }
+    }
+
     private func fetchOrganizations() -> Promise<[Organization], NSError> {
         self.showsProgressIndicator = true
+
         return Account.shared.me().onSuccess { [weak self] result in
             guard let self = self else { return .failure(NSError("Missing self")) }
 
