@@ -16,6 +16,13 @@
       "params" : {
 
       }
+    },
+    {
+      "id" : "Disabled",
+      "name" : "Disabled",
+      "params" : {
+        "disabled" : true
+      }
     }
   ],
   "logic" : [
@@ -46,15 +53,86 @@
     {
       "body" : [
         {
+          "body" : [
+            {
+              "assignee" : [
+                "layers",
+                "Container",
+                "backgroundColor"
+              ],
+              "content" : {
+                "type" : "LitExpr",
+                "value" : {
+                  "data" : "darkTransparentOutline",
+                  "type" : "Color"
+                }
+              },
+              "type" : "AssignExpr"
+            }
+          ],
+          "condition" : {
+            "left" : [
+              "layers",
+              "Container",
+              "hovered"
+            ],
+            "op" : "==",
+            "right" : {
+              "type" : "LitExpr",
+              "value" : {
+                "data" : true,
+                "type" : "Boolean"
+              }
+            },
+            "type" : "BinExpr"
+          },
+          "type" : "IfExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "disabled"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : false,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
           "assignee" : [
             "layers",
-            "Container",
-            "backgroundColor"
+            "Title",
+            "textStyle"
           ],
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : "darkTransparentOutline",
+              "data" : "regularMuted",
+              "type" : "TextStyle"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "Container",
+            "borderColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "dividerSubtle",
               "type" : "Color"
             }
           },
@@ -63,9 +141,8 @@
       ],
       "condition" : {
         "left" : [
-          "layers",
-          "Container",
-          "hovered"
+          "parameters",
+          "disabled"
         ],
         "op" : "==",
         "right" : {
@@ -90,6 +167,14 @@
     {
       "name" : "titleText",
       "type" : "String"
+    },
+    {
+      "defaultValue" : {
+        "data" : false,
+        "type" : "Boolean"
+      },
+      "name" : "disabled",
+      "type" : "Boolean"
     }
   ],
   "root" : {

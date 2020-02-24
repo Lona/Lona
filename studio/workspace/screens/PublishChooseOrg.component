@@ -103,6 +103,18 @@
         "onSelectOrganizationId"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "SubmitButton",
+        "disabled"
+      ],
+      "content" : [
+        "parameters",
+        "isSubmitting"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -142,6 +154,10 @@
           }
         ]
       }
+    },
+    {
+      "name" : "isSubmitting",
+      "type" : "Boolean"
     }
   ],
   "root" : {

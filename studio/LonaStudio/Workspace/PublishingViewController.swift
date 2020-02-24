@@ -296,11 +296,15 @@ class PublishingViewController: NSViewController {
             return screen
         case .chooseOrg(let organizations):
             let organizationIds = organizations.map { $0.id }
-            let screen = PublishChooseOrg(workspaceName: workspaceName, organizationName: "", organizationIds: organizationIds)
+            let screen = PublishChooseOrg(workspaceName: workspaceName, organizationName: "", organizationIds: organizationIds, isSubmitting: false)
             screen.onChangeTextValue = { [unowned screen] value in
                 screen.organizationName = value
             }
             screen.onClickSubmit = { [unowned self] in
+                if screen.isSubmitting { return }
+
+                screen.isSubmitting = true
+
                 self.createOrganization(name: screen.organizationName).finalResult({ [weak self] result in
                     guard let self = self else { return }
 
@@ -308,7 +312,9 @@ class PublishingViewController: NSViewController {
                     case .success(let organization):
                         self.history.navigateTo(.needsRepo(organization: organization))
                     case .failure(let error):
-                        Swift.print("Failed to create organization:", error)
+                        screen.isSubmitting = false
+
+                        Alert.runInformationalAlert(messageText: "Failed to create organization", informativeText: error.description)
                     }
                 })
             }
@@ -359,6 +365,7 @@ class PublishingViewController: NSViewController {
 
         containerView.widthAnchor.constraint(equalToConstant: 720).isActive = true
         containerView.heightAnchor.constraint(greaterThanOrEqualToConstant: 100).isActive = true
+        containerView.heightAnchor.constraint(lessThanOrEqualToConstant: 800).isActive = true
 
         navigationControl.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 40).isActive = true
         navigationControl.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 32).isActive = true

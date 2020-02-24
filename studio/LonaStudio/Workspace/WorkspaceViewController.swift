@@ -614,7 +614,9 @@ class WorkspaceViewController: NSSplitViewController {
 
         editorViewController.showsHeaderDivider = false
 
-        editorViewController.onClickPublish = {
+        editorViewController.onClickPublish = { [unowned self] in
+            DocumentController.shared.saveAllDocuments(nil)
+
             PublishingViewController.shared.initializeState()
             self.presentAsModalWindow(PublishingViewController.shared)
         }

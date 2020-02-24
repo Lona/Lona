@@ -18,10 +18,19 @@ public class PublishChooseOrg: NSBox {
     update()
   }
 
-  public convenience init(workspaceName: String, organizationName: String, organizationIds: [String]) {
+  public convenience init(
+    workspaceName: String,
+    organizationName: String,
+    organizationIds: [String],
+    isSubmitting: Bool)
+  {
     self
       .init(
-        Parameters(workspaceName: workspaceName, organizationName: organizationName, organizationIds: organizationIds))
+        Parameters(
+          workspaceName: workspaceName,
+          organizationName: organizationName,
+          organizationIds: organizationIds,
+          isSubmitting: isSubmitting))
   }
 
   public convenience init() {
@@ -81,6 +90,15 @@ public class PublishChooseOrg: NSBox {
   public var onSelectOrganizationId: ((String) -> Void)? {
     get { return parameters.onSelectOrganizationId }
     set { parameters.onSelectOrganizationId = newValue }
+  }
+
+  public var isSubmitting: Bool {
+    get { return parameters.isSubmitting }
+    set {
+      if parameters.isSubmitting != newValue {
+        parameters.isSubmitting = newValue
+      }
+    }
   }
 
   public var parameters: Parameters {
@@ -393,6 +411,7 @@ public class PublishChooseOrg: NSBox {
     organizationNameInputView.placeholderString = "Organization name"
     organizationListView.organizationIds = organizationIds
     organizationListView.onSelectOrganizationId = handleOnSelectOrganizationId
+    submitButtonView.disabled = isSubmitting
   }
 
   private func handleOnClickSubmit() {
@@ -415,6 +434,7 @@ extension PublishChooseOrg {
     public var workspaceName: String
     public var organizationName: String
     public var organizationIds: [String]
+    public var isSubmitting: Bool
     public var onClickSubmit: (() -> Void)?
     public var onChangeTextValue: StringHandler
     public var onSelectOrganizationId: ((String) -> Void)?
@@ -423,6 +443,7 @@ extension PublishChooseOrg {
       workspaceName: String,
       organizationName: String,
       organizationIds: [String],
+      isSubmitting: Bool,
       onClickSubmit: (() -> Void)? = nil,
       onChangeTextValue: StringHandler = nil,
       onSelectOrganizationId: ((String) -> Void)? = nil)
@@ -430,18 +451,20 @@ extension PublishChooseOrg {
       self.workspaceName = workspaceName
       self.organizationName = organizationName
       self.organizationIds = organizationIds
+      self.isSubmitting = isSubmitting
       self.onClickSubmit = onClickSubmit
       self.onChangeTextValue = onChangeTextValue
       self.onSelectOrganizationId = onSelectOrganizationId
     }
 
     public init() {
-      self.init(workspaceName: "", organizationName: "", organizationIds: [])
+      self.init(workspaceName: "", organizationName: "", organizationIds: [], isSubmitting: false)
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
       return lhs.workspaceName == rhs.workspaceName &&
-        lhs.organizationName == rhs.organizationName && lhs.organizationIds == rhs.organizationIds
+        lhs.organizationName == rhs.organizationName &&
+          lhs.organizationIds == rhs.organizationIds && lhs.isSubmitting == rhs.isSubmitting
     }
   }
 }
@@ -469,6 +492,7 @@ extension PublishChooseOrg {
       workspaceName: String,
       organizationName: String,
       organizationIds: [String],
+      isSubmitting: Bool,
       onClickSubmit: (() -> Void)? = nil,
       onChangeTextValue: StringHandler = nil,
       onSelectOrganizationId: ((String) -> Void)? = nil)
@@ -479,13 +503,14 @@ extension PublishChooseOrg {
             workspaceName: workspaceName,
             organizationName: organizationName,
             organizationIds: organizationIds,
+            isSubmitting: isSubmitting,
             onClickSubmit: onClickSubmit,
             onChangeTextValue: onChangeTextValue,
             onSelectOrganizationId: onSelectOrganizationId))
     }
 
     public init() {
-      self.init(workspaceName: "", organizationName: "", organizationIds: [])
+      self.init(workspaceName: "", organizationName: "", organizationIds: [], isSubmitting: false)
     }
   }
 }

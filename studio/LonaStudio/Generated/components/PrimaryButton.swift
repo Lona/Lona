@@ -20,8 +20,8 @@ public class PrimaryButton: NSBox {
     addTrackingArea(trackingArea)
   }
 
-  public convenience init(titleText: String) {
-    self.init(Parameters(titleText: titleText))
+  public convenience init(titleText: String, disabled: Bool) {
+    self.init(Parameters(titleText: titleText, disabled: disabled))
   }
 
   public convenience init() {
@@ -61,6 +61,15 @@ public class PrimaryButton: NSBox {
     }
   }
 
+  public var disabled: Bool {
+    get { return parameters.disabled }
+    set {
+      if parameters.disabled != newValue {
+        parameters.disabled = newValue
+      }
+    }
+  }
+
   public var parameters: Parameters {
     didSet {
       if parameters != oldValue {
@@ -92,7 +101,6 @@ public class PrimaryButton: NSBox {
 
     addSubview(titleView)
 
-    borderColor = Colors.divider
     cornerRadius = 2
     borderWidth = 1
     titleView.maximumNumberOfLines = 1
@@ -117,10 +125,20 @@ public class PrimaryButton: NSBox {
 
   private func update() {
     fillColor = Colors.controlBackground
+    borderColor = Colors.divider
+    titleViewTextStyle = TextStyles.regular.with(alignment: .center)
+    titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleText)
     onPress = handleOnClick
-    if hovered {
-      fillColor = Colors.darkTransparentOutline
+    if disabled == false {
+      if hovered {
+        fillColor = Colors.darkTransparentOutline
+      }
+    }
+    if disabled {
+      titleViewTextStyle = TextStyles.regularMuted.with(alignment: .center)
+      titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
+      borderColor = Colors.dividerSubtle
     }
   }
 
@@ -182,19 +200,21 @@ public class PrimaryButton: NSBox {
 extension PrimaryButton {
   public struct Parameters: Equatable {
     public var titleText: String
+    public var disabled: Bool
     public var onClick: (() -> Void)?
 
-    public init(titleText: String, onClick: (() -> Void)? = nil) {
+    public init(titleText: String, disabled: Bool, onClick: (() -> Void)? = nil) {
       self.titleText = titleText
+      self.disabled = disabled
       self.onClick = onClick
     }
 
     public init() {
-      self.init(titleText: "")
+      self.init(titleText: "", disabled: false)
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return lhs.titleText == rhs.titleText
+      return lhs.titleText == rhs.titleText && lhs.disabled == rhs.disabled
     }
   }
 }
@@ -218,12 +238,21 @@ extension PrimaryButton {
       self.parameters = parameters
     }
 
-    public init(titleText: String, onClick: (() -> Void)? = nil) {
-      self.init(Parameters(titleText: titleText, onClick: onClick))
+    public init(titleText: String, disabled: Bool, onClick: (() -> Void)? = nil) {
+      self.init(Parameters(titleText: titleText, disabled: disabled, onClick: onClick))
     }
 
     public init() {
-      self.init(titleText: "")
+      self.init(titleText: "", disabled: false)
     }
+  }
+}
+
+// LONA: KEEP BELOW
+
+extension PrimaryButton {
+  public override func updateConstraints() {
+    self.titleView.setContentCompressionResistancePriority(.required, for: .vertical)
+    super.updateConstraints()
   }
 }

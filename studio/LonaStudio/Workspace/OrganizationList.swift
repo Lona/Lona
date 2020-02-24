@@ -78,6 +78,8 @@ public class OrganizationList: NSBox {
     }
 
     private var stackView = NSStackView()
+    private let scrollView = NSScrollView()
+    private let flippedView = FlippedView()
 
     private func setUpViews() {
         boxType = .custom
@@ -86,7 +88,15 @@ public class OrganizationList: NSBox {
 
         stackView.orientation = .vertical
 
-        addSubview(stackView)
+        scrollView.hasVerticalScroller = true
+        scrollView.hasHorizontalScroller = false
+        scrollView.autohidesScrollers = true
+        scrollView.drawsBackground = false
+        scrollView.documentView = flippedView
+
+        flippedView.addSubview(stackView)
+
+        addSubview(scrollView)
 
         Network.shared.lona.fetch(query: GetMeQuery()) { [weak self] result in
             guard let self = self else { return }
@@ -109,12 +119,26 @@ public class OrganizationList: NSBox {
 
     private func setUpConstraints() {
         translatesAutoresizingMaskIntoConstraints = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        flippedView.translatesAutoresizingMaskIntoConstraints = false
         stackView.translatesAutoresizingMaskIntoConstraints = false
 
-        stackView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        stackView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        stackView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        stackView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        scrollView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        scrollView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        scrollView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        scrollView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+
+        scrollView.contentView.leadingAnchor.constraint(equalTo: flippedView.leadingAnchor).isActive = true
+        scrollView.contentView.trailingAnchor.constraint(equalTo: flippedView.trailingAnchor).isActive = true
+
+        flippedView.topAnchor.constraint(equalTo: stackView.topAnchor).isActive = true
+        flippedView.leadingAnchor.constraint(equalTo: stackView.leadingAnchor).isActive = true
+        flippedView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor).isActive = true
+        flippedView.bottomAnchor.constraint(equalTo: stackView.bottomAnchor).isActive = true
+
+        let scrollViewMinimumHeightConstraint = scrollView.heightAnchor.constraint(greaterThanOrEqualTo: stackView.heightAnchor)
+        scrollViewMinimumHeightConstraint.priority = .defaultHigh
+        scrollViewMinimumHeightConstraint.isActive = true
 
         stackView.setHuggingPriority(.defaultHigh, for: .vertical)
     }
@@ -123,7 +147,7 @@ public class OrganizationList: NSBox {
         stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
         organizationIds.forEach { id in
-            let organizationView = PrimaryButton(titleText: organizations.first(where: { $0.id == id })?.name ?? "")
+            let organizationView = PrimaryButton(titleText: organizations.first(where: { $0.id == id })?.name ?? "", disabled: false)
             organizationView.onClick = { [unowned self] in self.onSelectOrganizationId?(id) }
 
             stackView.addArrangedSubview(organizationView, stretched: true)
