@@ -20,7 +20,7 @@ jobs:
 
       - name: Bump the workspace version
         id: tag_version
-        uses: mathieudutour/github-tag-action@v3
+        uses: mathieudutour/github-tag-action@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           default_bump: patch
@@ -47,6 +47,7 @@ jobs:
         with:
           tag_name: ${{ steps.tag_version.outputs.new_tag }}
           release_name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
           draft: "false"
           prerelease: "false"
 
