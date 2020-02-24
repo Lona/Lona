@@ -19,17 +19,21 @@ public class PublishChooseOrg: NSBox {
   }
 
   public convenience init(
-    workspaceName: String,
+    titleText: String,
+    bodyText: String,
     organizationName: String,
     organizationIds: [String],
+    showsOrganizationsList: Bool,
     isSubmitting: Bool)
   {
     self
       .init(
         Parameters(
-          workspaceName: workspaceName,
+          titleText: titleText,
+          bodyText: bodyText,
           organizationName: organizationName,
           organizationIds: organizationIds,
+          showsOrganizationsList: showsOrganizationsList,
           isSubmitting: isSubmitting))
   }
 
@@ -50,11 +54,20 @@ public class PublishChooseOrg: NSBox {
 
   // MARK: Public
 
-  public var workspaceName: String {
-    get { return parameters.workspaceName }
+  public var titleText: String {
+    get { return parameters.titleText }
     set {
-      if parameters.workspaceName != newValue {
-        parameters.workspaceName = newValue
+      if parameters.titleText != newValue {
+        parameters.titleText = newValue
+      }
+    }
+  }
+
+  public var bodyText: String {
+    get { return parameters.bodyText }
+    set {
+      if parameters.bodyText != newValue {
+        parameters.bodyText = newValue
       }
     }
   }
@@ -66,11 +79,6 @@ public class PublishChooseOrg: NSBox {
         parameters.organizationName = newValue
       }
     }
-  }
-
-  public var onClickSubmit: (() -> Void)? {
-    get { return parameters.onClickSubmit }
-    set { parameters.onClickSubmit = newValue }
   }
 
   public var onChangeTextValue: StringHandler {
@@ -87,9 +95,13 @@ public class PublishChooseOrg: NSBox {
     }
   }
 
-  public var onSelectOrganizationId: ((String) -> Void)? {
-    get { return parameters.onSelectOrganizationId }
-    set { parameters.onSelectOrganizationId = newValue }
+  public var showsOrganizationsList: Bool {
+    get { return parameters.showsOrganizationsList }
+    set {
+      if parameters.showsOrganizationsList != newValue {
+        parameters.showsOrganizationsList = newValue
+      }
+    }
   }
 
   public var isSubmitting: Bool {
@@ -99,6 +111,16 @@ public class PublishChooseOrg: NSBox {
         parameters.isSubmitting = newValue
       }
     }
+  }
+
+  public var onClickSubmit: (() -> Void)? {
+    get { return parameters.onClickSubmit }
+    set { parameters.onClickSubmit = newValue }
+  }
+
+  public var onSelectOrganizationId: ((String) -> Void)? {
+    get { return parameters.onSelectOrganizationId }
+    set { parameters.onSelectOrganizationId = newValue }
   }
 
   public var parameters: Parameters {
@@ -111,12 +133,11 @@ public class PublishChooseOrg: NSBox {
 
   // MARK: Private
 
-  private var titleContainerView = NSBox()
-  private var publishTextView = LNATextField(labelWithString: "")
-  private var workspaceTitleView = LNATextField(labelWithString: "")
+  private var titleView = LNATextField(labelWithString: "")
   private var vSpacerView = NSBox()
-  private var bodyTextView = LNATextField(labelWithString: "")
+  private var bodyView = LNATextField(labelWithString: "")
   private var vSpacer4View = NSBox()
+  private var organizationContainerView = NSBox()
   private var text1View = LNATextField(labelWithString: "")
   private var vSpacer5View = NSBox()
   private var organizationListView = OrganizationList()
@@ -129,33 +150,47 @@ public class PublishChooseOrg: NSBox {
   private var viewView = NSBox()
   private var submitButtonView = PrimaryButton()
 
-  private var publishTextViewTextStyle = TextStyles.titleLight
-  private var workspaceTitleViewTextStyle = TextStyles.title
-  private var bodyTextViewTextStyle = TextStyles.body
+  private var titleViewTextStyle = TextStyles.title
+  private var bodyViewTextStyle = TextStyles.body
   private var text1ViewTextStyle = TextStyles.subtitle
   private var textViewTextStyle = TextStyles.subtitle
+
+  private var textViewTopAnchorVSpacer4ViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var organizationContainerViewTopAnchorVSpacer4ViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var organizationContainerViewLeadingAnchorLeadingAnchorConstraint: NSLayoutConstraint?
+  private var organizationContainerViewTrailingAnchorTrailingAnchorConstraint: NSLayoutConstraint?
+  private var textViewTopAnchorOrganizationContainerViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var text1ViewTopAnchorOrganizationContainerViewTopAnchorConstraint: NSLayoutConstraint?
+  private var text1ViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var text1ViewTrailingAnchorOrganizationContainerViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var vSpacer5ViewTopAnchorText1ViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var vSpacer5ViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var organizationListViewTopAnchorVSpacer5ViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var organizationListViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var organizationListViewTrailingAnchorOrganizationContainerViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var vSpacer1ViewBottomAnchorOrganizationContainerViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var vSpacer1ViewTopAnchorOrganizationListViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var vSpacer1ViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var vSpacer5ViewHeightAnchorConstraint: NSLayoutConstraint?
+  private var vSpacer5ViewWidthAnchorConstraint: NSLayoutConstraint?
+  private var vSpacer1ViewHeightAnchorConstraint: NSLayoutConstraint?
+  private var vSpacer1ViewWidthAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
     boxType = .custom
     borderType = .noBorder
     contentViewMargins = .zero
-    titleContainerView.boxType = .custom
-    titleContainerView.borderType = .noBorder
-    titleContainerView.contentViewMargins = .zero
+    titleView.lineBreakMode = .byWordWrapping
     vSpacerView.boxType = .custom
     vSpacerView.borderType = .noBorder
     vSpacerView.contentViewMargins = .zero
-    bodyTextView.lineBreakMode = .byWordWrapping
+    bodyView.lineBreakMode = .byWordWrapping
     vSpacer4View.boxType = .custom
     vSpacer4View.borderType = .noBorder
     vSpacer4View.contentViewMargins = .zero
-    text1View.lineBreakMode = .byWordWrapping
-    vSpacer5View.boxType = .custom
-    vSpacer5View.borderType = .noBorder
-    vSpacer5View.contentViewMargins = .zero
-    vSpacer1View.boxType = .custom
-    vSpacer1View.borderType = .noBorder
-    vSpacer1View.contentViewMargins = .zero
+    organizationContainerView.boxType = .custom
+    organizationContainerView.borderType = .noBorder
+    organizationContainerView.contentViewMargins = .zero
     textView.lineBreakMode = .byWordWrapping
     vSpacer3View.boxType = .custom
     vSpacer3View.borderType = .noBorder
@@ -163,8 +198,13 @@ public class PublishChooseOrg: NSBox {
     view1View.boxType = .custom
     view1View.borderType = .noBorder
     view1View.contentViewMargins = .zero
-    publishTextView.lineBreakMode = .byWordWrapping
-    workspaceTitleView.lineBreakMode = .byWordWrapping
+    text1View.lineBreakMode = .byWordWrapping
+    vSpacer5View.boxType = .custom
+    vSpacer5View.borderType = .noBorder
+    vSpacer5View.contentViewMargins = .zero
+    vSpacer1View.boxType = .custom
+    vSpacer1View.borderType = .noBorder
+    vSpacer1View.contentViewMargins = .zero
     vSpacer2View.boxType = .custom
     vSpacer2View.borderType = .noBorder
     vSpacer2View.contentViewMargins = .zero
@@ -172,35 +212,28 @@ public class PublishChooseOrg: NSBox {
     viewView.borderType = .noBorder
     viewView.contentViewMargins = .zero
 
-    addSubview(titleContainerView)
+    addSubview(titleView)
     addSubview(vSpacerView)
-    addSubview(bodyTextView)
+    addSubview(bodyView)
     addSubview(vSpacer4View)
-    addSubview(text1View)
-    addSubview(vSpacer5View)
-    addSubview(organizationListView)
-    addSubview(vSpacer1View)
+    addSubview(organizationContainerView)
     addSubview(textView)
     addSubview(vSpacer3View)
     addSubview(view1View)
-    titleContainerView.addSubview(publishTextView)
-    titleContainerView.addSubview(workspaceTitleView)
+    organizationContainerView.addSubview(text1View)
+    organizationContainerView.addSubview(vSpacer5View)
+    organizationContainerView.addSubview(organizationListView)
+    organizationContainerView.addSubview(vSpacer1View)
     view1View.addSubview(organizationNameInputView)
     view1View.addSubview(vSpacer2View)
     view1View.addSubview(viewView)
     viewView.addSubview(submitButtonView)
 
-    publishTextView.attributedStringValue = publishTextViewTextStyle.apply(to: "Publish ")
-    publishTextViewTextStyle = TextStyles.titleLight
-    publishTextView.attributedStringValue = publishTextViewTextStyle.apply(to: publishTextView.attributedStringValue)
-    workspaceTitleViewTextStyle = TextStyles.title
-    workspaceTitleView.attributedStringValue =
-      workspaceTitleViewTextStyle.apply(to: workspaceTitleView.attributedStringValue)
+    titleViewTextStyle = TextStyles.title
+    titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
     vSpacerView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    bodyTextView.attributedStringValue =
-      bodyTextViewTextStyle.apply(to: "Choose a Lona organization to publish this workspace to, or create a new one.")
-    bodyTextViewTextStyle = TextStyles.body
-    bodyTextView.attributedStringValue = bodyTextViewTextStyle.apply(to: bodyTextView.attributedStringValue)
+    bodyViewTextStyle = TextStyles.body
+    bodyView.attributedStringValue = bodyViewTextStyle.apply(to: bodyView.attributedStringValue)
     vSpacer4View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     text1View.attributedStringValue = text1ViewTextStyle.apply(to: "Choose organization")
     text1ViewTextStyle = TextStyles.subtitle
@@ -217,53 +250,33 @@ public class PublishChooseOrg: NSBox {
 
   private func setUpConstraints() {
     translatesAutoresizingMaskIntoConstraints = false
-    titleContainerView.translatesAutoresizingMaskIntoConstraints = false
+    titleView.translatesAutoresizingMaskIntoConstraints = false
     vSpacerView.translatesAutoresizingMaskIntoConstraints = false
-    bodyTextView.translatesAutoresizingMaskIntoConstraints = false
+    bodyView.translatesAutoresizingMaskIntoConstraints = false
     vSpacer4View.translatesAutoresizingMaskIntoConstraints = false
+    organizationContainerView.translatesAutoresizingMaskIntoConstraints = false
+    textView.translatesAutoresizingMaskIntoConstraints = false
+    vSpacer3View.translatesAutoresizingMaskIntoConstraints = false
+    view1View.translatesAutoresizingMaskIntoConstraints = false
     text1View.translatesAutoresizingMaskIntoConstraints = false
     vSpacer5View.translatesAutoresizingMaskIntoConstraints = false
     organizationListView.translatesAutoresizingMaskIntoConstraints = false
     vSpacer1View.translatesAutoresizingMaskIntoConstraints = false
-    textView.translatesAutoresizingMaskIntoConstraints = false
-    vSpacer3View.translatesAutoresizingMaskIntoConstraints = false
-    view1View.translatesAutoresizingMaskIntoConstraints = false
-    publishTextView.translatesAutoresizingMaskIntoConstraints = false
-    workspaceTitleView.translatesAutoresizingMaskIntoConstraints = false
     organizationNameInputView.translatesAutoresizingMaskIntoConstraints = false
     vSpacer2View.translatesAutoresizingMaskIntoConstraints = false
     viewView.translatesAutoresizingMaskIntoConstraints = false
     submitButtonView.translatesAutoresizingMaskIntoConstraints = false
 
-    let titleContainerViewTopAnchorConstraint = titleContainerView.topAnchor.constraint(equalTo: topAnchor)
-    let titleContainerViewLeadingAnchorConstraint = titleContainerView.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let titleContainerViewTrailingAnchorConstraint = titleContainerView
-      .trailingAnchor
-      .constraint(equalTo: trailingAnchor)
-    let vSpacerViewTopAnchorConstraint = vSpacerView.topAnchor.constraint(equalTo: titleContainerView.bottomAnchor)
+    let titleViewTopAnchorConstraint = titleView.topAnchor.constraint(equalTo: topAnchor)
+    let titleViewLeadingAnchorConstraint = titleView.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let titleViewTrailingAnchorConstraint = titleView.trailingAnchor.constraint(equalTo: trailingAnchor)
+    let vSpacerViewTopAnchorConstraint = vSpacerView.topAnchor.constraint(equalTo: titleView.bottomAnchor)
     let vSpacerViewLeadingAnchorConstraint = vSpacerView.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let bodyTextViewTopAnchorConstraint = bodyTextView.topAnchor.constraint(equalTo: vSpacerView.bottomAnchor)
-    let bodyTextViewLeadingAnchorConstraint = bodyTextView.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let bodyTextViewTrailingAnchorConstraint = bodyTextView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor)
-    let vSpacer4ViewTopAnchorConstraint = vSpacer4View.topAnchor.constraint(equalTo: bodyTextView.bottomAnchor)
+    let bodyViewTopAnchorConstraint = bodyView.topAnchor.constraint(equalTo: vSpacerView.bottomAnchor)
+    let bodyViewLeadingAnchorConstraint = bodyView.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let bodyViewTrailingAnchorConstraint = bodyView.trailingAnchor.constraint(equalTo: trailingAnchor)
+    let vSpacer4ViewTopAnchorConstraint = vSpacer4View.topAnchor.constraint(equalTo: bodyView.bottomAnchor)
     let vSpacer4ViewLeadingAnchorConstraint = vSpacer4View.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let text1ViewTopAnchorConstraint = text1View.topAnchor.constraint(equalTo: vSpacer4View.bottomAnchor)
-    let text1ViewLeadingAnchorConstraint = text1View.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let text1ViewTrailingAnchorConstraint = text1View.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor)
-    let vSpacer5ViewTopAnchorConstraint = vSpacer5View.topAnchor.constraint(equalTo: text1View.bottomAnchor)
-    let vSpacer5ViewLeadingAnchorConstraint = vSpacer5View.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let organizationListViewTopAnchorConstraint = organizationListView
-      .topAnchor
-      .constraint(equalTo: vSpacer5View.bottomAnchor)
-    let organizationListViewLeadingAnchorConstraint = organizationListView
-      .leadingAnchor
-      .constraint(equalTo: leadingAnchor)
-    let organizationListViewTrailingAnchorConstraint = organizationListView
-      .trailingAnchor
-      .constraint(equalTo: trailingAnchor)
-    let vSpacer1ViewTopAnchorConstraint = vSpacer1View.topAnchor.constraint(equalTo: organizationListView.bottomAnchor)
-    let vSpacer1ViewLeadingAnchorConstraint = vSpacer1View.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: vSpacer1View.bottomAnchor)
     let textViewLeadingAnchorConstraint = textView.leadingAnchor.constraint(equalTo: leadingAnchor)
     let textViewTrailingAnchorConstraint = textView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor)
     let vSpacer3ViewTopAnchorConstraint = vSpacer3View.topAnchor.constraint(equalTo: textView.bottomAnchor)
@@ -272,36 +285,10 @@ public class PublishChooseOrg: NSBox {
     let view1ViewTopAnchorConstraint = view1View.topAnchor.constraint(equalTo: vSpacer3View.bottomAnchor)
     let view1ViewLeadingAnchorConstraint = view1View.leadingAnchor.constraint(equalTo: leadingAnchor)
     let view1ViewTrailingAnchorConstraint = view1View.trailingAnchor.constraint(equalTo: trailingAnchor)
-    let publishTextViewHeightAnchorParentConstraint = publishTextView
-      .heightAnchor
-      .constraint(lessThanOrEqualTo: titleContainerView.heightAnchor)
-    let workspaceTitleViewHeightAnchorParentConstraint = workspaceTitleView
-      .heightAnchor
-      .constraint(lessThanOrEqualTo: titleContainerView.heightAnchor)
-    let publishTextViewLeadingAnchorConstraint = publishTextView
-      .leadingAnchor
-      .constraint(equalTo: titleContainerView.leadingAnchor)
-    let publishTextViewTopAnchorConstraint = publishTextView.topAnchor.constraint(equalTo: titleContainerView.topAnchor)
-    let publishTextViewBottomAnchorConstraint = publishTextView
-      .bottomAnchor
-      .constraint(equalTo: titleContainerView.bottomAnchor)
-    let workspaceTitleViewLeadingAnchorConstraint = workspaceTitleView
-      .leadingAnchor
-      .constraint(equalTo: publishTextView.trailingAnchor)
-    let workspaceTitleViewTopAnchorConstraint = workspaceTitleView
-      .topAnchor
-      .constraint(equalTo: titleContainerView.topAnchor)
-    let workspaceTitleViewBottomAnchorConstraint = workspaceTitleView
-      .bottomAnchor
-      .constraint(equalTo: titleContainerView.bottomAnchor)
     let vSpacerViewHeightAnchorConstraint = vSpacerView.heightAnchor.constraint(equalToConstant: 32)
     let vSpacerViewWidthAnchorConstraint = vSpacerView.widthAnchor.constraint(equalToConstant: 0)
     let vSpacer4ViewHeightAnchorConstraint = vSpacer4View.heightAnchor.constraint(equalToConstant: 72)
     let vSpacer4ViewWidthAnchorConstraint = vSpacer4View.widthAnchor.constraint(equalToConstant: 0)
-    let vSpacer5ViewHeightAnchorConstraint = vSpacer5View.heightAnchor.constraint(equalToConstant: 20)
-    let vSpacer5ViewWidthAnchorConstraint = vSpacer5View.widthAnchor.constraint(equalToConstant: 0)
-    let vSpacer1ViewHeightAnchorConstraint = vSpacer1View.heightAnchor.constraint(equalToConstant: 72)
-    let vSpacer1ViewWidthAnchorConstraint = vSpacer1View.widthAnchor.constraint(equalToConstant: 0)
     let vSpacer3ViewHeightAnchorConstraint = vSpacer3View.heightAnchor.constraint(equalToConstant: 20)
     let vSpacer3ViewWidthAnchorConstraint = vSpacer3View.widthAnchor.constraint(equalToConstant: 0)
     let organizationNameInputViewTopAnchorConstraint = organizationNameInputView
@@ -333,78 +320,178 @@ public class PublishChooseOrg: NSBox {
     let submitButtonViewTrailingAnchorConstraint = submitButtonView
       .trailingAnchor
       .constraint(equalTo: viewView.trailingAnchor)
+    let textViewTopAnchorVSpacer4ViewBottomAnchorConstraint = textView
+      .topAnchor
+      .constraint(equalTo: vSpacer4View.bottomAnchor)
+    let organizationContainerViewTopAnchorVSpacer4ViewBottomAnchorConstraint = organizationContainerView
+      .topAnchor
+      .constraint(equalTo: vSpacer4View.bottomAnchor)
+    let organizationContainerViewLeadingAnchorLeadingAnchorConstraint = organizationContainerView
+      .leadingAnchor
+      .constraint(equalTo: leadingAnchor)
+    let organizationContainerViewTrailingAnchorTrailingAnchorConstraint = organizationContainerView
+      .trailingAnchor
+      .constraint(equalTo: trailingAnchor)
+    let textViewTopAnchorOrganizationContainerViewBottomAnchorConstraint = textView
+      .topAnchor
+      .constraint(equalTo: organizationContainerView.bottomAnchor)
+    let text1ViewTopAnchorOrganizationContainerViewTopAnchorConstraint = text1View
+      .topAnchor
+      .constraint(equalTo: organizationContainerView.topAnchor)
+    let text1ViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint = text1View
+      .leadingAnchor
+      .constraint(equalTo: organizationContainerView.leadingAnchor)
+    let text1ViewTrailingAnchorOrganizationContainerViewTrailingAnchorConstraint = text1View
+      .trailingAnchor
+      .constraint(lessThanOrEqualTo: organizationContainerView.trailingAnchor)
+    let vSpacer5ViewTopAnchorText1ViewBottomAnchorConstraint = vSpacer5View
+      .topAnchor
+      .constraint(equalTo: text1View.bottomAnchor)
+    let vSpacer5ViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint = vSpacer5View
+      .leadingAnchor
+      .constraint(equalTo: organizationContainerView.leadingAnchor)
+    let organizationListViewTopAnchorVSpacer5ViewBottomAnchorConstraint = organizationListView
+      .topAnchor
+      .constraint(equalTo: vSpacer5View.bottomAnchor)
+    let organizationListViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint = organizationListView
+      .leadingAnchor
+      .constraint(equalTo: organizationContainerView.leadingAnchor)
+    let organizationListViewTrailingAnchorOrganizationContainerViewTrailingAnchorConstraint = organizationListView
+      .trailingAnchor
+      .constraint(equalTo: organizationContainerView.trailingAnchor)
+    let vSpacer1ViewBottomAnchorOrganizationContainerViewBottomAnchorConstraint = vSpacer1View
+      .bottomAnchor
+      .constraint(equalTo: organizationContainerView.bottomAnchor)
+    let vSpacer1ViewTopAnchorOrganizationListViewBottomAnchorConstraint = vSpacer1View
+      .topAnchor
+      .constraint(equalTo: organizationListView.bottomAnchor)
+    let vSpacer1ViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint = vSpacer1View
+      .leadingAnchor
+      .constraint(equalTo: organizationContainerView.leadingAnchor)
+    let vSpacer5ViewHeightAnchorConstraint = vSpacer5View.heightAnchor.constraint(equalToConstant: 20)
+    let vSpacer5ViewWidthAnchorConstraint = vSpacer5View.widthAnchor.constraint(equalToConstant: 0)
+    let vSpacer1ViewHeightAnchorConstraint = vSpacer1View.heightAnchor.constraint(equalToConstant: 72)
+    let vSpacer1ViewWidthAnchorConstraint = vSpacer1View.widthAnchor.constraint(equalToConstant: 0)
 
-    publishTextViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
-    workspaceTitleViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
+    self.textViewTopAnchorVSpacer4ViewBottomAnchorConstraint = textViewTopAnchorVSpacer4ViewBottomAnchorConstraint
+    self.organizationContainerViewTopAnchorVSpacer4ViewBottomAnchorConstraint =
+      organizationContainerViewTopAnchorVSpacer4ViewBottomAnchorConstraint
+    self.organizationContainerViewLeadingAnchorLeadingAnchorConstraint =
+      organizationContainerViewLeadingAnchorLeadingAnchorConstraint
+    self.organizationContainerViewTrailingAnchorTrailingAnchorConstraint =
+      organizationContainerViewTrailingAnchorTrailingAnchorConstraint
+    self.textViewTopAnchorOrganizationContainerViewBottomAnchorConstraint =
+      textViewTopAnchorOrganizationContainerViewBottomAnchorConstraint
+    self.text1ViewTopAnchorOrganizationContainerViewTopAnchorConstraint =
+      text1ViewTopAnchorOrganizationContainerViewTopAnchorConstraint
+    self.text1ViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint =
+      text1ViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint
+    self.text1ViewTrailingAnchorOrganizationContainerViewTrailingAnchorConstraint =
+      text1ViewTrailingAnchorOrganizationContainerViewTrailingAnchorConstraint
+    self.vSpacer5ViewTopAnchorText1ViewBottomAnchorConstraint = vSpacer5ViewTopAnchorText1ViewBottomAnchorConstraint
+    self.vSpacer5ViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint =
+      vSpacer5ViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint
+    self.organizationListViewTopAnchorVSpacer5ViewBottomAnchorConstraint =
+      organizationListViewTopAnchorVSpacer5ViewBottomAnchorConstraint
+    self.organizationListViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint =
+      organizationListViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint
+    self.organizationListViewTrailingAnchorOrganizationContainerViewTrailingAnchorConstraint =
+      organizationListViewTrailingAnchorOrganizationContainerViewTrailingAnchorConstraint
+    self.vSpacer1ViewBottomAnchorOrganizationContainerViewBottomAnchorConstraint =
+      vSpacer1ViewBottomAnchorOrganizationContainerViewBottomAnchorConstraint
+    self.vSpacer1ViewTopAnchorOrganizationListViewBottomAnchorConstraint =
+      vSpacer1ViewTopAnchorOrganizationListViewBottomAnchorConstraint
+    self.vSpacer1ViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint =
+      vSpacer1ViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint
+    self.vSpacer5ViewHeightAnchorConstraint = vSpacer5ViewHeightAnchorConstraint
+    self.vSpacer5ViewWidthAnchorConstraint = vSpacer5ViewWidthAnchorConstraint
+    self.vSpacer1ViewHeightAnchorConstraint = vSpacer1ViewHeightAnchorConstraint
+    self.vSpacer1ViewWidthAnchorConstraint = vSpacer1ViewWidthAnchorConstraint
 
-    NSLayoutConstraint.activate([
-      titleContainerViewTopAnchorConstraint,
-      titleContainerViewLeadingAnchorConstraint,
-      titleContainerViewTrailingAnchorConstraint,
-      vSpacerViewTopAnchorConstraint,
-      vSpacerViewLeadingAnchorConstraint,
-      bodyTextViewTopAnchorConstraint,
-      bodyTextViewLeadingAnchorConstraint,
-      bodyTextViewTrailingAnchorConstraint,
-      vSpacer4ViewTopAnchorConstraint,
-      vSpacer4ViewLeadingAnchorConstraint,
-      text1ViewTopAnchorConstraint,
-      text1ViewLeadingAnchorConstraint,
-      text1ViewTrailingAnchorConstraint,
-      vSpacer5ViewTopAnchorConstraint,
-      vSpacer5ViewLeadingAnchorConstraint,
-      organizationListViewTopAnchorConstraint,
-      organizationListViewLeadingAnchorConstraint,
-      organizationListViewTrailingAnchorConstraint,
-      vSpacer1ViewTopAnchorConstraint,
-      vSpacer1ViewLeadingAnchorConstraint,
-      textViewTopAnchorConstraint,
-      textViewLeadingAnchorConstraint,
-      textViewTrailingAnchorConstraint,
-      vSpacer3ViewTopAnchorConstraint,
-      vSpacer3ViewLeadingAnchorConstraint,
-      view1ViewBottomAnchorConstraint,
-      view1ViewTopAnchorConstraint,
-      view1ViewLeadingAnchorConstraint,
-      view1ViewTrailingAnchorConstraint,
-      publishTextViewHeightAnchorParentConstraint,
-      workspaceTitleViewHeightAnchorParentConstraint,
-      publishTextViewLeadingAnchorConstraint,
-      publishTextViewTopAnchorConstraint,
-      publishTextViewBottomAnchorConstraint,
-      workspaceTitleViewLeadingAnchorConstraint,
-      workspaceTitleViewTopAnchorConstraint,
-      workspaceTitleViewBottomAnchorConstraint,
-      vSpacerViewHeightAnchorConstraint,
-      vSpacerViewWidthAnchorConstraint,
-      vSpacer4ViewHeightAnchorConstraint,
-      vSpacer4ViewWidthAnchorConstraint,
-      vSpacer5ViewHeightAnchorConstraint,
-      vSpacer5ViewWidthAnchorConstraint,
-      vSpacer1ViewHeightAnchorConstraint,
-      vSpacer1ViewWidthAnchorConstraint,
-      vSpacer3ViewHeightAnchorConstraint,
-      vSpacer3ViewWidthAnchorConstraint,
-      organizationNameInputViewTopAnchorConstraint,
-      organizationNameInputViewLeadingAnchorConstraint,
-      organizationNameInputViewTrailingAnchorConstraint,
-      vSpacer2ViewTopAnchorConstraint,
-      vSpacer2ViewTrailingAnchorConstraint,
-      viewViewBottomAnchorConstraint,
-      viewViewTopAnchorConstraint,
-      viewViewTrailingAnchorConstraint,
-      vSpacer2ViewHeightAnchorConstraint,
-      vSpacer2ViewWidthAnchorConstraint,
-      viewViewWidthAnchorConstraint,
-      submitButtonViewTopAnchorConstraint,
-      submitButtonViewBottomAnchorConstraint,
-      submitButtonViewLeadingAnchorConstraint,
-      submitButtonViewTrailingAnchorConstraint
-    ])
+    NSLayoutConstraint.activate(
+      [
+        titleViewTopAnchorConstraint,
+        titleViewLeadingAnchorConstraint,
+        titleViewTrailingAnchorConstraint,
+        vSpacerViewTopAnchorConstraint,
+        vSpacerViewLeadingAnchorConstraint,
+        bodyViewTopAnchorConstraint,
+        bodyViewLeadingAnchorConstraint,
+        bodyViewTrailingAnchorConstraint,
+        vSpacer4ViewTopAnchorConstraint,
+        vSpacer4ViewLeadingAnchorConstraint,
+        textViewLeadingAnchorConstraint,
+        textViewTrailingAnchorConstraint,
+        vSpacer3ViewTopAnchorConstraint,
+        vSpacer3ViewLeadingAnchorConstraint,
+        view1ViewBottomAnchorConstraint,
+        view1ViewTopAnchorConstraint,
+        view1ViewLeadingAnchorConstraint,
+        view1ViewTrailingAnchorConstraint,
+        vSpacerViewHeightAnchorConstraint,
+        vSpacerViewWidthAnchorConstraint,
+        vSpacer4ViewHeightAnchorConstraint,
+        vSpacer4ViewWidthAnchorConstraint,
+        vSpacer3ViewHeightAnchorConstraint,
+        vSpacer3ViewWidthAnchorConstraint,
+        organizationNameInputViewTopAnchorConstraint,
+        organizationNameInputViewLeadingAnchorConstraint,
+        organizationNameInputViewTrailingAnchorConstraint,
+        vSpacer2ViewTopAnchorConstraint,
+        vSpacer2ViewTrailingAnchorConstraint,
+        viewViewBottomAnchorConstraint,
+        viewViewTopAnchorConstraint,
+        viewViewTrailingAnchorConstraint,
+        vSpacer2ViewHeightAnchorConstraint,
+        vSpacer2ViewWidthAnchorConstraint,
+        viewViewWidthAnchorConstraint,
+        submitButtonViewTopAnchorConstraint,
+        submitButtonViewBottomAnchorConstraint,
+        submitButtonViewLeadingAnchorConstraint,
+        submitButtonViewTrailingAnchorConstraint
+      ] +
+        conditionalConstraints(organizationContainerViewIsHidden: organizationContainerView.isHidden))
+  }
+
+  private func conditionalConstraints(organizationContainerViewIsHidden: Bool) -> [NSLayoutConstraint] {
+    var constraints: [NSLayoutConstraint?]
+
+    switch (organizationContainerViewIsHidden) {
+      case (true):
+        constraints = [textViewTopAnchorVSpacer4ViewBottomAnchorConstraint]
+      case (false):
+        constraints = [
+          organizationContainerViewTopAnchorVSpacer4ViewBottomAnchorConstraint,
+          organizationContainerViewLeadingAnchorLeadingAnchorConstraint,
+          organizationContainerViewTrailingAnchorTrailingAnchorConstraint,
+          textViewTopAnchorOrganizationContainerViewBottomAnchorConstraint,
+          text1ViewTopAnchorOrganizationContainerViewTopAnchorConstraint,
+          text1ViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint,
+          text1ViewTrailingAnchorOrganizationContainerViewTrailingAnchorConstraint,
+          vSpacer5ViewTopAnchorText1ViewBottomAnchorConstraint,
+          vSpacer5ViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint,
+          organizationListViewTopAnchorVSpacer5ViewBottomAnchorConstraint,
+          organizationListViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint,
+          organizationListViewTrailingAnchorOrganizationContainerViewTrailingAnchorConstraint,
+          vSpacer1ViewBottomAnchorOrganizationContainerViewBottomAnchorConstraint,
+          vSpacer1ViewTopAnchorOrganizationListViewBottomAnchorConstraint,
+          vSpacer1ViewLeadingAnchorOrganizationContainerViewLeadingAnchorConstraint,
+          vSpacer5ViewHeightAnchorConstraint,
+          vSpacer5ViewWidthAnchorConstraint,
+          vSpacer1ViewHeightAnchorConstraint,
+          vSpacer1ViewWidthAnchorConstraint
+        ]
+    }
+
+    return constraints.compactMap({ $0 })
   }
 
   private func update() {
-    workspaceTitleView.attributedStringValue = workspaceTitleViewTextStyle.apply(to: workspaceName)
+    let organizationContainerViewIsHidden = organizationContainerView.isHidden
+
+    organizationContainerView.isHidden = !false
+    titleView.attributedStringValue = titleViewTextStyle.apply(to: titleText)
+    bodyView.attributedStringValue = bodyViewTextStyle.apply(to: bodyText)
     organizationNameInputView.textValue = organizationName
     organizationNameInputView.onChangeTextValue = handleOnChangeTextValue
     submitButtonView.onClick = handleOnClickSubmit
@@ -412,14 +499,24 @@ public class PublishChooseOrg: NSBox {
     organizationListView.organizationIds = organizationIds
     organizationListView.onSelectOrganizationId = handleOnSelectOrganizationId
     submitButtonView.disabled = isSubmitting
-  }
+    if showsOrganizationsList {
+      organizationContainerView.isHidden = !true
+    }
 
-  private func handleOnClickSubmit() {
-    onClickSubmit?()
+    if organizationContainerView.isHidden != organizationContainerViewIsHidden {
+      NSLayoutConstraint.deactivate(
+        conditionalConstraints(organizationContainerViewIsHidden: organizationContainerViewIsHidden))
+      NSLayoutConstraint.activate(
+        conditionalConstraints(organizationContainerViewIsHidden: organizationContainerView.isHidden))
+    }
   }
 
   private func handleOnChangeTextValue(_ arg0: String) {
     onChangeTextValue?(arg0)
+  }
+
+  private func handleOnClickSubmit() {
+    onClickSubmit?()
   }
 
   private func handleOnSelectOrganizationId(_ arg0: String) {
@@ -431,40 +528,55 @@ public class PublishChooseOrg: NSBox {
 
 extension PublishChooseOrg {
   public struct Parameters: Equatable {
-    public var workspaceName: String
+    public var titleText: String
+    public var bodyText: String
     public var organizationName: String
     public var organizationIds: [String]
+    public var showsOrganizationsList: Bool
     public var isSubmitting: Bool
-    public var onClickSubmit: (() -> Void)?
     public var onChangeTextValue: StringHandler
+    public var onClickSubmit: (() -> Void)?
     public var onSelectOrganizationId: ((String) -> Void)?
 
     public init(
-      workspaceName: String,
+      titleText: String,
+      bodyText: String,
       organizationName: String,
       organizationIds: [String],
+      showsOrganizationsList: Bool,
       isSubmitting: Bool,
-      onClickSubmit: (() -> Void)? = nil,
       onChangeTextValue: StringHandler = nil,
+      onClickSubmit: (() -> Void)? = nil,
       onSelectOrganizationId: ((String) -> Void)? = nil)
     {
-      self.workspaceName = workspaceName
+      self.titleText = titleText
+      self.bodyText = bodyText
       self.organizationName = organizationName
       self.organizationIds = organizationIds
+      self.showsOrganizationsList = showsOrganizationsList
       self.isSubmitting = isSubmitting
-      self.onClickSubmit = onClickSubmit
       self.onChangeTextValue = onChangeTextValue
+      self.onClickSubmit = onClickSubmit
       self.onSelectOrganizationId = onSelectOrganizationId
     }
 
     public init() {
-      self.init(workspaceName: "", organizationName: "", organizationIds: [], isSubmitting: false)
+      self
+        .init(
+          titleText: "",
+          bodyText: "",
+          organizationName: "",
+          organizationIds: [],
+          showsOrganizationsList: false,
+          isSubmitting: false)
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return lhs.workspaceName == rhs.workspaceName &&
-        lhs.organizationName == rhs.organizationName &&
-          lhs.organizationIds == rhs.organizationIds && lhs.isSubmitting == rhs.isSubmitting
+      return lhs.titleText == rhs.titleText &&
+        lhs.bodyText == rhs.bodyText &&
+          lhs.organizationName == rhs.organizationName &&
+            lhs.organizationIds == rhs.organizationIds &&
+              lhs.showsOrganizationsList == rhs.showsOrganizationsList && lhs.isSubmitting == rhs.isSubmitting
     }
   }
 }
@@ -489,28 +601,39 @@ extension PublishChooseOrg {
     }
 
     public init(
-      workspaceName: String,
+      titleText: String,
+      bodyText: String,
       organizationName: String,
       organizationIds: [String],
+      showsOrganizationsList: Bool,
       isSubmitting: Bool,
-      onClickSubmit: (() -> Void)? = nil,
       onChangeTextValue: StringHandler = nil,
+      onClickSubmit: (() -> Void)? = nil,
       onSelectOrganizationId: ((String) -> Void)? = nil)
     {
       self
         .init(
           Parameters(
-            workspaceName: workspaceName,
+            titleText: titleText,
+            bodyText: bodyText,
             organizationName: organizationName,
             organizationIds: organizationIds,
+            showsOrganizationsList: showsOrganizationsList,
             isSubmitting: isSubmitting,
-            onClickSubmit: onClickSubmit,
             onChangeTextValue: onChangeTextValue,
+            onClickSubmit: onClickSubmit,
             onSelectOrganizationId: onSelectOrganizationId))
     }
 
     public init() {
-      self.init(workspaceName: "", organizationName: "", organizationIds: [], isSubmitting: false)
+      self
+        .init(
+          titleText: "",
+          bodyText: "",
+          organizationName: "",
+          organizationIds: [],
+          showsOrganizationsList: false,
+          isSubmitting: false)
     }
   }
 }

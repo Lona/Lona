@@ -32,7 +32,6 @@ class PublishingViewController: NSViewController {
 
     private enum State: Equatable {
         case needsAuth
-        case needsOrg
         case chooseOrg(organizations: [Organization])
         case needsRepo(organization: Organization)
         case createRepo(organization: Organization, githubOrganizations: [Organization])
@@ -138,11 +137,7 @@ class PublishingViewController: NSViewController {
                         // If we don't find a match, then this is a repository not created through Lona Studio
                     }
 
-                    if organizations.isEmpty {
-                        self.history.navigateTo(.needsOrg)
-                    } else {
-                        self.history.navigateTo(.chooseOrg(organizations: organizations))
-                    }
+                    self.history.navigateTo(.chooseOrg(organizations: organizations))
                 }
             })
         } else {
@@ -217,24 +212,6 @@ class PublishingViewController: NSViewController {
                 }
             }
             return screen
-        case .needsOrg:
-            let screen = PublishNeedsOrg(workspaceName: workspaceName, organizationName: "")
-            screen.onChangeTextValue = { [unowned screen] value in
-                screen.organizationName = value
-            }
-            screen.onClickSubmit = { [unowned self] in
-                self.createOrganization(name: screen.organizationName).finalResult({ [weak self] result in
-                    guard let self = self else { return }
-
-                    switch result {
-                    case .success(let organization):
-                        self.history.navigateTo(.needsRepo(organization: organization))
-                    case .failure(let error):
-                        Swift.print("Failed to create organization", error)
-                    }
-                })
-            }
-            return screen
         case .needsRepo(let organization):
             let screen = PublishNeedsRepo(workspaceName: workspaceName, organizationName: organization.name)
             screen.onClickCreateRepository = { [unowned self] in
@@ -296,7 +273,20 @@ class PublishingViewController: NSViewController {
             return screen
         case .chooseOrg(let organizations):
             let organizationIds = organizations.map { $0.id }
-            let screen = PublishChooseOrg(workspaceName: workspaceName, organizationName: "", organizationIds: organizationIds, isSubmitting: false)
+            let screen = PublishChooseOrg(
+                titleText: "Publish \(workspaceName)",
+                bodyText: organizations.isEmpty
+                    ? """
+First, you’ll need a Lona organization associated with your account.
+
+If your team or company already has a Lona organization, an organization owner can add your account to it. Otherwise, create a new organization below.
+"""
+                    : "Choose a Lona organization to publish this workspace to, or create a new one.",
+                organizationName: "",
+                organizationIds: organizationIds,
+                showsOrganizationsList: !organizations.isEmpty,
+                isSubmitting: false
+            )
             screen.onChangeTextValue = { [unowned screen] value in
                 screen.organizationName = value
             }

@@ -9,6 +9,13 @@
   ],
   "examples" : [
     {
+      "id" : "HasOrganizations",
+      "name" : "HasOrganizations",
+      "params" : {
+        "showsOrganizationsList" : true
+      }
+    },
+    {
       "id" : "Default",
       "name" : "Default",
       "params" : {
@@ -20,12 +27,24 @@
     {
       "assignee" : [
         "layers",
-        "WorkspaceTitle",
+        "Title",
         "text"
       ],
       "content" : [
         "parameters",
-        "workspaceName"
+        "titleText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Body",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "bodyText"
       ],
       "type" : "AssignExpr"
     },
@@ -115,22 +134,55 @@
         "isSubmitting"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "OrganizationContainer",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : true,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "showsOrganizationsList"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
     }
   ],
   "params" : [
     {
-      "name" : "workspaceName",
+      "name" : "titleText",
+      "type" : "String"
+    },
+    {
+      "name" : "bodyText",
       "type" : "String"
     },
     {
       "name" : "organizationName",
       "type" : "String"
-    },
-    {
-      "name" : "onClickSubmit",
-      "type" : {
-        "name" : "Function"
-      }
     },
     {
       "name" : "onChangeTextValue",
@@ -144,6 +196,20 @@
       }
     },
     {
+      "name" : "showsOrganizationsList",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "isSubmitting",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "onClickSubmit",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
       "name" : "onSelectOrganizationId",
       "type" : {
         "name" : "Function",
@@ -154,39 +220,18 @@
           }
         ]
       }
-    },
-    {
-      "name" : "isSubmitting",
-      "type" : "Boolean"
     }
   ],
   "root" : {
     "children" : [
       {
-        "children" : [
-          {
-            "id" : "PublishText",
-            "params" : {
-              "font" : "titleLight",
-              "text" : "Publish "
-            },
-            "type" : "Lona:Text"
-          },
-          {
-            "id" : "WorkspaceTitle",
-            "params" : {
-              "font" : "title",
-              "text" : "Workspace Name"
-            },
-            "type" : "Lona:Text"
-          }
-        ],
-        "id" : "TitleContainer",
+        "id" : "Title",
         "params" : {
           "alignSelf" : "stretch",
-          "flexDirection" : "row"
+          "font" : "title",
+          "text" : "Title text"
         },
-        "type" : "Lona:View"
+        "type" : "Lona:Text"
       },
       {
         "id" : "VSpacer",
@@ -198,10 +243,11 @@
         "type" : "Lona:View"
       },
       {
-        "id" : "BodyText",
+        "id" : "Body",
         "params" : {
+          "alignSelf" : "stretch",
           "font" : "body",
-          "text" : "Choose a Lona organization to publish this workspace to, or create a new one."
+          "text" : "Body text"
         },
         "type" : "Lona:Text"
       },
@@ -215,37 +261,47 @@
         "type" : "Lona:View"
       },
       {
-        "id" : "Text 1",
-        "params" : {
-          "font" : "subtitle",
-          "text" : "Choose organization"
-        },
-        "type" : "Lona:Text"
-      },
-      {
-        "id" : "VSpacer 5",
-        "params" : {
-          "backgroundColor" : "#D8D8D8",
-          "height" : 20,
-          "width" : 0
-        },
-        "type" : "Lona:View"
-      },
-      {
-        "id" : "OrganizationList",
-        "params" : {
-          "organizationIds" : [
+        "children" : [
+          {
+            "id" : "Text 1",
+            "params" : {
+              "font" : "subtitle",
+              "text" : "Choose organization"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "VSpacer 5",
+            "params" : {
+              "backgroundColor" : "#D8D8D8",
+              "height" : 20,
+              "width" : 0
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "OrganizationList",
+            "params" : {
+              "organizationIds" : [
 
-          ]
-        },
-        "type" : "OrganizationList"
-      },
-      {
-        "id" : "VSpacer 1",
+              ]
+            },
+            "type" : "OrganizationList"
+          },
+          {
+            "id" : "VSpacer 1",
+            "params" : {
+              "backgroundColor" : "#D8D8D8",
+              "height" : 72,
+              "width" : 0
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "OrganizationContainer",
         "params" : {
-          "backgroundColor" : "#D8D8D8",
-          "height" : 72,
-          "width" : 0
+          "alignSelf" : "stretch",
+          "visible" : false
         },
         "type" : "Lona:View"
       },
