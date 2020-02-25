@@ -64,7 +64,7 @@ jobs:
         with:
           output_folder: ${{ steps.lona.outputs.output_folder }}
           path_prefix: __lona-docs__/secret/prefix
-          version: ${{ steps.tag_version.outputs.new_tag }}
+          version: ${{ steps.tag_version.outputs.new_version }}
           base_url: __lona-docs__/secret/base-url
 
       - name: Create a GitHub release
