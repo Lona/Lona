@@ -174,7 +174,8 @@ class PublishingViewController: NSViewController {
 
     private let progressIndicator = NSProgressIndicator()
 
-    private var contentViewTopAnchor: NSLayoutConstraint?
+    private var scrollViewMinimumHeightConstraint: NSLayoutConstraint?
+    private var contentViewTopAnchorConstraint: NSLayoutConstraint?
 
     private var contentView: NSView? {
         didSet {
@@ -182,13 +183,14 @@ class PublishingViewController: NSViewController {
                 oldValue?.removeFromSuperview()
 
                 if let contentView = contentView {
-                    containerView.addSubview(contentView)
+                    scrollView.documentView = contentView
+
+                    scrollViewMinimumHeightConstraint = scrollView.heightAnchor.constraint(greaterThanOrEqualTo: contentView.heightAnchor, constant: 80)
+                    scrollViewMinimumHeightConstraint?.priority = .required - 1
+                    scrollViewMinimumHeightConstraint?.isActive = true
 
                     contentView.translatesAutoresizingMaskIntoConstraints = false
-                    contentView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: showNavigationControl ? 80 : 40).isActive = true
-                    contentView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 40).isActive = true
-                    contentView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -40).isActive = true
-                    contentView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -40).isActive = true
+                    contentView.widthAnchor.constraint(equalToConstant: 720 - 80).isActive = true
                 }
             }
         }
@@ -251,17 +253,6 @@ class PublishingViewController: NSViewController {
 
                     switch result {
                     case .success(let url):
-                        let gitResult = Git.client
-                            .addRemote(name: Git.defaultOriginName, url: Git.URL.format(url, as: .ssh)!)
-                            .flatMap({ _ in Git.client.push(repository: Git.defaultOriginName, refspec: "HEAD") })
-
-                        switch gitResult {
-                        case .success:
-                            break
-                        case .failure(let error):
-                            Swift.print("Failed to add git remote", url, error)
-                        }
-
                         self.fetchRepositoriesAndOrganizations().finalResult({ [weak self] repositoriesAndOrganizations in
                             guard let self = self else { return }
 
@@ -271,7 +262,7 @@ class PublishingViewController: NSViewController {
                             case .success(let repositories, _):
                                 if let found = repositories.first(where: { Git.URL.isSameGitRepository($0.url, url) }) {
                                     if found.activated {
-                                        self.history = .init(.done)
+                                        self.addRemoteAndPush(url: url)
                                     } else {
                                         self.history.navigateTo(.installLonaApp(repository: found))
                                     }
@@ -281,9 +272,8 @@ class PublishingViewController: NSViewController {
                             }
                         })
 
-                        self.history = .init(.done)
                     case .failure(let error):
-                        Swift.print("Failed to add repo:", error)
+                        Alert.runInformationalAlert(messageText: "Failed to create repository", informativeText: "\(error)")
                     }
                 })
             }
@@ -341,7 +331,7 @@ If your team or company already has a Lona organization, an organization owner c
                         Alert.runInformationalAlert(messageText: "Failed to connect to GitHub", informativeText: "Are you connected to the internet? \(error)")
                     case .success(let repositories, _):
                         if repositories.contains(where: { Git.URL.isSameGitRepository($0.url, repository.url) && $0.activated }) {
-                            self.history = .init(.done)
+                            self.addRemoteAndPush(url: repository.url)
                         } else {
                             Alert.runInformationalAlert(messageText: "Lona plugin not installed", informativeText: "Are you sure you installed the Lona GitHub app on the correct repository?")
                         }
@@ -370,6 +360,8 @@ If your team or company already has a Lona organization, an organization owner c
         }
     }
 
+    private let scrollView = FlippedScrollView()
+
     private func setUpViews() {
         containerView.boxType = .custom
         containerView.borderType = .noBorder
@@ -380,6 +372,18 @@ If your team or company already has a Lona organization, an organization owner c
 
         containerView.addSubview(progressIndicator)
 
+        scrollView.hasVerticalScroller = true
+        scrollView.hasHorizontalScroller = false
+        scrollView.autohidesScrollers = true
+        scrollView.drawsBackground = false
+        scrollView.automaticallyAdjustsContentInsets = false
+        scrollView.contentInsets = .init(top: 40, left: 40, bottom: 40, right: 40)
+        scrollView.scrollerInsets = .init(top: -40, left: -40, bottom: -40, right: -40)
+
+        containerView.addSubview(scrollView)
+
+        navigationControl.fillColor = Colors.contentBackground
+        navigationControl.cornerRadius = 2
         navigationControl.onClickBack = { [unowned self] in self.history.goBack() }
         navigationControl.onClickForward = { [unowned self] in self.history.goForward() }
 
@@ -393,13 +397,16 @@ If your team or company already has a Lona organization, an organization owner c
         containerView.translatesAutoresizingMaskIntoConstraints = false
         navigationControl.translatesAutoresizingMaskIntoConstraints = false
         progressIndicator.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
 
         containerView.widthAnchor.constraint(equalToConstant: 720).isActive = true
         containerView.heightAnchor.constraint(greaterThanOrEqualToConstant: 100).isActive = true
-//        containerView.heightAnchor.constraint(lessThanOrEqualToConstant: 800).isActive = true
+        containerView.heightAnchor.constraint(lessThanOrEqualToConstant: 816).isActive = true
 
-        navigationControl.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 40).isActive = true
-        navigationControl.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 32).isActive = true
+        scrollView.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
+        scrollView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor).isActive = true
+        scrollView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor).isActive = true
+        scrollView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor).isActive = true
 
         progressIndicator.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 44).isActive = true
         progressIndicator.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
@@ -407,13 +414,39 @@ If your team or company already has a Lona organization, an organization owner c
     }
 
     private func update() {
-        contentView = makeContentView()
+        let newContentView = makeContentView()
+
+        // A small hack to prevent transitioning between the same State twice.
+        // This allows us to store screen variables (i.e. user input values) directly on the screen instance.
+        // If we need to allow transitions between the same State, a better approach could be to store screens variables
+        // in the State object, and update the old screen instance as needed, without unmounting.
+        if newContentView.className != contentView?.className {
+            contentView = newContentView
+        }
 
         progressIndicator.isHidden = !showsProgressIndicator
 
         navigationControl.isBackEnabled = history.canGoBack()
         navigationControl.isForwardEnabled = history.canGoForward()
         navigationControl.isHidden = !showNavigationControl
+
+        navigationControl.removeFromSuperview()
+        containerView.addSubview(navigationControl)
+        navigationControl.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 40).isActive = true
+        navigationControl.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 32).isActive = true
+
+        let topInset: CGFloat = showNavigationControl ? 80 : 40
+
+        scrollView.contentInsets = .init(top: topInset, left: 40, bottom: 40, right: 40)
+        scrollView.scrollerInsets = .init(top: -topInset, left: -40, bottom: -40, right: -40)
+        scrollViewMinimumHeightConstraint?.constant = topInset + 40
+        contentViewTopAnchorConstraint?.constant = topInset + 40
+
+        if let contentView = self.contentView, let window = contentView.window {
+            // Try to set the window dimensions to zero.
+            // Autolayout will snap it back to the minimum size allowed based on the contentView's contraints.
+            window.setContentSize(.zero)
+        }
     }
 
     private var showNavigationControl: Bool {
@@ -433,6 +466,25 @@ If your team or company already has a Lona organization, an organization owner c
         window.title = "Publishing"
         window.standardWindowButton(.miniaturizeButton)?.isHidden = true
         window.standardWindowButton(.zoomButton)?.isHidden = true
+    }
+}
+
+// MARK: - Git
+
+extension PublishingViewController {
+    private func addRemoteAndPush(url: URL) {
+        let gitResult = Git.client
+            .addRemote(name: Git.defaultOriginName, url: Git.URL.format(url, as: .ssh)!)
+            .flatMap({ _ in Git.client.push(repository: Git.defaultOriginName, refspec: "HEAD") })
+
+        switch gitResult {
+        case .success:
+            break
+        case .failure(let error):
+            Swift.print("Failed to add git remote", url, error)
+        }
+
+        self.history = .init(.done)
     }
 }
 

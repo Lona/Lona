@@ -255,6 +255,7 @@
 		6B6E47512405F86D0067B2FF /* lona-app-install-step2.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E474D2405F86D0067B2FF /* lona-app-install-step2.png */; };
 		6B6E47522405F86D0067B2FF /* lona-app-install-step2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E474E2405F86D0067B2FF /* lona-app-install-step2@2x.png */; };
 		6B6E47532405F86D0067B2FF /* lona-app-install-step1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E474F2405F86D0067B2FF /* lona-app-install-step1@2x.png */; };
+		6B6E47552407201D0067B2FF /* FlippedScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E47542407201D0067B2FF /* FlippedScrollView.swift */; };
 		6B6F19CE2304B49A00E5AC60 /* SwiftGraph.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */; };
 		6B6F19CF2304B49A00E5AC60 /* SwiftGraph.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6B6F19D12307222200E5AC60 /* TemplateFileCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */; };
@@ -645,6 +646,7 @@
 		6B6E474D2405F86D0067B2FF /* lona-app-install-step2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lona-app-install-step2.png"; sourceTree = "<group>"; };
 		6B6E474E2405F86D0067B2FF /* lona-app-install-step2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lona-app-install-step2@2x.png"; sourceTree = "<group>"; };
 		6B6E474F2405F86D0067B2FF /* lona-app-install-step1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lona-app-install-step1@2x.png"; sourceTree = "<group>"; };
+		6B6E47542407201D0067B2FF /* FlippedScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlippedScrollView.swift; sourceTree = "<group>"; };
 		6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftGraph.framework; path = Carthage/Build/Mac/SwiftGraph.framework; sourceTree = "<group>"; };
 		6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateFileCard.swift; sourceTree = "<group>"; };
 		6B73809322C66E59007534A0 /* TemplateBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateBrowser.swift; sourceTree = "<group>"; };
@@ -890,6 +892,7 @@
 				6BF4EF44235A695F00548F61 /* WorkspaceWindow.swift */,
 				6BA6E89821307D65009CD33C /* WorkspaceWindowController.swift */,
 				BAC24A8E203576730005B16F /* InspectorView */,
+				6B6E47542407201D0067B2FF /* FlippedScrollView.swift */,
 			);
 			path = Workspace;
 			sourceTree = "<group>";
@@ -1834,6 +1837,7 @@
 				6B73809622C67563007534A0 /* WorkspaceTemplateCard.swift in Sources */,
 				30335A0C1F5B2F8B006E507B /* CaseList.swift in Sources */,
 				3056275C1FBA07C800026796 /* DictionaryEditor.swift in Sources */,
+				6B6E47552407201D0067B2FF /* FlippedScrollView.swift in Sources */,
 				30F7C9561ED4E02F009D27DF /* YogaLayout.swift in Sources */,
 				3090D7931F01B2EF009277E7 /* CSLayer.swift in Sources */,
 				6B14C7BF23C5109900EF85FA /* NoDocument.swift in Sources */,

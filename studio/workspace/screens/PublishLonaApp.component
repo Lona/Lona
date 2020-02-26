@@ -278,7 +278,8 @@
     ],
     "id" : "Container",
     "params" : {
-      "alignSelf" : "stretch"
+      "alignSelf" : "stretch",
+      "height" : 820
     },
     "type" : "Lona:View"
   }

@@ -217,6 +217,7 @@ public class PublishLonaApp: NSBox {
     image1View.translatesAutoresizingMaskIntoConstraints = false
     submitButtonView.translatesAutoresizingMaskIntoConstraints = false
 
+    let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 820)
     let titleViewTopAnchorConstraint = titleView.topAnchor.constraint(equalTo: topAnchor)
     let titleViewLeadingAnchorConstraint = titleView.leadingAnchor.constraint(equalTo: leadingAnchor)
     let titleViewTrailingAnchorConstraint = titleView.trailingAnchor.constraint(equalTo: trailingAnchor)
@@ -244,7 +245,6 @@ public class PublishLonaApp: NSBox {
     let text1ViewTrailingAnchorConstraint = text1View.trailingAnchor.constraint(equalTo: trailingAnchor)
     let vSpacer3ViewTopAnchorConstraint = vSpacer3View.topAnchor.constraint(equalTo: text1View.bottomAnchor)
     let vSpacer3ViewLeadingAnchorConstraint = vSpacer3View.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let view1ViewBottomAnchorConstraint = view1View.bottomAnchor.constraint(equalTo: bottomAnchor)
     let view1ViewTopAnchorConstraint = view1View.topAnchor.constraint(equalTo: vSpacer3View.bottomAnchor)
     let view1ViewLeadingAnchorConstraint = view1View.leadingAnchor.constraint(equalTo: leadingAnchor)
     let vSpacerViewHeightAnchorConstraint = vSpacerView.heightAnchor.constraint(equalToConstant: 32)
@@ -310,6 +310,7 @@ public class PublishLonaApp: NSBox {
     let image1ViewHeightAnchorConstraint = image1View.heightAnchor.constraint(equalToConstant: 371)
 
     NSLayoutConstraint.activate([
+      heightAnchorConstraint,
       titleViewTopAnchorConstraint,
       titleViewLeadingAnchorConstraint,
       titleViewTrailingAnchorConstraint,
@@ -337,7 +338,6 @@ public class PublishLonaApp: NSBox {
       text1ViewTrailingAnchorConstraint,
       vSpacer3ViewTopAnchorConstraint,
       vSpacer3ViewLeadingAnchorConstraint,
-      view1ViewBottomAnchorConstraint,
       view1ViewTopAnchorConstraint,
       view1ViewLeadingAnchorConstraint,
       vSpacerViewHeightAnchorConstraint,
