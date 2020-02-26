@@ -349,7 +349,8 @@ If your team or company already has a Lona organization, an organization owner c
                 })
             }
             screen.onClickOpenGithub = {
-                if !NSWorkspace.shared.open(URL(string: "https://github.com/apps/lona/installations/new")!) {
+              let ghApp = API_BASE_URL == "https://api.lona.design/production" ? "lona" : "lona-dev"
+              if !NSWorkspace.shared.open(URL(string: "https://github.com/apps/\(ghApp)/installations/new")!) {
                     Swift.print("couldn't open the browser")
                 }
             }

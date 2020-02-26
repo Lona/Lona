@@ -2180,7 +2180,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DCCCCF4DF09F5DFEA7FB404D /* Pods-LonaStudio.debug.xcconfig */;
 			buildSettings = {
-				API_BASE_URL = "https://te1fv8l2wh.execute-api.eu-west-1.amazonaws.com/dev";
+				API_BASE_URL = "https://api.lona.design/dev";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = LonaStudio/LonaStudio.entitlements;
 				CODE_SIGN_IDENTITY = "";
@@ -2212,7 +2212,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = ABA583EA99B83FD52B085CE5 /* Pods-LonaStudio.release.xcconfig */;
 			buildSettings = {
-				API_BASE_URL = "https://te1fv8l2wh.execute-api.eu-west-1.amazonaws.com/dev";
+				API_BASE_URL = "https://api.lona.design/production";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = LonaStudio/LonaStudio.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
@@ -2225,7 +2225,7 @@
 					"$(PROJECT_DIR)/Pods/Sparkle",
 					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
-				GITHUB_CLIENT_ID = 47895007495ec2ed6366;
+				GITHUB_CLIENT_ID = 2cefa310d0e458ed11c6;
 				GOOGLE_CLIENT_ID = "546773951334-iaqahhpbofeno5t3t72espkhc81ttlev.apps.googleusercontent.com";
 				INFOPLIST_FILE = LonaStudio/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

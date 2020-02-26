@@ -169,22 +169,38 @@ enum WorkspaceTemplate {
         }
     }
 
+    private static func replaceBaseAPI(_ data: Data) -> Data {
+        guard let string = String(data: data, encoding: .utf8) else {
+            return data
+        }
+
+        guard
+            let newData = string
+                .replacingOccurrences(of: "https://api.lona.design/production", with: API_BASE_URL)
+                .data(using: .utf8)
+        else {
+            return data
+        }
+
+        return newData
+    }
+
     static var lonaDelete: Data = {
         let path = Bundle.main.path(forResource: "lona-delete.yml", ofType: nil)!
         let data = FileManager.default.contents(atPath: path)!
-        return data
+        return replaceBaseAPI(data)
     }()
 
     static var lonaPR: Data = {
         let path = Bundle.main.path(forResource: "lona-pr.yml", ofType: nil)!
         let data = FileManager.default.contents(atPath: path)!
-        return data
+        return replaceBaseAPI(data)
     }()
 
     static var lonaMaster: Data = {
         let path = Bundle.main.path(forResource: "lona-master.yml", ofType: nil)!
         let data = FileManager.default.contents(atPath: path)!
-        return data
+        return replaceBaseAPI(data)
     }()
 }
 

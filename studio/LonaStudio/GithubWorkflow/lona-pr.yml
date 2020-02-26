@@ -25,6 +25,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow_succeeded: ${{ job.status == 'Success' }}
           ref_name: ${{ github.ref }}
+          lona_api_base_url: https://api.lona.design/production
 
       - name: Restore the dependencies cache
         uses: actions/cache@preview

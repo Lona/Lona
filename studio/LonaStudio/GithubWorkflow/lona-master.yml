@@ -55,6 +55,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow_succeeded: ${{ job.status == 'Success' }}
           ref_name: refs/tags/${{ steps.tag_version.outputs.new_tag || steps.tag_version.outputs.previous_tag }}
+          lona_api_base_url: https://api.lona.design/production
 
       - name: Install the Lona Compiler
         run: npm install -g @lona/compiler
