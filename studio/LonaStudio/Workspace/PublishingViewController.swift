@@ -35,6 +35,7 @@ class PublishingViewController: NSViewController {
         case chooseOrg(organizations: [Organization])
         case needsRepo(organization: Organization)
         case createRepo(organization: Organization, githubOrganizations: [Organization])
+        case installLonaApp(repository: Repository)
         case done
         case error(title: String, body: String)
     }
@@ -91,9 +92,7 @@ class PublishingViewController: NSViewController {
                         break
                     case .success(let url):
                         // Check if the remote repository URL matches a Lona repository URL
-                        if repositories.contains(where: {
-                            $0.url == Git.URL.format(url, as: .ssh) || $0.url == Git.URL.format(url, as: .https)
-                        }) {
+                        if repositories.contains(where: { Git.URL.isSameGitRepository($0.url, url) }) {
                             self.showsProgressIndicator = true
 
                             // If local and remote repo are out of sync, bail out
@@ -263,6 +262,25 @@ class PublishingViewController: NSViewController {
                             Swift.print("Failed to add git remote", url, error)
                         }
 
+                        self.fetchRepositoriesAndOrganizations().finalResult({ [weak self] repositoriesAndOrganizations in
+                            guard let self = self else { return }
+
+                            switch repositoriesAndOrganizations {
+                            case .failure(let error):
+                                self.history = .init(.error(title: "Failed to find connected repository", body: "Are you sure you're connected to the internet? \(error)"))
+                            case .success(let repositories, _):
+                                if let found = repositories.first(where: { Git.URL.isSameGitRepository($0.url, url) }) {
+                                    if found.activated {
+                                        self.history = .init(.done)
+                                    } else {
+                                        self.history.navigateTo(.installLonaApp(repository: found))
+                                    }
+                                } else {
+                                    Alert.runInformationalAlert(messageText: "Failed to find repository", informativeText: "This repository doesn't seem to be connected to Lona.")
+                                }
+                            }
+                        })
+
                         self.history = .init(.done)
                     case .failure(let error):
                         Swift.print("Failed to add repo:", error)
@@ -314,6 +332,28 @@ If your team or company already has a Lona organization, an organization owner c
                 self.history.navigateTo(.needsRepo(organization: organization))
             }
             return screen
+        case .installLonaApp(repository: let repository):
+            let screen = PublishLonaApp()
+            screen.onClickSubmit = { [unowned self] in
+                self.fetchRepositoriesAndOrganizations().finalResult({ result in
+                    switch result {
+                    case .failure(let error):
+                        Alert.runInformationalAlert(messageText: "Failed to connect to GitHub", informativeText: "Are you connected to the internet? \(error)")
+                    case .success(let repositories, _):
+                        if repositories.contains(where: { Git.URL.isSameGitRepository($0.url, repository.url) && $0.activated }) {
+                            self.history = .init(.done)
+                        } else {
+                            Alert.runInformationalAlert(messageText: "Lona plugin not installed", informativeText: "Are you sure you installed the Lona GitHub app on the correct repository?")
+                        }
+                    }
+                })
+            }
+            screen.onClickOpenGithub = {
+                if !NSWorkspace.shared.open(URL(string: "https://github.com/apps/lona/installations/new")!) {
+                    Swift.print("couldn't open the browser")
+                }
+            }
+            return screen
         case .error(title: let title, body: let body):
             let screen = PublishInfo(titleText: title, bodyText: body)
             screen.onClickDoneButton = { [unowned self] in
@@ -355,7 +395,7 @@ If your team or company already has a Lona organization, an organization owner c
 
         containerView.widthAnchor.constraint(equalToConstant: 720).isActive = true
         containerView.heightAnchor.constraint(greaterThanOrEqualToConstant: 100).isActive = true
-        containerView.heightAnchor.constraint(lessThanOrEqualToConstant: 800).isActive = true
+//        containerView.heightAnchor.constraint(lessThanOrEqualToConstant: 800).isActive = true
 
         navigationControl.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 40).isActive = true
         navigationControl.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 32).isActive = true

@@ -186,5 +186,9 @@ extension Git {
                 return baseURL.pathExtension == "git" ? baseURL.deletingPathExtension() : baseURL
             }
         }
+
+        public static func isSameGitRepository(_ a: Foundation.URL, _ b: Foundation.URL) -> Bool {
+            return a == Git.URL.format(b, as: .ssh) || a == Git.URL.format(b, as: .https)
+        }
     }
 }

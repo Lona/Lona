@@ -250,6 +250,11 @@
 		6B6E4744240070C20067B2FF /* lona-delete.yml in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E4741240070C20067B2FF /* lona-delete.yml */; };
 		6B6E4745240070C20067B2FF /* lona-pr.yml in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E4742240070C20067B2FF /* lona-pr.yml */; };
 		6B6E47472401C8E50067B2FF /* PublishInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E47462401C8E40067B2FF /* PublishInfo.swift */; };
+		6B6E474B2405F8540067B2FF /* PublishLonaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E474A2405F8540067B2FF /* PublishLonaApp.swift */; };
+		6B6E47502405F86D0067B2FF /* lona-app-install-step1.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E474C2405F86D0067B2FF /* lona-app-install-step1.png */; };
+		6B6E47512405F86D0067B2FF /* lona-app-install-step2.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E474D2405F86D0067B2FF /* lona-app-install-step2.png */; };
+		6B6E47522405F86D0067B2FF /* lona-app-install-step2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E474E2405F86D0067B2FF /* lona-app-install-step2@2x.png */; };
+		6B6E47532405F86D0067B2FF /* lona-app-install-step1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E474F2405F86D0067B2FF /* lona-app-install-step1@2x.png */; };
 		6B6F19CE2304B49A00E5AC60 /* SwiftGraph.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */; };
 		6B6F19CF2304B49A00E5AC60 /* SwiftGraph.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6B6F19D12307222200E5AC60 /* TemplateFileCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */; };
@@ -635,6 +640,11 @@
 		6B6E4741240070C20067B2FF /* lona-delete.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = "lona-delete.yml"; sourceTree = "<group>"; };
 		6B6E4742240070C20067B2FF /* lona-pr.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = "lona-pr.yml"; sourceTree = "<group>"; };
 		6B6E47462401C8E40067B2FF /* PublishInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishInfo.swift; sourceTree = "<group>"; };
+		6B6E474A2405F8540067B2FF /* PublishLonaApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishLonaApp.swift; sourceTree = "<group>"; };
+		6B6E474C2405F86D0067B2FF /* lona-app-install-step1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lona-app-install-step1.png"; sourceTree = "<group>"; };
+		6B6E474D2405F86D0067B2FF /* lona-app-install-step2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lona-app-install-step2.png"; sourceTree = "<group>"; };
+		6B6E474E2405F86D0067B2FF /* lona-app-install-step2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lona-app-install-step2@2x.png"; sourceTree = "<group>"; };
+		6B6E474F2405F86D0067B2FF /* lona-app-install-step1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lona-app-install-step1@2x.png"; sourceTree = "<group>"; };
 		6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftGraph.framework; path = Carthage/Build/Mac/SwiftGraph.framework; sourceTree = "<group>"; };
 		6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateFileCard.swift; sourceTree = "<group>"; };
 		6B73809322C66E59007534A0 /* TemplateBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateBrowser.swift; sourceTree = "<group>"; };
@@ -1130,6 +1140,7 @@
 				6BCCE33B23F39CD3004C482E /* PublishCreateRepo.swift */,
 				6BCCE33D23F3AAC2004C482E /* PublishDone.swift */,
 				6B6E47462401C8E40067B2FF /* PublishInfo.swift */,
+				6B6E474A2405F8540067B2FF /* PublishLonaApp.swift */,
 				6BCCE33323F34BEE004C482E /* PublishNeedsAuth.swift */,
 				6BCCE33923F39417004C482E /* PublishNeedsRepo.swift */,
 				6B73809322C66E59007534A0 /* TemplateBrowser.swift */,
@@ -1181,6 +1192,10 @@
 				307D44142097DDAB004B57F5 /* icon-tab-docs@2x.png */,
 				307D44122097DDAB004B57F5 /* icon-tab-layers.png */,
 				307D44132097DDAB004B57F5 /* icon-tab-layers@2x.png */,
+				6B6E474C2405F86D0067B2FF /* lona-app-install-step1.png */,
+				6B6E474F2405F86D0067B2FF /* lona-app-install-step1@2x.png */,
+				6B6E474D2405F86D0067B2FF /* lona-app-install-step2.png */,
+				6B6E474E2405F86D0067B2FF /* lona-app-install-step2@2x.png */,
 				30F870CE20865858007ADA5B /* LonaIcon_16x16.png */,
 				30F870D420865858007ADA5B /* LonaIcon_16x16@2x.png */,
 				30F870C920865858007ADA5B /* LonaIcon_32x32.png */,
@@ -1551,8 +1566,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				307D4420209B6CEA004B57F5 /* Web in Resources */,
+				6B6E47512405F86D0067B2FF /* lona-app-install-step2.png in Resources */,
 				307D44162097DDAB004B57F5 /* icon-tab-layers.png in Resources */,
 				6B73809F22C7B3BF007534A0 /* themed-tokens-list.png in Resources */,
+				6B6E47502405F86D0067B2FF /* lona-app-install-step1.png in Resources */,
 				30F870E920865859007ADA5B /* LonaIcon_16x16@2x.png in Resources */,
 				30F870E620865859007ADA5B /* LonaIcon_128x128.png in Resources */,
 				30F870E020865859007ADA5B /* LonaIcon_512x512@2x.png in Resources */,
@@ -1567,6 +1584,7 @@
 				30F870DF20865859007ADA5B /* LonaIcon_256x256.png in Resources */,
 				6B0AEFBE1EBF74D800F35BBF /* Assets.xcassets in Resources */,
 				30F870E420865859007ADA5B /* icon-documentation.png in Resources */,
+				6B6E47532405F86D0067B2FF /* lona-app-install-step1@2x.png in Resources */,
 				0304A72923FD48AC009A1E82 /* createRepository.graphql in Resources */,
 				0304A71B23FA8B18009A1E82 /* addRepo.graphql in Resources */,
 				30F870DE20865859007ADA5B /* LonaIcon_32x32.png in Resources */,
@@ -1591,6 +1609,7 @@
 				30F870DA20865859007ADA5B /* LonaIcon_32x32@2x.png in Resources */,
 				307D44172097DDAB004B57F5 /* icon-tab-layers@2x.png in Resources */,
 				303C3FEC20A396BB008E1541 /* icon-plus@2x.png in Resources */,
+				6B6E47522405F86D0067B2FF /* lona-app-install-step2@2x.png in Resources */,
 				6B9733D22236F2BF005967E8 /* svg-model.umd.js in Resources */,
 				6BD96652217FB0DB0012F173 /* default-workspace-thumbnail.png in Resources */,
 				6B6E4744240070C20067B2FF /* lona-delete.yml in Resources */,
@@ -1945,6 +1964,7 @@
 				6BCE162722D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift in Sources */,
 				6B7DBF5E22A877F50062031E /* LogicDocument.swift in Sources */,
 				301C262420C1C3B500F18F73 /* TextStyle.swift in Sources */,
+				6B6E474B2405F8540067B2FF /* PublishLonaApp.swift in Sources */,
 				306DA4F61F34E42F002772DC /* DimensionSizingRule.swift in Sources */,
 				6BE99D7423CD1F6800E35E35 /* Emitter.swift in Sources */,
 				6B7DBF6022A87B050062031E /* LogicViewController.swift in Sources */,
