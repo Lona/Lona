@@ -1,0 +1,45 @@
+# Fetches the statuses of the GH action workflow for a specific ref (usually `refs/heads/master`)
+# as well as the latest deployment of the repo
+#
+# To get the deployment of the ref, you need
+# `data.repository.deployments.nodes.find(x => x.commit.id === data.repository.ref.target.id)`
+# It might not exist yet (if the GH Action hasn't created it yet), or might be too old
+query getDeploymentStatus($owner: String!, $name: String!, $ref: String!) {
+  repository(owner: $owner, name: $name) {
+    ref(qualifiedName: $ref) {
+      target {
+        id
+        ... on Commit {
+          # look for the GH Action check suite
+          checkSuites(last: 1, filterBy: {appId: 15368}) {
+            nodes {
+              url
+              # there is only 4 for now, but let's get 10 to be future-proof
+              checkRuns(first: 10) {
+                nodes {
+                  status
+                  conclusion
+                  name
+                }
+              }
+              status
+              conclusion
+            }
+          }
+        }
+      }
+    }
+    deployments(last: 10) {
+      nodes {
+        commit {
+          id
+        }
+        environment
+        state
+        latestStatus {
+          environmentUrl
+        }
+      }
+    }
+  }
+}

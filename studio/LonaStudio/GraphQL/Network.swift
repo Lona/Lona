@@ -50,6 +50,8 @@ extension Network: HTTPNetworkTransportPreflightDelegate {
     }
 
     if networkTransport.clientName == "GitHub API Transport" {
+      // We need this to get the check suites
+      request.addValue("application/vnd.github.antiope-preview+json", forHTTPHeaderField: "Accept")
       if let githubToken = Account.shared.cachedMe?.githubAccessToken {
         request.addValue("Bearer \(githubToken)", forHTTPHeaderField: "Authorization")
       }
