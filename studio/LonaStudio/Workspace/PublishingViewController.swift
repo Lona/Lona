@@ -10,64 +10,56 @@ import AppKit
 import BreadcrumbBar
 import Apollo
 
+// MARK: - Types
+
+public struct LonaOrganization: Equatable {
+    let id: GraphQLID
+    let name: String
+}
+
+public struct LonaRepository: Equatable {
+    let url: URL
+    let activated: Bool
+}
+
+public enum PublishingState: Equatable {
+    case needsAuth
+    case chooseOrg(organizations: [LonaOrganization])
+    case needsRepo(organization: LonaOrganization)
+    case createRepo(organization: LonaOrganization, githubOrganizations: [LonaOrganization])
+    case installLonaApp(repository: LonaRepository)
+    case done
+    case error(title: String, body: String)
+}
+
 // MARK: - PublishingViewController
 
-class PublishingViewController: NSViewController {
-
-    public struct Organization: Equatable {
-        let id: GraphQLID
-        let name: String
-    }
-
-    public struct Repository: Equatable {
-        let url: URL
-        let activated: Bool
-    }
-
-    // MARK: Static
-
-    static var shared = PublishingViewController()
-
-    // MARK: Types
-
-    private enum State: Equatable {
-        case needsAuth
-        case chooseOrg(organizations: [Organization])
-        case needsRepo(organization: Organization)
-        case createRepo(organization: Organization, githubOrganizations: [Organization])
-        case installLonaApp(repository: Repository)
-        case done
-        case error(title: String, body: String)
-    }
+class PublishingViewController: FlowViewController<PublishingState> {
 
     // MARK: Lifecycle
 
     override init(nibName nibNameOrNil: NSNib.Name?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nil, bundle: nil)
 
-        setUpViews()
-        setUpConstraints()
-
-        update()
+        self.makeContentView = self.makeViewFromState
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
-        setUpViews()
-        setUpConstraints()
-
-        update()
+        self.makeContentView = self.makeViewFromState
     }
 
-    // MARK: Public
+    // MARK: Static
 
-    public var image: NSImage? { didSet { update() } }
+    static var shared = PublishingViewController()
+
+    // MARK: Public
 
     public func initializeState() {
         history = .init()
         workspaceName = CSWorkspacePreferences.workspaceName
-        update()
+        forceUpdate()
 
         switch Git.client.getRootDirectoryPath() {
         case .success(let path) where path == CSUserPreferences.workspaceURL.path:
@@ -140,63 +132,15 @@ class PublishingViewController: NSViewController {
                 }
             })
         } else {
-            history.navigateTo(State.needsAuth)
+            history.navigateTo(PublishingState.needsAuth)
         }
     }
 
     // MARK: Private
 
-    private var history = History<State>() {
-        didSet {
-            update()
-        }
-    }
-
-    private var showsProgressIndicator = false {
-        didSet {
-            if oldValue != showsProgressIndicator {
-                if showsProgressIndicator {
-                    progressIndicator.startAnimation(nil)
-                } else {
-                    progressIndicator.stopAnimation(nil)
-                }
-
-                update()
-            }
-        }
-    }
-
     private var workspaceName: String = ""
 
-    private let containerView = NSBox()
-
-    private let navigationControl = NavigationControl()
-
-    private let progressIndicator = NSProgressIndicator()
-
-    private var scrollViewMinimumHeightConstraint: NSLayoutConstraint?
-    private var contentViewTopAnchorConstraint: NSLayoutConstraint?
-
-    private var contentView: NSView? {
-        didSet {
-            if oldValue != contentView {
-                oldValue?.removeFromSuperview()
-
-                if let contentView = contentView {
-                    scrollView.documentView = contentView
-
-                    scrollViewMinimumHeightConstraint = scrollView.heightAnchor.constraint(greaterThanOrEqualTo: contentView.heightAnchor, constant: 80)
-                    scrollViewMinimumHeightConstraint?.priority = .required - 1
-                    scrollViewMinimumHeightConstraint?.isActive = true
-
-                    contentView.translatesAutoresizingMaskIntoConstraints = false
-                    contentView.widthAnchor.constraint(equalToConstant: 720 - 80).isActive = true
-                }
-            }
-        }
-    }
-
-    private func makeContentView() -> NSView {
+    private func makeViewFromState() -> NSView {
         guard let state = history.current else { return NSView() }
 
         switch state {
@@ -359,114 +303,6 @@ If your team or company already has a Lona organization, an organization owner c
             return screen
         }
     }
-
-    private let scrollView = FlippedScrollView()
-
-    private func setUpViews() {
-        containerView.boxType = .custom
-        containerView.borderType = .noBorder
-        containerView.contentViewMargins = .zero
-        containerView.fillColor = Colors.windowBackground
-
-        containerView.addSubview(navigationControl)
-
-        containerView.addSubview(progressIndicator)
-
-        scrollView.hasVerticalScroller = true
-        scrollView.hasHorizontalScroller = false
-        scrollView.autohidesScrollers = true
-        scrollView.drawsBackground = false
-        scrollView.automaticallyAdjustsContentInsets = false
-        scrollView.contentInsets = .init(top: 40, left: 40, bottom: 40, right: 40)
-        scrollView.scrollerInsets = .init(top: -40, left: -40, bottom: -40, right: -40)
-
-        containerView.addSubview(scrollView)
-
-        navigationControl.fillColor = Colors.contentBackground
-        navigationControl.cornerRadius = 2
-        navigationControl.onClickBack = { [unowned self] in self.history.goBack() }
-        navigationControl.onClickForward = { [unowned self] in self.history.goForward() }
-
-        progressIndicator.style = .spinning
-        progressIndicator.isIndeterminate = true
-
-        self.view = containerView
-    }
-
-    private func setUpConstraints() {
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        navigationControl.translatesAutoresizingMaskIntoConstraints = false
-        progressIndicator.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-
-        containerView.widthAnchor.constraint(equalToConstant: 720).isActive = true
-        containerView.heightAnchor.constraint(greaterThanOrEqualToConstant: 100).isActive = true
-        containerView.heightAnchor.constraint(lessThanOrEqualToConstant: 816).isActive = true
-
-        scrollView.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
-        scrollView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor).isActive = true
-        scrollView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor).isActive = true
-        scrollView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor).isActive = true
-
-        progressIndicator.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 44).isActive = true
-        progressIndicator.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
-        progressIndicator.controlSize = .small
-    }
-
-    private func update() {
-        let newContentView = makeContentView()
-
-        // A small hack to prevent transitioning between the same State twice.
-        // This allows us to store screen variables (i.e. user input values) directly on the screen instance.
-        // If we need to allow transitions between the same State, a better approach could be to store screens variables
-        // in the State object, and update the old screen instance as needed, without unmounting.
-        if newContentView.className != contentView?.className {
-            contentView = newContentView
-        }
-
-        progressIndicator.isHidden = !showsProgressIndicator
-
-        navigationControl.isBackEnabled = history.canGoBack()
-        navigationControl.isForwardEnabled = history.canGoForward()
-        navigationControl.isHidden = !showNavigationControl
-
-        navigationControl.removeFromSuperview()
-        containerView.addSubview(navigationControl)
-        navigationControl.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 40).isActive = true
-        navigationControl.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 32).isActive = true
-
-        let topInset: CGFloat = showNavigationControl ? 80 : 40
-
-        scrollView.contentInsets = .init(top: topInset, left: 40, bottom: 40, right: 40)
-        scrollView.scrollerInsets = .init(top: -topInset, left: -40, bottom: -40, right: -40)
-        scrollViewMinimumHeightConstraint?.constant = topInset + 40
-        contentViewTopAnchorConstraint?.constant = topInset + 40
-
-        if let contentView = self.contentView, let window = contentView.window {
-            // Try to set the window dimensions to zero.
-            // Autolayout will snap it back to the minimum size allowed based on the contentView's contraints.
-            window.setContentSize(.zero)
-        }
-    }
-
-    private var showNavigationControl: Bool {
-        guard let state = history.current else { return false }
-
-        switch state {
-        case .needsAuth, .done, .error:
-            return false
-        default:
-            return true
-        }
-    }
-
-    override func viewDidAppear() {
-        guard let window = contentView?.window else { return }
-
-        window.title = "Publishing"
-        window.standardWindowButton(.miniaturizeButton)?.isHidden = true
-        window.standardWindowButton(.zoomButton)?.isHidden = true
-    }
 }
 
 // MARK: - Git
@@ -492,7 +328,7 @@ extension PublishingViewController {
 
 extension PublishingViewController {
 
-    private func fetchRepositoriesAndOrganizations() -> Promise<([Repository], [Organization]), NSError> {
+    private func fetchRepositoriesAndOrganizations() -> Promise<([LonaRepository], [LonaOrganization]), NSError> {
         self.showsProgressIndicator = true
 
         return Account.shared.me(forceRefresh: true).onSuccess { [weak self] result in
@@ -500,17 +336,17 @@ extension PublishingViewController {
 
             self.showsProgressIndicator = false
 
-            let organizations = result.organizations.map { Organization(id: $0.id, name: $0.name) }
+            let organizations = result.organizations.map { LonaOrganization(id: $0.id, name: $0.name) }
 
-            let repositories: [Repository] = Array(result.organizations.map({ organization in
-                return organization.repos.map { Repository(url: URL(string: $0.url)!, activated: $0.activated) }
+            let repositories: [LonaRepository] = Array(result.organizations.map({ organization in
+                return organization.repos.map { LonaRepository(url: URL(string: $0.url)!, activated: $0.activated) }
             }).joined())
 
             return .success((repositories, organizations))
         }
     }
 
-    private func fetchGitHubOrganizations() -> Promise<[Organization], NSError> {
+    private func fetchGitHubOrganizations() -> Promise<[LonaOrganization], NSError> {
         return .result { complete in
             self.showsProgressIndicator = true
 
@@ -531,11 +367,11 @@ extension PublishingViewController {
                       return
                     }
 
-                    var organizations = [Organization(id: data.id, name: data.login)]
+                    var organizations = [LonaOrganization(id: data.id, name: data.login)]
 
                     data.organizations.nodes?.forEach { org in
                       if let org = org {
-                        organizations.append(Organization(id: org.id, name: org.login))
+                        organizations.append(LonaOrganization(id: org.id, name: org.login))
                       }
                     }
 
@@ -547,7 +383,7 @@ extension PublishingViewController {
         }
     }
 
-    private func createRepo(organizationId: String, githubOrganization: Organization, githubRepositoryName: String) -> Promise<URL, NSError> {
+    private func createRepo(organizationId: String, githubOrganization: LonaOrganization, githubRepositoryName: String) -> Promise<URL, NSError> {
         return .result { complete in
             self.showsProgressIndicator = true
 
@@ -619,7 +455,7 @@ extension PublishingViewController {
         }
     }
 
-    private func createOrganization(name organizationName: String) -> Promise<Organization, NSError> {
+    private func createOrganization(name organizationName: String) -> Promise<LonaOrganization, NSError> {
         return .result { complete in
             self.showsProgressIndicator = true
 
@@ -643,7 +479,7 @@ extension PublishingViewController {
                             return
                     }
 
-                    complete(.success(Organization(id: organizationId, name: organizationName)))
+                    complete(.success(LonaOrganization(id: organizationId, name: organizationName)))
                 case .failure(let error):
                     complete(.failure(NSError(error.localizedDescription)))
                 }

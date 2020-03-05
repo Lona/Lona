@@ -71,7 +71,7 @@ public class OrganizationList: NSBox {
 
     // MARK: Private
 
-    private var organizations: [PublishingViewController.Organization] = [] {
+    private var organizations: [LonaOrganization] = [] {
         didSet {
             update()
         }
@@ -110,7 +110,7 @@ public class OrganizationList: NSBox {
 
                 guard let organizations = graphQLResult.data?.getMe?.organizations else { return }
 
-                self.organizations = organizations.map { PublishingViewController.Organization(id: $0.id, name: $0.name) }
+                self.organizations = organizations.map { LonaOrganization(id: $0.id, name: $0.name) }
             case .failure(let error):
                 print(error.localizedDescription)
             }

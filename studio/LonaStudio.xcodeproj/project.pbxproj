@@ -291,6 +291,7 @@
 		6BA6E89F21324207009CD33C /* ForeignTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA6E89E21324207009CD33C /* ForeignTypes.swift */; };
 		6BA775C921C59E2A0033C03C /* DimensionsInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA775C821C59E2A0033C03C /* DimensionsInspector.swift */; };
 		6BA775CB21C59E330033C03C /* DimensionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA775CA21C59E330033C03C /* DimensionType.swift */; };
+		6BA78311241087D8008F3761 /* FlowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA78310241087D8008F3761 /* FlowViewController.swift */; };
 		6BABAFE52139C0EE002B8C8F /* Toolbar.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6BABAFE42139C0EE002B8C8F /* Toolbar.xcassets */; };
 		6BABAFE72139C341002B8C8F /* WorkspaceToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */; };
 		6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; };
@@ -681,6 +682,7 @@
 		6BA6E89E21324207009CD33C /* ForeignTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForeignTypes.swift; sourceTree = "<group>"; };
 		6BA775C821C59E2A0033C03C /* DimensionsInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DimensionsInspector.swift; sourceTree = "<group>"; };
 		6BA775CA21C59E330033C03C /* DimensionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DimensionType.swift; sourceTree = "<group>"; };
+		6BA78310241087D8008F3761 /* FlowViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowViewController.swift; sourceTree = "<group>"; };
 		6BA8985923271BE800AA8F78 /* LonaStudio.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LonaStudio.entitlements; sourceTree = "<group>"; };
 		6BABAFE42139C0EE002B8C8F /* Toolbar.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Toolbar.xcassets; sourceTree = "<group>"; };
 		6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceToolbar.swift; sourceTree = "<group>"; };
@@ -869,6 +871,8 @@
 				307D441D209B657B004B57F5 /* DocumentationView.swift */,
 				6B5D4D2A213E19B9004F8AC3 /* EditorViewController.swift */,
 				6BA5BBD82174F2A500F086A7 /* FileNavigator.swift */,
+				6B6E47542407201D0067B2FF /* FlippedScrollView.swift */,
+				6BA78310241087D8008F3761 /* FlowViewController.swift */,
 				036A4E9921E1F5FB00948DBD /* ImagePreview.swift */,
 				036A4E8D21E0EF0100948DBD /* ImageViewController.swift */,
 				036A4EA121E1FD3B00948DBD /* KeyHandlingCollectionView.swift */,
@@ -895,7 +899,6 @@
 				6BF4EF44235A695F00548F61 /* WorkspaceWindow.swift */,
 				6BA6E89821307D65009CD33C /* WorkspaceWindowController.swift */,
 				BAC24A8E203576730005B16F /* InspectorView */,
-				6B6E47542407201D0067B2FF /* FlippedScrollView.swift */,
 			);
 			path = Workspace;
 			sourceTree = "<group>";
@@ -2020,6 +2023,7 @@
 				6BCCE33E23F3AAC2004C482E /* PublishDone.swift in Sources */,
 				30F4FD551F76B9DB0048691C /* DictionaryExtensions.swift in Sources */,
 				3094DFE81F6ACF1E00E5C7F0 /* ImageCache.swift in Sources */,
+				6BA78311241087D8008F3761 /* FlowViewController.swift in Sources */,
 				306DA4F41F34E416002772DC /* DataNode.swift in Sources */,
 				3069E0A21F32585A0005E9A8 /* CSPreferences.swift in Sources */,
 				30C8BC2B1EDB641E00B99F1B /* NSViewExtensions.swift in Sources */,
