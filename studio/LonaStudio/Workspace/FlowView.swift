@@ -1,5 +1,5 @@
 //
-//  FlowViewController.swift
+//  FlowView.swift
 //
 //  Created by Devin Abbott on 2/11/20.
 //  Copyright © 2020 Devin Abbott. All rights reserved.
@@ -58,6 +58,14 @@ class FlowView: NSBox {
         }
     }
 
+    public var showsNavigationControl: Bool = false {
+        didSet {
+            if oldValue != showsNavigationControl {
+                update()
+            }
+        }
+    }
+
     public var screenView: NSView? {
         didSet {
             if oldValue != screenView {
@@ -91,8 +99,6 @@ class FlowView: NSBox {
 
     private var scrollViewMinimumHeightConstraint: NSLayoutConstraint?
     private var screenViewTopAnchorConstraint: NSLayoutConstraint?
-
-    private var showNavigationControl: Bool = false
 
     private let scrollView = FlippedScrollView()
 
@@ -150,14 +156,14 @@ class FlowView: NSBox {
 
         progressIndicator.isHidden = !showsProgressIndicator
 
-        navigationControl.isHidden = !showNavigationControl
+        navigationControl.isHidden = !showsNavigationControl
 
         navigationControl.removeFromSuperview()
         containerView.addSubview(navigationControl)
         navigationControl.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 40).isActive = true
         navigationControl.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 32).isActive = true
 
-        let topInset: CGFloat = showNavigationControl ? 80 : 40
+        let topInset: CGFloat = showsNavigationControl ? 80 : 40
 
         scrollView.contentInsets = .init(top: topInset, left: 40, bottom: 40, right: 40)
         scrollView.scrollerInsets = .init(top: -topInset, left: -40, bottom: -40, right: -40)
@@ -169,5 +175,19 @@ class FlowView: NSBox {
             // Autolayout will snap it back to the minimum size allowed based on the screenView's contraints.
             window.setContentSize(.zero)
         }
+    }
+}
+
+// MARK: - Promise Helper
+
+extension FlowView {
+    public func withProgress<S, F>(_ f: () -> Promise<S, F>) -> Promise<S, F> {
+        self.showsProgressIndicator = true
+
+        return f().onResult({ result in
+            self.showsProgressIndicator = false
+
+            return .result(result)
+        })
     }
 }

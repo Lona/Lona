@@ -174,6 +174,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             Account.shared.signin(token: token)
             AppDelegate.reloadPreferencesWindow()
             PublishingViewController.shared.initializeState()
+            OpenWorkspaceViewController.shared.initializeState()
         }
     }
 }

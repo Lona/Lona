@@ -1,0 +1,381 @@
+{
+  "devices" : [
+    {
+      "height" : 1,
+      "heightMode" : "At Least",
+      "name" : "Desktop",
+      "width" : 640
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Logged_in",
+      "name" : "Logged in",
+      "params" : {
+        "isLoggedIn" : true
+      }
+    },
+    {
+      "id" : "Logged_out",
+      "name" : "Logged out",
+      "params" : {
+        "isLoggedIn" : false
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "GitHubButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickGithubButton"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "GoogleButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickGoogleButton"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "LocalButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickLocalButton"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "RemoteButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickRemoteButton"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "BodyText",
+            "text"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "Sync a workspace from your Lona account to your hard drive:",
+              "type" : "String"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "LoggedIn",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : true,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "LoggedOut",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : false,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "isLoggedIn"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "BodyText",
+            "text"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "Sign in to sync a Lona workspace from your account to your hard drive:",
+              "type" : "String"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "LoggedIn",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : false,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "LoggedOut",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : true,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "isLoggedIn"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : false,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "onClickGithubButton",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onClickGoogleButton",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onClickLocalButton",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onClickRemoteButton",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "isLoggedIn",
+      "type" : "Boolean"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "Title",
+            "params" : {
+              "alignSelf" : "stretch",
+              "font" : "title",
+              "text" : "Open workspace"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "View 2",
+        "params" : {
+          "alignSelf" : "stretch"
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "VSpacer",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 32,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "BodyText",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "body",
+          "text" : "Sign in to sync a Lona workspace from your account to your hard drive."
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "VSpacer 1",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 16,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "GitHubButton",
+            "params" : {
+              "titleText" : "Sign in with GitHub"
+            },
+            "type" : "PrimaryButton"
+          },
+          {
+            "id" : "VSpacer 2",
+            "params" : {
+              "backgroundColor" : "#D8D8D8",
+              "height" : 8,
+              "width" : 0
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "GoogleButton",
+            "params" : {
+              "titleText" : "Sign in with Google"
+            },
+            "type" : "PrimaryButton"
+          }
+        ],
+        "id" : "LoggedOut",
+        "params" : {
+          "width" : 250
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "RemoteButton",
+            "params" : {
+              "titleText" : "Sync a Lona workspace"
+            },
+            "type" : "PrimaryButton"
+          }
+        ],
+        "id" : "LoggedIn",
+        "params" : {
+          "width" : 250
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "VSpacer 3",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 40,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "BodyText 1",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "body",
+          "text" : "Or choose a workspace that’s already on your hard drive:"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "VSpacer 4",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 16,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "LocalButton",
+            "params" : {
+              "titleText" : "Open workspace folder..."
+            },
+            "type" : "PrimaryButton"
+          }
+        ],
+        "id" : "View 1",
+        "params" : {
+          "width" : 250
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

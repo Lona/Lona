@@ -65,7 +65,6 @@ class PublishingViewController: NSViewController {
     public func initializeState() {
         history = .init()
         workspaceName = CSWorkspacePreferences.workspaceName
-        flowView.forceUpdate() // TODO: needed?
 
         switch Git.client.getRootDirectoryPath() {
         case .success(let path) where path == CSUserPreferences.workspaceURL.path:
@@ -79,7 +78,7 @@ class PublishingViewController: NSViewController {
         }
 
         if Account.shared.signedIn {
-            fetchRepositoriesAndOrganizations().finalResult({ result in
+            flowView.withProgress(PublishingViewController.self.fetchRepositoriesAndOrganizations).finalResult({ result in
                 switch result {
                 case .failure(let error):
                     self.history = .init(.error(title: "Couldn't publish workspace", body: "Failed to connect to Lona API.\n\(error)"))
@@ -163,12 +162,25 @@ class PublishingViewController: NSViewController {
     private func update() {
         let newContentView = makeViewFromState()
 
+        switch history.current {
+        case .needsAuth, .done, .error:
+            flowView.showsNavigationControl = false
+        default:
+            flowView.showsNavigationControl = true
+        }
+
         // A small hack to prevent transitioning between the same State twice.
         // This allows us to store screen variables (i.e. user input values) directly on the screen instance.
         // If we need to allow transitions between the same State, a better approach could be to store screens variables
         // in the State object, and update the old screen instance as needed, without unmounting.
         if newContentView.className != flowView.screenView?.className {
             flowView.screenView = newContentView
+        }
+
+        if let window = flowView.window {
+            // Try to set the window dimensions to zero.
+            // Autolayout will snap it back to the minimum size allowed based on the contentView's contraints.
+            window.setContentSize(.zero)
         }
     }
 
@@ -237,7 +249,7 @@ class PublishingViewController: NSViewController {
 
                     switch result {
                     case .success(let url):
-                        self.fetchRepositoriesAndOrganizations().finalResult({ [weak self] repositoriesAndOrganizations in
+                        self.flowView.withProgress(PublishingViewController.fetchRepositoriesAndOrganizations).finalResult({ [weak self] repositoriesAndOrganizations in
                             guard let self = self else { return }
 
                             switch repositoriesAndOrganizations {
@@ -309,7 +321,7 @@ If your team or company already has a Lona organization, an organization owner c
         case .installLonaApp(repository: let repository):
             let screen = PublishLonaApp()
             screen.onClickSubmit = { [unowned self] in
-                self.fetchRepositoriesAndOrganizations().finalResult({ result in
+                self.flowView.withProgress(PublishingViewController.fetchRepositoriesAndOrganizations).finalResult({ result in
                     switch result {
                     case .failure(let error):
                         Alert.runInformationalAlert(messageText: "Failed to connect to GitHub", informativeText: "Are you connected to the internet? \(error)")
@@ -368,14 +380,8 @@ extension PublishingViewController {
 
 extension PublishingViewController {
 
-    private func fetchRepositoriesAndOrganizations() -> Promise<([LonaRepository], [LonaOrganization]), NSError> {
-        self.showsProgressIndicator = true
-
-        return Account.shared.me(forceRefresh: true).onSuccess { [weak self] result in
-            guard let self = self else { return .failure(NSError("Missing self")) }
-
-            self.showsProgressIndicator = false
-
+    public static func fetchRepositoriesAndOrganizations() -> Promise<([LonaRepository], [LonaOrganization]), NSError> {
+        return Account.shared.me(forceRefresh: true).onSuccess { result in
             let organizations = result.organizations.map { LonaOrganization(id: $0.id, name: $0.name) }
 
             let repositories: [LonaRepository] = Array(result.organizations.map({ organization in

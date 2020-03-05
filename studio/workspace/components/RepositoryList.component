@@ -1,0 +1,76 @@
+{
+  "devices" : [
+    {
+      "deviceId" : "iPhone SE",
+      "heightMode" : "At Least"
+    },
+    {
+      "deviceId" : "Pixel 2",
+      "heightMode" : "At Least"
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+    {
+      "name" : "repositoryIds",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "onSelectRepositoryId",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "String"
+          }
+        ]
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "PrimaryButton",
+        "params" : {
+          "titleText" : "Organization 1"
+        },
+        "type" : "PrimaryButton"
+      },
+      {
+        "id" : "View 1",
+        "params" : {
+          "alignSelf" : "stretch",
+          "height" : 8
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "PrimaryButton 1",
+        "params" : {
+          "titleText" : "Organization 2"
+        },
+        "type" : "PrimaryButton"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

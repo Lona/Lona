@@ -43,7 +43,12 @@ public class WelcomeWindow: NSWindow {
         view.contentViewMargins = .zero
         view.translatesAutoresizingMaskIntoConstraints = false
 
-        window.contentView = view
+        view.widthAnchor.constraint(equalToConstant: 720).isActive = true
+        view.heightAnchor.constraint(equalToConstant: 460).isActive = true
+
+        let viewController = NSViewController(view: view)
+
+        window.contentViewController = viewController
 
         // Set up welcome screen
 
@@ -89,13 +94,20 @@ public class WelcomeWindow: NSWindow {
         }
 
         welcome.onOpenProject = {
-            guard let url = WelcomeWindow.openWorkspaceDialog() else { return }
+            let sheetWindow = NSWindow(
+                contentRect: NSRect(origin: .zero, size: .init(width: 720, height: 100)),
+                styleMask: [.titled, .closable],
+                backing: .buffered,
+                defer: false,
+                screen: nil
+            )
 
-            DocumentController.shared.openDocument(withContentsOf: url, display: true, completionHandler: { document, _, _ in
-                if let _ = document {
-                    window.close()
-                }
-            })
+            sheetWindow.contentViewController = OpenWorkspaceViewController.shared
+            OpenWorkspaceViewController.shared.initializeState()
+            OpenWorkspaceViewController.shared.onRequestClose = {
+                OpenWorkspaceViewController.shared.dismiss(nil)
+            }
+            self.contentViewController?.presentAsModalWindow(OpenWorkspaceViewController.shared)
         }
 
         welcome.onOpenExample = {
@@ -129,7 +141,7 @@ extension WelcomeWindow {
         }
     }
 
-    private static func openWorkspaceDialog() -> URL? {
+    public static func openWorkspaceDialog() -> URL? {
         let dialog = NSOpenPanel()
 
         dialog.title                   = "Choose a workspace"

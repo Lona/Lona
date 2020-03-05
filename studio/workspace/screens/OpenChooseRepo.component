@@ -1,0 +1,152 @@
+{
+  "devices" : [
+    {
+      "height" : 1,
+      "heightMode" : "At Least",
+      "name" : "Desktop",
+      "width" : 640
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Title",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "titleText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Body",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "bodyText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "RepositoryList",
+        "repositoryIds"
+      ],
+      "content" : [
+        "parameters",
+        "repositoryIds"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "RepositoryList",
+        "onSelectRepositoryId"
+      ],
+      "content" : [
+        "parameters",
+        "onSelectRepositoryId"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "titleText",
+      "type" : "String"
+    },
+    {
+      "name" : "bodyText",
+      "type" : "String"
+    },
+    {
+      "name" : "repositoryIds",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "onSelectRepositoryId",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "String"
+          }
+        ]
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Title",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "title",
+          "text" : "Title text"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "VSpacer",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 32,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Body",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "body",
+          "text" : "Body text"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "VSpacer 4",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 16,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "RepositoryList",
+        "params" : {
+          "repositoryIds" : [
+
+          ]
+        },
+        "type" : "RepositoryList"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}
