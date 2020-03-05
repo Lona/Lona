@@ -44,6 +44,16 @@ class FlowView: NSBox {
         set { navigationControl.onClickForward = newValue }
     }
 
+    public var isBackEnabled: Bool {
+        get { return navigationControl.isBackEnabled }
+        set { navigationControl.isBackEnabled = newValue }
+    }
+
+    public var isForwardEnabled: Bool {
+        get { return navigationControl.isForwardEnabled }
+        set { navigationControl.isForwardEnabled = newValue }
+    }
+
     public var showsProgressIndicator = false {
         didSet {
             if oldValue != showsProgressIndicator {

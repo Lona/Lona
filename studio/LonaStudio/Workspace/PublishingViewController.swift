@@ -169,6 +169,9 @@ class PublishingViewController: NSViewController {
             flowView.showsNavigationControl = true
         }
 
+        flowView.isBackEnabled = history.canGoBack()
+        flowView.isForwardEnabled = history.canGoForward()
+
         // A small hack to prevent transitioning between the same State twice.
         // This allows us to store screen variables (i.e. user input values) directly on the screen instance.
         // If we need to allow transitions between the same State, a better approach could be to store screens variables

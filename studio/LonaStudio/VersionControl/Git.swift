@@ -128,6 +128,10 @@ extension Git.Client {
             !output.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         })
     }
+
+    public func clone(repository: URL, localDirectoryPath: String) -> Result<String, NSError> {
+        return run(arguments: ["clone", repository.absoluteString, localDirectoryPath])
+    }
 }
 
 // MARK: Async

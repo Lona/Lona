@@ -1,0 +1,269 @@
+{
+  "devices" : [
+    {
+      "height" : 1,
+      "heightMode" : "At Least",
+      "name" : "Desktop",
+      "width" : 640
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "WorkspaceTitle",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "workspaceName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "LocalPathInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "localPath"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "LocalPathInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeLocalPath"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "SubmitButton",
+        "titleText"
+      ],
+      "content" : [
+        "parameters",
+        "submitButtonTitle"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "SubmitButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickSubmitButton"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ChoosePathButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickChooseDirectory"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "LocalPathInput",
+        "placeholderString"
+      ],
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "Directory location",
+          "type" : "String"
+        }
+      },
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "workspaceName",
+      "type" : "String"
+    },
+    {
+      "name" : "localPath",
+      "type" : "String"
+    },
+    {
+      "name" : "onChangeLocalPath",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "submitButtonTitle",
+      "type" : "String"
+    },
+    {
+      "name" : "onClickSubmitButton",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onClickChooseDirectory",
+      "type" : {
+        "name" : "Function"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "PublishText",
+            "params" : {
+              "font" : "titleLight",
+              "text" : "Sync "
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "WorkspaceTitle",
+            "params" : {
+              "font" : "title",
+              "text" : "Workspace Name"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "TitleContainer",
+        "params" : {
+          "alignSelf" : "stretch",
+          "flexDirection" : "row"
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "VSpacer",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 32,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "BodyText",
+        "params" : {
+          "font" : "body",
+          "text" : "Where do you want to sync this workspace on your hard drive?"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "VSpacer 3",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 16,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "children" : [
+              {
+                "id" : "LocalPathInput",
+                "params" : {
+                  "placeholderString" : "Text",
+                  "textValue" : "Text"
+                },
+                "type" : "TextInput"
+              },
+              {
+                "children" : [
+                  {
+                    "id" : "ChoosePathButton",
+                    "params" : {
+                      "titleText" : "Choose directory..."
+                    },
+                    "type" : "Button"
+                  }
+                ],
+                "id" : "View 3",
+                "params" : {
+                  "marginLeft" : 8
+                },
+                "type" : "Lona:View"
+              }
+            ],
+            "id" : "View 2",
+            "params" : {
+              "alignSelf" : "stretch",
+              "flexDirection" : "row"
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "VSpacer 2",
+            "params" : {
+              "backgroundColor" : "#D8D8D8",
+              "height" : 32,
+              "width" : 0
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "children" : [
+              {
+                "id" : "SubmitButton",
+                "params" : {
+                  "titleText" : "Create repository"
+                },
+                "type" : "PrimaryButton"
+              }
+            ],
+            "id" : "View",
+            "params" : {
+              "alignItems" : "flex-end",
+              "width" : 250
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "View 1",
+        "params" : {
+          "alignItems" : "flex-end",
+          "alignSelf" : "stretch"
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

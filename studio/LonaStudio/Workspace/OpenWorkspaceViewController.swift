@@ -76,15 +76,19 @@ class OpenWorkspaceViewController: NSViewController {
     }
 
     private func update() {
+        switch history.current {
+        case .done, .error:
+            flowView.showsNavigationControl = false
+        default:
+            flowView.showsNavigationControl = true
+        }
+
+        flowView.isBackEnabled = history.canGoBack()
+        flowView.isForwardEnabled = history.canGoForward()
+
         let newContentView = makeViewFromState()
 
-        // A small hack to prevent transitioning between the same State twice.
-        // This allows us to store screen variables (i.e. user input values) directly on the screen instance.
-        // If we need to allow transitions between the same State, a better approach could be to store screens variables
-        // in the State object, and update the old screen instance as needed, without unmounting.
-//        if newContentView.className != flowView.screenView?.className {
-            flowView.screenView = newContentView
-//        }
+        flowView.screenView = newContentView
 
         if let window = flowView.window {
             // Try to set the window dimensions to zero.
@@ -147,7 +151,52 @@ class OpenWorkspaceViewController: NSViewController {
             }
             return screen
         case .chooseSyncDirectory(repository: let repository):
-            return PublishDone(workspaceName: "")
+            let screen = OpenSyncLocation(workspaceName: repository.url.lastPathComponent, localPath: "", submitButtonTitle: "")
+            let updateSubmitButtonTitle: () -> Void = { [unowned screen] in
+                if let url = URL(string: screen.localPath) {
+                    screen.submitButtonTitle = "Sync \(url.lastPathComponent)"
+                } else {
+                    screen.submitButtonTitle = "Sync"
+                }
+            }
+            updateSubmitButtonTitle()
+            screen.onChangeLocalPath = { value in
+                screen.localPath = value
+                updateSubmitButtonTitle()
+            }
+            screen.onClickChooseDirectory = {
+                let dialog = NSOpenPanel()
+
+                dialog.title = "Workspace sync directory"
+                dialog.message = "Choose a directory to sync this workspace into"
+                dialog.showsResizeIndicator = true
+                dialog.showsHiddenFiles = false
+                dialog.canChooseFiles = false
+                dialog.canChooseDirectories = true
+                dialog.canCreateDirectories = true
+                dialog.allowsMultipleSelection = false
+
+                if dialog.runModal() != NSApplication.ModalResponse.OK { return }
+                guard let localURL = dialog.url else { return }
+
+                screen.localPath = localURL.appendingPathComponent(repository.url.lastPathComponent).path
+                updateSubmitButtonTitle()
+            }
+            screen.onClickSubmitButton = {
+                let result = Git.client.clone(repository: repository.url, localDirectoryPath: screen.localPath)
+                switch result {
+                case .failure(let error):
+                    Alert.runInformationalAlert(messageText: "Failed to sync \(repository.url.lastPathComponent)", informativeText: "Git clone failed. Error: \(error)")
+                case .success:
+                    let initialDocumentURL = URL(fileURLWithPath: screen.localPath).appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)
+                    DocumentController.shared.openDocument(withContentsOf: initialDocumentURL, display: true, completionHandler: { [unowned self] document, _, _ in
+                        if let _ = document {
+                            self.onRequestClose?()
+                        }
+                    })
+                }
+            }
+            return screen
         case .error(title: let title, body: let body):
             let screen = PublishInfo(titleText: title, bodyText: body)
             screen.onClickDoneButton = self.onRequestClose
