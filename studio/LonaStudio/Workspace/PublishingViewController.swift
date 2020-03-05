@@ -34,20 +34,24 @@ public enum PublishingState: Equatable {
 
 // MARK: - PublishingViewController
 
-class PublishingViewController: FlowViewController<PublishingState> {
+class PublishingViewController: NSViewController {
 
     // MARK: Lifecycle
 
     override init(nibName nibNameOrNil: NSNib.Name?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nil, bundle: nil)
 
-        self.makeContentView = self.makeViewFromState
+        setUpViews()
+
+        update()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
-        self.makeContentView = self.makeViewFromState
+        setUpViews()
+
+        update()
     }
 
     // MARK: Static
@@ -56,10 +60,12 @@ class PublishingViewController: FlowViewController<PublishingState> {
 
     // MARK: Public
 
+    private var history = History<PublishingState>() { didSet { update() } }
+
     public func initializeState() {
         history = .init()
         workspaceName = CSWorkspacePreferences.workspaceName
-        forceUpdate()
+        flowView.forceUpdate() // TODO: needed?
 
         switch Git.client.getRootDirectoryPath() {
         case .success(let path) where path == CSUserPreferences.workspaceURL.path:
@@ -138,7 +144,41 @@ class PublishingViewController: FlowViewController<PublishingState> {
 
     // MARK: Private
 
+    private var flowView: FlowView = FlowView()
+
+    private var showsProgressIndicator: Bool {
+        get { return flowView.showsProgressIndicator }
+        set { flowView.showsProgressIndicator = newValue }
+    }
+
     private var workspaceName: String = ""
+
+    private func setUpViews() {
+        flowView.onClickBack = { [unowned self] in self.history.goBack() }
+        flowView.onClickForward = { [unowned self] in self.history.goForward() }
+
+        self.view = flowView
+    }
+
+    private func update() {
+        let newContentView = makeViewFromState()
+
+        // A small hack to prevent transitioning between the same State twice.
+        // This allows us to store screen variables (i.e. user input values) directly on the screen instance.
+        // If we need to allow transitions between the same State, a better approach could be to store screens variables
+        // in the State object, and update the old screen instance as needed, without unmounting.
+        if newContentView.className != flowView.screenView?.className {
+            flowView.screenView = newContentView
+        }
+    }
+
+    override func viewDidAppear() {
+        guard let window = view.window else { return }
+
+        window.title = "Publishing"
+        window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+        window.standardWindowButton(.zoomButton)?.isHidden = true
+    }
 
     private func makeViewFromState() -> NSView {
         guard let state = history.current else { return NSView() }

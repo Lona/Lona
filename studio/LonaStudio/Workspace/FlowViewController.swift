@@ -8,14 +8,14 @@
 import AppKit
 import BreadcrumbBar
 
-// MARK: - FlowViewController
+// MARK: - FlowView
 
-class FlowViewController<State: Equatable>: NSViewController {
+class FlowView: NSBox {
 
     // MARK: Lifecycle
 
-    override init(nibName nibNameOrNil: NSNib.Name?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nil, bundle: nil)
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
 
         setUpViews()
         setUpConstraints()
@@ -34,11 +34,14 @@ class FlowViewController<State: Equatable>: NSViewController {
 
     // MARK: Public
 
-    public var history = History<State>() { didSet { update() } }
+    public var onClickBack: (() -> Void)? {
+        get { return navigationControl.onClickBack }
+        set { navigationControl.onClickBack = newValue }
+    }
 
-    public var flowTitle: String {
-        get { contentView?.window?.title ?? "" }
-        set { contentView?.window?.title = newValue }
+    public var onClickForward: (() -> Void)? {
+        get { return navigationControl.onClickForward }
+        set { navigationControl.onClickForward = newValue }
     }
 
     public var showsProgressIndicator = false {
@@ -55,21 +58,23 @@ class FlowViewController<State: Equatable>: NSViewController {
         }
     }
 
-    public var contentView: NSView? {
+    public var screenView: NSView? {
         didSet {
-            if oldValue != contentView {
+            if oldValue != screenView {
                 oldValue?.removeFromSuperview()
 
-                if let contentView = contentView {
-                    scrollView.documentView = contentView
+                if let screenView = screenView {
+                    scrollView.documentView = screenView
 
-                    scrollViewMinimumHeightConstraint = scrollView.heightAnchor.constraint(greaterThanOrEqualTo: contentView.heightAnchor, constant: 80)
+                    scrollViewMinimumHeightConstraint = scrollView.heightAnchor.constraint(greaterThanOrEqualTo: screenView.heightAnchor, constant: 80)
                     scrollViewMinimumHeightConstraint?.priority = .required - 1
                     scrollViewMinimumHeightConstraint?.isActive = true
 
-                    contentView.translatesAutoresizingMaskIntoConstraints = false
-                    contentView.widthAnchor.constraint(equalToConstant: 720 - 80).isActive = true
+                    screenView.translatesAutoresizingMaskIntoConstraints = false
+                    screenView.widthAnchor.constraint(equalToConstant: 720 - 80).isActive = true
                 }
+
+                update()
             }
         }
     }
@@ -78,24 +83,21 @@ class FlowViewController<State: Equatable>: NSViewController {
         update()
     }
 
-    public var makeContentView: () -> NSView = { return NSView() }
-
     // MARK: Private
-
-    private let containerView = NSBox()
 
     private let navigationControl = NavigationControl()
 
     private let progressIndicator = NSProgressIndicator()
 
     private var scrollViewMinimumHeightConstraint: NSLayoutConstraint?
-    private var contentViewTopAnchorConstraint: NSLayoutConstraint?
+    private var screenViewTopAnchorConstraint: NSLayoutConstraint?
 
     private var showNavigationControl: Bool = false
 
     private let scrollView = FlippedScrollView()
 
     private func setUpViews() {
+        let containerView = self
         containerView.boxType = .custom
         containerView.borderType = .noBorder
         containerView.contentViewMargins = .zero
@@ -117,16 +119,13 @@ class FlowViewController<State: Equatable>: NSViewController {
 
         navigationControl.fillColor = Colors.contentBackground
         navigationControl.cornerRadius = 2
-        navigationControl.onClickBack = { [unowned self] in self.history.goBack() }
-        navigationControl.onClickForward = { [unowned self] in self.history.goForward() }
 
         progressIndicator.style = .spinning
         progressIndicator.isIndeterminate = true
-
-        self.view = containerView
     }
 
     private func setUpConstraints() {
+        let containerView = self
         containerView.translatesAutoresizingMaskIntoConstraints = false
         navigationControl.translatesAutoresizingMaskIntoConstraints = false
         progressIndicator.translatesAutoresizingMaskIntoConstraints = false
@@ -147,20 +146,10 @@ class FlowViewController<State: Equatable>: NSViewController {
     }
 
     private func update() {
-        let newContentView = makeContentView()
-
-        // A small hack to prevent transitioning between the same State twice.
-        // This allows us to store screen variables (i.e. user input values) directly on the screen instance.
-        // If we need to allow transitions between the same State, a better approach could be to store screens variables
-        // in the State object, and update the old screen instance as needed, without unmounting.
-        if newContentView.className != contentView?.className {
-            contentView = newContentView
-        }
+        let containerView = self
 
         progressIndicator.isHidden = !showsProgressIndicator
 
-        navigationControl.isBackEnabled = history.canGoBack()
-        navigationControl.isForwardEnabled = history.canGoForward()
         navigationControl.isHidden = !showNavigationControl
 
         navigationControl.removeFromSuperview()
@@ -173,19 +162,12 @@ class FlowViewController<State: Equatable>: NSViewController {
         scrollView.contentInsets = .init(top: topInset, left: 40, bottom: 40, right: 40)
         scrollView.scrollerInsets = .init(top: -topInset, left: -40, bottom: -40, right: -40)
         scrollViewMinimumHeightConstraint?.constant = topInset + 40
-        contentViewTopAnchorConstraint?.constant = topInset + 40
+        screenViewTopAnchorConstraint?.constant = topInset + 40
 
-        if let contentView = self.contentView, let window = contentView.window {
+        if let screenView = self.screenView, let window = screenView.window {
             // Try to set the window dimensions to zero.
-            // Autolayout will snap it back to the minimum size allowed based on the contentView's contraints.
+            // Autolayout will snap it back to the minimum size allowed based on the screenView's contraints.
             window.setContentSize(.zero)
         }
-    }
-
-    override func viewDidAppear() {
-        guard let window = contentView?.window else { return }
-
-        window.standardWindowButton(.miniaturizeButton)?.isHidden = true
-        window.standardWindowButton(.zoomButton)?.isHidden = true
     }
 }
