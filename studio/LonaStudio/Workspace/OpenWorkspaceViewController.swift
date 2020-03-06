@@ -183,7 +183,12 @@ class OpenWorkspaceViewController: NSViewController {
                 updateSubmitButtonTitle()
             }
             screen.onClickSubmitButton = {
-                let result = Git.client.clone(repository: repository.url, localDirectoryPath: screen.localPath)
+                guard let sshURL = Git.URL.format(repository.url, as: .ssh) else {
+                    Alert.runInformationalAlert(messageText: "Invalid workspace", informativeText: "Faile to create SSH URL from \(repository.url).")
+                    return
+                }
+
+                let result = Git.client.clone(repository: sshURL, localDirectoryPath: screen.localPath)
                 switch result {
                 case .failure(let error):
                     Alert.runInformationalAlert(messageText: "Failed to sync \(repository.url.lastPathComponent)", informativeText: "Git clone failed. Error: \(error)")
