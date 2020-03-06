@@ -3,6 +3,55 @@
 import Apollo
 import Foundation
 
+/// The repository's visibility level.
+public enum RepositoryVisibility: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  /// The repository is visible only to those with explicit access.
+  case `private`
+  /// The repository is visible to everyone.
+  case `public`
+  /// The repository is visible only to users in the same business.
+  case `internal`
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "PRIVATE": self = .private
+      case "PUBLIC": self = .public
+      case "INTERNAL": self = .internal
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .private: return "PRIVATE"
+      case .public: return "PUBLIC"
+      case .internal: return "INTERNAL"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: RepositoryVisibility, rhs: RepositoryVisibility) -> Bool {
+    switch (lhs, rhs) {
+      case (.private, .private): return true
+      case (.public, .public): return true
+      case (.internal, .internal): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [RepositoryVisibility] {
+    return [
+      .private,
+      .public,
+      .internal,
+    ]
+  }
+}
+
 /// The possible states for a check suite or run status.
 public enum CheckStatusState: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
   public typealias RawValue = String
@@ -226,8 +275,8 @@ public final class CreateRepositoryMutation: GraphQLMutation {
   /// The raw GraphQL definition of this operation.
   public let operationDefinition =
     """
-    mutation createRepository($ownerId: ID!, $name: String!, $description: String!) {
-      createRepository(input: {ownerId: $ownerId, name: $name, description: $description, visibility: PUBLIC}) {
+    mutation createRepository($ownerId: ID!, $name: String!, $description: String!, $visibility: RepositoryVisibility!) {
+      createRepository(input: {ownerId: $ownerId, name: $name, description: $description, visibility: $visibility}) {
         __typename
         repository {
           __typename
@@ -242,22 +291,24 @@ public final class CreateRepositoryMutation: GraphQLMutation {
   public var ownerId: GraphQLID
   public var name: String
   public var description: String
+  public var visibility: RepositoryVisibility
 
-  public init(ownerId: GraphQLID, name: String, description: String) {
+  public init(ownerId: GraphQLID, name: String, description: String, visibility: RepositoryVisibility) {
     self.ownerId = ownerId
     self.name = name
     self.description = description
+    self.visibility = visibility
   }
 
   public var variables: GraphQLMap? {
-    return ["ownerId": ownerId, "name": name, "description": description]
+    return ["ownerId": ownerId, "name": name, "description": description, "visibility": visibility]
   }
 
   public struct Data: GraphQLSelectionSet {
     public static let possibleTypes = ["Mutation"]
 
     public static let selections: [GraphQLSelection] = [
-      GraphQLField("createRepository", arguments: ["input": ["ownerId": GraphQLVariable("ownerId"), "name": GraphQLVariable("name"), "description": GraphQLVariable("description"), "visibility": "PUBLIC"]], type: .object(CreateRepository.selections)),
+      GraphQLField("createRepository", arguments: ["input": ["ownerId": GraphQLVariable("ownerId"), "name": GraphQLVariable("name"), "description": GraphQLVariable("description"), "visibility": GraphQLVariable("visibility")]], type: .object(CreateRepository.selections)),
     ]
 
     public private(set) var resultMap: ResultMap

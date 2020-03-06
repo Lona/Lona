@@ -128,6 +128,42 @@
     {
       "assignee" : [
         "layers",
+        "VisibilitiesDropdown",
+        "values"
+      ],
+      "content" : [
+        "parameters",
+        "repositoryVisibilities"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "VisibilitiesDropdown",
+        "selectedIndex"
+      ],
+      "content" : [
+        "parameters",
+        "repositoryVisibilityIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "VisibilitiesDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeRepositoryVisibilityIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
         "RepositoryNameInput",
         "placeholderString"
       ],
@@ -190,6 +226,29 @@
       "type" : {
         "name" : "Function"
       }
+    },
+    {
+      "name" : "repositoryVisibilities",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "onChangeRepositoryVisibilityIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "repositoryVisibilityIndex",
+      "type" : "WholeNumber"
     }
   ],
   "root" : {
@@ -284,6 +343,16 @@
           {
             "children" : [
               {
+                "id" : "Text 1",
+                "params" : {
+                  "marginRight" : 12,
+                  "text" : "GitHub organization",
+                  "textAlign" : "right",
+                  "width" : 160
+                },
+                "type" : "Lona:Text"
+              },
+              {
                 "children" : [
                   {
                     "id" : "GithubOrganizationsDropdown",
@@ -302,18 +371,11 @@
                   "width" : 100
                 },
                 "type" : "Lona:View"
-              },
-              {
-                "id" : "RepositoryNameInput",
-                "params" : {
-                  "placeholderString" : "Text",
-                  "textValue" : "Text"
-                },
-                "type" : "TextInput"
               }
             ],
-            "id" : "View 2",
+            "id" : "View 4",
             "params" : {
+              "alignItems" : "center",
               "alignSelf" : "stretch",
               "flexDirection" : "row"
             },
@@ -328,6 +390,111 @@
             },
             "type" : "Lona:View"
           },
+          {
+            "children" : [
+              {
+                "id" : "Text 2",
+                "params" : {
+                  "marginRight" : 12,
+                  "text" : "Repository name",
+                  "textAlign" : "right",
+                  "width" : 160
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "RepositoryNameInput",
+                "params" : {
+                  "placeholderString" : "Text",
+                  "textValue" : "Text"
+                },
+                "type" : "TextInput"
+              }
+            ],
+            "id" : "View 5",
+            "params" : {
+              "alignItems" : "center",
+              "alignSelf" : "stretch",
+              "flexDirection" : "row"
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "VSpacer 5",
+            "params" : {
+              "backgroundColor" : "#D8D8D8",
+              "height" : 8,
+              "width" : 0
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "children" : [
+              {
+                "id" : "Text 3",
+                "params" : {
+                  "marginRight" : 12,
+                  "text" : "Repository visibility",
+                  "textAlign" : "right",
+                  "width" : 160
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "children" : [
+                  {
+                    "id" : "VisibilitiesDropdown",
+                    "params" : {
+                      "selectedIndex" : 0,
+                      "values" : [
+
+                      ]
+                    },
+                    "type" : "ControlledDropdown"
+                  }
+                ],
+                "id" : "View 7",
+                "params" : {
+                  "marginRight" : 8,
+                  "width" : 100
+                },
+                "type" : "Lona:View"
+              }
+            ],
+            "id" : "View 6",
+            "params" : {
+              "alignItems" : "center",
+              "alignSelf" : "stretch",
+              "flexDirection" : "row"
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "Form",
+        "params" : {
+          "alignSelf" : "stretch"
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "View 2",
+        "params" : {
+          "alignSelf" : "stretch",
+          "flexDirection" : "row"
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "VSpacer 4",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 24,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
           {
             "children" : [
               {

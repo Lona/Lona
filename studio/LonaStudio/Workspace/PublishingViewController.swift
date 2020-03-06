@@ -221,13 +221,19 @@ class PublishingViewController: NSViewController {
             }
             return screen
         case .createRepo(let organization, let githubOrganizations):
+            let repositoryPublic = "Public"
+            let repositoryPrivate = "Private"
+            let repositoryVisiblities = [repositoryPublic, repositoryPrivate]
+
             let screen = PublishCreateRepo(
                 workspaceName: workspaceName,
                 organizationName: organization.name,
                 githubOrganizations: githubOrganizations.map { $0.name },
                 githubOrganizationIndex: 0,
                 repositoryName: workspaceName,
-                submitButtonTitle: ""
+                submitButtonTitle: "",
+                repositoryVisibilities: repositoryVisiblities,
+                repositoryVisibilityIndex: 0
             )
             let updateSubmitButtonTitle: () -> Void = { [unowned screen] in
                 screen.submitButtonTitle = "Create \(githubOrganizations[screen.githubOrganizationIndex].name)/\(screen.repositoryName)"
@@ -240,13 +246,17 @@ class PublishingViewController: NSViewController {
                 screen.githubOrganizationIndex = index
                 updateSubmitButtonTitle()
             }
+            screen.onChangeRepositoryVisibilityIndex = { [unowned screen] index in
+                screen.repositoryVisibilityIndex = index
+            }
             screen.onClickSubmitButton = { [unowned self] in
                 self.showsProgressIndicator = true
 
                 self.createRepo(
                     organizationId: organization.id,
                     githubOrganization: githubOrganizations[screen.githubOrganizationIndex],
-                    githubRepositoryName: screen.repositoryName
+                    githubRepositoryName: screen.repositoryName,
+                    isPrivate: repositoryVisiblities[screen.repositoryVisibilityIndex] == repositoryPrivate
                 ).finalResult({ [weak self] result in
                     guard let self = self else { return }
 
@@ -432,14 +442,15 @@ extension PublishingViewController {
         }
     }
 
-    private func createRepo(organizationId: String, githubOrganization: LonaOrganization, githubRepositoryName: String) -> Promise<URL, NSError> {
+    private func createRepo(organizationId: String, githubOrganization: LonaOrganization, githubRepositoryName: String, isPrivate: Bool) -> Promise<URL, NSError> {
         return .result { complete in
             self.showsProgressIndicator = true
 
             let mutation = CreateRepositoryMutation(
                 ownerId: githubOrganization.id,
                 name: githubRepositoryName,
-                description: "Lona Workspace"
+                description: "Lona Workspace",
+                visibility: isPrivate ? .private : .public
             )
 
             Network.shared.github.perform(mutation: mutation) { [weak self] result in
