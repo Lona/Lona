@@ -26,6 +26,7 @@ public enum PublishingState: Equatable {
     case needsAuth
     case chooseOrg(organizations: [LonaOrganization])
     case needsRepo(organization: LonaOrganization)
+    case chooseExistingRepo(organization: LonaOrganization)
     case createRepo(organization: LonaOrganization, githubOrganizations: [LonaOrganization])
     case needsRepoScope(organizationId: String, githubOrganizationId: GraphQLID, githubRepositoryName: String, isPrivate: Bool)
     case installLonaApp(repository: LonaRepository)
@@ -275,6 +276,26 @@ class PublishingViewController: NSViewController {
                 self.fetchGitHubOrganizations().finalSuccess({ [weak self] organizations in
                     self?.history.navigateTo(.createRepo(organization: organization, githubOrganizations: organizations))
                 })
+            }
+            screen.onClickUseExistingRepository = { [unowned self] in
+                self.history.navigateTo(.chooseExistingRepo(organization: organization))
+            }
+            return screen
+        case .chooseExistingRepo(organization: let organization):
+            let screen = PublishExistingRepo(workspaceName: workspaceName, organizationName: organization.name, repositoryName: "")
+            screen.onChangeRepositoryName = { [unowned screen] value in
+                screen.repositoryName = value
+            }
+            screen.onClickSubmitButton = {
+                guard let url = URL(string: screen.repositoryName) else { return }
+
+                self.flowView.withProgress(
+                    self.addRepo(organizationId: organization.id, githubRepoURL: url)
+                        .onSuccess({ (_: Void) -> Promise<Void, NSError> in
+                            self.addRemoteAndPush(url: url)
+                            return .success(())
+                        })
+                )
             }
             return screen
         case .createRepo(let organization, let githubOrganizations):

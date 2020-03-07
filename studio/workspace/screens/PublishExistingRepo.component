@@ -1,0 +1,249 @@
+{
+  "devices" : [
+    {
+      "height" : 1,
+      "heightMode" : "At Least",
+      "name" : "Desktop",
+      "width" : 640
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "WorkspaceTitle",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "workspaceName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "OrgTitle",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "organizationName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "RepositoryNameInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "repositoryName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "RepositoryNameInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeRepositoryName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "SubmitButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickSubmitButton"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "RepositoryNameInput",
+        "placeholderString"
+      ],
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "Repository URL",
+          "type" : "String"
+        }
+      },
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "workspaceName",
+      "type" : "String"
+    },
+    {
+      "name" : "organizationName",
+      "type" : "String"
+    },
+    {
+      "name" : "repositoryName",
+      "type" : "String"
+    },
+    {
+      "name" : "onChangeRepositoryName",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "onClickSubmitButton",
+      "type" : {
+        "name" : "Function"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "PublishText",
+            "params" : {
+              "font" : "titleLight",
+              "text" : "Publish "
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "WorkspaceTitle",
+            "params" : {
+              "font" : "title",
+              "text" : "Workspace Name"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "PublishText 1",
+            "params" : {
+              "font" : "titleLight",
+              "text" : " to "
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "OrgTitle",
+            "params" : {
+              "font" : "title",
+              "text" : "LonaTeam"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "TitleContainer",
+        "params" : {
+          "alignSelf" : "stretch",
+          "flexDirection" : "row"
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "VSpacer",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 32,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "BodyText",
+        "params" : {
+          "font" : "body",
+          "text" : "Paste the URL of the repository you'd like to sync this Lona workspace to. The repository must be empty."
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "VSpacer 3",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 32,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "RepositoryNameInput",
+        "params" : {
+          "placeholderString" : "Text",
+          "textValue" : "Text"
+        },
+        "type" : "TextInput"
+      },
+      {
+        "id" : "View 2",
+        "params" : {
+          "alignSelf" : "stretch",
+          "flexDirection" : "row"
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "VSpacer 4",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 24,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "children" : [
+              {
+                "id" : "SubmitButton",
+                "params" : {
+                  "titleText" : "Sync to repository"
+                },
+                "type" : "PrimaryButton"
+              }
+            ],
+            "id" : "View",
+            "params" : {
+              "alignItems" : "flex-end",
+              "width" : 250
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "View 1",
+        "params" : {
+          "alignItems" : "flex-end",
+          "alignSelf" : "stretch"
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}
