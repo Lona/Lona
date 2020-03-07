@@ -200,4 +200,14 @@ extension FlowView {
             return .result(result)
         })
     }
+
+    public func withProgress<S, F>(_ promise: Promise<S, F>) {
+        self.showsProgressIndicator = true
+
+        return promise.finalResult({ _ in
+            DispatchQueue.main.async {
+                self.showsProgressIndicator = false
+            }
+        })
+    }
 }

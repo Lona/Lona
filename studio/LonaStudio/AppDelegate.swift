@@ -173,7 +173,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
             Account.shared.signin(token: token)
             AppDelegate.reloadPreferencesWindow()
-            PublishingViewController.shared.initializeState()
+            PublishingViewController.shared.updateForNewAccountInfo()
             OpenWorkspaceViewController.shared.initializeState()
         }
     }
