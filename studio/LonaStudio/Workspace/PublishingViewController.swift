@@ -388,7 +388,7 @@ If your team or company already has a Lona organization, an organization owner c
                 bodyText: "Lona needs an additional permission to create a GitHub repository on your behalf. Press OK to open GitHub in your browser."
             )
             screen.onClickDoneButton = {
-                if !NSWorkspace.shared.open(GITHUB_SIGNIN_URL(scopes: ["repo"])) {
+                if !NSWorkspace.shared.open(GITHUB_SIGNIN_URL(scopes: ["user:email", "read:org", "repo"])) {
                     Alert.runInformationalAlert(messageText: "Failed to open GitHub in your web browser")
                 }
             }
