@@ -90,11 +90,7 @@ class OpenWorkspaceViewController: NSViewController {
 
         flowView.screenView = newContentView
 
-        if let window = flowView.window {
-            // Try to set the window dimensions to zero.
-            // Autolayout will snap it back to the minimum size allowed based on the contentView's contraints.
-            window.setContentSize(.zero)
-        }
+        self.view.window?.setContentSize(.init(width: flowView.frame.width, height: 0))
     }
 
     override func viewDidAppear() {
@@ -179,7 +175,7 @@ class OpenWorkspaceViewController: NSViewController {
                 if dialog.runModal() != NSApplication.ModalResponse.OK { return }
                 guard let localURL = dialog.url else { return }
 
-                screen.localPath = localURL.appendingPathComponent(repository.url.lastPathComponent).path
+                screen.localPath = localURL.appendingPathComponent(repository.url.deletingPathExtension().lastPathComponent).path
                 updateSubmitButtonTitle()
             }
             screen.onClickSubmitButton = {

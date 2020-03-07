@@ -238,11 +238,7 @@ class PublishingViewController: NSViewController {
             flowView.screenView = newContentView
         }
 
-        if let window = flowView.window {
-            // Try to set the window dimensions to zero.
-            // Autolayout will snap it back to the minimum size allowed based on the contentView's contraints.
-            window.setContentSize(.zero)
-        }
+        self.view.window?.setContentSize(.init(width: flowView.frame.width, height: 0))
     }
 
     override func viewDidAppear() {
@@ -251,6 +247,8 @@ class PublishingViewController: NSViewController {
         window.title = "Publishing"
         window.standardWindowButton(.miniaturizeButton)?.isHidden = true
         window.standardWindowButton(.zoomButton)?.isHidden = true
+
+        self.view.window?.setContentSize(.init(width: flowView.frame.width, height: 0))
     }
 
     private func makeViewFromState() -> NSView {
