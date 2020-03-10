@@ -171,6 +171,8 @@
 		30F870EB20869644007ADA5B /* Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F870EA20869644007ADA5B /* Fetch.swift */; };
 		6B06ADB121E8138400136BC8 /* MultipleSelectionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B06ADB021E8138400136BC8 /* MultipleSelectionButton.swift */; };
 		6B074891241349FB00990660 /* PublishExistingRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B074890241349FA00990660 /* PublishExistingRepo.swift */; };
+		6B074893241710F000990660 /* TemplatePreviewCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B074892241710F000990660 /* TemplatePreviewCollection.swift */; };
+		6B07489724172B6600990660 /* TemplateFileList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B07489624172B6600990660 /* TemplateFileList.swift */; };
 		6B0A29E6212736F900A96B0F /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0A29E5212736F900A96B0F /* Alert.swift */; };
 		6B0AEFB81EBF74D800F35BBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */; };
 		6B0AEFBC1EBF74D800F35BBF /* ComponentDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0AEFBB1EBF74D800F35BBF /* ComponentDocument.swift */; };
@@ -571,6 +573,8 @@
 		30F870EA20869644007ADA5B /* Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fetch.swift; sourceTree = "<group>"; };
 		6B06ADB021E8138400136BC8 /* MultipleSelectionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipleSelectionButton.swift; sourceTree = "<group>"; };
 		6B074890241349FA00990660 /* PublishExistingRepo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishExistingRepo.swift; sourceTree = "<group>"; };
+		6B074892241710F000990660 /* TemplatePreviewCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplatePreviewCollection.swift; sourceTree = "<group>"; };
+		6B07489624172B6600990660 /* TemplateFileList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateFileList.swift; sourceTree = "<group>"; };
 		6B0A29E5212736F900A96B0F /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		6B0AEFB41EBF74D800F35BBF /* LonaStudio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LonaStudio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -904,6 +908,8 @@
 				6BA783162410A11D008F3761 /* RepositoryList.swift */,
 				300A0AFB1EDA0CBC00704DB7 /* SectionSplitter.swift */,
 				6BEA1A75233AE8E00008FF7E /* SubtleSplitView.swift */,
+				6B07489624172B6600990660 /* TemplateFileList.swift */,
+				6B074892241710F000990660 /* TemplatePreviewCollection.swift */,
 				6BA5BBDE2176D93D00F086A7 /* TextStyleEditorViewController.swift */,
 				30C203DE20BF5955007C3FE0 /* TextStylePreviewCollection.swift */,
 				6B39E6F2212DB3AD0012DA4C /* UtilitiesView.swift */,
@@ -1864,6 +1870,7 @@
 				30335A0C1F5B2F8B006E507B /* CaseList.swift in Sources */,
 				3056275C1FBA07C800026796 /* DictionaryEditor.swift in Sources */,
 				6B6E47552407201D0067B2FF /* FlippedScrollView.swift in Sources */,
+				6B07489724172B6600990660 /* TemplateFileList.swift in Sources */,
 				30F7C9561ED4E02F009D27DF /* YogaLayout.swift in Sources */,
 				3090D7931F01B2EF009277E7 /* CSLayer.swift in Sources */,
 				6B14C7BF23C5109900EF85FA /* NoDocument.swift in Sources */,
@@ -2047,6 +2054,7 @@
 				30F4FD551F76B9DB0048691C /* DictionaryExtensions.swift in Sources */,
 				3094DFE81F6ACF1E00E5C7F0 /* ImageCache.swift in Sources */,
 				6BA78311241087D8008F3761 /* FlowView.swift in Sources */,
+				6B074893241710F000990660 /* TemplatePreviewCollection.swift in Sources */,
 				306DA4F41F34E416002772DC /* DataNode.swift in Sources */,
 				6BA783172410A11D008F3761 /* RepositoryList.swift in Sources */,
 				3069E0A21F32585A0005E9A8 /* CSPreferences.swift in Sources */,

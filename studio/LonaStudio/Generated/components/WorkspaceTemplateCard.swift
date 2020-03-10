@@ -130,13 +130,16 @@ public class WorkspaceTemplateCard: NSBox {
     addSubview(descriptionView)
     imageContainerView.addSubview(imageView)
 
-    cornerRadius = 8
-    borderWidth = 2
-    imageContainerView.fillColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.9)
+    cornerRadius = 4
+    borderWidth = 1
+    imageContainerView.fillColor = Colors.dividerSubtle
     imageContainerView.cornerRadius = 8
     imageContainerView.borderWidth = 1
     titleViewTextStyle = TextStyles.large
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
+    descriptionViewTextStyle = TextStyles.regularMuted
+    descriptionView.attributedStringValue = descriptionViewTextStyle.apply(to: descriptionView.attributedStringValue)
+    descriptionView.maximumNumberOfLines = 2
   }
 
   private func setUpConstraints() {
@@ -146,33 +149,31 @@ public class WorkspaceTemplateCard: NSBox {
     descriptionView.translatesAutoresizingMaskIntoConstraints = false
     imageView.translatesAutoresizingMaskIntoConstraints = false
 
-    let widthAnchorConstraint = widthAnchor.constraint(equalToConstant: 230)
+    let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 220)
+    let widthAnchorConstraint = widthAnchor.constraint(equalToConstant: 216)
     let imageContainerViewTopAnchorConstraint = imageContainerView
       .topAnchor
-      .constraint(equalTo: topAnchor, constant: 14)
+      .constraint(equalTo: topAnchor, constant: 13)
     let imageContainerViewLeadingAnchorConstraint = imageContainerView
       .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: 14)
+      .constraint(equalTo: leadingAnchor, constant: 13)
     let imageContainerViewTrailingAnchorConstraint = imageContainerView
       .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -14)
+      .constraint(equalTo: trailingAnchor, constant: -13)
     let titleViewTopAnchorConstraint = titleView
       .topAnchor
-      .constraint(equalTo: imageContainerView.bottomAnchor, constant: 16)
-    let titleViewLeadingAnchorConstraint = titleView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14)
-    let titleViewTrailingAnchorConstraint = titleView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14)
-    let descriptionViewBottomAnchorConstraint = descriptionView
-      .bottomAnchor
-      .constraint(equalTo: bottomAnchor, constant: -14)
+      .constraint(equalTo: imageContainerView.bottomAnchor, constant: 12)
+    let titleViewLeadingAnchorConstraint = titleView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 13)
+    let titleViewTrailingAnchorConstraint = titleView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -13)
     let descriptionViewTopAnchorConstraint = descriptionView
       .topAnchor
       .constraint(equalTo: titleView.bottomAnchor, constant: 8)
     let descriptionViewLeadingAnchorConstraint = descriptionView
       .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: 14)
+      .constraint(equalTo: leadingAnchor, constant: 13)
     let descriptionViewTrailingAnchorConstraint = descriptionView
       .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -14)
+      .constraint(equalTo: trailingAnchor, constant: -13)
     let imageContainerViewHeightAnchorConstraint = imageContainerView.heightAnchor.constraint(equalToConstant: 120)
     let imageViewTopAnchorConstraint = imageView
       .topAnchor
@@ -189,6 +190,7 @@ public class WorkspaceTemplateCard: NSBox {
       .constraint(equalTo: imageContainerView.trailingAnchor, constant: -1)
 
     NSLayoutConstraint.activate([
+      heightAnchorConstraint,
       widthAnchorConstraint,
       imageContainerViewTopAnchorConstraint,
       imageContainerViewLeadingAnchorConstraint,
@@ -196,7 +198,6 @@ public class WorkspaceTemplateCard: NSBox {
       titleViewTopAnchorConstraint,
       titleViewLeadingAnchorConstraint,
       titleViewTrailingAnchorConstraint,
-      descriptionViewBottomAnchorConstraint,
       descriptionViewTopAnchorConstraint,
       descriptionViewLeadingAnchorConstraint,
       descriptionViewTrailingAnchorConstraint,
@@ -212,19 +213,15 @@ public class WorkspaceTemplateCard: NSBox {
   private func update() {
     fillColor = Colors.transparent
     borderColor = Colors.transparent
-    descriptionViewTextStyle = TextStyles.regularMuted
-    descriptionView.attributedStringValue = descriptionViewTextStyle.apply(to: descriptionView.attributedStringValue)
-    imageContainerView.borderColor = Colors.grey200
+    imageContainerView.borderColor = Colors.dividerSubtle
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleText)
     descriptionView.attributedStringValue = descriptionViewTextStyle.apply(to: descriptionText)
     imageView.image = image
     onPress = handleOnPressCard
     if isSelected {
-      fillColor = Colors.blue50
-      imageContainerView.borderColor = Colors.blue100
+      fillColor = Colors.systemSelection10
+      imageContainerView.borderColor = Colors.systemSelection30
       borderColor = Colors.systemSelection
-      descriptionViewTextStyle = TextStyles.regular
-      descriptionView.attributedStringValue = descriptionViewTextStyle.apply(to: descriptionView.attributedStringValue)
     }
   }
 

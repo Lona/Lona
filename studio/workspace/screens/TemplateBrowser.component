@@ -20,30 +20,6 @@
     {
       "assignee" : [
         "layers",
-        "TokensListTemplate",
-        "onPressCard"
-      ],
-      "content" : [
-        "parameters",
-        "onSelectTokens"
-      ],
-      "type" : "AssignExpr"
-    },
-    {
-      "assignee" : [
-        "layers",
-        "ThemedTokensListTemplate",
-        "onPressCard"
-      ],
-      "content" : [
-        "parameters",
-        "onSelectThemedTokens"
-      ],
-      "type" : "AssignExpr"
-    },
-    {
-      "assignee" : [
-        "layers",
         "DoneButton",
         "onClick"
       ],
@@ -64,21 +40,81 @@
         "onClickCancel"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TemplatePreviewCollection",
+        "templateTitles"
+      ],
+      "content" : [
+        "parameters",
+        "templateTitles"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TemplatePreviewCollection",
+        "templateDescriptions"
+      ],
+      "content" : [
+        "parameters",
+        "templateDescriptions"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TemplatePreviewCollection",
+        "templateImages"
+      ],
+      "content" : [
+        "parameters",
+        "templateImages"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TemplateFileList",
+        "fileNames"
+      ],
+      "content" : [
+        "parameters",
+        "selectedTemplateFiles"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TemplatePreviewCollection",
+        "selectedTemplateIndex"
+      ],
+      "content" : [
+        "parameters",
+        "selectedTemplateIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TemplatePreviewCollection",
+        "onSelectTemplateIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeSelectedTemplateIndex"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
-    {
-      "name" : "onSelectTokens",
-      "type" : {
-        "name" : "Function"
-      }
-    },
-    {
-      "name" : "onSelectThemedTokens",
-      "type" : {
-        "name" : "Function"
-      }
-    },
     {
       "name" : "onClickDone",
       "type" : {
@@ -89,6 +125,50 @@
       "name" : "onClickCancel",
       "type" : {
         "name" : "Function"
+      }
+    },
+    {
+      "name" : "templateTitles",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "templateDescriptions",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "templateImages",
+      "type" : {
+        "name" : "Array",
+        "of" : "URL"
+      }
+    },
+    {
+      "name" : "selectedTemplateIndex",
+      "type" : "WholeNumber"
+    },
+    {
+      "name" : "onChangeSelectedTemplateIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "selectedTemplateFiles",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
       }
     }
   ],
@@ -111,7 +191,7 @@
         "id" : "Divider",
         "params" : {
           "alignSelf" : "stretch",
-          "backgroundColor" : "grey300",
+          "backgroundColor" : "divider",
           "height" : 1
         },
         "type" : "Lona:View"
@@ -125,7 +205,7 @@
                 "params" : {
                   "font" : "sectionTitle",
                   "marginBottom" : 20,
-                  "marginLeft" : 12,
+                  "marginLeft" : 40,
                   "marginTop" : 12,
                   "text" : "TEMPLATES"
                 },
@@ -134,39 +214,20 @@
               {
                 "children" : [
                   {
-                    "id" : "TokensListTemplate",
+                    "id" : "TemplatePreviewCollection",
                     "params" : {
-                      "descriptionText" : "Simple lists of tokens (colors, text styles, etc). Great for new design systems.",
-                      "image" : "file:\/\/.\/assets\/tokens-list@2x.png",
-                      "isSelected" : true,
-                      "titleText" : "Design Tokens"
+                      "selectedTemplateIndex" : 0,
+                      "templateDescriptions" : [
+
+                      ],
+                      "templateImages" : [
+
+                      ],
+                      "templateTitles" : [
+
+                      ]
                     },
-                    "type" : "WorkspaceTemplateCard"
-                  },
-                  {
-                    "id" : "View 2",
-                    "params" : {
-                      "width" : 8
-                    },
-                    "type" : "Lona:View"
-                  },
-                  {
-                    "children" : [
-                      {
-                        "id" : "ThemedTokensListTemplate",
-                        "params" : {
-                          "descriptionText" : "There's only one template at the moment...",
-                          "image" : "file:\/\/.\/assets\/themed-tokens-list@2x.png",
-                          "titleText" : "More coming soon!"
-                        },
-                        "type" : "WorkspaceTemplateCard"
-                      }
-                    ],
-                    "id" : "View 1",
-                    "params" : {
-                      "opacity" : 0.59999999999999998
-                    },
-                    "type" : "Lona:View"
+                    "type" : "TemplatePreviewCollection"
                   }
                 ],
                 "id" : "TemplateListContent",
@@ -189,8 +250,8 @@
             "id" : "VDivider",
             "params" : {
               "alignSelf" : "stretch",
-              "backgroundColor" : "grey200",
-              "marginLeft" : 40,
+              "backgroundColor" : "divider",
+              "marginBottom" : 16,
               "marginRight" : 40,
               "width" : 1
             },
@@ -201,6 +262,7 @@
               {
                 "id" : "TemplateListTitle 1",
                 "params" : {
+                  "alignSelf" : "stretch",
                   "font" : "sectionTitle",
                   "marginBottom" : 20,
                   "marginTop" : 12,
@@ -209,51 +271,29 @@
                 "type" : "Lona:Text"
               },
               {
-                "id" : "TemplateFileCard",
+                "children" : [
+                  {
+                    "id" : "TemplateFileList",
+                    "params" : {
+                      "fileNames" : [
+
+                      ]
+                    },
+                    "type" : "TemplateFileList"
+                  }
+                ],
+                "id" : "View 1",
                 "params" : {
-                  "subtitleText" : "A list of color tokens",
-                  "titleText" : "Colors.tokens"
-                },
-                "type" : "TemplateFileCard"
-              },
-              {
-                "id" : "CardSpacer",
-                "params" : {
-                  "backgroundColor" : "#D8D8D8",
-                  "height" : 8,
-                  "width" : 0
-                },
-                "type" : "Lona:View"
-              },
-              {
-                "id" : "TemplateFileCard 1",
-                "params" : {
-                  "subtitleText" : "A list of text style tokens",
-                  "titleText" : "TextStyles.tokens"
-                },
-                "type" : "TemplateFileCard"
-              },
-              {
-                "id" : "CardSpacer 1",
-                "params" : {
-                  "backgroundColor" : "#D8D8D8",
-                  "height" : 8,
-                  "width" : 0
+                  "alignSelf" : "stretch",
+                  "flex" : 1
                 },
                 "type" : "Lona:View"
-              },
-              {
-                "id" : "TemplateFileCard 2",
-                "params" : {
-                  "subtitleText" : "A list of shadow tokens",
-                  "titleText" : "Shadows.tokens"
-                },
-                "type" : "TemplateFileCard"
               }
             ],
             "id" : "FileListContainer",
             "params" : {
               "alignSelf" : "stretch",
+              "paddingBottom" : 16,
               "width" : 321
             },
             "type" : "Lona:View"
@@ -262,11 +302,9 @@
         "id" : "ContentArea",
         "params" : {
           "alignSelf" : "stretch",
-          "backgroundColor" : "grey50",
+          "backgroundColor" : "headerBackground",
           "flexDirection" : "row",
           "height" : 460,
-          "paddingBottom" : 16,
-          "paddingLeft" : 28,
           "paddingRight" : 40,
           "paddingTop" : 16
         },
@@ -276,7 +314,7 @@
         "id" : "Divider 5",
         "params" : {
           "alignSelf" : "stretch",
-          "backgroundColor" : "grey300",
+          "backgroundColor" : "divider",
           "height" : 1
         },
         "type" : "Lona:View"
@@ -320,7 +358,7 @@
     "id" : "View",
     "params" : {
       "alignSelf" : "stretch",
-      "backgroundColor" : "white"
+      "backgroundColor" : "windowBackground"
     },
     "type" : "Lona:View"
   }

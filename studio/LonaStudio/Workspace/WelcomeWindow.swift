@@ -63,13 +63,30 @@ public class WelcomeWindow: NSWindow {
 
         welcome.onCreateProject = {
             let sheetWindow = WelcomeWindow.createSheetWindow(size: .init(width: 924, height: 635))
-            let templateBrowser = TemplateBrowser()
+
+            let cards = WorkspaceTemplate.allTemplates.map { $0.metadata }
+            var selectedTemplateIndex: Int = 0
+
+            let templateBrowser = TemplateBrowser(
+                templateTitles: cards.map { $0.titleText },
+                templateDescriptions: cards.map { $0.descriptionText },
+                templateImages: cards.map { $0.image },
+                selectedTemplateIndex: selectedTemplateIndex,
+                selectedTemplateFiles: WorkspaceTemplate.allTemplates[selectedTemplateIndex].filePaths
+            )
+
             sheetWindow.contentView = templateBrowser
+
+            templateBrowser.onChangeSelectedTemplateIndex = { value in
+                selectedTemplateIndex = value
+                templateBrowser.selectedTemplateIndex = value
+                templateBrowser.selectedTemplateFiles = WorkspaceTemplate.allTemplates[value].filePaths
+            }
 
             templateBrowser.onClickDone = {
                 guard let url = WelcomeWindow.self.createWorkspaceDialog() else { return }
 
-                if !DocumentController.shared.createWorkspace(url: url, workspaceTemplate: .designTokens) {
+                if !DocumentController.shared.createWorkspace(url: url, workspaceTemplate: WorkspaceTemplate.allTemplates[selectedTemplateIndex]) {
                     Swift.print("Failed to create workspace")
                     return
                 }

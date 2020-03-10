@@ -9,17 +9,89 @@
 import Foundation
 import Logic
 
-enum WorkspaceTemplate {
-    case designTokens, componentLibrary
+struct WorkspaceTemplate {
+
+    var metadata: WorkspaceTemplateCard.Parameters
+
+    var workspaceFiles: (String) -> [VirtualNode]
+
+    static var blank: WorkspaceTemplate = {
+        return WorkspaceTemplate(
+            metadata: .init(
+                titleText: "Blank",
+                descriptionText: "Like a blank canvas!",
+                isSelected: false,
+                image: NSImage()
+            ),
+            workspaceFiles: ({ workspaceName in
+                [
+                    VirtualFile(name: MarkdownDocument.INDEX_PAGE_NAME, contents: { "# \(workspaceName)\n\n".data(using: .utf8)! }),
+                    VirtualFile(name: "lona.json") { CSData.Object([:]) }
+                ]
+            })
+        )
+    }()
+
+    static var colorPalette: WorkspaceTemplate = {
+        return WorkspaceTemplate(
+            metadata: .init(
+                titleText: "Color Palette",
+                descriptionText: "Define a collection of shared colors",
+                isSelected: false,
+                image: NSImage()
+            ),
+            workspaceFiles: ({ workspaceName in
+                [
+                    VirtualFile(name: MarkdownDocument.INDEX_PAGE_NAME, contents: { colorsDocumentContents.data(using: .utf8)! }),
+                    VirtualFile(name: "lona.json") { CSData.Object([:]) }
+                ]
+            })
+        )
+    }()
+
+    static var designTokens: WorkspaceTemplate = {
+        return WorkspaceTemplate(
+            metadata: .init(
+                titleText: "Design Tokens",
+                descriptionText: "Everything you need for a design system",
+                isSelected: false,
+                image: NSImage()
+            ),
+            workspaceFiles: ({ workspaceName in
+                makeDesignTokensFiles()
+            })
+        )
+    }()
 
     func make(workspaceName: String) -> VirtualNode {
-        switch self {
-        case .componentLibrary:
-            return WorkspaceTemplate.makeComponentLibraryWorkspace(workspaceName: workspaceName)
-        case .designTokens:
-            return WorkspaceTemplate.makeDesignTokensWorkspace(workspaceName: workspaceName)
-        }
+        return VirtualDirectory(name: workspaceName, children: { self.workspaceFiles("") })
     }
+
+    var filePaths: [String] {
+        var paths: [String] = []
+
+        func addNode(_ node: VirtualNode, path: [String]) {
+            if let file = node as? VirtualFile {
+                paths.append((path + [file.name]).joined(separator: "/"))
+            } else if let directory = node as? VirtualDirectory {
+                for file in directory.children {
+                    addNode(file, path: path + [directory.name])
+                }
+            }
+        }
+
+        for file in workspaceFiles("") {
+            addNode(file, path: [])
+        }
+
+        return paths
+    }
+
+    static var allTemplates: [WorkspaceTemplate] = [
+        WorkspaceTemplate.blank,
+        WorkspaceTemplate.colorPalette,
+        WorkspaceTemplate.designTokens
+    ]
 
     static func makeColor(name: String, colorString: String) -> LGCDeclaration {
         return .variable(
@@ -108,65 +180,35 @@ enum WorkspaceTemplate {
         )
     }
 
-    static func makeDesignTokensWorkspace(workspaceName: String) -> VirtualNode {
-        return VirtualDirectory(name: workspaceName) {
-            [
-                VirtualFile(name: "README.md") {
-                    designTokensReadmeContents.data(using: .utf8)!
-                },
-                VirtualFile(name: "lona.json") {
-                    CSData.Object([:])
-                },
-                VirtualFile(name: "Colors.md", contents: {
-                    return colorsDocumentContents.data(using: .utf8)!
-                }),
-                VirtualFile(name: "TextStyles.md", contents: {
-                    return textStylesDocumentContents.data(using: .utf8)!
-                }),
-                VirtualFile(name: "Shadows.md", contents: {
-                    return shadowsDocumentContents.data(using: .utf8)!
-                }),
-                VirtualDirectory(name: ".github") {
-                    [
-                        VirtualDirectory(name: "workflows") {
-                            [
-                                VirtualFile(name: "lona-delete.yml") { lonaDelete },
-                                VirtualFile(name: "lona-pr.yml") { lonaPR },
-                                VirtualFile(name: "lona-master.yml") { lonaMaster }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-
-    static func makeComponentLibraryWorkspace(workspaceName: String) -> VirtualNode {
-        return VirtualDirectory(name: workspaceName) {
-            [
-                VirtualFile(name: "README.md") {
-                    componentLibraryReadmeContents.data(using: .utf8)!
-                },
-                VirtualFile(name: "lona.json") {
-                    CSData.Object([:])
-                },
-                VirtualDirectory(name: "assets"),
-                VirtualDirectory(name: "components"),
-                VirtualDirectory(name: "foundation") {
-                    [
-                        VirtualFile(name: "colors.json") {
-                            CSData.Object(["colors": CSData.Array([])])
-                        },
-                        VirtualFile(name: "textStyles.json") {
-                            CSData.Object(["styles": CSData.Array([])])
-                        },
-                        VirtualFile(name: "shadows.json") {
-                            CSData.Object(["shadows": CSData.Array([])])
-                        }
-                    ]
-                }
-            ]
-        }
+    static func makeDesignTokensFiles() -> [VirtualNode] {
+        return [
+            VirtualFile(name: "README.md") {
+                designTokensReadmeContents.data(using: .utf8)!
+            },
+            VirtualFile(name: "lona.json") {
+                CSData.Object([:])
+            },
+            VirtualFile(name: "Colors.md", contents: {
+                return colorsDocumentContents.data(using: .utf8)!
+            }),
+            VirtualFile(name: "TextStyles.md", contents: {
+                return textStylesDocumentContents.data(using: .utf8)!
+            }),
+            VirtualFile(name: "Shadows.md", contents: {
+                return shadowsDocumentContents.data(using: .utf8)!
+            }),
+            VirtualDirectory(name: ".github") {
+                [
+                    VirtualDirectory(name: "workflows") {
+                        [
+                            VirtualFile(name: "lona-delete.yml") { lonaDelete },
+                            VirtualFile(name: "lona-pr.yml") { lonaPR },
+                            VirtualFile(name: "lona-master.yml") { lonaMaster }
+                        ]
+                    }
+                ]
+            }
+        ]
     }
 
     private static func replaceBaseAPI(_ data: Data) -> Data {

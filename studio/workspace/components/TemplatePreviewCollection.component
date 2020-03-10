@@ -1,0 +1,69 @@
+{
+  "devices" : [
+    {
+      "height" : 400,
+      "heightMode" : "Exactly",
+      "name" : "",
+      "width" : 600
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+    {
+      "name" : "templateTitles",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "templateDescriptions",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "templateImages",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "onSelectTemplateIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "selectedTemplateIndex",
+      "type" : "WholeNumber"
+    }
+  ],
+  "root" : {
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch",
+      "flex" : 1
+    },
+    "type" : "Lona:View"
+  }
+}

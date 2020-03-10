@@ -18,6 +18,23 @@ public class TemplateBrowser: NSBox {
     update()
   }
 
+  public convenience init(
+    templateTitles: [String],
+    templateDescriptions: [String],
+    templateImages: [NSImage],
+    selectedTemplateIndex: Int,
+    selectedTemplateFiles: [String])
+  {
+    self
+      .init(
+        Parameters(
+          templateTitles: templateTitles,
+          templateDescriptions: templateDescriptions,
+          templateImages: templateImages,
+          selectedTemplateIndex: selectedTemplateIndex,
+          selectedTemplateFiles: selectedTemplateFiles))
+  }
+
   public convenience init() {
     self.init(Parameters())
   }
@@ -35,16 +52,6 @@ public class TemplateBrowser: NSBox {
 
   // MARK: Public
 
-  public var onSelectTokens: (() -> Void)? {
-    get { return parameters.onSelectTokens }
-    set { parameters.onSelectTokens = newValue }
-  }
-
-  public var onSelectThemedTokens: (() -> Void)? {
-    get { return parameters.onSelectThemedTokens }
-    set { parameters.onSelectThemedTokens = newValue }
-  }
-
   public var onClickDone: (() -> Void)? {
     get { return parameters.onClickDone }
     set { parameters.onClickDone = newValue }
@@ -53,6 +60,56 @@ public class TemplateBrowser: NSBox {
   public var onClickCancel: (() -> Void)? {
     get { return parameters.onClickCancel }
     set { parameters.onClickCancel = newValue }
+  }
+
+  public var templateTitles: [String] {
+    get { return parameters.templateTitles }
+    set {
+      if parameters.templateTitles != newValue {
+        parameters.templateTitles = newValue
+      }
+    }
+  }
+
+  public var templateDescriptions: [String] {
+    get { return parameters.templateDescriptions }
+    set {
+      if parameters.templateDescriptions != newValue {
+        parameters.templateDescriptions = newValue
+      }
+    }
+  }
+
+  public var templateImages: [NSImage] {
+    get { return parameters.templateImages }
+    set {
+      if parameters.templateImages != newValue {
+        parameters.templateImages = newValue
+      }
+    }
+  }
+
+  public var selectedTemplateIndex: Int {
+    get { return parameters.selectedTemplateIndex }
+    set {
+      if parameters.selectedTemplateIndex != newValue {
+        parameters.selectedTemplateIndex = newValue
+      }
+    }
+  }
+
+  public var onChangeSelectedTemplateIndex: ((Int) -> Void)? {
+    get { return parameters.onChangeSelectedTemplateIndex }
+    set { parameters.onChangeSelectedTemplateIndex = newValue }
+  }
+
+  public var selectedTemplateFiles: [String] {
+    get { return parameters.selectedTemplateFiles }
+    set {
+      if parameters.selectedTemplateFiles != newValue {
+        parameters.selectedTemplateFiles = newValue
+      }
+    }
   }
 
   public var parameters: Parameters {
@@ -71,18 +128,12 @@ public class TemplateBrowser: NSBox {
   private var templateListContainerView = NSBox()
   private var templateListTitleView = LNATextField(labelWithString: "")
   private var templateListContentView = NSBox()
-  private var tokensListTemplateView = WorkspaceTemplateCard()
-  private var view2View = NSBox()
-  private var view1View = NSBox()
-  private var themedTokensListTemplateView = WorkspaceTemplateCard()
+  private var templatePreviewCollectionView = TemplatePreviewCollection()
   private var vDividerView = NSBox()
   private var fileListContainerView = NSBox()
   private var templateListTitle1View = LNATextField(labelWithString: "")
-  private var templateFileCardView = TemplateFileCard()
-  private var cardSpacerView = NSBox()
-  private var templateFileCard1View = TemplateFileCard()
-  private var cardSpacer1View = NSBox()
-  private var templateFileCard2View = TemplateFileCard()
+  private var view1View = NSBox()
+  private var templateFileListView = TemplateFileList()
   private var divider5View = NSBox()
   private var view4View = NSBox()
   private var cancelButtonView = Button()
@@ -123,19 +174,10 @@ public class TemplateBrowser: NSBox {
     templateListContentView.boxType = .custom
     templateListContentView.borderType = .noBorder
     templateListContentView.contentViewMargins = .zero
-    view2View.boxType = .custom
-    view2View.borderType = .noBorder
-    view2View.contentViewMargins = .zero
+    templateListTitle1View.lineBreakMode = .byWordWrapping
     view1View.boxType = .custom
     view1View.borderType = .noBorder
     view1View.contentViewMargins = .zero
-    templateListTitle1View.lineBreakMode = .byWordWrapping
-    cardSpacerView.boxType = .custom
-    cardSpacerView.borderType = .noBorder
-    cardSpacerView.contentViewMargins = .zero
-    cardSpacer1View.boxType = .custom
-    cardSpacer1View.borderType = .noBorder
-    cardSpacer1View.contentViewMargins = .zero
     view5View.boxType = .custom
     view5View.borderType = .noBorder
     view5View.contentViewMargins = .zero
@@ -150,53 +192,30 @@ public class TemplateBrowser: NSBox {
     contentAreaView.addSubview(fileListContainerView)
     templateListContainerView.addSubview(templateListTitleView)
     templateListContainerView.addSubview(templateListContentView)
-    templateListContentView.addSubview(tokensListTemplateView)
-    templateListContentView.addSubview(view2View)
-    templateListContentView.addSubview(view1View)
-    view1View.addSubview(themedTokensListTemplateView)
+    templateListContentView.addSubview(templatePreviewCollectionView)
     fileListContainerView.addSubview(templateListTitle1View)
-    fileListContainerView.addSubview(templateFileCardView)
-    fileListContainerView.addSubview(cardSpacerView)
-    fileListContainerView.addSubview(templateFileCard1View)
-    fileListContainerView.addSubview(cardSpacer1View)
-    fileListContainerView.addSubview(templateFileCard2View)
+    fileListContainerView.addSubview(view1View)
+    view1View.addSubview(templateFileListView)
     view4View.addSubview(cancelButtonView)
     view4View.addSubview(view5View)
     view4View.addSubview(doneButtonView)
 
-    fillColor = Colors.white
+    fillColor = Colors.windowBackground
     titleView.attributedStringValue = titleViewTextStyle.apply(to: "Choose a template")
     titleViewTextStyle = TextStyles.subtitle
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
-    dividerView.fillColor = Colors.grey300
-    contentAreaView.fillColor = Colors.grey50
+    dividerView.fillColor = Colors.divider
+    contentAreaView.fillColor = Colors.headerBackground
     templateListTitleView.attributedStringValue = templateListTitleViewTextStyle.apply(to: "TEMPLATES")
     templateListTitleViewTextStyle = TextStyles.sectionTitle
     templateListTitleView.attributedStringValue =
       templateListTitleViewTextStyle.apply(to: templateListTitleView.attributedStringValue)
-    tokensListTemplateView.image = #imageLiteral(resourceName: "tokens-list")
-    tokensListTemplateView.descriptionText =
-      "Simple lists of tokens (colors, text styles, etc). Great for new design systems."
-    tokensListTemplateView.isSelected = true
-    tokensListTemplateView.titleText = "Design Tokens"
-    view1View.alphaValue = 0.6
-    themedTokensListTemplateView.image = #imageLiteral(resourceName: "themed-tokens-list")
-    themedTokensListTemplateView.descriptionText = "There's only one template at the moment..."
-    themedTokensListTemplateView.titleText = "More coming soon!"
-    vDividerView.fillColor = Colors.grey200
+    vDividerView.fillColor = Colors.divider
     templateListTitle1View.attributedStringValue = templateListTitle1ViewTextStyle.apply(to: "FILES IN THIS TEMPLATE")
     templateListTitle1ViewTextStyle = TextStyles.sectionTitle
     templateListTitle1View.attributedStringValue =
       templateListTitle1ViewTextStyle.apply(to: templateListTitle1View.attributedStringValue)
-    templateFileCardView.subtitleText = "A list of color tokens"
-    templateFileCardView.titleText = "Colors.tokens"
-    cardSpacerView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    templateFileCard1View.subtitleText = "A list of text style tokens"
-    templateFileCard1View.titleText = "TextStyles.tokens"
-    cardSpacer1View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    templateFileCard2View.subtitleText = "A list of shadow tokens"
-    templateFileCard2View.titleText = "Shadows.tokens"
-    divider5View.fillColor = Colors.grey300
+    divider5View.fillColor = Colors.divider
     cancelButtonView.titleText = "Cancel"
     doneButtonView.titleText = "OK"
   }
@@ -213,16 +232,10 @@ public class TemplateBrowser: NSBox {
     fileListContainerView.translatesAutoresizingMaskIntoConstraints = false
     templateListTitleView.translatesAutoresizingMaskIntoConstraints = false
     templateListContentView.translatesAutoresizingMaskIntoConstraints = false
-    tokensListTemplateView.translatesAutoresizingMaskIntoConstraints = false
-    view2View.translatesAutoresizingMaskIntoConstraints = false
-    view1View.translatesAutoresizingMaskIntoConstraints = false
-    themedTokensListTemplateView.translatesAutoresizingMaskIntoConstraints = false
+    templatePreviewCollectionView.translatesAutoresizingMaskIntoConstraints = false
     templateListTitle1View.translatesAutoresizingMaskIntoConstraints = false
-    templateFileCardView.translatesAutoresizingMaskIntoConstraints = false
-    cardSpacerView.translatesAutoresizingMaskIntoConstraints = false
-    templateFileCard1View.translatesAutoresizingMaskIntoConstraints = false
-    cardSpacer1View.translatesAutoresizingMaskIntoConstraints = false
-    templateFileCard2View.translatesAutoresizingMaskIntoConstraints = false
+    view1View.translatesAutoresizingMaskIntoConstraints = false
+    templateFileListView.translatesAutoresizingMaskIntoConstraints = false
     cancelButtonView.translatesAutoresizingMaskIntoConstraints = false
     view5View.translatesAutoresizingMaskIntoConstraints = false
     doneButtonView.translatesAutoresizingMaskIntoConstraints = false
@@ -247,16 +260,16 @@ public class TemplateBrowser: NSBox {
     let contentAreaViewHeightAnchorConstraint = contentAreaView.heightAnchor.constraint(equalToConstant: 460)
     let templateListContainerViewLeadingAnchorConstraint = templateListContainerView
       .leadingAnchor
-      .constraint(equalTo: contentAreaView.leadingAnchor, constant: 28)
+      .constraint(equalTo: contentAreaView.leadingAnchor)
     let templateListContainerViewTopAnchorConstraint = templateListContainerView
       .topAnchor
       .constraint(equalTo: contentAreaView.topAnchor, constant: 16)
     let templateListContainerViewBottomAnchorConstraint = templateListContainerView
       .bottomAnchor
-      .constraint(equalTo: contentAreaView.bottomAnchor, constant: -16)
+      .constraint(equalTo: contentAreaView.bottomAnchor)
     let vDividerViewLeadingAnchorConstraint = vDividerView
       .leadingAnchor
-      .constraint(equalTo: templateListContainerView.trailingAnchor, constant: 40)
+      .constraint(equalTo: templateListContainerView.trailingAnchor)
     let vDividerViewTopAnchorConstraint = vDividerView
       .topAnchor
       .constraint(equalTo: contentAreaView.topAnchor, constant: 16)
@@ -274,7 +287,7 @@ public class TemplateBrowser: NSBox {
       .constraint(equalTo: contentAreaView.topAnchor, constant: 16)
     let fileListContainerViewBottomAnchorConstraint = fileListContainerView
       .bottomAnchor
-      .constraint(equalTo: contentAreaView.bottomAnchor, constant: -16)
+      .constraint(equalTo: contentAreaView.bottomAnchor)
     let divider5ViewHeightAnchorConstraint = divider5View.heightAnchor.constraint(equalToConstant: 1)
     let cancelButtonViewHeightAnchorParentConstraint = cancelButtonView
       .heightAnchor
@@ -316,7 +329,7 @@ public class TemplateBrowser: NSBox {
       .constraint(equalTo: templateListContainerView.topAnchor, constant: 12)
     let templateListTitleViewLeadingAnchorConstraint = templateListTitleView
       .leadingAnchor
-      .constraint(equalTo: templateListContainerView.leadingAnchor, constant: 12)
+      .constraint(equalTo: templateListContainerView.leadingAnchor, constant: 40)
     let templateListTitleViewTrailingAnchorConstraint = templateListTitleView
       .trailingAnchor
       .constraint(lessThanOrEqualTo: templateListContainerView.trailingAnchor)
@@ -343,94 +356,43 @@ public class TemplateBrowser: NSBox {
     let templateListTitle1ViewTrailingAnchorConstraint = templateListTitle1View
       .trailingAnchor
       .constraint(equalTo: fileListContainerView.trailingAnchor)
-    let templateFileCardViewTopAnchorConstraint = templateFileCardView
-      .topAnchor
-      .constraint(equalTo: templateListTitle1View.bottomAnchor, constant: 20)
-    let templateFileCardViewLeadingAnchorConstraint = templateFileCardView
-      .leadingAnchor
-      .constraint(equalTo: fileListContainerView.leadingAnchor)
-    let templateFileCardViewTrailingAnchorConstraint = templateFileCardView
-      .trailingAnchor
-      .constraint(equalTo: fileListContainerView.trailingAnchor)
-    let cardSpacerViewTopAnchorConstraint = cardSpacerView
-      .topAnchor
-      .constraint(equalTo: templateFileCardView.bottomAnchor)
-    let cardSpacerViewLeadingAnchorConstraint = cardSpacerView
-      .leadingAnchor
-      .constraint(equalTo: fileListContainerView.leadingAnchor)
-    let templateFileCard1ViewTopAnchorConstraint = templateFileCard1View
-      .topAnchor
-      .constraint(equalTo: cardSpacerView.bottomAnchor)
-    let templateFileCard1ViewLeadingAnchorConstraint = templateFileCard1View
-      .leadingAnchor
-      .constraint(equalTo: fileListContainerView.leadingAnchor)
-    let templateFileCard1ViewTrailingAnchorConstraint = templateFileCard1View
-      .trailingAnchor
-      .constraint(equalTo: fileListContainerView.trailingAnchor)
-    let cardSpacer1ViewTopAnchorConstraint = cardSpacer1View
-      .topAnchor
-      .constraint(equalTo: templateFileCard1View.bottomAnchor)
-    let cardSpacer1ViewLeadingAnchorConstraint = cardSpacer1View
-      .leadingAnchor
-      .constraint(equalTo: fileListContainerView.leadingAnchor)
-    let templateFileCard2ViewTopAnchorConstraint = templateFileCard2View
-      .topAnchor
-      .constraint(equalTo: cardSpacer1View.bottomAnchor)
-    let templateFileCard2ViewLeadingAnchorConstraint = templateFileCard2View
-      .leadingAnchor
-      .constraint(equalTo: fileListContainerView.leadingAnchor)
-    let templateFileCard2ViewTrailingAnchorConstraint = templateFileCard2View
-      .trailingAnchor
-      .constraint(equalTo: fileListContainerView.trailingAnchor)
-    let tokensListTemplateViewLeadingAnchorConstraint = tokensListTemplateView
-      .leadingAnchor
-      .constraint(equalTo: templateListContentView.leadingAnchor)
-    let tokensListTemplateViewTopAnchorConstraint = tokensListTemplateView
-      .topAnchor
-      .constraint(equalTo: templateListContentView.topAnchor)
-    let tokensListTemplateViewBottomAnchorConstraint = tokensListTemplateView
-      .bottomAnchor
-      .constraint(lessThanOrEqualTo: templateListContentView.bottomAnchor)
-    let view2ViewLeadingAnchorConstraint = view2View
-      .leadingAnchor
-      .constraint(equalTo: tokensListTemplateView.trailingAnchor)
-    let view2ViewTopAnchorConstraint = view2View.topAnchor.constraint(equalTo: templateListContentView.topAnchor)
-    let view2ViewBottomAnchorConstraint = view2View
-      .bottomAnchor
-      .constraint(lessThanOrEqualTo: templateListContentView.bottomAnchor)
-    let view1ViewLeadingAnchorConstraint = view1View.leadingAnchor.constraint(equalTo: view2View.trailingAnchor)
-    let view1ViewTopAnchorConstraint = view1View.topAnchor.constraint(equalTo: templateListContentView.topAnchor)
     let view1ViewBottomAnchorConstraint = view1View
       .bottomAnchor
-      .constraint(lessThanOrEqualTo: templateListContentView.bottomAnchor)
-    let tokensListTemplateViewWidthAnchorConstraint = tokensListTemplateView
-      .widthAnchor
-      .constraint(equalToConstant: 230)
-    let view2ViewWidthAnchorConstraint = view2View.widthAnchor.constraint(equalToConstant: 8)
-    let themedTokensListTemplateViewWidthAnchorParentConstraint = themedTokensListTemplateView
-      .widthAnchor
-      .constraint(lessThanOrEqualTo: view1View.widthAnchor)
-    let themedTokensListTemplateViewTopAnchorConstraint = themedTokensListTemplateView
+      .constraint(equalTo: fileListContainerView.bottomAnchor, constant: -16)
+    let view1ViewTopAnchorConstraint = view1View
+      .topAnchor
+      .constraint(equalTo: templateListTitle1View.bottomAnchor, constant: 20)
+    let view1ViewLeadingAnchorConstraint = view1View
+      .leadingAnchor
+      .constraint(equalTo: fileListContainerView.leadingAnchor)
+    let view1ViewTrailingAnchorConstraint = view1View
+      .trailingAnchor
+      .constraint(equalTo: fileListContainerView.trailingAnchor)
+    let templatePreviewCollectionViewLeadingAnchorConstraint = templatePreviewCollectionView
+      .leadingAnchor
+      .constraint(equalTo: templateListContentView.leadingAnchor)
+    let templatePreviewCollectionViewTrailingAnchorConstraint = templatePreviewCollectionView
+      .trailingAnchor
+      .constraint(equalTo: templateListContentView.trailingAnchor)
+    let templatePreviewCollectionViewTopAnchorConstraint = templatePreviewCollectionView
+      .topAnchor
+      .constraint(equalTo: templateListContentView.topAnchor)
+    let templatePreviewCollectionViewBottomAnchorConstraint = templatePreviewCollectionView
+      .bottomAnchor
+      .constraint(equalTo: templateListContentView.bottomAnchor)
+    let templateFileListViewTopAnchorConstraint = templateFileListView
       .topAnchor
       .constraint(equalTo: view1View.topAnchor)
-    let themedTokensListTemplateViewBottomAnchorConstraint = themedTokensListTemplateView
-      .bottomAnchor
-      .constraint(equalTo: view1View.bottomAnchor)
-    let themedTokensListTemplateViewLeadingAnchorConstraint = themedTokensListTemplateView
+    let templateFileListViewLeadingAnchorConstraint = templateFileListView
       .leadingAnchor
       .constraint(equalTo: view1View.leadingAnchor)
-    let themedTokensListTemplateViewWidthAnchorConstraint = themedTokensListTemplateView
-      .widthAnchor
-      .constraint(equalToConstant: 230)
-    let cardSpacerViewHeightAnchorConstraint = cardSpacerView.heightAnchor.constraint(equalToConstant: 8)
-    let cardSpacerViewWidthAnchorConstraint = cardSpacerView.widthAnchor.constraint(equalToConstant: 0)
-    let cardSpacer1ViewHeightAnchorConstraint = cardSpacer1View.heightAnchor.constraint(equalToConstant: 8)
-    let cardSpacer1ViewWidthAnchorConstraint = cardSpacer1View.widthAnchor.constraint(equalToConstant: 0)
+    let templateFileListViewTrailingAnchorConstraint = templateFileListView
+      .trailingAnchor
+      .constraint(equalTo: view1View.trailingAnchor)
 
     cancelButtonViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     view5ViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     doneButtonViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
-    themedTokensListTemplateViewWidthAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 
     NSLayoutConstraint.activate([
       titleViewTopAnchorConstraint,
@@ -487,55 +449,29 @@ public class TemplateBrowser: NSBox {
       templateListTitle1ViewTopAnchorConstraint,
       templateListTitle1ViewLeadingAnchorConstraint,
       templateListTitle1ViewTrailingAnchorConstraint,
-      templateFileCardViewTopAnchorConstraint,
-      templateFileCardViewLeadingAnchorConstraint,
-      templateFileCardViewTrailingAnchorConstraint,
-      cardSpacerViewTopAnchorConstraint,
-      cardSpacerViewLeadingAnchorConstraint,
-      templateFileCard1ViewTopAnchorConstraint,
-      templateFileCard1ViewLeadingAnchorConstraint,
-      templateFileCard1ViewTrailingAnchorConstraint,
-      cardSpacer1ViewTopAnchorConstraint,
-      cardSpacer1ViewLeadingAnchorConstraint,
-      templateFileCard2ViewTopAnchorConstraint,
-      templateFileCard2ViewLeadingAnchorConstraint,
-      templateFileCard2ViewTrailingAnchorConstraint,
-      tokensListTemplateViewLeadingAnchorConstraint,
-      tokensListTemplateViewTopAnchorConstraint,
-      tokensListTemplateViewBottomAnchorConstraint,
-      view2ViewLeadingAnchorConstraint,
-      view2ViewTopAnchorConstraint,
-      view2ViewBottomAnchorConstraint,
-      view1ViewLeadingAnchorConstraint,
-      view1ViewTopAnchorConstraint,
       view1ViewBottomAnchorConstraint,
-      tokensListTemplateViewWidthAnchorConstraint,
-      view2ViewWidthAnchorConstraint,
-      themedTokensListTemplateViewWidthAnchorParentConstraint,
-      themedTokensListTemplateViewTopAnchorConstraint,
-      themedTokensListTemplateViewBottomAnchorConstraint,
-      themedTokensListTemplateViewLeadingAnchorConstraint,
-      themedTokensListTemplateViewWidthAnchorConstraint,
-      cardSpacerViewHeightAnchorConstraint,
-      cardSpacerViewWidthAnchorConstraint,
-      cardSpacer1ViewHeightAnchorConstraint,
-      cardSpacer1ViewWidthAnchorConstraint
+      view1ViewTopAnchorConstraint,
+      view1ViewLeadingAnchorConstraint,
+      view1ViewTrailingAnchorConstraint,
+      templatePreviewCollectionViewLeadingAnchorConstraint,
+      templatePreviewCollectionViewTrailingAnchorConstraint,
+      templatePreviewCollectionViewTopAnchorConstraint,
+      templatePreviewCollectionViewBottomAnchorConstraint,
+      templateFileListViewTopAnchorConstraint,
+      templateFileListViewLeadingAnchorConstraint,
+      templateFileListViewTrailingAnchorConstraint
     ])
   }
 
   private func update() {
-    tokensListTemplateView.onPressCard = handleOnSelectTokens
-    themedTokensListTemplateView.onPressCard = handleOnSelectThemedTokens
     doneButtonView.onClick = handleOnClickDone
     cancelButtonView.onClick = handleOnClickCancel
-  }
-
-  private func handleOnSelectTokens() {
-    onSelectTokens?()
-  }
-
-  private func handleOnSelectThemedTokens() {
-    onSelectThemedTokens?()
+    templatePreviewCollectionView.templateTitles = templateTitles
+    templatePreviewCollectionView.templateDescriptions = templateDescriptions
+    templatePreviewCollectionView.templateImages = templateImages
+    templateFileListView.fileNames = selectedTemplateFiles
+    templatePreviewCollectionView.selectedTemplateIndex = selectedTemplateIndex
+    templatePreviewCollectionView.onSelectTemplateIndex = handleOnChangeSelectedTemplateIndex
   }
 
   private func handleOnClickDone() {
@@ -545,31 +481,61 @@ public class TemplateBrowser: NSBox {
   private func handleOnClickCancel() {
     onClickCancel?()
   }
+
+  private func handleOnChangeSelectedTemplateIndex(_ arg0: Int) {
+    onChangeSelectedTemplateIndex?(arg0)
+  }
 }
 
 // MARK: - Parameters
 
 extension TemplateBrowser {
   public struct Parameters: Equatable {
-    public var onSelectTokens: (() -> Void)?
-    public var onSelectThemedTokens: (() -> Void)?
+    public var templateTitles: [String]
+    public var templateDescriptions: [String]
+    public var templateImages: [NSImage]
+    public var selectedTemplateIndex: Int
+    public var selectedTemplateFiles: [String]
     public var onClickDone: (() -> Void)?
     public var onClickCancel: (() -> Void)?
+    public var onChangeSelectedTemplateIndex: ((Int) -> Void)?
 
     public init(
-      onSelectTokens: (() -> Void)? = nil,
-      onSelectThemedTokens: (() -> Void)? = nil,
+      templateTitles: [String],
+      templateDescriptions: [String],
+      templateImages: [NSImage],
+      selectedTemplateIndex: Int,
+      selectedTemplateFiles: [String],
       onClickDone: (() -> Void)? = nil,
-      onClickCancel: (() -> Void)? = nil)
+      onClickCancel: (() -> Void)? = nil,
+      onChangeSelectedTemplateIndex: ((Int) -> Void)? = nil)
     {
-      self.onSelectTokens = onSelectTokens
-      self.onSelectThemedTokens = onSelectThemedTokens
+      self.templateTitles = templateTitles
+      self.templateDescriptions = templateDescriptions
+      self.templateImages = templateImages
+      self.selectedTemplateIndex = selectedTemplateIndex
+      self.selectedTemplateFiles = selectedTemplateFiles
       self.onClickDone = onClickDone
       self.onClickCancel = onClickCancel
+      self.onChangeSelectedTemplateIndex = onChangeSelectedTemplateIndex
+    }
+
+    public init() {
+      self
+        .init(
+          templateTitles: [],
+          templateDescriptions: [],
+          templateImages: [],
+          selectedTemplateIndex: 0,
+          selectedTemplateFiles: [])
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return true
+      return lhs.templateTitles == rhs.templateTitles &&
+        lhs.templateDescriptions == rhs.templateDescriptions &&
+          lhs.templateImages == rhs.templateImages &&
+            lhs.selectedTemplateIndex == rhs.selectedTemplateIndex &&
+              lhs.selectedTemplateFiles == rhs.selectedTemplateFiles
     }
   }
 }
@@ -594,18 +560,36 @@ extension TemplateBrowser {
     }
 
     public init(
-      onSelectTokens: (() -> Void)? = nil,
-      onSelectThemedTokens: (() -> Void)? = nil,
+      templateTitles: [String],
+      templateDescriptions: [String],
+      templateImages: [NSImage],
+      selectedTemplateIndex: Int,
+      selectedTemplateFiles: [String],
       onClickDone: (() -> Void)? = nil,
-      onClickCancel: (() -> Void)? = nil)
+      onClickCancel: (() -> Void)? = nil,
+      onChangeSelectedTemplateIndex: ((Int) -> Void)? = nil)
     {
       self
         .init(
           Parameters(
-            onSelectTokens: onSelectTokens,
-            onSelectThemedTokens: onSelectThemedTokens,
+            templateTitles: templateTitles,
+            templateDescriptions: templateDescriptions,
+            templateImages: templateImages,
+            selectedTemplateIndex: selectedTemplateIndex,
+            selectedTemplateFiles: selectedTemplateFiles,
             onClickDone: onClickDone,
-            onClickCancel: onClickCancel))
+            onClickCancel: onClickCancel,
+            onChangeSelectedTemplateIndex: onChangeSelectedTemplateIndex))
+    }
+
+    public init() {
+      self
+        .init(
+          templateTitles: [],
+          templateDescriptions: [],
+          templateImages: [],
+          selectedTemplateIndex: 0,
+          selectedTemplateFiles: [])
     }
   }
 }
