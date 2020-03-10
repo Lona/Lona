@@ -182,8 +182,6 @@
           "alignSelf" : "stretch",
           "backgroundColor" : "dividerSubtle",
           "borderColor" : "dividerSubtle",
-          "borderRadius" : 8,
-          "borderWidth" : 1,
           "height" : 120
         },
         "type" : "Lona:View"

@@ -22,7 +22,7 @@
       "name" : "Subtitle"
     },
     {
-      "color" : "#828282",
+      "color" : "mutedTextColor",
       "fontSize" : 20,
       "id" : "versionInfo",
       "name" : "Version Info"
@@ -59,13 +59,13 @@
       "name" : "Small"
     },
     {
-      "color" : "#828282",
+      "color" : "mutedTextColor",
       "fontSize" : 13,
       "id" : "regularMuted",
       "name" : "Regular Muted"
     },
     {
-      "color" : "#828282",
+      "color" : "mutedTextColor",
       "fontSize" : 11,
       "id" : "smallMuted",
       "name" : "Small Muted"

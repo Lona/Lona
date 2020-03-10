@@ -120,7 +120,7 @@ public class WorkspaceTemplateCard: NSBox {
     borderType = .lineBorder
     contentViewMargins = .zero
     imageContainerView.boxType = .custom
-    imageContainerView.borderType = .lineBorder
+    imageContainerView.borderType = .noBorder
     imageContainerView.contentViewMargins = .zero
     titleView.lineBreakMode = .byWordWrapping
     descriptionView.lineBreakMode = .byWordWrapping
@@ -133,8 +133,6 @@ public class WorkspaceTemplateCard: NSBox {
     cornerRadius = 4
     borderWidth = 1
     imageContainerView.fillColor = Colors.dividerSubtle
-    imageContainerView.cornerRadius = 8
-    imageContainerView.borderWidth = 1
     titleViewTextStyle = TextStyles.large
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
     descriptionViewTextStyle = TextStyles.regularMuted
@@ -175,19 +173,13 @@ public class WorkspaceTemplateCard: NSBox {
       .trailingAnchor
       .constraint(equalTo: trailingAnchor, constant: -13)
     let imageContainerViewHeightAnchorConstraint = imageContainerView.heightAnchor.constraint(equalToConstant: 120)
-    let imageViewTopAnchorConstraint = imageView
-      .topAnchor
-      .constraint(equalTo: imageContainerView.topAnchor, constant: 1)
-    let imageViewBottomAnchorConstraint = imageView
-      .bottomAnchor
-      .constraint(equalTo: imageContainerView.bottomAnchor, constant: -1)
-    let imageViewLeadingAnchorConstraint = imageView
-      .leadingAnchor
-      .constraint(equalTo: imageContainerView.leadingAnchor, constant: 1)
+    let imageViewTopAnchorConstraint = imageView.topAnchor.constraint(equalTo: imageContainerView.topAnchor)
+    let imageViewBottomAnchorConstraint = imageView.bottomAnchor.constraint(equalTo: imageContainerView.bottomAnchor)
+    let imageViewLeadingAnchorConstraint = imageView.leadingAnchor.constraint(equalTo: imageContainerView.leadingAnchor)
     let imageViewCenterXAnchorConstraint = imageView.centerXAnchor.constraint(equalTo: imageContainerView.centerXAnchor)
     let imageViewTrailingAnchorConstraint = imageView
       .trailingAnchor
-      .constraint(equalTo: imageContainerView.trailingAnchor, constant: -1)
+      .constraint(equalTo: imageContainerView.trailingAnchor)
 
     NSLayoutConstraint.activate([
       heightAnchorConstraint,

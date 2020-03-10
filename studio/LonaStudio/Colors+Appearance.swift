@@ -17,6 +17,14 @@ extension Colors {
         }
     }()
 
+    public static let mutedTextColor: NSColor = {
+        if #available(OSX 10.13, *) {
+            return NSColor(named: "textColor")!.withAlphaComponent(0.7)
+        } else {
+            return NSColor.black
+        }
+    }()
+
     public static let labelText: NSColor = {
         if #available(OSX 10.13, *) {
             return NSColor(named: "labelTextColor")!

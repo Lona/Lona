@@ -19,14 +19,15 @@ struct WorkspaceTemplate {
         return WorkspaceTemplate(
             metadata: .init(
                 titleText: "Blank",
-                descriptionText: "Like a blank canvas!",
+                descriptionText: "Like a blank notebook, you can fill it with anything you like!",
                 isSelected: false,
-                image: NSImage()
+                image: #imageLiteral(resourceName: "template-thumbnail-blank")
             ),
             workspaceFiles: ({ workspaceName in
                 [
                     VirtualFile(name: MarkdownDocument.INDEX_PAGE_NAME, contents: { "# \(workspaceName)\n\n".data(using: .utf8)! }),
-                    VirtualFile(name: "lona.json") { CSData.Object([:]) }
+                    VirtualFile(name: "lona.json") { CSData.Object([:]) },
+                    makeGithubDirectory()
                 ]
             })
         )
@@ -36,14 +37,15 @@ struct WorkspaceTemplate {
         return WorkspaceTemplate(
             metadata: .init(
                 titleText: "Color Palette",
-                descriptionText: "Define a collection of shared colors",
+                descriptionText: "Define a collection of shared colors.",
                 isSelected: false,
-                image: NSImage()
+                image: #imageLiteral(resourceName: "template-thumbnail-color-palette")
             ),
             workspaceFiles: ({ workspaceName in
                 [
                     VirtualFile(name: MarkdownDocument.INDEX_PAGE_NAME, contents: { colorsDocumentContents.data(using: .utf8)! }),
-                    VirtualFile(name: "lona.json") { CSData.Object([:]) }
+                    VirtualFile(name: "lona.json") { CSData.Object([:]) },
+                    makeGithubDirectory()
                 ]
             })
         )
@@ -53,9 +55,9 @@ struct WorkspaceTemplate {
         return WorkspaceTemplate(
             metadata: .init(
                 titleText: "Design Tokens",
-                descriptionText: "Everything you need for a design system",
+                descriptionText: "The shared styles that are the foundation of a design system.",
                 isSelected: false,
-                image: NSImage()
+                image: #imageLiteral(resourceName: "template-thumbnail-design-tokens")
             ),
             workspaceFiles: ({ workspaceName in
                 makeDesignTokensFiles()
@@ -180,6 +182,20 @@ struct WorkspaceTemplate {
         )
     }
 
+    static func makeGithubDirectory() -> VirtualDirectory {
+        VirtualDirectory(name: ".github") {
+            [
+                VirtualDirectory(name: "workflows") {
+                    [
+                        VirtualFile(name: "lona-delete.yml") { lonaDelete },
+                        VirtualFile(name: "lona-pr.yml") { lonaPR },
+                        VirtualFile(name: "lona-master.yml") { lonaMaster }
+                    ]
+                }
+            ]
+        }
+    }
+
     static func makeDesignTokensFiles() -> [VirtualNode] {
         return [
             VirtualFile(name: "README.md") {
@@ -197,17 +213,7 @@ struct WorkspaceTemplate {
             VirtualFile(name: "Shadows.md", contents: {
                 return shadowsDocumentContents.data(using: .utf8)!
             }),
-            VirtualDirectory(name: ".github") {
-                [
-                    VirtualDirectory(name: "workflows") {
-                        [
-                            VirtualFile(name: "lona-delete.yml") { lonaDelete },
-                            VirtualFile(name: "lona-pr.yml") { lonaPR },
-                            VirtualFile(name: "lona-master.yml") { lonaMaster }
-                        ]
-                    }
-                ]
-            }
+            makeGithubDirectory()
         ]
     }
 

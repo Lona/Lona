@@ -21,6 +21,16 @@
       "value": "black"
     },
     {
+      "id": "mutedTextColor",
+      "metadata": {
+        "shouldGenerateCode": {
+          "macos": false
+        }
+      },
+      "name": "mutedTextColor",
+      "value": "black"
+    },
+    {
       "id": "darkTransparentOutline",
       "name": "Dark Transparent Outline",
       "value": "rgba(0,0,0,0.1)"
