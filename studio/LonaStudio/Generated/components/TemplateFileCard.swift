@@ -84,7 +84,7 @@ public class TemplateFileCard: NSBox {
     addSubview(subtitleView)
 
     fillColor = Colors.windowBackground
-    borderColor = Colors.dividerSubtle
+    borderColor = Colors.divider
     cornerRadius = 4
     borderWidth = 1
     subtitleViewTextStyle = TextStyles.regularMuted

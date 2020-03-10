@@ -83,10 +83,10 @@ public class WelcomeWindow: NSWindow {
                 templateBrowser.selectedTemplateFiles = WorkspaceTemplate.allTemplates[value].filePaths
             }
 
-            templateBrowser.onClickDone = {
+            func handleCreateTemplate(_ template: WorkspaceTemplate) {
                 guard let url = WelcomeWindow.self.createWorkspaceDialog() else { return }
 
-                if !DocumentController.shared.createWorkspace(url: url, workspaceTemplate: WorkspaceTemplate.allTemplates[selectedTemplateIndex]) {
+                if !DocumentController.shared.createWorkspace(url: url, workspaceTemplate: template) {
                     Swift.print("Failed to create workspace")
                     return
                 }
@@ -102,6 +102,10 @@ public class WelcomeWindow: NSWindow {
                     }
                 })
             }
+
+            templateBrowser.onClickDone = { handleCreateTemplate(WorkspaceTemplate.allTemplates[selectedTemplateIndex]) }
+
+            templateBrowser.onDoubleClickTemplateIndex = { index in handleCreateTemplate(WorkspaceTemplate.allTemplates[index]) }
 
             templateBrowser.onClickCancel = { [unowned self] in
                 self.endSheet(sheetWindow)

@@ -91,6 +91,11 @@ public class TemplatePreviewCollection: NSBox {
     }
   }
 
+  public var onDoubleClickTemplateIndex: ((Int) -> Void)? {
+    get { return parameters.onDoubleClickTemplateIndex }
+    set { parameters.onDoubleClickTemplateIndex = newValue }
+  }
+
   public var parameters: Parameters {
     didSet {
       if parameters != oldValue {
@@ -116,6 +121,10 @@ public class TemplatePreviewCollection: NSBox {
   private func handleOnSelectTemplateIndex(_ arg0: Int) {
     onSelectTemplateIndex?(arg0)
   }
+
+  private func handleOnDoubleClickTemplateIndex(_ arg0: Int) {
+    onDoubleClickTemplateIndex?(arg0)
+  }
 }
 
 // MARK: - Parameters
@@ -127,19 +136,22 @@ extension TemplatePreviewCollection {
     public var templateImages: [String]
     public var selectedTemplateIndex: Int
     public var onSelectTemplateIndex: ((Int) -> Void)?
+    public var onDoubleClickTemplateIndex: ((Int) -> Void)?
 
     public init(
       templateTitles: [String],
       templateDescriptions: [String],
       templateImages: [String],
       selectedTemplateIndex: Int,
-      onSelectTemplateIndex: ((Int) -> Void)? = nil)
+      onSelectTemplateIndex: ((Int) -> Void)? = nil,
+      onDoubleClickTemplateIndex: ((Int) -> Void)? = nil)
     {
       self.templateTitles = templateTitles
       self.templateDescriptions = templateDescriptions
       self.templateImages = templateImages
       self.selectedTemplateIndex = selectedTemplateIndex
       self.onSelectTemplateIndex = onSelectTemplateIndex
+      self.onDoubleClickTemplateIndex = onDoubleClickTemplateIndex
     }
 
     public init() {
@@ -178,7 +190,8 @@ extension TemplatePreviewCollection {
       templateDescriptions: [String],
       templateImages: [String],
       selectedTemplateIndex: Int,
-      onSelectTemplateIndex: ((Int) -> Void)? = nil)
+      onSelectTemplateIndex: ((Int) -> Void)? = nil,
+      onDoubleClickTemplateIndex: ((Int) -> Void)? = nil)
     {
       self
         .init(
@@ -187,7 +200,8 @@ extension TemplatePreviewCollection {
             templateDescriptions: templateDescriptions,
             templateImages: templateImages,
             selectedTemplateIndex: selectedTemplateIndex,
-            onSelectTemplateIndex: onSelectTemplateIndex))
+            onSelectTemplateIndex: onSelectTemplateIndex,
+            onDoubleClickTemplateIndex: onDoubleClickTemplateIndex))
     }
 
     public init() {

@@ -56,6 +56,18 @@
     {
       "name" : "selectedTemplateIndex",
       "type" : "WholeNumber"
+    },
+    {
+      "name" : "onDoubleClickTemplateIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
     }
   ],
   "root" : {

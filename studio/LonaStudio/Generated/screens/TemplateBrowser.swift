@@ -112,6 +112,11 @@ public class TemplateBrowser: NSBox {
     }
   }
 
+  public var onDoubleClickTemplateIndex: ((Int) -> Void)? {
+    get { return parameters.onDoubleClickTemplateIndex }
+    set { parameters.onDoubleClickTemplateIndex = newValue }
+  }
+
   public var parameters: Parameters {
     didSet {
       if parameters != oldValue {
@@ -472,6 +477,7 @@ public class TemplateBrowser: NSBox {
     templateFileListView.fileNames = selectedTemplateFiles
     templatePreviewCollectionView.selectedTemplateIndex = selectedTemplateIndex
     templatePreviewCollectionView.onSelectTemplateIndex = handleOnChangeSelectedTemplateIndex
+    templatePreviewCollectionView.onDoubleClickTemplateIndex = handleOnDoubleClickTemplateIndex
   }
 
   private func handleOnClickDone() {
@@ -484,6 +490,10 @@ public class TemplateBrowser: NSBox {
 
   private func handleOnChangeSelectedTemplateIndex(_ arg0: Int) {
     onChangeSelectedTemplateIndex?(arg0)
+  }
+
+  private func handleOnDoubleClickTemplateIndex(_ arg0: Int) {
+    onDoubleClickTemplateIndex?(arg0)
   }
 }
 
@@ -499,6 +509,7 @@ extension TemplateBrowser {
     public var onClickDone: (() -> Void)?
     public var onClickCancel: (() -> Void)?
     public var onChangeSelectedTemplateIndex: ((Int) -> Void)?
+    public var onDoubleClickTemplateIndex: ((Int) -> Void)?
 
     public init(
       templateTitles: [String],
@@ -508,7 +519,8 @@ extension TemplateBrowser {
       selectedTemplateFiles: [String],
       onClickDone: (() -> Void)? = nil,
       onClickCancel: (() -> Void)? = nil,
-      onChangeSelectedTemplateIndex: ((Int) -> Void)? = nil)
+      onChangeSelectedTemplateIndex: ((Int) -> Void)? = nil,
+      onDoubleClickTemplateIndex: ((Int) -> Void)? = nil)
     {
       self.templateTitles = templateTitles
       self.templateDescriptions = templateDescriptions
@@ -518,6 +530,7 @@ extension TemplateBrowser {
       self.onClickDone = onClickDone
       self.onClickCancel = onClickCancel
       self.onChangeSelectedTemplateIndex = onChangeSelectedTemplateIndex
+      self.onDoubleClickTemplateIndex = onDoubleClickTemplateIndex
     }
 
     public init() {
@@ -567,7 +580,8 @@ extension TemplateBrowser {
       selectedTemplateFiles: [String],
       onClickDone: (() -> Void)? = nil,
       onClickCancel: (() -> Void)? = nil,
-      onChangeSelectedTemplateIndex: ((Int) -> Void)? = nil)
+      onChangeSelectedTemplateIndex: ((Int) -> Void)? = nil,
+      onDoubleClickTemplateIndex: ((Int) -> Void)? = nil)
     {
       self
         .init(
@@ -579,7 +593,8 @@ extension TemplateBrowser {
             selectedTemplateFiles: selectedTemplateFiles,
             onClickDone: onClickDone,
             onClickCancel: onClickCancel,
-            onChangeSelectedTemplateIndex: onChangeSelectedTemplateIndex))
+            onChangeSelectedTemplateIndex: onChangeSelectedTemplateIndex,
+            onDoubleClickTemplateIndex: onDoubleClickTemplateIndex))
     }
 
     public init() {

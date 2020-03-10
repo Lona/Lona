@@ -39,7 +39,12 @@ public class TemplatePreviewCollection: NSBox {
 
     public var selectedTemplateIndex: Int = 0 { didSet { update() } }
 
-    public var onSelectTemplateIndex: ((Int) -> Void)?
+    public var onSelectTemplateIndex: ((Int) -> Void)? {
+        get { collectionView.onSelectTemplateIndex }
+        set { collectionView.onSelectTemplateIndex = newValue }
+    }
+
+    public var onDoubleClickTemplateIndex: ((Int) -> Void)?
 
     // MARK: Private
 
@@ -50,11 +55,13 @@ public class TemplatePreviewCollection: NSBox {
         borderType = .noBorder
         contentViewMargins = .zero
 
-        collectionView.onSelectTemplateIndex = { [unowned self] index in
-            self.onSelectTemplateIndex?(index)
-        }
-
         addSubview(collectionView)
+
+        // Due to the collection view re-rendering (?), indexes change between the first and second click.
+        // So we ignore the index pass to this function and use the selected index instead
+        collectionView.onDoubleClickTemplateIndex = { [unowned self] _ in
+            self.onDoubleClickTemplateIndex?(self.selectedTemplateIndex)
+        }
     }
 
     private func setUpConstraints() {
@@ -102,6 +109,7 @@ class TemplatePreviewCollectionView: NSView {
 
     public var items: [WorkspaceTemplateCard.Parameters] = [] { didSet { update() } }
     public var onSelectTemplateIndex: ((Int) -> Void)?
+    public var onDoubleClickTemplateIndex: ((Int) -> Void)?
 
     // MARK: Private
 
@@ -199,8 +207,10 @@ extension TemplatePreviewCollectionView: NSCollectionViewDataSource {
         let item = collectionView.makeItem(withIdentifier: ITEM_IDENTIFIER, for: indexPath) as! TemplatePreviewItemViewController
 
         if let view = item.view as? DoubleClickableTemplatePreviewCard {
-            view.parameters = items[indexPath.item]
-            view.onPressCard = { self.onSelectTemplateIndex?(indexPath.item) }
+            let item = indexPath.item
+            view.parameters = items[item]
+            view.onPressCard = { [unowned self] in self.onSelectTemplateIndex?(item) }
+            view.onDoubleClick = { [unowned self] in self.onDoubleClickTemplateIndex?(item) }
         }
 
         return item

@@ -112,6 +112,18 @@
         "onChangeSelectedTemplateIndex"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TemplatePreviewCollection",
+        "onDoubleClickTemplateIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onDoubleClickTemplateIndex"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -169,6 +181,18 @@
       "type" : {
         "name" : "Array",
         "of" : "String"
+      }
+    },
+    {
+      "name" : "onDoubleClickTemplateIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
       }
     }
   ],

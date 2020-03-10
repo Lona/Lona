@@ -75,7 +75,7 @@
     "params" : {
       "alignSelf" : "stretch",
       "backgroundColor" : "windowBackground",
-      "borderColor" : "dividerSubtle",
+      "borderColor" : "divider",
       "borderRadius" : 4,
       "borderWidth" : 1,
       "paddingBottom" : 14,
