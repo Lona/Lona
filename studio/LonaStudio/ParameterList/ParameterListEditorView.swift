@@ -122,7 +122,6 @@ extension ParameterListEditorView {
                     parameterList.map { param in
                         return LGCFunctionParameter.parameter(
                             id: UUID(),
-                            externalName: nil,
                             localName: LGCPattern(id: UUID(), name: param.name),
                             annotation: LGCTypeAnnotation(csType: param.type),
                             defaultValue: param.hasDefaultValue
