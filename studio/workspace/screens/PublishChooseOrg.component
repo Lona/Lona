@@ -1,0 +1,375 @@
+{
+  "devices" : [
+    {
+      "height" : 1,
+      "heightMode" : "At Least",
+      "name" : "Desktop",
+      "width" : 640
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "HasOrganizations",
+      "name" : "HasOrganizations",
+      "params" : {
+        "showsOrganizationsList" : true
+      }
+    },
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Title",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "titleText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Body",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "bodyText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "OrganizationNameInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "organizationName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "OrganizationNameInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeTextValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "SubmitButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickSubmit"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "OrganizationNameInput",
+        "placeholderString"
+      ],
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "Organization name",
+          "type" : "String"
+        }
+      },
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "OrganizationList",
+        "organizationIds"
+      ],
+      "content" : [
+        "parameters",
+        "organizationIds"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "OrganizationList",
+        "onSelectOrganizationId"
+      ],
+      "content" : [
+        "parameters",
+        "onSelectOrganizationId"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "SubmitButton",
+        "disabled"
+      ],
+      "content" : [
+        "parameters",
+        "isSubmitting"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "OrganizationContainer",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : true,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "showsOrganizationsList"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "titleText",
+      "type" : "String"
+    },
+    {
+      "name" : "bodyText",
+      "type" : "String"
+    },
+    {
+      "name" : "organizationName",
+      "type" : "String"
+    },
+    {
+      "name" : "onChangeTextValue",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "organizationIds",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "showsOrganizationsList",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "isSubmitting",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "onClickSubmit",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onSelectOrganizationId",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "String"
+          }
+        ]
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Title",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "title",
+          "text" : "Title text"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "VSpacer",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 32,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Body",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "body",
+          "text" : "Body text"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "VSpacer 4",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 72,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "Text 1",
+            "params" : {
+              "font" : "subtitle",
+              "text" : "Choose organization"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "VSpacer 5",
+            "params" : {
+              "backgroundColor" : "#D8D8D8",
+              "height" : 20,
+              "width" : 0
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "OrganizationList",
+            "params" : {
+              "organizationIds" : [
+
+              ]
+            },
+            "type" : "OrganizationList"
+          },
+          {
+            "id" : "VSpacer 1",
+            "params" : {
+              "backgroundColor" : "#D8D8D8",
+              "height" : 72,
+              "width" : 0
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "OrganizationContainer",
+        "params" : {
+          "alignSelf" : "stretch",
+          "visible" : false
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Text",
+        "params" : {
+          "font" : "subtitle",
+          "text" : "Create organization"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "VSpacer 3",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 20,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "OrganizationNameInput",
+            "params" : {
+              "placeholderString" : "Text",
+              "textValue" : ""
+            },
+            "type" : "TextInput"
+          },
+          {
+            "id" : "VSpacer 2",
+            "params" : {
+              "backgroundColor" : "#D8D8D8",
+              "height" : 8,
+              "width" : 0
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "children" : [
+              {
+                "id" : "SubmitButton",
+                "params" : {
+                  "titleText" : "Create"
+                },
+                "type" : "PrimaryButton"
+              }
+            ],
+            "id" : "View",
+            "params" : {
+              "width" : 250
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "View 1",
+        "params" : {
+          "alignItems" : "flex-end",
+          "alignSelf" : "stretch"
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

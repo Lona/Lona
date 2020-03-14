@@ -9,20 +9,20 @@
       "name" : "Title"
     },
     {
-      "color" : "black",
+      "color" : "textColor",
       "extends" : "title",
-      "id" : "titleBlack",
-      "name" : "Title Black"
+      "fontWeight" : "300",
+      "id" : "titleLight",
+      "name" : "Title Light"
     },
     {
-      "color" : "black",
       "fontSize" : 24,
       "fontWeight" : "600",
       "id" : "subtitle",
       "name" : "Subtitle"
     },
     {
-      "color" : "#828282",
+      "color" : "mutedTextColor",
       "fontSize" : 20,
       "id" : "versionInfo",
       "name" : "Version Info"
@@ -59,13 +59,13 @@
       "name" : "Small"
     },
     {
-      "color" : "#828282",
+      "color" : "mutedTextColor",
       "fontSize" : 13,
       "id" : "regularMuted",
       "name" : "Regular Muted"
     },
     {
-      "color" : "#828282",
+      "color" : "mutedTextColor",
       "fontSize" : 11,
       "id" : "smallMuted",
       "name" : "Small Muted"
@@ -128,6 +128,13 @@
       "fontWeight" : "600",
       "id" : "labelTitle",
       "name" : "Label Title"
+    },
+    {
+      "color" : "textColor",
+      "fontSize" : 15,
+      "id" : "body",
+      "lineHeight" : 21,
+      "name" : "Body"
     }
   ]
 }

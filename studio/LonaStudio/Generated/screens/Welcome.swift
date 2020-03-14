@@ -71,16 +71,15 @@ public class Welcome: NSBox {
   private var titleView = LNATextField(labelWithString: "")
   private var versionView = LNATextField(labelWithString: "")
   private var rowsView = NSBox()
-  private var newButtonView = IconRow()
+  private var newWorkspaceView = PrimaryButton()
   private var spacerView = NSBox()
-  private var documentationButtonView = IconRow()
+  private var openWorkspaceButtonView = PrimaryButton()
   private var dividerView = NSBox()
   private var projectsView = NSBox()
   private var recentProjectsListView = RecentProjectsList()
-  private var openProjectButtonView = OpenProjectButton()
 
-  private var titleViewTextStyle = TextStyles.titleBlack
-  private var versionViewTextStyle = TextStyles.versionInfo
+  private var titleViewTextStyle = TextStyles.title
+  private var versionViewTextStyle = TextStyles.large
 
   private func setUpViews() {
     boxType = .custom
@@ -115,28 +114,22 @@ public class Welcome: NSBox {
     bannerView.addSubview(imageView)
     bannerView.addSubview(titleView)
     bannerView.addSubview(versionView)
-    rowsView.addSubview(newButtonView)
+    rowsView.addSubview(newWorkspaceView)
     rowsView.addSubview(spacerView)
-    rowsView.addSubview(documentationButtonView)
+    rowsView.addSubview(openWorkspaceButtonView)
     projectsView.addSubview(recentProjectsListView)
-    projectsView.addSubview(openProjectButtonView)
 
     imageView.image = #imageLiteral(resourceName: "LonaIcon_128x128")
     titleView.attributedStringValue = titleViewTextStyle.apply(to: "Welcome to Lona")
-    titleViewTextStyle = TextStyles.titleBlack
+    titleViewTextStyle = TextStyles.title
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
     versionView.attributedStringValue = versionViewTextStyle.apply(to: "Developer Preview")
-    versionViewTextStyle = TextStyles.versionInfo
+    versionViewTextStyle = TextStyles.large
     versionView.attributedStringValue = versionViewTextStyle.apply(to: versionView.attributedStringValue)
-    newButtonView.icon = #imageLiteral(resourceName: "icon-blank-document")
-    newButtonView.subtitleText = "Set up a new design system"
-    newButtonView.titleText = "Create a new Lona workspace"
-    documentationButtonView.icon = #imageLiteral(resourceName: "icon-documentation")
-    documentationButtonView.subtitleText = "Check out the documentation to learn how Lona works"
-    documentationButtonView.titleText = "Explore documentation"
-    dividerView.fillColor = Colors.grey200
-    projectsView.fillColor = Colors.grey50
-    openProjectButtonView.titleText = "Open workspace..."
+    newWorkspaceView.titleText = "New workspace"
+    openWorkspaceButtonView.titleText = "Open existing workspace"
+    dividerView.fillColor = Colors.divider
+    projectsView.fillColor = Colors.headerBackground
   }
 
   private func setUpConstraints() {
@@ -149,11 +142,10 @@ public class Welcome: NSBox {
     imageView.translatesAutoresizingMaskIntoConstraints = false
     titleView.translatesAutoresizingMaskIntoConstraints = false
     versionView.translatesAutoresizingMaskIntoConstraints = false
-    newButtonView.translatesAutoresizingMaskIntoConstraints = false
+    newWorkspaceView.translatesAutoresizingMaskIntoConstraints = false
     spacerView.translatesAutoresizingMaskIntoConstraints = false
-    documentationButtonView.translatesAutoresizingMaskIntoConstraints = false
+    openWorkspaceButtonView.translatesAutoresizingMaskIntoConstraints = false
     recentProjectsListView.translatesAutoresizingMaskIntoConstraints = false
-    openProjectButtonView.translatesAutoresizingMaskIntoConstraints = false
 
     let splashViewLeadingAnchorConstraint = splashView.leadingAnchor.constraint(equalTo: leadingAnchor)
     let splashViewTopAnchorConstraint = splashView.topAnchor.constraint(equalTo: topAnchor)
@@ -171,7 +163,9 @@ public class Welcome: NSBox {
     let bannerViewTopAnchorConstraint = bannerView.topAnchor.constraint(equalTo: splashView.topAnchor)
     let bannerViewLeadingAnchorConstraint = bannerView.leadingAnchor.constraint(equalTo: splashView.leadingAnchor)
     let bannerViewTrailingAnchorConstraint = bannerView.trailingAnchor.constraint(equalTo: splashView.trailingAnchor)
-    let rowsViewBottomAnchorConstraint = rowsView.bottomAnchor.constraint(equalTo: splashView.bottomAnchor)
+    let rowsViewBottomAnchorConstraint = rowsView
+      .bottomAnchor
+      .constraint(equalTo: splashView.bottomAnchor, constant: -30)
     let rowsViewTopAnchorConstraint = rowsView.topAnchor.constraint(equalTo: bannerView.bottomAnchor)
     let rowsViewLeadingAnchorConstraint = rowsView.leadingAnchor.constraint(equalTo: splashView.leadingAnchor)
     let rowsViewTrailingAnchorConstraint = rowsView.trailingAnchor.constraint(equalTo: splashView.trailingAnchor)
@@ -179,22 +173,13 @@ public class Welcome: NSBox {
     let recentProjectsListViewTopAnchorConstraint = recentProjectsListView
       .topAnchor
       .constraint(equalTo: projectsView.topAnchor)
+    let recentProjectsListViewBottomAnchorConstraint = recentProjectsListView
+      .bottomAnchor
+      .constraint(equalTo: projectsView.bottomAnchor)
     let recentProjectsListViewLeadingAnchorConstraint = recentProjectsListView
       .leadingAnchor
       .constraint(equalTo: projectsView.leadingAnchor)
     let recentProjectsListViewTrailingAnchorConstraint = recentProjectsListView
-      .trailingAnchor
-      .constraint(equalTo: projectsView.trailingAnchor)
-    let openProjectButtonViewBottomAnchorConstraint = openProjectButtonView
-      .bottomAnchor
-      .constraint(equalTo: projectsView.bottomAnchor)
-    let openProjectButtonViewTopAnchorConstraint = openProjectButtonView
-      .topAnchor
-      .constraint(equalTo: recentProjectsListView.bottomAnchor)
-    let openProjectButtonViewLeadingAnchorConstraint = openProjectButtonView
-      .leadingAnchor
-      .constraint(equalTo: projectsView.leadingAnchor)
-    let openProjectButtonViewTrailingAnchorConstraint = openProjectButtonView
       .trailingAnchor
       .constraint(equalTo: projectsView.trailingAnchor)
     let imageViewTopAnchorConstraint = imageView.topAnchor.constraint(equalTo: bannerView.topAnchor, constant: 80)
@@ -207,7 +192,7 @@ public class Welcome: NSBox {
     let titleViewTrailingAnchorConstraint = titleView
       .trailingAnchor
       .constraint(lessThanOrEqualTo: bannerView.trailingAnchor)
-    let versionViewTopAnchorConstraint = versionView.topAnchor.constraint(equalTo: titleView.bottomAnchor)
+    let versionViewTopAnchorConstraint = versionView.topAnchor.constraint(equalTo: titleView.bottomAnchor, constant: 4)
     let versionViewLeadingAnchorConstraint = versionView
       .leadingAnchor
       .constraint(greaterThanOrEqualTo: bannerView.leadingAnchor)
@@ -215,36 +200,35 @@ public class Welcome: NSBox {
     let versionViewTrailingAnchorConstraint = versionView
       .trailingAnchor
       .constraint(lessThanOrEqualTo: bannerView.trailingAnchor)
-    let newButtonViewTopAnchorConstraint = newButtonView.topAnchor.constraint(equalTo: rowsView.topAnchor)
-    let newButtonViewLeadingAnchorConstraint = newButtonView
+    let newWorkspaceViewTopAnchorConstraint = newWorkspaceView.topAnchor.constraint(equalTo: rowsView.topAnchor)
+    let newWorkspaceViewLeadingAnchorConstraint = newWorkspaceView
       .leadingAnchor
-      .constraint(equalTo: rowsView.leadingAnchor, constant: 24)
-    let newButtonViewTrailingAnchorConstraint = newButtonView
+      .constraint(equalTo: rowsView.leadingAnchor, constant: 80)
+    let newWorkspaceViewTrailingAnchorConstraint = newWorkspaceView
       .trailingAnchor
-      .constraint(equalTo: rowsView.trailingAnchor, constant: -24)
-    let spacerViewTopAnchorConstraint = spacerView.topAnchor.constraint(equalTo: newButtonView.bottomAnchor)
+      .constraint(equalTo: rowsView.trailingAnchor, constant: -80)
+    let spacerViewTopAnchorConstraint = spacerView.topAnchor.constraint(equalTo: newWorkspaceView.bottomAnchor)
     let spacerViewLeadingAnchorConstraint = spacerView
       .leadingAnchor
-      .constraint(equalTo: rowsView.leadingAnchor, constant: 24)
+      .constraint(equalTo: rowsView.leadingAnchor, constant: 80)
     let spacerViewTrailingAnchorConstraint = spacerView
       .trailingAnchor
-      .constraint(equalTo: rowsView.trailingAnchor, constant: -24)
-    let documentationButtonViewBottomAnchorConstraint = documentationButtonView
+      .constraint(equalTo: rowsView.trailingAnchor, constant: -80)
+    let openWorkspaceButtonViewBottomAnchorConstraint = openWorkspaceButtonView
       .bottomAnchor
       .constraint(equalTo: rowsView.bottomAnchor)
-    let documentationButtonViewTopAnchorConstraint = documentationButtonView
+    let openWorkspaceButtonViewTopAnchorConstraint = openWorkspaceButtonView
       .topAnchor
       .constraint(equalTo: spacerView.bottomAnchor)
-    let documentationButtonViewLeadingAnchorConstraint = documentationButtonView
+    let openWorkspaceButtonViewLeadingAnchorConstraint = openWorkspaceButtonView
       .leadingAnchor
-      .constraint(equalTo: rowsView.leadingAnchor, constant: 24)
-    let documentationButtonViewTrailingAnchorConstraint = documentationButtonView
+      .constraint(equalTo: rowsView.leadingAnchor, constant: 80)
+    let openWorkspaceButtonViewTrailingAnchorConstraint = openWorkspaceButtonView
       .trailingAnchor
-      .constraint(equalTo: rowsView.trailingAnchor, constant: -24)
+      .constraint(equalTo: rowsView.trailingAnchor, constant: -80)
     let imageViewHeightAnchorConstraint = imageView.heightAnchor.constraint(equalToConstant: 128)
     let imageViewWidthAnchorConstraint = imageView.widthAnchor.constraint(equalToConstant: 128)
     let spacerViewHeightAnchorConstraint = spacerView.heightAnchor.constraint(equalToConstant: 4)
-    let openProjectButtonViewHeightAnchorConstraint = openProjectButtonView.heightAnchor.constraint(equalToConstant: 48)
 
     NSLayoutConstraint.activate([
       splashViewLeadingAnchorConstraint,
@@ -267,12 +251,9 @@ public class Welcome: NSBox {
       rowsViewTrailingAnchorConstraint,
       dividerViewWidthAnchorConstraint,
       recentProjectsListViewTopAnchorConstraint,
+      recentProjectsListViewBottomAnchorConstraint,
       recentProjectsListViewLeadingAnchorConstraint,
       recentProjectsListViewTrailingAnchorConstraint,
-      openProjectButtonViewBottomAnchorConstraint,
-      openProjectButtonViewTopAnchorConstraint,
-      openProjectButtonViewLeadingAnchorConstraint,
-      openProjectButtonViewTrailingAnchorConstraint,
       imageViewTopAnchorConstraint,
       imageViewCenterXAnchorConstraint,
       titleViewTopAnchorConstraint,
@@ -283,28 +264,25 @@ public class Welcome: NSBox {
       versionViewLeadingAnchorConstraint,
       versionViewCenterXAnchorConstraint,
       versionViewTrailingAnchorConstraint,
-      newButtonViewTopAnchorConstraint,
-      newButtonViewLeadingAnchorConstraint,
-      newButtonViewTrailingAnchorConstraint,
+      newWorkspaceViewTopAnchorConstraint,
+      newWorkspaceViewLeadingAnchorConstraint,
+      newWorkspaceViewTrailingAnchorConstraint,
       spacerViewTopAnchorConstraint,
       spacerViewLeadingAnchorConstraint,
       spacerViewTrailingAnchorConstraint,
-      documentationButtonViewBottomAnchorConstraint,
-      documentationButtonViewTopAnchorConstraint,
-      documentationButtonViewLeadingAnchorConstraint,
-      documentationButtonViewTrailingAnchorConstraint,
+      openWorkspaceButtonViewBottomAnchorConstraint,
+      openWorkspaceButtonViewTopAnchorConstraint,
+      openWorkspaceButtonViewLeadingAnchorConstraint,
+      openWorkspaceButtonViewTrailingAnchorConstraint,
       imageViewHeightAnchorConstraint,
       imageViewWidthAnchorConstraint,
-      spacerViewHeightAnchorConstraint,
-      openProjectButtonViewHeightAnchorConstraint
+      spacerViewHeightAnchorConstraint
     ])
   }
 
   private func update() {
-    newButtonView.onClick = handleOnCreateProject
-    openProjectButtonView.onPressPlus = handleOnCreateProject
-    openProjectButtonView.onPressTitle = handleOnOpenProject
-    documentationButtonView.onClick = handleOnOpenDocumentation
+    newWorkspaceView.onClick = handleOnCreateProject
+    openWorkspaceButtonView.onClick = handleOnOpenProject
   }
 
   private func handleOnCreateProject() {

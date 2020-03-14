@@ -74,8 +74,8 @@
     "id" : "View 1",
     "params" : {
       "alignSelf" : "stretch",
-      "backgroundColor" : "white",
-      "borderColor" : "grey200",
+      "backgroundColor" : "windowBackground",
+      "borderColor" : "divider",
       "borderRadius" : 4,
       "borderWidth" : 1,
       "paddingBottom" : 14,

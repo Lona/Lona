@@ -1,0 +1,10 @@
+mutation createOrganization($name: String!) {
+  createOrganization(name: $name) {
+    success
+    message
+    organization {
+      id
+      name
+    }
+  }
+}

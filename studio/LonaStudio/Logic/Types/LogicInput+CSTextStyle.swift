@@ -38,7 +38,7 @@ extension LogicInput {
     static func suggestionsForTextStyle(isOptional: Bool, node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
         let noneSuggestion = LogicSuggestionItem(
             title: "None",
-            category: "No Text Style".uppercased(),
+            category: LGCExpression.Suggestion.variablesCategoryTitle,
             node: .expression(
                 .identifierExpression(
                     id: UUID(),
@@ -59,7 +59,7 @@ extension LogicInput {
                 let font = style.font
                 return LogicSuggestionItem(
                     title: style.name,
-                    category: "Text Styles".uppercased(),
+                    category: LGCExpression.Suggestion.variablesCategoryTitle,
                     node: .expression(
                         .identifierExpression(
                             id: UUID(),

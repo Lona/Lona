@@ -1,0 +1,16 @@
+query getMe {
+  getMe {
+    id
+    username
+    token
+    githubAccessToken
+    organizations {
+      id
+      name
+      repos {
+        url
+        activated
+      }
+    }
+  }
+}

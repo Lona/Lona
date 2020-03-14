@@ -153,3 +153,84 @@ extension Promise where Success == Void {
         return promise
     }
 }
+
+// MARK: Parallel
+
+extension Promise {
+    public static func parallel<S1, S2, F>(_ p1: Promise<S1, F>, _ p2: Promise<S2, F>) -> Promise<(S1, S2), F> {
+        return .result { complete in
+            var value1: S1?
+            var value2: S2?
+
+            func finalize() {
+                if let value1 = value1, let value2 = value2 {
+                    complete(.success((value1, value2)))
+                }
+            }
+
+            p1.finalResult({ result in
+                switch result {
+                case .failure(let error):
+                    complete(.failure(error))
+                case .success(let value):
+                    value1 = value
+                    finalize()
+                }
+            })
+
+            p2.finalResult({ result in
+                switch result {
+                case .failure(let error):
+                    complete(.failure(error))
+                case .success(let value):
+                    value2 = value
+                    finalize()
+                }
+            })
+        }
+    }
+
+    public static func parallel<S1, S2, S3, F>(_ p1: Promise<S1, F>, _ p2: Promise<S2, F>, _ p3: Promise<S3, F>) -> Promise<(S1, S2, S3), F> {
+        return .result { complete in
+            var value1: S1?
+            var value2: S2?
+            var value3: S3?
+
+            func finalize() {
+                if let value1 = value1, let value2 = value2, let value3 = value3 {
+                    complete(.success((value1, value2, value3)))
+                }
+            }
+
+            p1.finalResult({ result in
+                switch result {
+                case .failure(let error):
+                    complete(.failure(error))
+                case .success(let value):
+                    value1 = value
+                    finalize()
+                }
+            })
+
+            p2.finalResult({ result in
+                switch result {
+                case .failure(let error):
+                    complete(.failure(error))
+                case .success(let value):
+                    value2 = value
+                    finalize()
+                }
+            })
+
+            p3.finalResult({ result in
+                switch result {
+                case .failure(let error):
+                    complete(.failure(error))
+                case .success(let value):
+                    value3 = value
+                    finalize()
+                }
+            })
+        }
+    }
+}

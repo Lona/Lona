@@ -17,6 +17,14 @@ extension Colors {
         }
     }()
 
+    public static let mutedTextColor: NSColor = {
+        if #available(OSX 10.13, *) {
+            return NSColor(named: "textColor")!.withAlphaComponent(0.7)
+        } else {
+            return NSColor.black
+        }
+    }()
+
     public static let labelText: NSColor = {
         if #available(OSX 10.13, *) {
             return NSColor(named: "labelTextColor")!
@@ -25,9 +33,25 @@ extension Colors {
         }
     }()
 
+    public static let windowBackground: NSColor = {
+        if #available(OSX 10.13, *) {
+            return NSColor(named: "windowBackgroundColor")!
+        } else {
+            return NSColor.white
+        }
+    }()
+
     public static let headerBackground: NSColor = {
         if #available(OSX 10.13, *) {
             return NSColor(named: "headerBackgroundColor")!
+        } else {
+            return NSColor.white
+        }
+    }()
+
+    public static let controlBackground: NSColor = {
+        if #available(OSX 10.13, *) {
+            return NSColor(named: "controlBackgroundColor")!
         } else {
             return NSColor.white
         }
@@ -68,10 +92,6 @@ extension Colors {
     }()
 
     public static let divider: NSColor = {
-        if #available(OSX 10.13, *) {
-            return NSColor(named: "dividerColor")!
-        } else {
-            return NSColor.parse(css: "rgba(0,0,0,0.16)")!
-        }
+        return NSSplitView.defaultDividerColor
     }()
 }

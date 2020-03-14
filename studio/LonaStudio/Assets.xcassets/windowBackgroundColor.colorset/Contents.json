@@ -9,10 +9,10 @@
       "color" : {
         "color-space" : "srgb",
         "components" : {
-          "red" : "0x00",
-          "alpha" : "0.160",
-          "blue" : "0x00",
-          "green" : "0x00"
+          "red" : "0xFF",
+          "alpha" : "1.000",
+          "blue" : "0xFF",
+          "green" : "0xFF"
         }
       }
     },
@@ -25,13 +25,8 @@
         }
       ],
       "color" : {
-        "color-space" : "srgb",
-        "components" : {
-          "red" : "0xFF",
-          "alpha" : "0.160",
-          "blue" : "0xFF",
-          "green" : "0xFF"
-        }
+        "platform" : "osx",
+        "reference" : "windowBackgroundColor"
       }
     }
   ]

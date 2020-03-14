@@ -35,13 +35,15 @@ class DocumentController: NSDocumentController {
         _ = navigateForward()
     }
 
-    public var history = History() {
+    public var history = History<URL>() {
         didSet {
             historyEmitter.emit(history)
         }
     }
 
-    public var historyEmitter = Emitter<History>()
+    public var historyEmitter = Emitter<History<URL>>()
+
+    public var recentProjectsEmitter = Emitter<[URL]>()
 
     override public static var shared: DocumentController {
         return NSDocumentController.shared as! DocumentController
@@ -61,7 +63,7 @@ class DocumentController: NSDocumentController {
         self._openDocument(withContentsOf: url, display: displayDocument, completionHandler: {
             document, documentWasAlreadyOpen, error in
             if displayDocument {
-                self.history.navigateTo(url: url)
+                self.history.navigateTo(url)
             }
             completionHandler(document, documentWasAlreadyOpen, error)
         })
@@ -142,7 +144,7 @@ class DocumentController: NSDocumentController {
                 if let _ = error {
                     self.removeAllDocumentsFromWorkspaceWindowControllers()
                 } else {
-                    self.history.navigateTo(url: contentsURL)
+                    self.history.navigateTo(contentsURL)
                 }
             }
             completionHandler(document, documentWasAlreadyOpen, error)
@@ -296,6 +298,18 @@ extension DocumentController {
             return false
         }
 
+        let workspacePath = workspaceParent.appendingPathComponent(root.name).path
+
+        let client = Git.Client(currentDirectoryPath: workspacePath)
+
+        let gitResult = client.initRepo()
+            .flatMap({ _ in client.addAllFiles() })
+            .flatMap({ _ in client.commit(message: "Initial commit" )})
+
+        if case .failure(let error) = gitResult {
+            Swift.print("Failed to initialize git repo with workspace files", error)
+        }
+
         return true
     }
 
@@ -315,7 +329,7 @@ extension DocumentController {
         }
 
         // If opening a file in a different workspaces, attempt to switch workspaces
-        if LonaModule.current.url != workspaceURL {
+        if !URL.equal(LonaModule.current.url, workspaceURL, ignoringTrailingSlash: true) {
             if hasEditedDocuments {
                 if Alert.runConfirmationAlert(
                 confirmationText: "Save all and switch",

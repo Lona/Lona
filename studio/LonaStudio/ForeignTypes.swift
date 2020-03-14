@@ -45,7 +45,7 @@ class TextInput: ControlledComponents.TextInput {
         super.init(frame: frameRect)
 
         // This lets us use fittingSize to determine total view height (e.g. in the inspector)
-        let heightConstraint = heightAnchor.constraint(greaterThanOrEqualToConstant: 22)
+        let heightConstraint = heightAnchor.constraint(greaterThanOrEqualToConstant: 23)
         heightConstraint.priority = .defaultHigh
         heightConstraint.isActive = true
     }

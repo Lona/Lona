@@ -1,0 +1,286 @@
+{
+  "devices" : [
+    {
+      "height" : 1,
+      "heightMode" : "At Least",
+      "name" : "Desktop",
+      "width" : 640
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "default",
+      "name" : "default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "SubmitButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickSubmit"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "OpenGithubButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickOpenGithub"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "SubmitButton",
+        "disabled"
+      ],
+      "content" : [
+        "parameters",
+        "isSubmitting"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "OpenGithubButton",
+        "disabled"
+      ],
+      "content" : [
+        "parameters",
+        "isSubmitting"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "isSubmitting",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "onClickSubmit",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onClickOpenGithub",
+      "type" : {
+        "name" : "Function"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Title",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "title",
+          "text" : "Install Lona's GitHub plugin"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "VSpacer",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 32,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Body",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "body",
+          "text" : "In order to generate a documentation website automatically, you’ll need to install the Lona plugin on your GitHub repository."
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "children" : [
+          {
+            "id" : "OpenGithubButton",
+            "params" : {
+              "titleText" : "Open GitHub and install Lona plugin"
+            },
+            "type" : "PrimaryButton"
+          }
+        ],
+        "id" : "View",
+        "params" : {
+          "marginTop" : 20,
+          "width" : 300
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "VSpacer 4",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 36,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Instructions",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "largeSemibold",
+          "text" : "Instructions"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "VSpacer 2",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 20,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "children" : [
+              {
+                "id" : "Text",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "marginBottom" : 12,
+                  "text" : "1. Choose the GitHub organization your repository belongs to."
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "Image",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "height" : 196,
+                  "image" : "file:\/\/.\/assets\/lona-app-install-step1@2x.png"
+                },
+                "type" : "Lona:Image"
+              }
+            ],
+            "id" : "View 3",
+            "params" : {
+              "alignSelf" : "stretch",
+              "flex" : 1
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "HSpacer",
+            "params" : {
+              "alignSelf" : "stretch",
+              "width" : 24
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "children" : [
+              {
+                "id" : "Text 2",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "marginBottom" : 12,
+                  "text" : "2. Choose which repositories the Lona plugin has access to."
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "Image 1",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "height" : 371,
+                  "image" : "file:\/\/.\/assets\/lona-app-install-step2.png"
+                },
+                "type" : "Lona:Image"
+              }
+            ],
+            "id" : "View 4",
+            "params" : {
+              "alignSelf" : "stretch",
+              "flex" : 1
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "View 2",
+        "params" : {
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "height" : 415
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "VSpacer 1",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 72,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Text 1",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "subtitle",
+          "text" : "All done?"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "VSpacer 3",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 20,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "SubmitButton",
+            "params" : {
+              "titleText" : "OK, I installed the Lona GitHub plugin"
+            },
+            "type" : "PrimaryButton"
+          }
+        ],
+        "id" : "View 1",
+        "params" : {
+          "width" : 300
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch",
+      "height" : 820
+    },
+    "type" : "Lona:View"
+  }
+}

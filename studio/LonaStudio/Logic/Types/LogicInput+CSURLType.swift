@@ -40,7 +40,7 @@ extension LogicInput {
     static func suggestionsForURL(isOptional: Bool, isVector: Bool, node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
         let noneSuggestion = LogicSuggestionItem(
             title: "None",
-            category: "No URL".uppercased(),
+            category: LGCExpression.Suggestion.variablesCategoryTitle,
             node: .expression(
                 .identifierExpression(
                     id: UUID(),
@@ -53,7 +53,7 @@ extension LogicInput {
 
         let customSuggestion = LogicSuggestionItem(
             title: "URL: \(query)",
-            category: "URLS",
+            category: LGCLiteral.Suggestion.categoryTitle,
             node: .expression(
                 .identifierExpression(
                     id: UUID(),
@@ -94,7 +94,7 @@ extension LogicInput {
 
             return LogicSuggestionItem(
                 title: displayString,
-                category: "Assets".uppercased(),
+                category: LGCExpression.Suggestion.variablesCategoryTitle,
                 node: .expression(
                     .identifierExpression(
                         id: UUID(),
@@ -107,7 +107,7 @@ extension LogicInput {
         let dataSourceSuggestions = [
             LogicSuggestionItem(
                 title: !sizes.isEmpty ? "placehold.it/\(sizes.joined(separator: "x"))" : "placehold.it",
-                category: "Data Sources".uppercased(),
+                category: LGCExpression.Suggestion.variablesCategoryTitle,
                 node: .expression(
                     .identifierExpression(
                         id: UUID(),
@@ -118,7 +118,7 @@ extension LogicInput {
             ),
             LogicSuggestionItem(
                 title: !sizes.isEmpty ? "picsum.photos/\(sizes.joined(separator: "/"))" : "picsum.photos",
-                category: "Data Sources".uppercased(),
+                category: LGCExpression.Suggestion.variablesCategoryTitle,
                 node: .expression(
                     .identifierExpression(
                         id: UUID(),
@@ -131,7 +131,7 @@ extension LogicInput {
 
         let randomProfileSuggestion = LogicSuggestionItem(
             title: "Random profile photo",
-            category: "Data Sources".uppercased(),
+            category: LGCExpression.Suggestion.variablesCategoryTitle,
             node: .expression(
                 .identifierExpression(
                     id: UUID(),

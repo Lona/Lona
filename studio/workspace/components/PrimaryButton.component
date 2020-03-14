@@ -1,0 +1,207 @@
+{
+  "devices" : [
+    {
+      "deviceId" : "iPhone SE",
+      "heightMode" : "At Least"
+    },
+    {
+      "deviceId" : "Pixel 2",
+      "heightMode" : "At Least"
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    },
+    {
+      "id" : "Disabled",
+      "name" : "Disabled",
+      "params" : {
+        "disabled" : true
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Title",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "titleText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Container",
+        "onPress"
+      ],
+      "content" : [
+        "parameters",
+        "onClick"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "body" : [
+            {
+              "assignee" : [
+                "layers",
+                "Container",
+                "backgroundColor"
+              ],
+              "content" : {
+                "type" : "LitExpr",
+                "value" : {
+                  "data" : "darkTransparentOutline",
+                  "type" : "Color"
+                }
+              },
+              "type" : "AssignExpr"
+            }
+          ],
+          "condition" : {
+            "left" : [
+              "layers",
+              "Container",
+              "hovered"
+            ],
+            "op" : "==",
+            "right" : {
+              "type" : "LitExpr",
+              "value" : {
+                "data" : true,
+                "type" : "Boolean"
+              }
+            },
+            "type" : "BinExpr"
+          },
+          "type" : "IfExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "disabled"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : false,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Title",
+            "textStyle"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "regularMuted",
+              "type" : "TextStyle"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "Container",
+            "borderColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "dividerSubtle",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "disabled"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "onClick",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "titleText",
+      "type" : "String"
+    },
+    {
+      "defaultValue" : {
+        "data" : false,
+        "type" : "Boolean"
+      },
+      "name" : "disabled",
+      "type" : "Boolean"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Title",
+        "params" : {
+          "alignSelf" : "stretch",
+          "numberOfLines" : 1,
+          "text" : "Text goes here",
+          "textAlign" : "center"
+        },
+        "type" : "Lona:Text"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch",
+      "backgroundColor" : "controlBackground",
+      "borderColor" : "divider",
+      "borderRadius" : 2,
+      "borderWidth" : 1,
+      "paddingBottom" : 8,
+      "paddingLeft" : 8,
+      "paddingRight" : 8,
+      "paddingTop" : 8
+    },
+    "type" : "Lona:View"
+  }
+}

@@ -20,7 +20,7 @@
     {
       "assignee" : [
         "layers",
-        "NewButton",
+        "NewWorkspace",
         "onClick"
       ],
       "content" : [
@@ -32,36 +32,12 @@
     {
       "assignee" : [
         "layers",
-        "OpenProjectButton",
-        "onPressPlus"
-      ],
-      "content" : [
-        "parameters",
-        "onCreateProject"
-      ],
-      "type" : "AssignExpr"
-    },
-    {
-      "assignee" : [
-        "layers",
-        "OpenProjectButton",
-        "onPressTitle"
+        "OpenWorkspaceButton",
+        "onClick"
       ],
       "content" : [
         "parameters",
         "onOpenProject"
-      ],
-      "type" : "AssignExpr"
-    },
-    {
-      "assignee" : [
-        "layers",
-        "DocumentationButton",
-        "onClick"
-      ],
-      "content" : [
-        "parameters",
-        "onOpenDocumentation"
       ],
       "type" : "AssignExpr"
     }
@@ -110,7 +86,8 @@
               {
                 "id" : "Title",
                 "params" : {
-                  "font" : "titleBlack",
+                  "font" : "title",
+                  "marginBottom" : 4,
                   "text" : "Welcome to Lona"
                 },
                 "type" : "Lona:Text"
@@ -118,7 +95,7 @@
               {
                 "id" : "Version",
                 "params" : {
-                  "font" : "versionInfo",
+                  "font" : "large",
                   "text" : "Developer Preview"
                 },
                 "type" : "Lona:Text"
@@ -129,7 +106,7 @@
               "alignItems" : "center",
               "alignSelf" : "stretch",
               "flex" : 1,
-              "paddingBottom" : 80,
+              "paddingBottom" : 50,
               "paddingTop" : 80
             },
             "type" : "Lona:View"
@@ -137,13 +114,11 @@
           {
             "children" : [
               {
-                "id" : "NewButton",
+                "id" : "NewWorkspace",
                 "params" : {
-                  "icon" : "file:\/\/.\/assets\/icon-blank-document@2x.png",
-                  "subtitleText" : "Set up a new design system",
-                  "titleText" : "Create a new Lona workspace"
+                  "titleText" : "New workspace"
                 },
-                "type" : "IconRow"
+                "type" : "PrimaryButton"
               },
               {
                 "id" : "Spacer",
@@ -154,20 +129,19 @@
                 "type" : "Lona:View"
               },
               {
-                "id" : "DocumentationButton",
+                "id" : "OpenWorkspaceButton",
                 "params" : {
-                  "icon" : "file:\/\/.\/assets\/icon-documentation@2x.png",
-                  "subtitleText" : "Check out the documentation to learn how Lona works",
-                  "titleText" : "Explore documentation"
+                  "titleText" : "Open existing workspace"
                 },
-                "type" : "IconRow"
+                "type" : "PrimaryButton"
               }
             ],
             "id" : "Rows",
             "params" : {
               "alignSelf" : "stretch",
-              "paddingLeft" : 24,
-              "paddingRight" : 24
+              "marginBottom" : 30,
+              "paddingLeft" : 80,
+              "paddingRight" : 80
             },
             "type" : "Lona:View"
           }
@@ -183,7 +157,7 @@
         "id" : "Divider",
         "params" : {
           "alignSelf" : "stretch",
-          "backgroundColor" : "grey200",
+          "backgroundColor" : "divider",
           "width" : 1
         },
         "type" : "Lona:View"
@@ -196,19 +170,12 @@
 
             },
             "type" : "RecentProjectsList"
-          },
-          {
-            "id" : "OpenProjectButton",
-            "params" : {
-              "titleText" : "Open workspace..."
-            },
-            "type" : "OpenProjectButton"
           }
         ],
         "id" : "Projects",
         "params" : {
           "alignSelf" : "stretch",
-          "backgroundColor" : "grey50",
+          "backgroundColor" : "headerBackground",
           "flex" : 1
         },
         "type" : "Lona:View"

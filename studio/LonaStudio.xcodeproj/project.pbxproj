@@ -7,10 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0304A71323F421F4009A1E82 /* getMe.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 0304A71223F421F4009A1E82 /* getMe.graphql */; };
+		0304A71723F424B1009A1E82 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A71623F424B1009A1E82 /* Network.swift */; };
+		0304A71923F425B4009A1E82 /* createOrganization.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 0304A71823F425B4009A1E82 /* createOrganization.graphql */; };
+		0304A71B23FA8B18009A1E82 /* addRepo.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 0304A71A23FA8B18009A1E82 /* addRepo.graphql */; };
+		0304A72123FD26CF009A1E82 /* LonaAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A71E23FD26CE009A1E82 /* LonaAPI.swift */; };
+		0304A72523FD272D009A1E82 /* getOrganizations.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 0304A72423FD272D009A1E82 /* getOrganizations.graphql */; };
+		0304A72723FD28A1009A1E82 /* GitHubAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A72623FD28A1009A1E82 /* GitHubAPI.swift */; };
+		0304A72923FD48AC009A1E82 /* createRepository.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 0304A72823FD48AC009A1E82 /* createRepository.graphql */; };
 		0310D107220B13D5007B3546 /* RPCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0310D106220B13D5007B3546 /* RPCService.swift */; };
 		0310D109220B9DE8007B3546 /* PluginAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0310D108220B9DE8007B3546 /* PluginAPI.swift */; };
 		0314F4B323F2A910009CE468 /* AccountPreferencesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0314F4B223F2A910009CE468 /* AccountPreferencesViewController.swift */; };
 		0314F4B523F2B335009CE468 /* LonaAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0314F4B423F2B335009CE468 /* LonaAccount.swift */; };
+		0314F4B823F41C54009CE468 /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 0314F4B723F41C54009CE468 /* Apollo */; };
 		036A4E8A21E0DFE700948DBD /* LonaFileIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E8921E0DFE700948DBD /* LonaFileIcon.swift */; };
 		036A4E8E21E0EF0100948DBD /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E8D21E0EF0100948DBD /* ImageViewController.swift */; };
 		036A4E9021E0F6AA00948DBD /* ImageViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E8F21E0F6AA00948DBD /* ImageViewer.swift */; };
@@ -20,7 +29,10 @@
 		036A4EA221E1FD3B00948DBD /* KeyHandlingCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA121E1FD3B00948DBD /* KeyHandlingCollectionView.swift */; };
 		036A4EA421E21DA500948DBD /* AddTextStyleSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA321E21DA400948DBD /* AddTextStyleSheet.swift */; };
 		036A4EA921E2469D00948DBD /* DirectoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA821E2469D00948DBD /* DirectoryViewController.swift */; };
+		0383231D2400660F0091C6F5 /* lona-schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 0383231C2400660F0091C6F5 /* lona-schema.json */; };
 		039952C721E50D31008310DB /* MarkdownEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039952C621E50D31008310DB /* MarkdownEditor.swift */; };
+		03E1AE8B240FA75C0061E93A /* getDeploymentStatus.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 03E1AE8A240FA75C0061E93A /* getDeploymentStatus.graphql */; };
+		03E1AE8D240FAB180061E93A /* github-schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 03E1AE8C240FAB180061E93A /* github-schema.json */; };
 		300302741EDC7FA90085E140 /* CSStatementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300302731EDC7FA90085E140 /* CSStatementView.swift */; };
 		300302761EDCDA030085E140 /* LogicListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300302751EDCDA030085E140 /* LogicListView.swift */; };
 		3003027A1EDCDBA00085E140 /* LogicNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300302791EDCDBA00085E140 /* LogicNode.swift */; };
@@ -158,6 +170,9 @@
 		30F870E920865859007ADA5B /* LonaIcon_16x16@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870D420865858007ADA5B /* LonaIcon_16x16@2x.png */; };
 		30F870EB20869644007ADA5B /* Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F870EA20869644007ADA5B /* Fetch.swift */; };
 		6B06ADB121E8138400136BC8 /* MultipleSelectionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B06ADB021E8138400136BC8 /* MultipleSelectionButton.swift */; };
+		6B074891241349FB00990660 /* PublishExistingRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B074890241349FA00990660 /* PublishExistingRepo.swift */; };
+		6B074893241710F000990660 /* TemplatePreviewCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B074892241710F000990660 /* TemplatePreviewCollection.swift */; };
+		6B07489724172B6600990660 /* TemplateFileList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B07489624172B6600990660 /* TemplateFileList.swift */; };
 		6B0A29E6212736F900A96B0F /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0A29E5212736F900A96B0F /* Alert.swift */; };
 		6B0AEFB81EBF74D800F35BBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */; };
 		6B0AEFBC1EBF74D800F35BBF /* ComponentDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0AEFBB1EBF74D800F35BBF /* ComponentDocument.swift */; };
@@ -233,6 +248,18 @@
 		6B6D4427218F55B50016262C /* CGSize+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4426218F55B50016262C /* CGSize+Resizing.swift */; };
 		6B6D4434218F6B070016262C /* NSImage+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4432218F6B070016262C /* NSImage+Resizing.swift */; };
 		6B6D4435218F6B070016262C /* LNAImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4433218F6B070016262C /* LNAImageView.swift */; };
+		6B6E473923FE0BC30067B2FF /* Git.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E473823FE0BC30067B2FF /* Git.swift */; };
+		6B6E473B23FE0D590067B2FF /* Process+Execute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E473A23FE0D590067B2FF /* Process+Execute.swift */; };
+		6B6E4743240070C20067B2FF /* lona-master.yml in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E4740240070C20067B2FF /* lona-master.yml */; };
+		6B6E4744240070C20067B2FF /* lona-delete.yml in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E4741240070C20067B2FF /* lona-delete.yml */; };
+		6B6E4745240070C20067B2FF /* lona-pr.yml in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E4742240070C20067B2FF /* lona-pr.yml */; };
+		6B6E47472401C8E50067B2FF /* PublishInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E47462401C8E40067B2FF /* PublishInfo.swift */; };
+		6B6E474B2405F8540067B2FF /* PublishLonaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E474A2405F8540067B2FF /* PublishLonaApp.swift */; };
+		6B6E47502405F86D0067B2FF /* lona-app-install-step1.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E474C2405F86D0067B2FF /* lona-app-install-step1.png */; };
+		6B6E47512405F86D0067B2FF /* lona-app-install-step2.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E474D2405F86D0067B2FF /* lona-app-install-step2.png */; };
+		6B6E47522405F86D0067B2FF /* lona-app-install-step2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E474E2405F86D0067B2FF /* lona-app-install-step2@2x.png */; };
+		6B6E47532405F86D0067B2FF /* lona-app-install-step1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B6E474F2405F86D0067B2FF /* lona-app-install-step1@2x.png */; };
+		6B6E47552407201D0067B2FF /* FlippedScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E47542407201D0067B2FF /* FlippedScrollView.swift */; };
 		6B6F19CE2304B49A00E5AC60 /* SwiftGraph.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */; };
 		6B6F19CF2304B49A00E5AC60 /* SwiftGraph.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6B6F19D12307222200E5AC60 /* TemplateFileCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */; };
@@ -251,6 +278,7 @@
 		6B80645A21D8322B006560C7 /* CanvasTableHeaderExtra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B80645921D8322A006560C7 /* CanvasTableHeaderExtra.swift */; };
 		6B87001622EFBC42007C589C /* Logic+Builders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B87001522EFBC42007C589C /* Logic+Builders.swift */; };
 		6B892C6022CAB81600D0AEDA /* GeneratedOutputPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B892C5F22CAB81500D0AEDA /* GeneratedOutputPreview.swift */; };
+		6B8D1E8823FCE9AF00EA6E40 /* NSError+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D1E8723FCE9AF00EA6E40 /* NSError+String.swift */; };
 		6B8D7DA021BED32E0087A3F7 /* LayoutInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D7D9D21BED32E0087A3F7 /* LayoutInspector.swift */; };
 		6B8D7DA321BF04B60087A3F7 /* InspectorSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D7DA221BF04B60087A3F7 /* InspectorSectionHeader.swift */; };
 		6B9733CE2236E602005967E8 /* LonaJS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9733CD2236E602005967E8 /* LonaJS.swift */; };
@@ -266,6 +294,12 @@
 		6BA6E89F21324207009CD33C /* ForeignTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA6E89E21324207009CD33C /* ForeignTypes.swift */; };
 		6BA775C921C59E2A0033C03C /* DimensionsInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA775C821C59E2A0033C03C /* DimensionsInspector.swift */; };
 		6BA775CB21C59E330033C03C /* DimensionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA775CA21C59E330033C03C /* DimensionType.swift */; };
+		6BA78311241087D8008F3761 /* FlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA78310241087D8008F3761 /* FlowView.swift */; };
+		6BA783132410926A008F3761 /* OpenWorkspaceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA783122410926A008F3761 /* OpenWorkspaceViewController.swift */; };
+		6BA783152410963C008F3761 /* OpenWorkspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA783142410963C008F3761 /* OpenWorkspace.swift */; };
+		6BA783172410A11D008F3761 /* RepositoryList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA783162410A11D008F3761 /* RepositoryList.swift */; };
+		6BA783192410A4A7008F3761 /* OpenChooseRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA783182410A4A7008F3761 /* OpenChooseRepo.swift */; };
+		6BA7831B2410AF87008F3761 /* OpenSyncLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA7831A2410AF87008F3761 /* OpenSyncLocation.swift */; };
 		6BABAFE52139C0EE002B8C8F /* Toolbar.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6BABAFE42139C0EE002B8C8F /* Toolbar.xcassets */; };
 		6BABAFE72139C341002B8C8F /* WorkspaceToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */; };
 		6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; };
@@ -286,6 +320,14 @@
 		6BC60632223F194E003E616B /* Logic.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6BC60630223F1947003E616B /* Logic.framework.dSYM */; };
 		6BCCE31123E27034004C482E /* BreadcrumbBar in Frameworks */ = {isa = PBXBuildFile; productRef = 6BCCE31023E27034004C482E /* BreadcrumbBar */; };
 		6BCCE31423E762EB004C482E /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE31323E762EB004C482E /* History.swift */; };
+		6BCCE33223F322D7004C482E /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33123F322D7004C482E /* PrimaryButton.swift */; };
+		6BCCE33423F34BEF004C482E /* PublishNeedsAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33323F34BEE004C482E /* PublishNeedsAuth.swift */; };
+		6BCCE33623F35699004C482E /* PublishingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33523F35699004C482E /* PublishingViewController.swift */; };
+		6BCCE33A23F39417004C482E /* PublishNeedsRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33923F39417004C482E /* PublishNeedsRepo.swift */; };
+		6BCCE33C23F39CD3004C482E /* PublishCreateRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33B23F39CD3004C482E /* PublishCreateRepo.swift */; };
+		6BCCE33E23F3AAC2004C482E /* PublishDone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33D23F3AAC2004C482E /* PublishDone.swift */; };
+		6BCCE34023FCA769004C482E /* PublishChooseOrg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33F23FCA769004C482E /* PublishChooseOrg.swift */; };
+		6BCCE34223FCA78B004C482E /* OrganizationList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE34123FCA78B004C482E /* OrganizationList.swift */; };
 		6BCE162722D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCE162622D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift */; };
 		6BD4976121E42EC400BC3970 /* AccessibilityInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */; };
 		6BD4976321E53F2000BC3970 /* Accessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976221E53F2000BC3970 /* Accessibility.swift */; };
@@ -367,6 +409,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0304A71223F421F4009A1E82 /* getMe.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = getMe.graphql; sourceTree = "<group>"; };
+		0304A71623F424B1009A1E82 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
+		0304A71823F425B4009A1E82 /* createOrganization.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = createOrganization.graphql; sourceTree = "<group>"; };
+		0304A71A23FA8B18009A1E82 /* addRepo.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = addRepo.graphql; sourceTree = "<group>"; };
+		0304A71E23FD26CE009A1E82 /* LonaAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaAPI.swift; sourceTree = "<group>"; };
+		0304A72423FD272D009A1E82 /* getOrganizations.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = getOrganizations.graphql; sourceTree = "<group>"; };
+		0304A72623FD28A1009A1E82 /* GitHubAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GitHubAPI.swift; sourceTree = "<group>"; };
+		0304A72823FD48AC009A1E82 /* createRepository.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = createRepository.graphql; sourceTree = "<group>"; };
 		0310D106220B13D5007B3546 /* RPCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RPCService.swift; sourceTree = "<group>"; };
 		0310D108220B9DE8007B3546 /* PluginAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginAPI.swift; sourceTree = "<group>"; };
 		0314F4B223F2A910009CE468 /* AccountPreferencesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountPreferencesViewController.swift; sourceTree = "<group>"; };
@@ -380,7 +430,10 @@
 		036A4EA121E1FD3B00948DBD /* KeyHandlingCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyHandlingCollectionView.swift; sourceTree = "<group>"; };
 		036A4EA321E21DA400948DBD /* AddTextStyleSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddTextStyleSheet.swift; sourceTree = "<group>"; };
 		036A4EA821E2469D00948DBD /* DirectoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectoryViewController.swift; sourceTree = "<group>"; };
+		0383231C2400660F0091C6F5 /* lona-schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "lona-schema.json"; sourceTree = "<group>"; };
 		039952C621E50D31008310DB /* MarkdownEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownEditor.swift; sourceTree = "<group>"; };
+		03E1AE8A240FA75C0061E93A /* getDeploymentStatus.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = getDeploymentStatus.graphql; sourceTree = "<group>"; };
+		03E1AE8C240FAB180061E93A /* github-schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "github-schema.json"; sourceTree = "<group>"; };
 		300302731EDC7FA90085E140 /* CSStatementView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSStatementView.swift; sourceTree = "<group>"; };
 		300302751EDCDA030085E140 /* LogicListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogicListView.swift; sourceTree = "<group>"; };
 		300302791EDCDBA00085E140 /* LogicNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogicNode.swift; sourceTree = "<group>"; };
@@ -519,6 +572,9 @@
 		30F870D420865858007ADA5B /* LonaIcon_16x16@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LonaIcon_16x16@2x.png"; sourceTree = "<group>"; };
 		30F870EA20869644007ADA5B /* Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fetch.swift; sourceTree = "<group>"; };
 		6B06ADB021E8138400136BC8 /* MultipleSelectionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipleSelectionButton.swift; sourceTree = "<group>"; };
+		6B074890241349FA00990660 /* PublishExistingRepo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishExistingRepo.swift; sourceTree = "<group>"; };
+		6B074892241710F000990660 /* TemplatePreviewCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplatePreviewCollection.swift; sourceTree = "<group>"; };
+		6B07489624172B6600990660 /* TemplateFileList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateFileList.swift; sourceTree = "<group>"; };
 		6B0A29E5212736F900A96B0F /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		6B0AEFB41EBF74D800F35BBF /* LonaStudio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LonaStudio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -593,6 +649,18 @@
 		6B6D4426218F55B50016262C /* CGSize+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Resizing.swift"; sourceTree = "<group>"; };
 		6B6D4432218F6B070016262C /* NSImage+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSImage+Resizing.swift"; sourceTree = "<group>"; };
 		6B6D4433218F6B070016262C /* LNAImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LNAImageView.swift; sourceTree = "<group>"; };
+		6B6E473823FE0BC30067B2FF /* Git.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Git.swift; sourceTree = "<group>"; };
+		6B6E473A23FE0D590067B2FF /* Process+Execute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Process+Execute.swift"; sourceTree = "<group>"; };
+		6B6E4740240070C20067B2FF /* lona-master.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = "lona-master.yml"; sourceTree = "<group>"; };
+		6B6E4741240070C20067B2FF /* lona-delete.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = "lona-delete.yml"; sourceTree = "<group>"; };
+		6B6E4742240070C20067B2FF /* lona-pr.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = "lona-pr.yml"; sourceTree = "<group>"; };
+		6B6E47462401C8E40067B2FF /* PublishInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishInfo.swift; sourceTree = "<group>"; };
+		6B6E474A2405F8540067B2FF /* PublishLonaApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishLonaApp.swift; sourceTree = "<group>"; };
+		6B6E474C2405F86D0067B2FF /* lona-app-install-step1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lona-app-install-step1.png"; sourceTree = "<group>"; };
+		6B6E474D2405F86D0067B2FF /* lona-app-install-step2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lona-app-install-step2.png"; sourceTree = "<group>"; };
+		6B6E474E2405F86D0067B2FF /* lona-app-install-step2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lona-app-install-step2@2x.png"; sourceTree = "<group>"; };
+		6B6E474F2405F86D0067B2FF /* lona-app-install-step1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lona-app-install-step1@2x.png"; sourceTree = "<group>"; };
+		6B6E47542407201D0067B2FF /* FlippedScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlippedScrollView.swift; sourceTree = "<group>"; };
 		6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftGraph.framework; path = Carthage/Build/Mac/SwiftGraph.framework; sourceTree = "<group>"; };
 		6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateFileCard.swift; sourceTree = "<group>"; };
 		6B73809322C66E59007534A0 /* TemplateBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateBrowser.swift; sourceTree = "<group>"; };
@@ -610,6 +678,7 @@
 		6B80645921D8322A006560C7 /* CanvasTableHeaderExtra.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasTableHeaderExtra.swift; sourceTree = "<group>"; };
 		6B87001522EFBC42007C589C /* Logic+Builders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Logic+Builders.swift"; sourceTree = "<group>"; };
 		6B892C5F22CAB81500D0AEDA /* GeneratedOutputPreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneratedOutputPreview.swift; sourceTree = "<group>"; };
+		6B8D1E8723FCE9AF00EA6E40 /* NSError+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSError+String.swift"; sourceTree = "<group>"; };
 		6B8D7D9D21BED32E0087A3F7 /* LayoutInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutInspector.swift; sourceTree = "<group>"; };
 		6B8D7DA221BF04B60087A3F7 /* InspectorSectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InspectorSectionHeader.swift; sourceTree = "<group>"; };
 		6B9733CD2236E602005967E8 /* LonaJS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LonaJS.swift; sourceTree = "<group>"; };
@@ -624,6 +693,12 @@
 		6BA6E89E21324207009CD33C /* ForeignTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForeignTypes.swift; sourceTree = "<group>"; };
 		6BA775C821C59E2A0033C03C /* DimensionsInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DimensionsInspector.swift; sourceTree = "<group>"; };
 		6BA775CA21C59E330033C03C /* DimensionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DimensionType.swift; sourceTree = "<group>"; };
+		6BA78310241087D8008F3761 /* FlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowView.swift; sourceTree = "<group>"; };
+		6BA783122410926A008F3761 /* OpenWorkspaceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenWorkspaceViewController.swift; sourceTree = "<group>"; };
+		6BA783142410963C008F3761 /* OpenWorkspace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenWorkspace.swift; sourceTree = "<group>"; };
+		6BA783162410A11D008F3761 /* RepositoryList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryList.swift; sourceTree = "<group>"; };
+		6BA783182410A4A7008F3761 /* OpenChooseRepo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenChooseRepo.swift; sourceTree = "<group>"; };
+		6BA7831A2410AF87008F3761 /* OpenSyncLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenSyncLocation.swift; sourceTree = "<group>"; };
 		6BA8985923271BE800AA8F78 /* LonaStudio.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LonaStudio.entitlements; sourceTree = "<group>"; };
 		6BABAFE42139C0EE002B8C8F /* Toolbar.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Toolbar.xcassets; sourceTree = "<group>"; };
 		6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceToolbar.swift; sourceTree = "<group>"; };
@@ -641,6 +716,14 @@
 		6BC60626223F1878003E616B /* Logic.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Logic.framework; path = Carthage/Build/Mac/Logic.framework; sourceTree = "<group>"; };
 		6BC60630223F1947003E616B /* Logic.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Logic.framework.dSYM; path = Carthage/Build/Mac/Logic.framework.dSYM; sourceTree = "<group>"; };
 		6BCCE31323E762EB004C482E /* History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = History.swift; sourceTree = "<group>"; };
+		6BCCE33123F322D7004C482E /* PrimaryButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
+		6BCCE33323F34BEE004C482E /* PublishNeedsAuth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishNeedsAuth.swift; sourceTree = "<group>"; };
+		6BCCE33523F35699004C482E /* PublishingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishingViewController.swift; sourceTree = "<group>"; };
+		6BCCE33923F39417004C482E /* PublishNeedsRepo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishNeedsRepo.swift; sourceTree = "<group>"; };
+		6BCCE33B23F39CD3004C482E /* PublishCreateRepo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishCreateRepo.swift; sourceTree = "<group>"; };
+		6BCCE33D23F3AAC2004C482E /* PublishDone.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishDone.swift; sourceTree = "<group>"; };
+		6BCCE33F23FCA769004C482E /* PublishChooseOrg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishChooseOrg.swift; sourceTree = "<group>"; };
+		6BCCE34123FCA78B004C482E /* OrganizationList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationList.swift; sourceTree = "<group>"; };
 		6BCE162622D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CustomParametersEditorSheet+Present.swift"; sourceTree = "<group>"; };
 		6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessibilityInspector.swift; sourceTree = "<group>"; };
 		6BD4976221E53F2000BC3970 /* Accessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accessibility.swift; sourceTree = "<group>"; };
@@ -690,6 +773,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0314F4B823F41C54009CE468 /* Apollo in Frameworks */,
 				6BA6E895212F92B0009CD33C /* Witness.framework in Frameworks */,
 				6BC6062B223F191A003E616B /* Logic.framework in Frameworks */,
 				6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */,
@@ -714,6 +798,40 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0304A71123F421C0009A1E82 /* GraphQL */ = {
+			isa = PBXGroup;
+			children = (
+				0304A71623F424B1009A1E82 /* Network.swift */,
+				03E1AE8C240FAB180061E93A /* github-schema.json */,
+				0383231C2400660F0091C6F5 /* lona-schema.json */,
+				0304A72623FD28A1009A1E82 /* GitHubAPI.swift */,
+				0304A71E23FD26CE009A1E82 /* LonaAPI.swift */,
+				0304A72323FD2712009A1E82 /* GitHub */,
+				0304A71C23FD241A009A1E82 /* Lona */,
+			);
+			path = GraphQL;
+			sourceTree = "<group>";
+		};
+		0304A71C23FD241A009A1E82 /* Lona */ = {
+			isa = PBXGroup;
+			children = (
+				0304A71A23FA8B18009A1E82 /* addRepo.graphql */,
+				0304A71823F425B4009A1E82 /* createOrganization.graphql */,
+				0304A71223F421F4009A1E82 /* getMe.graphql */,
+			);
+			path = Lona;
+			sourceTree = "<group>";
+		};
+		0304A72323FD2712009A1E82 /* GitHub */ = {
+			isa = PBXGroup;
+			children = (
+				0304A72423FD272D009A1E82 /* getOrganizations.graphql */,
+				0304A72823FD48AC009A1E82 /* createRepository.graphql */,
+				03E1AE8A240FA75C0061E93A /* getDeploymentStatus.graphql */,
+			);
+			path = GitHub;
+			sourceTree = "<group>";
+		};
 		036A4EA521E23F3A00948DBD /* Documents */ = {
 			isa = PBXGroup;
 			children = (
@@ -769,6 +887,8 @@
 				307D441D209B657B004B57F5 /* DocumentationView.swift */,
 				6B5D4D2A213E19B9004F8AC3 /* EditorViewController.swift */,
 				6BA5BBD82174F2A500F086A7 /* FileNavigator.swift */,
+				6B6E47542407201D0067B2FF /* FlippedScrollView.swift */,
+				6BA78310241087D8008F3761 /* FlowView.swift */,
 				036A4E9921E1F5FB00948DBD /* ImagePreview.swift */,
 				036A4E8D21E0EF0100948DBD /* ImageViewController.swift */,
 				036A4EA121E1FD3B00948DBD /* KeyHandlingCollectionView.swift */,
@@ -781,9 +901,15 @@
 				039952C621E50D31008310DB /* MarkdownEditor.swift */,
 				6B7380A322C7CE7B007534A0 /* MarkdownViewController.swift */,
 				307B7B4E1F9A71C5001A62D9 /* MetadataEditorView.swift */,
+				6BA783122410926A008F3761 /* OpenWorkspaceViewController.swift */,
+				6BCCE34123FCA78B004C482E /* OrganizationList.swift */,
+				6BCCE33523F35699004C482E /* PublishingViewController.swift */,
 				303C3FEF20A3A05D008E1541 /* RecentProjectsList.swift */,
+				6BA783162410A11D008F3761 /* RepositoryList.swift */,
 				300A0AFB1EDA0CBC00704DB7 /* SectionSplitter.swift */,
 				6BEA1A75233AE8E00008FF7E /* SubtleSplitView.swift */,
+				6B07489624172B6600990660 /* TemplateFileList.swift */,
+				6B074892241710F000990660 /* TemplatePreviewCollection.swift */,
 				6BA5BBDE2176D93D00F086A7 /* TextStyleEditorViewController.swift */,
 				30C203DE20BF5955007C3FE0 /* TextStylePreviewCollection.swift */,
 				6B39E6F2212DB3AD0012DA4C /* UtilitiesView.swift */,
@@ -935,6 +1061,7 @@
 				6B14C7BC23C4011B00EF85FA /* FileManager+Directory.swift */,
 				6B56ECB021BC55D9005F43C5 /* NSAttributedString+Measure.swift */,
 				30A3F13D1F300294004C7631 /* NSColorExtensions.swift */,
+				6B8D1E8723FCE9AF00EA6E40 /* NSError+String.swift */,
 				306D2FEF1F847DCB00907B4E /* NSImageExtensions.swift */,
 				30D9B40D1F79BADC00C8A3D4 /* NSMenuExtensions.swift */,
 				3094DFE91F6AECB300E5C7F0 /* NSOutlineViewExtensions.swift */,
@@ -947,6 +1074,7 @@
 				30DE880A1FBA194F00D62A50 /* NSViewControllerExtensions.swift */,
 				30C8BC2A1EDB641E00B99F1B /* NSViewExtensions.swift */,
 				BA0D85E31FD5AC2000D817C3 /* NSViewHoverExtensions.swift */,
+				6B6E473A23FE0D590067B2FF /* Process+Execute.swift */,
 				30516B481F43C46200940B3B /* SequenceExtensions.swift */,
 				30EFC9551EF1AA0B0087711D /* StringExtensions.swift */,
 				30335A061F5A2878006E507B /* URLExtensions.swift */,
@@ -1037,6 +1165,17 @@
 				6B892C5F22CAB81500D0AEDA /* GeneratedOutputPreview.swift */,
 				036A4E8F21E0F6AA00948DBD /* ImageViewer.swift */,
 				6B14C7BE23C5109900EF85FA /* NoDocument.swift */,
+				6BA783182410A4A7008F3761 /* OpenChooseRepo.swift */,
+				6BA7831A2410AF87008F3761 /* OpenSyncLocation.swift */,
+				6BA783142410963C008F3761 /* OpenWorkspace.swift */,
+				6BCCE33F23FCA769004C482E /* PublishChooseOrg.swift */,
+				6BCCE33B23F39CD3004C482E /* PublishCreateRepo.swift */,
+				6BCCE33D23F3AAC2004C482E /* PublishDone.swift */,
+				6B074890241349FA00990660 /* PublishExistingRepo.swift */,
+				6B6E47462401C8E40067B2FF /* PublishInfo.swift */,
+				6B6E474A2405F8540067B2FF /* PublishLonaApp.swift */,
+				6BCCE33323F34BEE004C482E /* PublishNeedsAuth.swift */,
+				6BCCE33923F39417004C482E /* PublishNeedsRepo.swift */,
 				6B73809322C66E59007534A0 /* TemplateBrowser.swift */,
 				30C203DC20BF5910007C3FE0 /* TextStyleBrowser.swift */,
 				30F870C020865858007ADA5B /* Welcome.swift */,
@@ -1058,6 +1197,7 @@
 				6BC605CC21F78F240087311A /* LabeledDropdownRow.swift */,
 				6B5A6AC722FB860900CA004E /* LogicPreviewCard.swift */,
 				303C3FED20A396C3008E1541 /* OpenProjectButton.swift */,
+				6BCCE33123F322D7004C482E /* PrimaryButton.swift */,
 				6B4DFCEE20A795070048BB43 /* RecentProjectItem.swift */,
 				307D440E2097DC17004B57F5 /* TabIcon.swift */,
 				6B6F19D02307222200E5AC60 /* TemplateFileCard.swift */,
@@ -1085,6 +1225,10 @@
 				307D44142097DDAB004B57F5 /* icon-tab-docs@2x.png */,
 				307D44122097DDAB004B57F5 /* icon-tab-layers.png */,
 				307D44132097DDAB004B57F5 /* icon-tab-layers@2x.png */,
+				6B6E474C2405F86D0067B2FF /* lona-app-install-step1.png */,
+				6B6E474F2405F86D0067B2FF /* lona-app-install-step1@2x.png */,
+				6B6E474D2405F86D0067B2FF /* lona-app-install-step2.png */,
+				6B6E474E2405F86D0067B2FF /* lona-app-install-step2@2x.png */,
 				30F870CE20865858007ADA5B /* LonaIcon_16x16.png */,
 				30F870D420865858007ADA5B /* LonaIcon_16x16@2x.png */,
 				30F870C920865858007ADA5B /* LonaIcon_32x32.png */,
@@ -1155,8 +1299,8 @@
 		6B0AEFB61EBF74D800F35BBF /* LonaStudio */ = {
 			isa = PBXGroup;
 			children = (
-				6BA8985923271BE800AA8F78 /* LonaStudio.entitlements */,
 				307D441F209B6CE9004B57F5 /* Web */,
+				6BA8985923271BE800AA8F78 /* LonaStudio.entitlements */,
 				6B0AEFC21EBF74D800F35BBF /* Info.plist */,
 				6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */,
 				6B3A563C21DEA7040012C44F /* Colors+Appearance.swift */,
@@ -1170,6 +1314,8 @@
 				036A4EA521E23F3A00948DBD /* Documents */,
 				30C8BC291EDB640500B99F1B /* Extensions */,
 				30F870BC20865858007ADA5B /* Generated */,
+				6B6E473F240070300067B2FF /* GithubWorkflow */,
+				0304A71123F421C0009A1E82 /* GraphQL */,
 				301433791F5C7AD100525DB1 /* ListEditors */,
 				6B34149C225803F500CC65D1 /* Logic */,
 				3030311D1F34E6A70078086F /* LogicList */,
@@ -1182,6 +1328,7 @@
 				30DDEE881F47925C001D41AB /* Scripting */,
 				BA153BC8202B2CBA002A83A5 /* Undo */,
 				3069E0981F32432C0005E9A8 /* Utils */,
+				6B6E473723FE0BAC0067B2FF /* VersionControl */,
 				3030311F1F34E7200078086F /* Workspace */,
 			);
 			path = LonaStudio;
@@ -1208,6 +1355,24 @@
 				6BF4EF5C235CF8DC00548F61 /* ShadowSuggestionEditor.swift */,
 			);
 			path = suggestions;
+			sourceTree = "<group>";
+		};
+		6B6E473723FE0BAC0067B2FF /* VersionControl */ = {
+			isa = PBXGroup;
+			children = (
+				6B6E473823FE0BC30067B2FF /* Git.swift */,
+			);
+			path = VersionControl;
+			sourceTree = "<group>";
+		};
+		6B6E473F240070300067B2FF /* GithubWorkflow */ = {
+			isa = PBXGroup;
+			children = (
+				6B6E4741240070C20067B2FF /* lona-delete.yml */,
+				6B6E4740240070C20067B2FF /* lona-master.yml */,
+				6B6E4742240070C20067B2FF /* lona-pr.yml */,
+			);
+			path = GithubWorkflow;
 			sourceTree = "<group>";
 		};
 		6B8D7D9C21BED32E0087A3F7 /* inspector */ = {
@@ -1333,7 +1498,8 @@
 			buildConfigurationList = 6B0AEFC51EBF74D800F35BBF /* Build configuration list for PBXNativeTarget "LonaStudio" */;
 			buildPhases = (
 				0D07092F8B9DD494FF4F76C4 /* [CP] Check Pods Manifest.lock */,
-				6BA89858232717D400AA8F78 /* ShellScript */,
+				0304A70E23F41E39009A1E82 /* Download GraphQL schema */,
+				6BA89858232717D400AA8F78 /* Code sign Autoupdate */,
 				6B0AEFB01EBF74D700F35BBF /* Sources */,
 				6B0AEFB11EBF74D700F35BBF /* Frameworks */,
 				6B0AEFB21EBF74D700F35BBF /* Resources */,
@@ -1349,6 +1515,7 @@
 			name = LonaStudio;
 			packageProductDependencies = (
 				6BCCE31023E27034004C482E /* BreadcrumbBar */,
+				0314F4B723F41C54009CE468 /* Apollo */,
 			);
 			productName = ComponentStudio;
 			productReference = 6B0AEFB41EBF74D800F35BBF /* LonaStudio.app */;
@@ -1414,6 +1581,7 @@
 			mainGroup = 6B0AEFAB1EBF74D700F35BBF;
 			packageReferences = (
 				6BCCE30F23E27034004C482E /* XCRemoteSwiftPackageReference "BreadcrumbBar" */,
+				0314F4B623F41C54009CE468 /* XCRemoteSwiftPackageReference "apollo-ios" */,
 			);
 			productRefGroup = 6B0AEFB51EBF74D800F35BBF /* Products */;
 			projectDirPath = "";
@@ -1431,14 +1599,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				307D4420209B6CEA004B57F5 /* Web in Resources */,
+				6B6E47512405F86D0067B2FF /* lona-app-install-step2.png in Resources */,
+				03E1AE8B240FA75C0061E93A /* getDeploymentStatus.graphql in Resources */,
 				307D44162097DDAB004B57F5 /* icon-tab-layers.png in Resources */,
 				6B73809F22C7B3BF007534A0 /* themed-tokens-list.png in Resources */,
+				6B6E47502405F86D0067B2FF /* lona-app-install-step1.png in Resources */,
 				30F870E920865859007ADA5B /* LonaIcon_16x16@2x.png in Resources */,
 				30F870E620865859007ADA5B /* LonaIcon_128x128.png in Resources */,
 				30F870E020865859007ADA5B /* LonaIcon_512x512@2x.png in Resources */,
 				6BC60631223F1947003E616B /* Logic.framework.dSYM in Resources */,
 				307D44182097DDAB004B57F5 /* icon-tab-docs@2x.png in Resources */,
 				307D44152097DDAB004B57F5 /* icon-tab-docs.png in Resources */,
+				0304A71323F421F4009A1E82 /* getMe.graphql in Resources */,
 				6B73809D22C7B3BF007534A0 /* tokens-list@2x.png in Resources */,
 				301D7EDC1F47A29D0098AB0D /* Modules in Resources */,
 				6B73809E22C7B3BF007534A0 /* tokens-list.png in Resources */,
@@ -1446,14 +1618,20 @@
 				30F870DF20865859007ADA5B /* LonaIcon_256x256.png in Resources */,
 				6B0AEFBE1EBF74D800F35BBF /* Assets.xcassets in Resources */,
 				30F870E420865859007ADA5B /* icon-documentation.png in Resources */,
+				6B6E47532405F86D0067B2FF /* lona-app-install-step1@2x.png in Resources */,
+				0304A72923FD48AC009A1E82 /* createRepository.graphql in Resources */,
+				0304A71B23FA8B18009A1E82 /* addRepo.graphql in Resources */,
 				30F870DE20865859007ADA5B /* LonaIcon_32x32.png in Resources */,
+				0383231D2400660F0091C6F5 /* lona-schema.json in Resources */,
 				6B7380A022C7B3BF007534A0 /* themed-tokens-list@2x.png in Resources */,
 				303C3FEB20A396BB008E1541 /* icon-plus.png in Resources */,
 				30F870E720865859007ADA5B /* icon-material-design-example@2x.png in Resources */,
 				30DDEE8A1F479280001D41AB /* node in Resources */,
 				30F870E120865859007ADA5B /* LonaIcon_128x128@2x.png in Resources */,
 				30F870E520865859007ADA5B /* LonaIcon_256x256@2x.png in Resources */,
+				0304A71923F425B4009A1E82 /* createOrganization.graphql in Resources */,
 				30F870DB20865859007ADA5B /* icon-blank-document.png in Resources */,
+				6B6E4743240070C20067B2FF /* lona-master.yml in Resources */,
 				30F870E220865859007ADA5B /* icon-documentation@2x.png in Resources */,
 				6BD96653217FB0DB0012F173 /* default-workspace-thumbnail@2x.png in Resources */,
 				6B0AEFC11EBF74D800F35BBF /* Main.storyboard in Resources */,
@@ -1464,9 +1642,14 @@
 				30F870DA20865859007ADA5B /* LonaIcon_32x32@2x.png in Resources */,
 				307D44172097DDAB004B57F5 /* icon-tab-layers@2x.png in Resources */,
 				303C3FEC20A396BB008E1541 /* icon-plus@2x.png in Resources */,
+				6B6E47522405F86D0067B2FF /* lona-app-install-step2@2x.png in Resources */,
 				6B9733D22236F2BF005967E8 /* svg-model.umd.js in Resources */,
 				6BD96652217FB0DB0012F173 /* default-workspace-thumbnail.png in Resources */,
+				6B6E4744240070C20067B2FF /* lona-delete.yml in Resources */,
+				6B6E4745240070C20067B2FF /* lona-pr.yml in Resources */,
 				6BABAFE52139C0EE002B8C8F /* Toolbar.xcassets in Resources */,
+				0304A72523FD272D009A1E82 /* getOrganizations.graphql in Resources */,
+				03E1AE8D240FAB180061E93A /* github-schema.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1480,6 +1663,30 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		0304A70E23F41E39009A1E82 /* Download GraphQL schema */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/LonaStudio/GraphQL/Lona",
+				"$(SRCROOT)/LonaStudio/GraphQL/GitHub",
+			);
+			name = "Download GraphQL schema";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SRCROOT)/LonaStudio/GraphQL/GitHubAPI.swift",
+				"$(SRCROOT)/LonaStudio/GraphQL/LonaAPI.swift",
+				"$(SRCROOT)/LonaStudio/GraphQL/github-schema.json",
+				"$(SRCROOT)/LonaStudio/GraphQL/lona-schema.json",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Go to the build root and search up the chain to find the Derived Data Path where the source packages are checked out.\nDERIVED_DATA_CANDIDATE=\"${BUILD_ROOT}\"\n\nwhile ! [ -d \"${DERIVED_DATA_CANDIDATE}/SourcePackages\" ]; do\n  if [ \"${DERIVED_DATA_CANDIDATE}\" = / ]; then\n    echo >&2 \"error: Unable to locate SourcePackages directory from BUILD_ROOT: '${BUILD_ROOT}'\"\n    exit 1\n  fi\n\n  DERIVED_DATA_CANDIDATE=\"$(dirname \"${DERIVED_DATA_CANDIDATE}\")\"\ndone\n\n# Grab a reference to the directory where scripts are checked out\nSCRIPT_PATH=\"${DERIVED_DATA_CANDIDATE}/SourcePackages/checkouts/apollo-ios/scripts\"\n\nif [ -z \"${SCRIPT_PATH}\" ]; then\n    echo >&2 \"error: Couldn't find the CLI script in your checked out SPM packages; make sure to add the framework to your project.\"\n    exit 1\nfi\n\ncd \"${SRCROOT}/${TARGET_NAME}\"\n\n# Download the schemas\n\"${SCRIPT_PATH}\"/run-bundled-codegen.sh schema:download --endpoint=$API_BASE_URL/graphql GraphQL/lona-schema.json\nif [ ! -z \"$GITHUB_ACCESS_TOKEN\" ]; then\n  \"${SCRIPT_PATH}\"/run-bundled-codegen.sh schema:download --endpoint=https://api.github.com/graphql GraphQL/github-schema.json --header=\"Authorization: Bearer ${GITHUB_ACCESS_TOKEN}\" --header=\"Accept: application/vnd.github.antiope-preview+json\"\nfi\n\n# Generate GraphQL API code\n\"${SCRIPT_PATH}\"/run-bundled-codegen.sh codegen:generate --target=swift --includes=./**/Lona/**/*.graphql --localSchemaFile=\"GraphQL/lona-schema.json\" GraphQL/LonaAPI.swift\n\"${SCRIPT_PATH}\"/run-bundled-codegen.sh codegen:generate --target=swift --includes=./**/GitHub/**/*.graphql --localSchemaFile=\"GraphQL/github-schema.json\" GraphQL/GitHubAPI.swift\n";
+		};
 		0D07092F8B9DD494FF4F76C4 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1498,18 +1705,20 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		6BA89858232717D400AA8F78 /* ShellScript */ = {
+		6BA89858232717D400AA8F78 /* Code sign Autoupdate */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 8;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Code sign Autoupdate";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "codesign --force -o runtime -s \"Developer ID Application\" \"${PODS_ROOT}/Sparkle/Sparkle.framework/Resources/Autoupdate.app/Contents/MacOS/Autoupdate\"\ncodesign --force -o runtime -s \"Developer ID Application\" \"${PODS_ROOT}/Sparkle/Sparkle.framework/Resources/Autoupdate.app/Contents/MacOS/fileop\"\n";
+			showEnvVarsInLog = 0;
 		};
 		AE944FBCF020B00505E3912C /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1584,11 +1793,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B8D1E8823FCE9AF00EA6E40 /* NSError+String.swift in Sources */,
 				6BE89BBC21B7452800F35AC3 /* LonaViewModel.swift in Sources */,
+				6BCCE34223FCA78B004C482E /* OrganizationList.swift in Sources */,
 				6BA5BBD72173A7F600F086A7 /* Shadows.swift in Sources */,
 				6B4DFCED20A77C650048BB43 /* FileUtils.swift in Sources */,
 				305029C320643EC7002D9EE1 /* ComponentMenu.swift in Sources */,
 				303C3FF320A4E396008E1541 /* ComponentBrowser.swift in Sources */,
+				6BCCE34023FCA769004C482E /* PublishChooseOrg.swift in Sources */,
 				6B3414B4225D29AC00CC65D1 /* LogicEditor+Suggestions.swift in Sources */,
 				6B4E25FC22E160C100F0076A /* ColorSuggestionEditor.swift in Sources */,
 				6BE99D7A23CE50CC00E35E35 /* Promise+AppKit.swift in Sources */,
@@ -1606,6 +1818,7 @@
 				30C8BC321EDB758C00B99F1B /* Canvas.swift in Sources */,
 				3003027C1EDCE0880085E140 /* CSComponent.swift in Sources */,
 				3056275E1FBA0C0700026796 /* CSConstraint.swift in Sources */,
+				6B6E473B23FE0D590067B2FF /* Process+Execute.swift in Sources */,
 				6B4203E121BAD56500D59317 /* CanvasTableView.swift in Sources */,
 				6BC2D4542263D8F2003A9F63 /* LabeledColorInput.swift in Sources */,
 				30C203DD20BF5910007C3FE0 /* TextStyleBrowser.swift in Sources */,
@@ -1642,18 +1855,22 @@
 				3043A0CC1F46653B00EF31EF /* Label.swift in Sources */,
 				6B56ECB121BC55D9005F43C5 /* NSAttributedString+Measure.swift in Sources */,
 				036A4E8A21E0DFE700948DBD /* LonaFileIcon.swift in Sources */,
+				0304A72123FD26CF009A1E82 /* LonaAPI.swift in Sources */,
 				30F870EB20869644007ADA5B /* Fetch.swift in Sources */,
 				303C3FF520A4E3C1008E1541 /* ComponentPreviewCollection.swift in Sources */,
 				3090D7D31F032305009277E7 /* CSComponentLayer.swift in Sources */,
 				6B73809422C66E59007534A0 /* TemplateBrowser.swift in Sources */,
 				6B8D7DA321BF04B60087A3F7 /* InspectorSectionHeader.swift in Sources */,
 				6B1086FB217A34340024AE56 /* Data+String.swift in Sources */,
+				6BA783152410963C008F3761 /* OpenWorkspace.swift in Sources */,
 				6B87001622EFBC42007C589C /* Logic+Builders.swift in Sources */,
 				6B4203E921BC49C700D59317 /* CanvasAreaView.swift in Sources */,
 				30F7C9521ED4AE23009D27DF /* CoreComponentInspectorView.swift in Sources */,
 				6B73809622C67563007534A0 /* WorkspaceTemplateCard.swift in Sources */,
 				30335A0C1F5B2F8B006E507B /* CaseList.swift in Sources */,
 				3056275C1FBA07C800026796 /* DictionaryEditor.swift in Sources */,
+				6B6E47552407201D0067B2FF /* FlippedScrollView.swift in Sources */,
+				6B07489724172B6600990660 /* TemplateFileList.swift in Sources */,
 				30F7C9561ED4E02F009D27DF /* YogaLayout.swift in Sources */,
 				3090D7931F01B2EF009277E7 /* CSLayer.swift in Sources */,
 				6B14C7BF23C5109900EF85FA /* NoDocument.swift in Sources */,
@@ -1669,7 +1886,9 @@
 				30B5B1A11EC36A70002068CE /* PopupField.swift in Sources */,
 				306DA4F11F33EA74002772DC /* CSTextView.swift in Sources */,
 				6BC2D44122624BBB003A9F63 /* LogicInput+CSColor.swift in Sources */,
+				0304A72723FD28A1009A1E82 /* GitHubAPI.swift in Sources */,
 				BACCB4271FEFA05B00B58E32 /* TextStylePickerView.swift in Sources */,
+				6BA7831B2410AF87008F3761 /* OpenSyncLocation.swift in Sources */,
 				300302741EDC7FA90085E140 /* CSStatementView.swift in Sources */,
 				6B5D4D2B213E19B9004F8AC3 /* EditorViewController.swift in Sources */,
 				039952C721E50D31008310DB /* MarkdownEditor.swift in Sources */,
@@ -1693,6 +1912,7 @@
 				6B25041821E5510900AE7F97 /* ImageDocument.swift in Sources */,
 				6BD4976321E53F2000BC3970 /* Accessibility.swift in Sources */,
 				30B5B1A71EC3BF4F002068CE /* ColorPickerButton.swift in Sources */,
+				6BCCE33223F322D7004C482E /* PrimaryButton.swift in Sources */,
 				6B3414A822596AA300CC65D1 /* LGCTypeAnnotation+CSType.swift in Sources */,
 				BACCB42B1FEFA26E00B58E32 /* ShadowStyleRowView.swift in Sources */,
 				306D2FF01F847DCB00907B4E /* NSImageExtensions.swift in Sources */,
@@ -1706,6 +1926,7 @@
 				301433781F5B525100525DB1 /* ListEditor.swift in Sources */,
 				BA3001761FDB97260003E7D2 /* ShadowStylePickerButton.swift in Sources */,
 				6B4203E321BAD71800D59317 /* CanvasTableHeaderView.swift in Sources */,
+				0304A71723F424B1009A1E82 /* Network.swift in Sources */,
 				6BC2D45622640BA9003A9F63 /* LogicInput+CSURLType.swift in Sources */,
 				3069E09C1F324C550005E9A8 /* CSWorkspacePreferences.swift in Sources */,
 				6B4203E721BC495B00D59317 /* NSTableColumn+Init.swift in Sources */,
@@ -1713,6 +1934,7 @@
 				036A4E8E21E0EF0100948DBD /* ImageViewController.swift in Sources */,
 				6B56ECB321BC5B6D005F43C5 /* FlippedView.swift in Sources */,
 				307D4422209B75C0004B57F5 /* LonaWebView.swift in Sources */,
+				6BCCE33C23F39CD3004C482E /* PublishCreateRepo.swift in Sources */,
 				6B68CA8123C918B70045D009 /* WelcomeWindow.swift in Sources */,
 				6B56ECB521BC6645005F43C5 /* ConfiguredLayer.swift in Sources */,
 				6B9733CE2236E602005967E8 /* LonaJS.swift in Sources */,
@@ -1736,8 +1958,11 @@
 				30EFC95A1EF43C900087711D /* CheckboxField.swift in Sources */,
 				BA3001781FDB97430003E7D2 /* ShadowStylePickerView.swift in Sources */,
 				6BC2D44922639B83003A9F63 /* LogicSuggestions.swift in Sources */,
+				6BCCE33423F34BEF004C482E /* PublishNeedsAuth.swift in Sources */,
+				6BCCE33623F35699004C482E /* PublishingViewController.swift in Sources */,
 				3084164D1EDB2A5B00A1CA6D /* Button+Init.swift in Sources */,
 				6BFAE60423009AB700B150E2 /* LogicModule.swift in Sources */,
+				6BCCE33A23F39417004C482E /* PublishNeedsRepo.swift in Sources */,
 				6BA6E89B213080CE009CD33C /* ComponentEditorViewController.swift in Sources */,
 				036A4EA221E1FD3B00948DBD /* KeyHandlingCollectionView.swift in Sources */,
 				307B7B4F1F9A71C5001A62D9 /* MetadataEditorView.swift in Sources */,
@@ -1750,6 +1975,7 @@
 				3069E09A1F3243780005E9A8 /* parseCSSColor.swift in Sources */,
 				30990AAE1FA3FC4200BC0CCE /* CSSearchField.swift in Sources */,
 				3080AD401FBCE21600B485DC /* CSShadows.swift in Sources */,
+				6B6E47472401C8E50067B2FF /* PublishInfo.swift in Sources */,
 				307B7B511F9A8EE5001A62D9 /* ArrayEditorButton.swift in Sources */,
 				6BA5BBDB2174FA2100F086A7 /* FileNavigatorHeader.swift in Sources */,
 				307718E81F35241A003A597B /* CSControl.swift in Sources */,
@@ -1772,9 +1998,11 @@
 				30F4FD531F76ADC70048691C /* AnimationUtils.swift in Sources */,
 				036A4E9A21E1F5FB00948DBD /* ImagePreview.swift in Sources */,
 				6B0F5B86213862A0007DBBB2 /* ColorEditorViewController.swift in Sources */,
+				6B6E473923FE0BC30067B2FF /* Git.swift in Sources */,
 				6BCE162722D7AD9A0066711C /* CustomParametersEditorSheet+Present.swift in Sources */,
 				6B7DBF5E22A877F50062031E /* LogicDocument.swift in Sources */,
 				301C262420C1C3B500F18F73 /* TextStyle.swift in Sources */,
+				6B6E474B2405F8540067B2FF /* PublishLonaApp.swift in Sources */,
 				306DA4F61F34E42F002772DC /* DimensionSizingRule.swift in Sources */,
 				6BE99D7423CD1F6800E35E35 /* Emitter.swift in Sources */,
 				6B7DBF6022A87B050062031E /* LogicViewController.swift in Sources */,
@@ -1799,6 +2027,7 @@
 				30CE47CD1ED776FA00BBF716 /* TextStylePickerButton.swift in Sources */,
 				30C203DF20BF5955007C3FE0 /* TextStylePreviewCollection.swift in Sources */,
 				0310D109220B9DE8007B3546 /* PluginAPI.swift in Sources */,
+				6BA783192410A4A7008F3761 /* OpenChooseRepo.swift in Sources */,
 				6B1086FD217A38110024AE56 /* LRUCache.swift in Sources */,
 				30D9B40E1F79BADC00C8A3D4 /* NSMenuExtensions.swift in Sources */,
 				3090D78D1F01B050009277E7 /* CSParameter.swift in Sources */,
@@ -1810,6 +2039,7 @@
 				306D2FEE1F84735900907B4E /* LayerThumbnail.swift in Sources */,
 				6B4DFCE720A7581E0048BB43 /* ColorBrowser.swift in Sources */,
 				301433761F5B499900525DB1 /* DictionaryEditorButton.swift in Sources */,
+				6BA783132410926A008F3761 /* OpenWorkspaceViewController.swift in Sources */,
 				6B3D7C2E222F569A008AA3D2 /* CustomParametersEditorSheet.swift in Sources */,
 				6B0F5B8E2138970C007DBBB2 /* LayerList.swift in Sources */,
 				30CE47CF1ED77C0200BBF716 /* TextStyleRowView.swift in Sources */,
@@ -1819,9 +2049,14 @@
 				307D440F2097DC17004B57F5 /* WorkspaceVerticalTabs.swift in Sources */,
 				6B39E6F5212DEF120012DA4C /* WorkspaceViewController.swift in Sources */,
 				6B2DC1B221362E8400679668 /* CoreColorPicker.swift in Sources */,
+				6BCCE33E23F3AAC2004C482E /* PublishDone.swift in Sources */,
+				6B074891241349FB00990660 /* PublishExistingRepo.swift in Sources */,
 				30F4FD551F76B9DB0048691C /* DictionaryExtensions.swift in Sources */,
 				3094DFE81F6ACF1E00E5C7F0 /* ImageCache.swift in Sources */,
+				6BA78311241087D8008F3761 /* FlowView.swift in Sources */,
+				6B074893241710F000990660 /* TemplatePreviewCollection.swift in Sources */,
 				306DA4F41F34E416002772DC /* DataNode.swift in Sources */,
+				6BA783172410A11D008F3761 /* RepositoryList.swift in Sources */,
 				3069E0A21F32585A0005E9A8 /* CSPreferences.swift in Sources */,
 				30C8BC2B1EDB641E00B99F1B /* NSViewExtensions.swift in Sources */,
 				6BFC4E0621C9C5A10030938B /* CanvasInspector.swift in Sources */,
@@ -1989,7 +2224,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DCCCCF4DF09F5DFEA7FB404D /* Pods-LonaStudio.debug.xcconfig */;
 			buildSettings = {
-				API_BASE_URL = "https://te1fv8l2wh.execute-api.eu-west-1.amazonaws.com/dev";
+				API_BASE_URL = "https://api.lona.design/dev";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = LonaStudio/LonaStudio.entitlements;
 				CODE_SIGN_IDENTITY = "";
@@ -2003,6 +2238,7 @@
 					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
 				GITHUB_CLIENT_ID = 47895007495ec2ed6366;
+				GOOGLE_CLIENT_ID = "546773951334-iaqahhpbofeno5t3t72espkhc81ttlev.apps.googleusercontent.com";
 				INFOPLIST_FILE = LonaStudio/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2020,7 +2256,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = ABA583EA99B83FD52B085CE5 /* Pods-LonaStudio.release.xcconfig */;
 			buildSettings = {
-				API_BASE_URL = "https://te1fv8l2wh.execute-api.eu-west-1.amazonaws.com/dev";
+				API_BASE_URL = "https://api.lona.design/production";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = LonaStudio/LonaStudio.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
@@ -2033,7 +2269,8 @@
 					"$(PROJECT_DIR)/Pods/Sparkle",
 					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
-				GITHUB_CLIENT_ID = 47895007495ec2ed6366;
+				GITHUB_CLIENT_ID = 2cefa310d0e458ed11c6;
+				GOOGLE_CLIENT_ID = "546773951334-iaqahhpbofeno5t3t72espkhc81ttlev.apps.googleusercontent.com";
 				INFOPLIST_FILE = LonaStudio/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2128,6 +2365,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0314F4B623F41C54009CE468 /* XCRemoteSwiftPackageReference "apollo-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apollographql/apollo-ios.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.21.0;
+			};
+		};
 		6BCCE30F23E27034004C482E /* XCRemoteSwiftPackageReference "BreadcrumbBar" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/dabbott/BreadcrumbBar.git";
@@ -2139,6 +2384,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0314F4B723F41C54009CE468 /* Apollo */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0314F4B623F41C54009CE468 /* XCRemoteSwiftPackageReference "apollo-ios" */;
+			productName = Apollo;
+		};
 		6BCCE31023E27034004C482E /* BreadcrumbBar */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 6BCCE30F23E27034004C482E /* XCRemoteSwiftPackageReference "BreadcrumbBar" */;

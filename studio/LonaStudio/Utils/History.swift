@@ -10,23 +10,27 @@ import Foundation
 
 // MARK: - History
 
-public struct History {
-    public var back: [URL] = []
-    public var current: URL?
-    public var forward: [URL] = []
+public struct History<Item: Equatable> {
+    public var back: [Item] = []
+    public var current: Item?
+    public var forward: [Item] = []
     public var maxLength: Int = 20
     public var allowsConsecutiveDuplicates = false
 
-    public mutating func navigateTo(url: URL) {
+    public init(_ current: Item? = nil) {
+        self.current = current
+    }
+
+    public mutating func navigateTo(_ item: Item) {
         if let current = current {
-            if current == url && !allowsConsecutiveDuplicates {
+            if current == item && !allowsConsecutiveDuplicates {
                 return
             }
 
             back.insert(current, at: 0)
         }
 
-        current = url
+        current = item
         forward.removeAll()
 
         evict()

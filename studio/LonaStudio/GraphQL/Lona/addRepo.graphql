@@ -1,0 +1,11 @@
+mutation addRepo($organizationId: ID!, $url: String!) {
+  addRepo(organizationId: $organizationId, url: $url) {
+    success
+    message
+    repo {
+      url
+      activated
+      origin
+    }
+  }
+}

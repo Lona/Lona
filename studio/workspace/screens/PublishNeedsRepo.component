@@ -1,0 +1,200 @@
+{
+  "devices" : [
+    {
+      "height" : 1,
+      "heightMode" : "At Least",
+      "name" : "Desktop",
+      "width" : 640
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "WorkspaceTitle",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "workspaceName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "OrgTitle",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "organizationName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "CreateButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickCreateRepository"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "UseExistingButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickUseExistingRepository"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "workspaceName",
+      "type" : "String"
+    },
+    {
+      "name" : "organizationName",
+      "type" : "String"
+    },
+    {
+      "name" : "onClickCreateRepository",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onClickUseExistingRepository",
+      "type" : {
+        "name" : "Function"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "PublishText",
+            "params" : {
+              "font" : "titleLight",
+              "text" : "Publish "
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "WorkspaceTitle",
+            "params" : {
+              "font" : "title",
+              "text" : "Workspace Name"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "PublishText 1",
+            "params" : {
+              "font" : "titleLight",
+              "text" : " to "
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "OrgTitle",
+            "params" : {
+              "font" : "title",
+              "text" : "LonaTeam"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "TitleContainer",
+        "params" : {
+          "alignSelf" : "stretch",
+          "flexDirection" : "row"
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "VSpacer",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 32,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "BodyText",
+        "params" : {
+          "font" : "body",
+          "text" : "Next, you’ll need to choose a git repository to store your workspace files. \n\nWe can create a new one automatically for you on GitHub (we’ll need permission to access your GitHub repositories), or you can choose an existing Git repository."
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "VSpacer 1",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 72,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "CreateButton",
+            "params" : {
+              "titleText" : "Create new GitHub repository"
+            },
+            "type" : "PrimaryButton"
+          },
+          {
+            "id" : "VSpacer 2",
+            "params" : {
+              "backgroundColor" : "#D8D8D8",
+              "height" : 8,
+              "width" : 0
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "UseExistingButton",
+            "params" : {
+              "titleText" : "Use an existing git repository"
+            },
+            "type" : "PrimaryButton"
+          }
+        ],
+        "id" : "View",
+        "params" : {
+          "width" : 250
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

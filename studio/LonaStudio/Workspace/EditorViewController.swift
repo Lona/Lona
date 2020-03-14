@@ -36,14 +36,27 @@ class EditorViewController: NSViewController {
 
     // MARK: Public
 
+    public var showsHeaderDivider: Bool = false {
+        didSet {
+            if showsHeaderDivider != oldValue {
+                update()
+            }
+        }
+    }
+
     public var breadcrumbs: [Breadcrumb] {
-        get { return breadcrumbView.breadcrumbs }
-        set { breadcrumbView.breadcrumbs = newValue }
+        get { return navigationBar.breadcrumbs }
+        set { navigationBar.breadcrumbs = newValue }
     }
 
     public var onClickBreadcrumb: ((UUID) -> Void)? {
-        get { return breadcrumbView.onClickBreadcrumb }
-        set { breadcrumbView.onClickBreadcrumb = newValue }
+        get { return navigationBar.onClickBreadcrumb }
+        set { navigationBar.onClickBreadcrumb = newValue }
+    }
+
+    public var onClickPublish: (() -> Void)? {
+        get { return publishButton.onClick }
+        set { publishButton.onClick = newValue }
     }
 
     public var contentView: NSView? {
@@ -57,7 +70,9 @@ class EditorViewController: NSViewController {
                     contentContainerView.addSubview(contentView)
 
                     contentView.translatesAutoresizingMaskIntoConstraints = false
-                    contentView.topAnchor.constraint(equalTo: breadcrumbView.bottomAnchor).isActive = true
+
+                    contentView.topAnchor.constraint(equalTo: dividerView.bottomAnchor).isActive = true
+
                     contentView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor).isActive = true
                     contentView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor).isActive = true
                     contentView.bottomAnchor.constraint(equalTo: contentContainerView.bottomAnchor).isActive = true
@@ -74,13 +89,19 @@ class EditorViewController: NSViewController {
 
     private let contentContainerView = NSBox(frame: .zero)
 
-    private let breadcrumbView = NavigationBar()
+    private let navigationBar = NavigationBar()
 
-    private func updateHistory(_ history: History) {
-        breadcrumbView.isBackEnabled = history.canGoBack()
-        breadcrumbView.isForwardEnabled = history.canGoForward()
+    private let dividerView = NSBox()
 
-        breadcrumbView.menuForBackItem = {
+    private let publishButton = BreadcrumbItem(titleText: "Publish", icon: nil, isEnabled: true)
+
+    private let accessoryButtonContainer = NSStackView()
+
+    private func updateHistory(_ history: History<URL>) {
+        navigationBar.isBackEnabled = history.canGoBack()
+        navigationBar.isForwardEnabled = history.canGoForward()
+
+        navigationBar.menuForBackItem = {
             return NSMenu(items: history.back.enumerated().map({ index, url in
                 let item = NSMenuItem(title: url.lastPathComponent, onClick: {
                     _ = DocumentController.shared.navigateBack(offset: index)
@@ -92,7 +113,7 @@ class EditorViewController: NSViewController {
             }))
         }
 
-        breadcrumbView.menuForForwardItem = {
+        navigationBar.menuForForwardItem = {
             return NSMenu(items: history.forward.enumerated().map({ index, url in
                 let item = NSMenuItem(title: url.lastPathComponent, onClick: {
                     _ = DocumentController.shared.navigateForward(offset: index)
@@ -104,11 +125,11 @@ class EditorViewController: NSViewController {
             }))
         }
 
-        breadcrumbView.onClickBack = {
+        navigationBar.onClickBack = {
             _ = DocumentController.shared.navigateBack()
         }
 
-        breadcrumbView.onClickForward = {
+        navigationBar.onClickForward = {
             _ = DocumentController.shared.navigateForward()
         }
     }
@@ -119,6 +140,18 @@ class EditorViewController: NSViewController {
         contentContainerView.borderType = .noBorder
         contentContainerView.contentViewMargins = .zero
 
+        dividerView.boxType = .custom
+        dividerView.borderType = .noBorder
+        dividerView.contentViewMargins = .zero
+
+        contentContainerView.addSubview(dividerView)
+        contentContainerView.addSubview(navigationBar)
+
+        accessoryButtonContainer.addArrangedSubview(publishButton)
+        accessoryButtonContainer.edgeInsets = .init(top: 0, left: 0, bottom: 0, right: 4)
+
+        navigationBar.accessoryView = accessoryButtonContainer
+
         DocumentController.shared.historyEmitter.addListener { [unowned self] history in self.updateHistory(history) }
 
         self.view = contentContainerView
@@ -126,15 +159,26 @@ class EditorViewController: NSViewController {
 
     private func setUpConstraints() {
         contentContainerView.translatesAutoresizingMaskIntoConstraints = false
-        breadcrumbView.translatesAutoresizingMaskIntoConstraints = false
+        navigationBar.translatesAutoresizingMaskIntoConstraints = false
+        dividerView.translatesAutoresizingMaskIntoConstraints = false
 
-        contentContainerView.addSubview(breadcrumbView)
+        navigationBar.topAnchor.constraint(equalTo: contentContainerView.topAnchor).isActive = true
+        navigationBar.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 8).isActive = true
+        navigationBar.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor, constant: -8).isActive = true
+        navigationBar.heightAnchor.constraint(equalToConstant: 38).isActive = true
 
-        breadcrumbView.topAnchor.constraint(equalTo: contentContainerView.topAnchor).isActive = true
-        breadcrumbView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 8).isActive = true
-        breadcrumbView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor, constant: -8).isActive = true
-        breadcrumbView.heightAnchor.constraint(equalToConstant: 38).isActive = true
+        dividerView.topAnchor.constraint(equalTo: navigationBar.bottomAnchor).isActive = true
+
+        dividerView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor).isActive = true
+        dividerView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor).isActive = true
+        dividerView.heightAnchor.constraint(equalToConstant: 1).isActive = true
     }
 
-    private func update() {}
+    private func update() {
+        if showsHeaderDivider {
+            dividerView.fillColor = NSSplitView.defaultDividerColor
+        } else {
+            dividerView.fillColor = .clear
+        }
+    }
 }

@@ -1,0 +1,50 @@
+{
+  "devices" : [
+    {
+      "deviceId" : "iPhone SE",
+      "heightMode" : "At Least"
+    },
+    {
+      "deviceId" : "Pixel 2",
+      "heightMode" : "At Least"
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+    {
+      "name" : "percent",
+      "type" : "Number"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "View 1",
+        "params" : {
+          "borderColor" : "systemSelection",
+          "borderRadius" : 20,
+          "borderWidth" : 1,
+          "height" : 40,
+          "width" : 40
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

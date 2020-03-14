@@ -32,7 +32,7 @@ public class WelcomeWindow: NSWindow {
         window.hasShadow = true
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden
-        window.backgroundColor = NSColor.white
+        window.backgroundColor = Colors.windowBackground
         window.standardWindowButton(.miniaturizeButton)?.isHidden = true
         window.standardWindowButton(.zoomButton)?.isHidden = true
         window.standardWindowButton(.closeButton)?.backgroundFill = CGColor.clear
@@ -43,7 +43,12 @@ public class WelcomeWindow: NSWindow {
         view.contentViewMargins = .zero
         view.translatesAutoresizingMaskIntoConstraints = false
 
-        window.contentView = view
+        view.widthAnchor.constraint(equalToConstant: 720).isActive = true
+        view.heightAnchor.constraint(equalToConstant: 460).isActive = true
+
+        let viewController = NSViewController(view: view)
+
+        window.contentViewController = viewController
 
         // Set up welcome screen
 
@@ -58,13 +63,30 @@ public class WelcomeWindow: NSWindow {
 
         welcome.onCreateProject = {
             let sheetWindow = WelcomeWindow.createSheetWindow(size: .init(width: 924, height: 635))
-            let templateBrowser = TemplateBrowser()
+
+            let cards = WorkspaceTemplate.allTemplates.map { $0.metadata }
+            var selectedTemplateIndex: Int = 0
+
+            let templateBrowser = TemplateBrowser(
+                templateTitles: cards.map { $0.titleText },
+                templateDescriptions: cards.map { $0.descriptionText },
+                templateImages: cards.map { $0.image },
+                selectedTemplateIndex: selectedTemplateIndex,
+                selectedTemplateFiles: WorkspaceTemplate.allTemplates[selectedTemplateIndex].filePaths
+            )
+
             sheetWindow.contentView = templateBrowser
 
-            templateBrowser.onClickDone = {
+            templateBrowser.onChangeSelectedTemplateIndex = { value in
+                selectedTemplateIndex = value
+                templateBrowser.selectedTemplateIndex = value
+                templateBrowser.selectedTemplateFiles = WorkspaceTemplate.allTemplates[value].filePaths
+            }
+
+            func handleCreateTemplate(_ template: WorkspaceTemplate) {
                 guard let url = WelcomeWindow.self.createWorkspaceDialog() else { return }
 
-                if !DocumentController.shared.createWorkspace(url: url, workspaceTemplate: .designTokens) {
+                if !DocumentController.shared.createWorkspace(url: url, workspaceTemplate: template) {
                     Swift.print("Failed to create workspace")
                     return
                 }
@@ -72,9 +94,18 @@ public class WelcomeWindow: NSWindow {
                 DocumentController.shared.openDocument(withContentsOf: url, display: true, completionHandler: { document, _, _ in
                     if let _ = document {
                         window.close()
+
+                        // We update recent projects here, rather than in DocumentController.noteNewRecentDocumentURL,
+                        // since we don't want the list to update immediately after clicking a project and before the document opens.
+                        // We also don't rearrange the list until the application restarts, to avoid things shifting around.
+                        DocumentController.shared.recentProjectsEmitter.emit(DocumentController.shared.recentDocumentURLs)
                     }
                 })
             }
+
+            templateBrowser.onClickDone = { handleCreateTemplate(WorkspaceTemplate.allTemplates[selectedTemplateIndex]) }
+
+            templateBrowser.onDoubleClickTemplateIndex = { index in handleCreateTemplate(WorkspaceTemplate.allTemplates[index]) }
 
             templateBrowser.onClickCancel = { [unowned self] in
                 self.endSheet(sheetWindow)
@@ -84,13 +115,20 @@ public class WelcomeWindow: NSWindow {
         }
 
         welcome.onOpenProject = {
-            guard let url = WelcomeWindow.openWorkspaceDialog() else { return }
+            let sheetWindow = NSWindow(
+                contentRect: NSRect(origin: .zero, size: .init(width: 720, height: 100)),
+                styleMask: [.titled, .closable],
+                backing: .buffered,
+                defer: false,
+                screen: nil
+            )
 
-            DocumentController.shared.openDocument(withContentsOf: url, display: true, completionHandler: { document, _, _ in
-                if let _ = document {
-                    window.close()
-                }
-            })
+            sheetWindow.contentViewController = OpenWorkspaceViewController.shared
+            OpenWorkspaceViewController.shared.initializeState()
+            OpenWorkspaceViewController.shared.onRequestClose = {
+                OpenWorkspaceViewController.shared.dismiss(nil)
+            }
+            self.contentViewController?.presentAsModalWindow(OpenWorkspaceViewController.shared)
         }
 
         welcome.onOpenExample = {
@@ -124,7 +162,7 @@ extension WelcomeWindow {
         }
     }
 
-    private static func openWorkspaceDialog() -> URL? {
+    public static func openWorkspaceDialog() -> URL? {
         let dialog = NSOpenPanel()
 
         dialog.title                   = "Choose a workspace"

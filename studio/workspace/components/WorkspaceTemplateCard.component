@@ -84,7 +84,7 @@
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : "blue50",
+              "data" : "systemSelection10",
               "type" : "Color"
             }
           },
@@ -99,7 +99,7 @@
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : "blue100",
+              "data" : "systemSelection30",
               "type" : "Color"
             }
           },
@@ -116,21 +116,6 @@
             "value" : {
               "data" : "systemSelection",
               "type" : "Color"
-            }
-          },
-          "type" : "AssignExpr"
-        },
-        {
-          "assignee" : [
-            "layers",
-            "Description",
-            "textStyle"
-          ],
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "data" : "regular",
-              "type" : "TextStyle"
             }
           },
           "type" : "AssignExpr"
@@ -195,10 +180,8 @@
         "params" : {
           "alignItems" : "center",
           "alignSelf" : "stretch",
-          "backgroundColor" : "rgba(255,255,255,0.9)",
-          "borderColor" : "grey200",
-          "borderRadius" : 8,
-          "borderWidth" : 1,
+          "backgroundColor" : "dividerSubtle",
+          "borderColor" : "dividerSubtle",
           "height" : 120
         },
         "type" : "Lona:View"
@@ -207,7 +190,7 @@
         "id" : "Title",
         "params" : {
           "font" : "large",
-          "marginTop" : 16,
+          "marginTop" : 12,
           "text" : "Tokens list"
         },
         "type" : "Lona:Text"
@@ -217,6 +200,7 @@
         "params" : {
           "font" : "regularMuted",
           "marginTop" : 8,
+          "numberOfLines" : 2,
           "text" : "Flat lists of tokens (colors, text styles, etc). Great for simple design systems."
         },
         "type" : "Lona:Text"
@@ -224,13 +208,14 @@
     ],
     "id" : "Container",
     "params" : {
-      "borderRadius" : 8,
-      "borderWidth" : 2,
+      "borderRadius" : 4,
+      "borderWidth" : 1,
+      "height" : 220,
       "paddingBottom" : 12,
       "paddingLeft" : 12,
       "paddingRight" : 12,
       "paddingTop" : 12,
-      "width" : 230
+      "width" : 216
     },
     "type" : "Lona:View"
   }
