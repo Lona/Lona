@@ -7,6 +7,7 @@ type t = {
   fontSize: option(float),
   lineHeight: option(float),
   letterSpacing: option(float),
+  textTransform: option(string),
   color: option(string),
   extends: option(string),
 };
@@ -25,6 +26,7 @@ let emptyStyle = {
   fontSize: None,
   lineHeight: None,
   letterSpacing: None,
+  textTransform: None,
   color: None,
   extends: None,
 };
@@ -74,6 +76,7 @@ let parseFile = content => {
     lineHeight: json |> optional(field("lineHeight", Json.Decode.float)),
     letterSpacing:
       json |> optional(field("letterSpacing", Json.Decode.float)),
+    textTransform: json |> optional(field("textTransform", string)),
     color: json |> optional(field("color", string)),
     extends: json |> optional(field("extends", string)),
   };

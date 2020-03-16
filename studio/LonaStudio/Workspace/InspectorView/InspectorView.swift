@@ -264,6 +264,7 @@ final class InspectorView: NSBox {
             editor.fontSizeNumber = CGFloat(textStyle.fontSize ?? -1)
             editor.lineHeightNumber = CGFloat(textStyle.lineHeight ?? -1)
             editor.letterSpacingNumber = CGFloat(textStyle.letterSpacing ?? -1)
+            editor.textTransformText = textStyle.textTransform ?? ""
             editor.colorValue = textStyle.color ?? ""
 
             editor.onChangeIdText = { value in
@@ -323,6 +324,12 @@ final class InspectorView: NSBox {
             editor.onChangeLetterSpacingNumber = { value in
                 var updated = textStyle
                 updated.letterSpacing = Double(value)
+                self.onChangeContent?(.textStyle(updated), .canvas)
+            }
+            
+            editor.onChangeTextTransformText = { value in
+                var updated = textStyle
+                updated.textTransform = value
                 self.onChangeContent?(.textStyle(updated), .canvas)
             }
 
