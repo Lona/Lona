@@ -30,6 +30,7 @@ public enum PublishingState: Equatable {
     case createRepo(organization: LonaOrganization, githubOrganizations: [LonaOrganization])
     case needsRepoScope(organizationId: String, githubOrganizationId: GraphQLID, githubRepositoryName: String, isPrivate: Bool)
     case installLonaApp(repository: LonaRepository)
+    indirect case needsPublicKeyScope(next: PublishingState)
     case done
     case error(title: String, body: String)
 }
@@ -39,7 +40,8 @@ public enum PublishingError: Error {
     case noLocalChanges
     case noGitRoot
     case localRepositoryOutdated
-    case localGit(Error)
+    case localGit(GitError)
+    case ssh(SSHError)
     case apiResponse(message: String)
     case network(Error)
 
@@ -54,11 +56,20 @@ public enum PublishingError: Error {
         case .localRepositoryOutdated:
             return ("Local workspace outdated", "Remote changes have been made to your workspace. You must sync them locally before you can publish your local changes.")
         case .localGit(let error):
-            return ("Failed to run git command", "Error: \(error)")
+            switch error {
+            case .generic(let error):
+                return ("Failed to run git command", "Error: \(error)")
+            case .permissionDenied:
+                return ("Invalid credentials", error.localizedDescription)
+            case .invalidRemoteURL(let string):
+                return ("Invalid git remote URL", "Couldn't create a URL from: \(string)")
+            }
         case .apiResponse(let message):
             return ("Invalid API response", "Error: \(message)")
         case .network(let error):
             return ("Network error", "Are you sure you're connected to the internet?\n\nError: \(error)")
+        case .ssh(let error):
+            return ("SSH error", "We encountered an error setting up your SSH keys.\n\nError: \(error)")
         }
     }
 
@@ -109,7 +120,7 @@ class PublishingViewController: NSViewController {
             self.history = .init(PublishingError.noGitRoot.publishingState)
             return
         case .failure(let error):
-            self.history = .init(PublishingError.localGit(error).publishingState)
+            self.history = .init(PublishingError.localGit(.generic(error)).publishingState)
             return
         }
 
@@ -151,7 +162,7 @@ class PublishingViewController: NSViewController {
                 return Git.client.isLocalBranchUpToDateWithRemote().onResult({ result in
                     switch Git.client.hasUncommittedChanges() {
                     case .failure(let error):
-                        return .failure(.localGit(error))
+                        return .failure(.localGit(.generic(error)))
                     case .success(false):
                         return .failure(.noLocalChanges)
                     case .success(true):
@@ -167,6 +178,8 @@ class PublishingViewController: NSViewController {
                         return .success(.done)
                     case .success(false):
                         return .failure(.localRepositoryOutdated)
+                    case .failure(.permissionDenied):
+                        return .success(.needsPublicKeyScope(next: .done))
                     case .failure(let error):
                         return .failure(.localGit(error))
                     }
@@ -194,6 +207,46 @@ class PublishingViewController: NSViewController {
             initializeState()
         case .needsRepoScope(let value):
             createRepoOrRequestPermissions(organizationId: value.organizationId, githubOrganizationId: value.githubOrganizationId, githubRepositoryName: value.githubRepositoryName, isPrivate: value.isPrivate)
+        case .needsPublicKeyScope(let nextState):
+            switch SSH.localKey() {
+            case .success(nil):
+                switch SSH.createLocalKey() {
+                case .success(let key):
+                    let promise = self.uploadSSHKeyToGithub(key: key)
+
+                    self.flowView.withProgress(promise)
+
+                    promise.finalResult({ result in
+                        DispatchQueue.main.async {
+                            switch result {
+                            case .success:
+                                self.history = .init(nextState)
+                            case .failure(let error):
+                                self.history = .init(error.publishingState)
+                            }
+                        }
+                    })
+                case .failure(let error):
+                    self.history = .init(PublishingError.ssh(error).publishingState)
+                }
+            case .success(.some(let key)):
+                let promise = self.uploadSSHKeyToGithub(key: key)
+
+                self.flowView.withProgress(promise)
+
+                promise.finalResult({ result in
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success:
+                            self.history = .init(nextState)
+                        case .failure(let error):
+                            self.history = .init(.error(title: "Failed to configure SSH access", body: "\(error)"))
+                        }
+                    }
+                })
+            case .failure(let error):
+                history = .init(PublishingError.ssh(error).publishingState)
+            }
         default:
             initializeState()
         }
@@ -218,7 +271,7 @@ class PublishingViewController: NSViewController {
     }
 
     private func update() {
-        let newContentView = makeViewFromState()
+        let newContentView = makeViewFromState(state: history.current)
 
         switch history.current {
         case .needsAuth, .done, .error:
@@ -230,11 +283,13 @@ class PublishingViewController: NSViewController {
         flowView.isBackEnabled = history.canGoBack()
         flowView.isForwardEnabled = history.canGoForward()
 
-        // A small hack to prevent transitioning between the same State twice.
-        // This allows us to store screen variables (i.e. user input values) directly on the screen instance.
-        // If we need to allow transitions between the same State, a better approach could be to store screens variables
-        // in the State object, and update the old screen instance as needed, without unmounting.
-        if newContentView.className != flowView.screenView?.className {
+        if let newContentView = newContentView as? PublishInfo, let contentView = flowView.screenView as? PublishInfo {
+            contentView.parameters = newContentView.parameters
+        } else if newContentView.className != flowView.screenView?.className {
+            // A small hack to prevent transitioning between the same State twice.
+            // This allows us to store screen variables (i.e. user input values) directly on the screen instance.
+            // If we need to allow transitions between the same State, a better approach could be to store screens variables
+            // in the State object, and update the old screen instance as needed, without unmounting.
             flowView.screenView = newContentView
         }
 
@@ -251,14 +306,14 @@ class PublishingViewController: NSViewController {
         self.view.window?.setContentSize(.init(width: flowView.frame.width, height: 0))
     }
 
-    private func makeViewFromState() -> NSView {
-        guard let state = history.current else { return NSView() }
+    private func makeViewFromState(state: PublishingState?) -> NSView {
+        guard let state = state else { return NSView() }
 
         switch state {
         case .needsAuth:
             let screen = PublishNeedsAuth(workspaceName: workspaceName)
             screen.onClickGithubButton = {
-                if !NSWorkspace.shared.open(GITHUB_SIGNIN_URL(scopes: ["user:email", "read:org"])) {
+                if !NSWorkspace.shared.open(GITHUB_SIGNIN_URL()) {
                     print("couldn't open the  browser")
                 }
             }
@@ -271,8 +326,13 @@ class PublishingViewController: NSViewController {
         case .needsRepo(let organization):
             let screen = PublishNeedsRepo(workspaceName: workspaceName, organizationName: organization.name)
             screen.onClickCreateRepository = { [unowned self] in
-                self.fetchGitHubOrganizations().finalSuccess({ [weak self] organizations in
-                    self?.history.navigateTo(.createRepo(organization: organization, githubOrganizations: organizations))
+                self.fetchGitHubOrganizations().finalResult({ [weak self] result in
+                    switch result {
+                    case .success(let organizations):
+                        self?.history.navigateTo(.createRepo(organization: organization, githubOrganizations: organizations))
+                    case .failure(let error):
+                        Alert.runInformationalAlert(messageText: "Failed to read repositories from GitHub", informativeText: "Error: \(error)")
+                    }
                 })
             }
             screen.onClickUseExistingRepository = { [unowned self] in
@@ -404,16 +464,25 @@ If your team or company already has a Lona organization, an organization owner c
         case .needsRepoScope:
             let screen = PublishInfo(
                 titleText: "Give Lona permission to create a repo?",
-                bodyText: "Lona needs an additional permission to create a GitHub repository on your behalf. Press OK to open GitHub in your browser."
+                bodyText: "Lona needs an additional permission to create a GitHub repository on your behalf. Press OK to open GitHub in your browser.",
+                showsCancelButton: false,
+                doneButtonTitle: "Open github.com",
+                cancelButtonTitle: "OK"
             )
             screen.onClickDoneButton = {
-                if !NSWorkspace.shared.open(GITHUB_SIGNIN_URL(scopes: ["user:email", "read:org", "repo"])) {
+                if !NSWorkspace.shared.open(GITHUB_SIGNIN_URL(scopes: GITHUB_BASIC_AND_REPO_SCOPES)) {
                     Alert.runInformationalAlert(messageText: "Failed to open GitHub in your web browser")
                 }
             }
             return screen
         case .error(title: let title, body: let body):
-            let screen = PublishInfo(titleText: title, bodyText: body)
+            let screen = PublishInfo(
+                titleText: title,
+                bodyText: body,
+                showsCancelButton: false,
+                doneButtonTitle: "OK",
+                cancelButtonTitle: ""
+            )
             screen.onClickDoneButton = { [unowned self] in
                 self.dismiss(nil)
             }
@@ -424,7 +493,49 @@ If your team or company already has a Lona organization, an organization owner c
                 self.dismiss(nil)
             }
             return screen
+        case .needsPublicKeyScope:
+            let screen = PublishInfo(
+                titleText: "Permission denied by GitHub",
+                bodyText: """
+We weren't able to connect to GitHub. This usually means you don't have any git credentials configured on your computer.
+
+If you'd like, we can automatically configure your git credentials (SSH keys) on your GitHub account. Allow this?
+""",
+                showsCancelButton: false,
+                doneButtonTitle: "Give permission to set up SSH key",
+                cancelButtonTitle: ""
+            )
+
+            screen.onClickDoneButton = {
+                if !NSWorkspace.shared.open(GITHUB_SIGNIN_URL(scopes: GITHUB_BASIC_SCOPES + ["write:public_key"])) {
+                    Alert.runInformationalAlert(messageText: "Failed to open GitHub in your web browser")
+                    return
+                }
+            }
+
+            return screen
         }
+    }
+
+    private func uploadSSHKeyToGithub(key sshKey: String) -> Promise<Void, PublishingError> {
+        switch SSH.validateGithubKeyAndAddToHosts() {
+        case .success:
+            break
+        case .failure(let error):
+            return .failure(PublishingError.ssh(error))
+        }
+
+        let requestPromise: Promise<Data, NSError> = RESTClient.githubV3.post(
+            path: "/user/keys",
+            body: CSData.Object([
+                "title": "LonaStudio".toData(),
+                "key": sshKey.toData()
+            ]).toData()!
+        )
+
+        return requestPromise
+            .onSuccess({ _ in return .success(()) })
+            .onFailure({ error in return .failure(PublishingError.network(error)) })
     }
 
     private func createRepoOrRequestPermissions(organizationId: String, githubOrganizationId: GraphQLID, githubRepositoryName: String, isPrivate: Bool) {
@@ -476,18 +587,26 @@ If your team or company already has a Lona organization, an organization owner c
 
 extension PublishingViewController {
     private func addRemoteAndPush(url: URL) {
-        let gitResult = Git.client
-            .addRemote(name: Git.defaultOriginName, url: Git.URL.format(url, as: .ssh)!)
-            .flatMap({ _ in Git.client.push(repository: Git.defaultOriginName, refspec: "HEAD") })
+        let sshURL = Git.URL.format(url, as: .ssh)!
 
-        switch gitResult {
+        switch Git.client.addRemote(name: Git.defaultOriginName, url: sshURL) {
         case .success:
             break
         case .failure(let error):
             Swift.print("Failed to add git remote", url, error)
+            self.history = .init(PublishingError.localGit(.generic(error)).publishingState)
+            return
         }
 
-        self.history = .init(.done)
+        switch Git.client.push(repository: Git.defaultOriginName, refspec: "HEAD") {
+        case .success:
+            self.history = .init(.done)
+        case .failure(.permissionDenied):
+            self.history = .init(.needsPublicKeyScope(next: .done))
+        case .failure(let error):
+            Swift.print(error)
+            self.history = .init(PublishingError.localGit(error).publishingState)
+        }
     }
 }
 

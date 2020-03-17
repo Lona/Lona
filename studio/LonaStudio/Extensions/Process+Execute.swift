@@ -8,6 +8,18 @@
 
 import Foundation
 
+public struct ProcessError: Error {
+    public var command: String
+    public var code: Int
+    public var output: Data
+    public var errorOutput: Data
+
+    public var localizedDescription: String {
+        let outputString = output.utf8String() ?? ""
+        return "`\(command)` failed with exit code \(code). \(outputString)"
+    }
+}
+
 extension Process {
 
     public struct Configuration {
@@ -16,8 +28,8 @@ extension Process {
         public var currentDirectoryPath: String?
     }
 
-    public static func runSync(configuration: Configuration, inputData: Data = Data()) -> Result<Data, NSError> {
-        var result: Result<Data, NSError>?
+    public static func runSync(_ configuration: Configuration, inputData: Data = Data()) -> Result<Data, ProcessError> {
+        var result: Result<Data, ProcessError>?
 
         _run(sync: true, configuration: configuration, inputData: inputData).finalResult { processResult in
             result = processResult
@@ -26,15 +38,16 @@ extension Process {
         return result!
     }
 
-    public static func run(configuration: Configuration, inputData: Data = Data()) -> Promise<Data, NSError> {
+    public static func run(_ configuration: Configuration, inputData: Data = Data()) -> Promise<Data, ProcessError> {
         return _run(sync: false, configuration: configuration, inputData: inputData)
     }
 
-    private static func _run(sync: Bool, configuration: Configuration, inputData: Data) -> Promise<Data, NSError> {
+    private static func _run(sync: Bool, configuration: Configuration, inputData: Data) -> Promise<Data, ProcessError> {
         return .result { complete in
             let process = makeProcess(configuration: configuration)
 
             var buffer = Data()
+            var stderrBuffer = Data()
 
             process.execute(
                 sync: sync,
@@ -43,12 +56,17 @@ extension Process {
                     process.pipeFromStandardOutput(onData: { data in
                         buffer += data
                     })
+                    process.pipeFromStandardError(onData: { data in
+                        stderrBuffer += data
+                    })
                 }),
                 onComplete: ({ _ in
                     if process.terminationStatus == 0 {
                         complete(.success(buffer))
                     } else {
-                        complete(.failure(NSError("Node process terminated with code: \(process.terminationStatus)")))
+                        let commandString = ([process.launchPath ?? ""] + (process.arguments ?? [])).joined(separator: " ")
+                        let error = ProcessError(command: commandString, code: Int(process.terminationStatus), output: buffer, errorOutput: stderrBuffer)
+                        complete(.failure(error))
                     }
                 })
             )
@@ -67,9 +85,11 @@ extension Process {
 
         let stdin = Pipe()
         let stdout = Pipe()
+        let stderr = Pipe()
 
         process.standardInput = stdin
         process.standardOutput = stdout
+        process.standardError = stderr
 
         return process
     }
@@ -111,6 +131,12 @@ extension Process {
 
     public func pipeFromStandardOutput(onData: @escaping (Data) -> Void) {
         guard let outputPipe = standardOutput as? Pipe else { fatalError("Invalid stdout") }
+
+        outputPipe.fileHandleForReading.readabilityHandler = { handle in onData(handle.availableData) }
+    }
+
+    public func pipeFromStandardError(onData: @escaping (Data) -> Void) {
+        guard let outputPipe = standardError as? Pipe else { fatalError("Invalid stderr") }
 
         outputPipe.fileHandleForReading.readabilityHandler = { handle in onData(handle.availableData) }
     }
