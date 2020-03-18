@@ -52,9 +52,47 @@ extension Network: HTTPNetworkTransportPreflightDelegate {
     if networkTransport.clientName == "GitHub API Transport" {
       // We need this to get the check suites
       request.addValue("application/vnd.github.antiope-preview+json", forHTTPHeaderField: "Accept")
+
+      // this will be up to date when using *AfterGitHubAuth
+      // might not be otherwise
       if let githubToken = Account.shared.cachedMe?.githubAccessToken {
         request.addValue("Bearer \(githubToken)", forHTTPHeaderField: "Authorization")
       }
     }
+  }
+}
+
+/// Support waiting for the GitHub token to be fetched
+extension ApolloClient {
+  @discardableResult
+  public func fetchAfterGitHubAuth<Query: GraphQLQuery>(
+    query: Query,
+    cachePolicy: CachePolicy = .returnCacheDataElseFetch,
+    context: UnsafeMutableRawPointer? = nil,x
+    queue: DispatchQueue = DispatchQueue.main,
+    resultHandler: GraphQLResultHandler<Query.Data>? = nil
+  ) -> Cancellable {
+    Account.shared.me().finalResult({_ in
+      self.fetch(query: query, cachePolicy: cachePolicy, context: context, queue: queue, resultHandler: resultHandler)
+    })
+
+    // TODO: return the result of self.fetch when available
+    return EmptyCancellable()
+  }
+
+  @discardableResult
+  public func performAfterGitHubAuth<Mutation: GraphQLMutation>(
+    mutation: Mutation,
+    cachePolicy: CachePolicy = .returnCacheDataElseFetch,
+    context: UnsafeMutableRawPointer? = nil,x
+    queue: DispatchQueue = DispatchQueue.main,
+    resultHandler: GraphQLResultHandler<Mutation.Data>? = nil
+  ) -> Cancellable {
+    Account.shared.me().finalResult({_ in
+      self.perform(mutation: mutation, context: context, queue: queue, resultHandler: resultHandler)
+    })
+
+    // TODO: return the result of self.perform when available
+    return EmptyCancellable()
   }
 }
