@@ -511,7 +511,7 @@ extension PublishingViewController {
         return .result { complete in
             self.showsProgressIndicator = true
 
-            Network.shared.github.fetchAfterGitHubAuth(query: GetOrganizationsQuery()) { [weak self] result in
+            Network.shared.github.fetch(query: GetOrganizationsQuery()) { [weak self] result in
                 guard let self = self else { return }
 
                 self.showsProgressIndicator = false
@@ -553,7 +553,7 @@ extension PublishingViewController {
                 visibility: isPrivate ? .private : .public
             )
 
-            Network.shared.github.performAfterGitHubAuth(mutation: mutation) { [weak self] result in
+            Network.shared.github.perform(mutation: mutation) { [weak self] result in
                 guard let self = self else { return }
 
                 switch result {
