@@ -52,6 +52,17 @@ extension Network: HTTPNetworkTransportPreflightDelegate {
     if networkTransport.clientName == "GitHub API Transport" {
       // We need this to get the check suites
       request.addValue("application/vnd.github.antiope-preview+json", forHTTPHeaderField: "Accept")
+
+      let group = DispatchGroup()
+      group.enter()
+
+      Account.shared.me().finalResult({_ in
+        group.leave()
+      })
+
+      // wait for the Lona account to be fetched
+      group.wait()
+
       if let githubToken = Account.shared.cachedMe?.githubAccessToken {
         request.addValue("Bearer \(githubToken)", forHTTPHeaderField: "Authorization")
       }
