@@ -69,7 +69,7 @@ class Account {
   private var pendingMePromise: Promise<GetMeQuery.Data.GetMe, NSError>?
 
   func me(forceRefresh: Bool = false) -> Promise<GetMeQuery.Data.GetMe, NSError> {
-    if let cachedMe = cachedMe, (!forceRefresh && pendingMePromise != nil) {
+    if let cachedMe = cachedMe, (!forceRefresh && pendingMePromise == nil) {
       return .success(cachedMe)
     }
 
