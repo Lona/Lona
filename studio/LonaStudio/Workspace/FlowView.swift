@@ -198,16 +198,6 @@ class FlowView: NSBox {
 // MARK: - Promise Helper
 
 extension FlowView {
-    public func withProgress<S, F>(_ f: () -> Promise<S, F>) -> Promise<S, F> {
-        self.showsProgressIndicator = true
-
-        return f().onResult({ result in
-            self.showsProgressIndicator = false
-
-            return .result(result)
-        })
-    }
-
     public func withProgress<S, F>(_ promise: Promise<S, F>) {
         self.showsProgressIndicator = true
 

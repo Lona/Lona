@@ -65,6 +65,9 @@ extension Process {
                         complete(.success(buffer))
                     } else {
                         let commandString = ([process.launchPath ?? ""] + (process.arguments ?? [])).joined(separator: " ")
+
+                        Swift.print("Command failed: \(commandString)\n\(buffer.utf8String() ?? "")\n\(stderrBuffer.utf8String() ?? "")")
+
                         let error = ProcessError(command: commandString, code: Int(process.terminationStatus), output: buffer, errorOutput: stderrBuffer)
                         complete(.failure(error))
                     }

@@ -119,7 +119,11 @@ class OpenWorkspaceViewController: NSViewController {
                 }
             }
             screen.onClickRemoteButton = {
-                self.flowView.withProgress(PublishingViewController.fetchRepositoriesAndOrganizations).finalResult({ result in
+                let promise = PublishingViewController.fetchRepositoriesAndOrganizations()
+
+                self.flowView.withProgress(promise)
+
+                promise.finalResult({ result in
                     switch result {
                     case .failure(let error):
                         Alert.runInformationalAlert(messageText: "Failed to connect to GitHub", informativeText: "Are you connected to the internet? \(error)")

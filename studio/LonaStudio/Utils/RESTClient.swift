@@ -86,11 +86,7 @@ extension RESTClient {
 extension URLRequest {
     func send() -> Promise<(URLResponse, Data), NSError> {
         return .result({ complete in
-            Swift.print("Request", self.url?.absoluteString ?? "")
-
             let task = URLSession.shared.dataTask(with: self, completionHandler: { data, response, error in
-                Swift.print("Response", self.url?.absoluteString ?? "", data, error)
-
                 if let error = error {
                     complete(.failure(error as NSError))
                     return

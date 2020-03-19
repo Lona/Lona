@@ -30,7 +30,7 @@ public enum PublishingState: Equatable {
     case createRepo(organization: LonaOrganization, githubOrganizations: [LonaOrganization])
     case needsRepoScope(organizationId: String, githubOrganizationId: GraphQLID, githubRepositoryName: String, isPrivate: Bool)
     case installLonaApp(repository: LonaRepository)
-    indirect case needsPublicKeyScope(next: PublishingState)
+    indirect case needsPublicKeyScope(isInitialPush: Bool)
     case done
     case error(title: String, body: String)
 }
@@ -179,7 +179,7 @@ class PublishingViewController: NSViewController {
                     case .success(false):
                         return .failure(.localRepositoryOutdated)
                     case .failure(.permissionDenied):
-                        return .success(.needsPublicKeyScope(next: .done))
+                        return .success(.needsPublicKeyScope(isInitialPush: false))
                     case .failure(let error):
                         return .failure(.localGit(error))
                     }
@@ -207,12 +207,22 @@ class PublishingViewController: NSViewController {
             initializeState()
         case .needsRepoScope(let value):
             createRepoOrRequestPermissions(organizationId: value.organizationId, githubOrganizationId: value.githubOrganizationId, githubRepositoryName: value.githubRepositoryName, isPrivate: value.isPrivate)
-        case .needsPublicKeyScope(let nextState):
+        case .needsPublicKeyScope:
             switch SSH.localKey() {
             case .success(nil):
                 switch SSH.createLocalKey() {
                 case .success(let key):
-                    let promise = self.uploadSSHKeyToGithub(key: key)
+                    let promise: Promise<Void, PublishingError> = self.uploadSSHKeyToGithub(key: key)
+                        .onSuccess({ _ in
+                            _ = Git.client.addAllFiles()
+                            _ = Git.client.commit(message: "Updates")
+
+                            let result = Git.client.push(repository: Git.defaultOriginName, refspec: "HEAD")
+                                .map({ _ in () })
+                                .mapError({ error in PublishingError.localGit(error) })
+
+                            return .result(result)
+                        })
 
                     self.flowView.withProgress(promise)
 
@@ -220,7 +230,7 @@ class PublishingViewController: NSViewController {
                         DispatchQueue.main.async {
                             switch result {
                             case .success:
-                                self.history = .init(nextState)
+                                self.history = .init(.done)
                             case .failure(let error):
                                 self.history = .init(error.publishingState)
                             }
@@ -230,7 +240,17 @@ class PublishingViewController: NSViewController {
                     self.history = .init(PublishingError.ssh(error).publishingState)
                 }
             case .success(.some(let key)):
-                let promise = self.uploadSSHKeyToGithub(key: key)
+                let promise: Promise<Void, PublishingError> = self.uploadSSHKeyToGithub(key: key)
+                    .onSuccess({ _ in
+                        _ = Git.client.addAllFiles()
+                        _ = Git.client.commit(message: "Updates")
+
+                        let result = Git.client.push(repository: Git.defaultOriginName, refspec: "HEAD")
+                            .map({ _ in () })
+                            .mapError({ error in PublishingError.localGit(error) })
+
+                        return .result(result)
+                    })
 
                 self.flowView.withProgress(promise)
 
@@ -238,7 +258,7 @@ class PublishingViewController: NSViewController {
                     DispatchQueue.main.async {
                         switch result {
                         case .success:
-                            self.history = .init(nextState)
+                            self.history = .init(.done)
                         case .failure(let error):
                             self.history = .init(.error(title: "Failed to configure SSH access", body: "\(error)"))
                         }
@@ -347,13 +367,20 @@ class PublishingViewController: NSViewController {
             screen.onClickSubmitButton = {
                 guard let url = URL(string: screen.repositoryName) else { return }
 
-                self.flowView.withProgress(
-                    self.addRepo(organizationId: organization.id, githubRepoURL: url)
-                        .onSuccess({ (_: Void) -> Promise<Void, NSError> in
-                            self.addRemoteAndPush(url: url)
-                            return .success(())
-                        })
-                )
+                let promise = self.addRepo(organizationId: organization.id, githubRepoURL: url)
+
+                self.flowView.withProgress(promise)
+
+                promise.finalSuccess({ _ in
+                    DispatchQueue.main.async {
+                        switch self.addRemoteAndPush(url: url) {
+                        case .success(let state):
+                            self.history = .init(state)
+                        case .failure(let error):
+                            self.history = .init(error.publishingState)
+                        }
+                    }
+                })
             }
             return screen
         case .createRepo(let organization, let githubOrganizations):
@@ -441,15 +468,26 @@ If your team or company already has a Lona organization, an organization owner c
         case .installLonaApp(repository: let repository):
             let screen = PublishLonaApp()
             screen.onClickSubmit = { [unowned self] in
-                self.flowView.withProgress(PublishingViewController.fetchRepositoriesAndOrganizations).finalResult({ result in
-                    switch result {
-                    case .failure(let error):
-                        Alert.runInformationalAlert(messageText: "Failed to connect to GitHub", informativeText: "Are you connected to the internet? \(error)")
-                    case .success(let repositories, _):
-                        if repositories.contains(where: { Git.URL.isSameGitRepository($0.url, repository.url) && $0.activated }) {
-                            self.addRemoteAndPush(url: repository.url)
-                        } else {
-                            Alert.runInformationalAlert(messageText: "Lona plugin not installed", informativeText: "Are you sure you installed the Lona GitHub app on the correct repository?")
+                let promise = PublishingViewController.fetchRepositoriesAndOrganizations()
+
+                self.flowView.withProgress(promise)
+
+                promise.finalResult({ result in
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .failure(let error):
+                            Alert.runInformationalAlert(messageText: "Failed to connect to GitHub", informativeText: "Are you connected to the internet? \(error)")
+                        case .success(let repositories, _):
+                            if repositories.contains(where: { Git.URL.isSameGitRepository($0.url, repository.url) && $0.activated }) {
+                                switch self.addRemoteAndPush(url: repository.url) {
+                                case .success(let state):
+                                    self.history = .init(state)
+                                case .failure(let error):
+                                    self.history = .init(error.publishingState)
+                                }
+                            } else {
+                                Alert.runInformationalAlert(messageText: "Lona plugin not installed", informativeText: "Are you sure you installed the Lona GitHub app on the correct repository?")
+                            }
                         }
                     }
                 })
@@ -549,21 +587,32 @@ If you'd like, we can automatically configure your git credentials (SSH keys) on
 
             switch result {
             case .success(let url):
-                self.flowView.withProgress(PublishingViewController.fetchRepositoriesAndOrganizations).finalResult({ [weak self] repositoriesAndOrganizations in
+                let promise = PublishingViewController.fetchRepositoriesAndOrganizations()
+
+                self.flowView.withProgress(promise)
+
+                promise.finalResult({ [weak self] repositoriesAndOrganizations in
                     guard let self = self else { return }
 
-                    switch repositoriesAndOrganizations {
-                    case .failure(let error):
-                        self.history = .init(.error(title: "Failed to find connected repository", body: "Are you sure you're connected to the internet? \(error)"))
-                    case .success(let repositories, _):
-                        if let found = repositories.first(where: { Git.URL.isSameGitRepository($0.url, url) }) {
-                            if found.activated {
-                                self.addRemoteAndPush(url: url)
+                    DispatchQueue.main.async {
+                        switch repositoriesAndOrganizations {
+                        case .failure(let error):
+                            self.history = .init(.error(title: "Failed to find connected repository", body: "Are you sure you're connected to the internet? \(error)"))
+                        case .success(let repositories, _):
+                            if let found = repositories.first(where: { Git.URL.isSameGitRepository($0.url, url) }) {
+                                if found.activated {
+                                    switch self.addRemoteAndPush(url: url) {
+                                    case .success(let state):
+                                        self.history = .init(state)
+                                    case .failure(let error):
+                                        self.history = .init(error.publishingState)
+                                    }
+                                } else {
+                                    self.history.navigateTo(.installLonaApp(repository: found))
+                                }
                             } else {
-                                self.history.navigateTo(.installLonaApp(repository: found))
+                                Alert.runInformationalAlert(messageText: "Failed to find repository", informativeText: "This repository doesn't seem to be connected to Lona.")
                             }
-                        } else {
-                            Alert.runInformationalAlert(messageText: "Failed to find repository", informativeText: "This repository doesn't seem to be connected to Lona.")
                         }
                     }
                 })
@@ -586,7 +635,7 @@ If you'd like, we can automatically configure your git credentials (SSH keys) on
 // MARK: - Git
 
 extension PublishingViewController {
-    private func addRemoteAndPush(url: URL) {
+    private func addRemoteAndPush(url: URL) -> Result<PublishingState, PublishingError> {
         let sshURL = Git.URL.format(url, as: .ssh)!
 
         switch Git.client.addRemote(name: Git.defaultOriginName, url: sshURL) {
@@ -594,18 +643,17 @@ extension PublishingViewController {
             break
         case .failure(let error):
             Swift.print("Failed to add git remote", url, error)
-            self.history = .init(PublishingError.localGit(.generic(error)).publishingState)
-            return
+            return .failure(PublishingError.localGit(.generic(error)))
         }
 
         switch Git.client.push(repository: Git.defaultOriginName, refspec: "HEAD") {
         case .success:
-            self.history = .init(.done)
+            return .success(.done)
         case .failure(.permissionDenied):
-            self.history = .init(.needsPublicKeyScope(next: .done))
+            return .success(.needsPublicKeyScope(isInitialPush: true))
         case .failure(let error):
             Swift.print(error)
-            self.history = .init(PublishingError.localGit(error).publishingState)
+            return .failure(PublishingError.localGit(error))
         }
     }
 }
