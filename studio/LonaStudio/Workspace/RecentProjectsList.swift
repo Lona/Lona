@@ -224,9 +224,7 @@ class RecentProjectsList: NSBox {
 
         recentProjectsTableView.projects = DocumentController.shared.recentDocumentURLs
         recentProjectsTableView.onOpenProject = { filename in
-            let application = NSApplication.shared
-            let appDelegate = application.delegate as? AppDelegate
-            _ = appDelegate?.application(application, openFile: filename.path)
+            DocumentController.shared.openDocument(withContentsOf: filename, display: true)
         }
 
         DocumentController.shared.recentProjectsEmitter.addListener { [unowned self] projects in

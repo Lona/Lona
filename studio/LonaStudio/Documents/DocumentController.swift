@@ -58,14 +58,18 @@ class DocumentController: NSDocumentController {
     override func openDocument(
         withContentsOf url: URL,
         display displayDocument: Bool,
-        completionHandler: @escaping (NSDocument?, Bool, Error?) -> Void
+        completionHandler: ((NSDocument?, Bool, Error?) -> Void)?
     ) {
         self._openDocument(withContentsOf: url, display: displayDocument, completionHandler: {
             document, documentWasAlreadyOpen, error in
             if displayDocument {
+                // hide the welcome window
+                let appDelegate = NSApplication.shared.delegate as? AppDelegate
+                appDelegate?.hideWelcomeWindow(self)
+
                 self.history.navigateTo(url)
             }
-            completionHandler(document, documentWasAlreadyOpen, error)
+            completionHandler?(document, documentWasAlreadyOpen, error)
         })
     }
 

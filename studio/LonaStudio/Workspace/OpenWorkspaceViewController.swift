@@ -135,11 +135,7 @@ class OpenWorkspaceViewController: NSViewController {
             screen.onClickLocalButton = {
                 guard let url = WelcomeWindow.openWorkspaceDialog() else { return }
 
-                DocumentController.shared.openDocument(withContentsOf: url, display: true, completionHandler: { [unowned self] document, _, _ in
-                    if let _ = document {
-                        self.onRequestClose?()
-                    }
-                })
+                DocumentController.shared.openDocument(withContentsOf: url, display: true)
             }
             return screen
         case .chooseRepo(let repositories):
@@ -194,11 +190,7 @@ class OpenWorkspaceViewController: NSViewController {
                     Alert.runInformationalAlert(messageText: "Failed to sync \(repository.url.lastPathComponent)", informativeText: "Git clone failed. Error: \(error)")
                 case .success:
                     let initialDocumentURL = URL(fileURLWithPath: screen.localPath).appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)
-                    DocumentController.shared.openDocument(withContentsOf: initialDocumentURL, display: true, completionHandler: { [unowned self] document, _, _ in
-                        if let _ = document {
-                            self.onRequestClose?()
-                        }
-                    })
+                    DocumentController.shared.openDocument(withContentsOf: initialDocumentURL, display: true)
                 }
             }
             return screen
