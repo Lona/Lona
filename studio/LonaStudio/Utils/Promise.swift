@@ -154,6 +154,22 @@ extension Promise where Success == Void {
     }
 }
 
+// MARK: Result Utilities
+
+extension Promise {
+    public func map<S2>(_ mapFunction: @escaping (Success) -> S2) -> Promise<S2, Failure> {
+        return self.onSuccess { (value: Success) -> Promise<S2, Failure> in
+            return Promise<S2, Failure>.success(mapFunction(value))
+        }
+    }
+
+    public func mapError<F2>(_ mapErrorFunction: @escaping (Failure) -> F2) -> Promise<Success, F2> {
+        return self.onFailure { (error: Failure) -> Promise<Success, F2> in
+            return Promise<Success, F2>.failure(mapErrorFunction(error))
+        }
+    }
+}
+
 // MARK: Parallel
 
 extension Promise {

@@ -186,21 +186,18 @@ class FlowView: NSBox {
             window.setContentSize(.zero)
         }
     }
+
+    // Prevent the user from taking any action when awaiting an async event
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        if showsProgressIndicator { return nil }
+
+        return super.hitTest(point)
+    }
 }
 
 // MARK: - Promise Helper
 
 extension FlowView {
-    public func withProgress<S, F>(_ f: () -> Promise<S, F>) -> Promise<S, F> {
-        self.showsProgressIndicator = true
-
-        return f().onResult({ result in
-            self.showsProgressIndicator = false
-
-            return .result(result)
-        })
-    }
-
     public func withProgress<S, F>(_ promise: Promise<S, F>) {
         self.showsProgressIndicator = true
 

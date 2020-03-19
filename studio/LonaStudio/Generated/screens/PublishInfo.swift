@@ -18,8 +18,21 @@ public class PublishInfo: NSBox {
     update()
   }
 
-  public convenience init(titleText: String, bodyText: String) {
-    self.init(Parameters(titleText: titleText, bodyText: bodyText))
+  public convenience init(
+    titleText: String,
+    bodyText: String,
+    showsCancelButton: Bool,
+    doneButtonTitle: String,
+    cancelButtonTitle: String)
+  {
+    self
+      .init(
+        Parameters(
+          titleText: titleText,
+          bodyText: bodyText,
+          showsCancelButton: showsCancelButton,
+          doneButtonTitle: doneButtonTitle,
+          cancelButtonTitle: cancelButtonTitle))
   }
 
   public convenience init() {
@@ -62,6 +75,38 @@ public class PublishInfo: NSBox {
     set { parameters.onClickDoneButton = newValue }
   }
 
+  public var showsCancelButton: Bool {
+    get { return parameters.showsCancelButton }
+    set {
+      if parameters.showsCancelButton != newValue {
+        parameters.showsCancelButton = newValue
+      }
+    }
+  }
+
+  public var doneButtonTitle: String {
+    get { return parameters.doneButtonTitle }
+    set {
+      if parameters.doneButtonTitle != newValue {
+        parameters.doneButtonTitle = newValue
+      }
+    }
+  }
+
+  public var cancelButtonTitle: String {
+    get { return parameters.cancelButtonTitle }
+    set {
+      if parameters.cancelButtonTitle != newValue {
+        parameters.cancelButtonTitle = newValue
+      }
+    }
+  }
+
+  public var onClickCancelButton: (() -> Void)? {
+    get { return parameters.onClickCancelButton }
+    set { parameters.onClickCancelButton = newValue }
+  }
+
   public var parameters: Parameters {
     didSet {
       if parameters != oldValue {
@@ -78,11 +123,26 @@ public class PublishInfo: NSBox {
   private var bodyTextView = LNATextField(labelWithString: "")
   private var vSpacer1View = NSBox()
   private var view1View = NSBox()
+  private var cancelContainerView = NSBox()
+  private var cancelButtonView = PrimaryButton()
+  private var view3View = NSBox()
   private var viewView = NSBox()
   private var doneButtonView = PrimaryButton()
 
   private var publishTextViewTextStyle = TextStyles.titleLight
   private var bodyTextViewTextStyle = TextStyles.body
+
+  private var view3ViewLeadingAnchorView1ViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var cancelContainerViewHeightAnchorParentConstraint: NSLayoutConstraint?
+  private var cancelContainerViewLeadingAnchorView1ViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var cancelContainerViewTopAnchorView1ViewTopAnchorConstraint: NSLayoutConstraint?
+  private var cancelContainerViewBottomAnchorView1ViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var view3ViewLeadingAnchorCancelContainerViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var cancelContainerViewWidthAnchorConstraint: NSLayoutConstraint?
+  private var cancelButtonViewTopAnchorCancelContainerViewTopAnchorConstraint: NSLayoutConstraint?
+  private var cancelButtonViewBottomAnchorCancelContainerViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var cancelButtonViewLeadingAnchorCancelContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var cancelButtonViewTrailingAnchorCancelContainerViewTrailingAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
     boxType = .custom
@@ -102,6 +162,12 @@ public class PublishInfo: NSBox {
     view1View.borderType = .noBorder
     view1View.contentViewMargins = .zero
     publishTextView.lineBreakMode = .byWordWrapping
+    cancelContainerView.boxType = .custom
+    cancelContainerView.borderType = .noBorder
+    cancelContainerView.contentViewMargins = .zero
+    view3View.boxType = .custom
+    view3View.borderType = .noBorder
+    view3View.contentViewMargins = .zero
     viewView.boxType = .custom
     viewView.borderType = .noBorder
     viewView.contentViewMargins = .zero
@@ -112,7 +178,10 @@ public class PublishInfo: NSBox {
     addSubview(vSpacer1View)
     addSubview(view1View)
     titleContainerView.addSubview(publishTextView)
+    view1View.addSubview(cancelContainerView)
+    view1View.addSubview(view3View)
     view1View.addSubview(viewView)
+    cancelContainerView.addSubview(cancelButtonView)
     viewView.addSubview(doneButtonView)
 
     publishTextViewTextStyle = TextStyles.titleLight
@@ -121,7 +190,6 @@ public class PublishInfo: NSBox {
     bodyTextViewTextStyle = TextStyles.body
     bodyTextView.attributedStringValue = bodyTextViewTextStyle.apply(to: bodyTextView.attributedStringValue)
     vSpacer1View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    doneButtonView.titleText = "OK"
   }
 
   private func setUpConstraints() {
@@ -132,7 +200,10 @@ public class PublishInfo: NSBox {
     vSpacer1View.translatesAutoresizingMaskIntoConstraints = false
     view1View.translatesAutoresizingMaskIntoConstraints = false
     publishTextView.translatesAutoresizingMaskIntoConstraints = false
+    cancelContainerView.translatesAutoresizingMaskIntoConstraints = false
+    view3View.translatesAutoresizingMaskIntoConstraints = false
     viewView.translatesAutoresizingMaskIntoConstraints = false
+    cancelButtonView.translatesAutoresizingMaskIntoConstraints = false
     doneButtonView.translatesAutoresizingMaskIntoConstraints = false
 
     let titleContainerViewTopAnchorConstraint = titleContainerView.topAnchor.constraint(equalTo: topAnchor)
@@ -165,9 +236,18 @@ public class PublishInfo: NSBox {
     let vSpacerViewWidthAnchorConstraint = vSpacerView.widthAnchor.constraint(equalToConstant: 0)
     let vSpacer1ViewHeightAnchorConstraint = vSpacer1View.heightAnchor.constraint(equalToConstant: 72)
     let vSpacer1ViewWidthAnchorConstraint = vSpacer1View.widthAnchor.constraint(equalToConstant: 0)
+    let view3ViewHeightAnchorParentConstraint = view3View
+      .heightAnchor
+      .constraint(lessThanOrEqualTo: view1View.heightAnchor)
+    let viewViewHeightAnchorParentConstraint = viewView
+      .heightAnchor
+      .constraint(lessThanOrEqualTo: view1View.heightAnchor)
+    let view3ViewTopAnchorConstraint = view3View.topAnchor.constraint(equalTo: view1View.topAnchor)
+    let view3ViewBottomAnchorConstraint = view3View.bottomAnchor.constraint(equalTo: view1View.bottomAnchor)
+    let viewViewTrailingAnchorConstraint = viewView.trailingAnchor.constraint(equalTo: view1View.trailingAnchor)
+    let viewViewLeadingAnchorConstraint = viewView.leadingAnchor.constraint(equalTo: view3View.trailingAnchor)
     let viewViewTopAnchorConstraint = viewView.topAnchor.constraint(equalTo: view1View.topAnchor)
     let viewViewBottomAnchorConstraint = viewView.bottomAnchor.constraint(equalTo: view1View.bottomAnchor)
-    let viewViewTrailingAnchorConstraint = viewView.trailingAnchor.constraint(equalTo: view1View.trailingAnchor)
     let viewViewWidthAnchorConstraint = viewView.widthAnchor.constraint(equalToConstant: 250)
     let doneButtonViewTopAnchorConstraint = doneButtonView.topAnchor.constraint(equalTo: viewView.topAnchor)
     let doneButtonViewBottomAnchorConstraint = doneButtonView.bottomAnchor.constraint(equalTo: viewView.bottomAnchor)
@@ -175,51 +255,151 @@ public class PublishInfo: NSBox {
     let doneButtonViewTrailingAnchorConstraint = doneButtonView
       .trailingAnchor
       .constraint(equalTo: viewView.trailingAnchor)
+    let view3ViewLeadingAnchorView1ViewLeadingAnchorConstraint = view3View
+      .leadingAnchor
+      .constraint(equalTo: view1View.leadingAnchor)
+    let cancelContainerViewHeightAnchorParentConstraint = cancelContainerView
+      .heightAnchor
+      .constraint(lessThanOrEqualTo: view1View.heightAnchor)
+    let cancelContainerViewLeadingAnchorView1ViewLeadingAnchorConstraint = cancelContainerView
+      .leadingAnchor
+      .constraint(equalTo: view1View.leadingAnchor)
+    let cancelContainerViewTopAnchorView1ViewTopAnchorConstraint = cancelContainerView
+      .topAnchor
+      .constraint(equalTo: view1View.topAnchor)
+    let cancelContainerViewBottomAnchorView1ViewBottomAnchorConstraint = cancelContainerView
+      .bottomAnchor
+      .constraint(equalTo: view1View.bottomAnchor)
+    let view3ViewLeadingAnchorCancelContainerViewTrailingAnchorConstraint = view3View
+      .leadingAnchor
+      .constraint(equalTo: cancelContainerView.trailingAnchor)
+    let cancelContainerViewWidthAnchorConstraint = cancelContainerView.widthAnchor.constraint(equalToConstant: 250)
+    let cancelButtonViewTopAnchorCancelContainerViewTopAnchorConstraint = cancelButtonView
+      .topAnchor
+      .constraint(equalTo: cancelContainerView.topAnchor)
+    let cancelButtonViewBottomAnchorCancelContainerViewBottomAnchorConstraint = cancelButtonView
+      .bottomAnchor
+      .constraint(equalTo: cancelContainerView.bottomAnchor)
+    let cancelButtonViewLeadingAnchorCancelContainerViewLeadingAnchorConstraint = cancelButtonView
+      .leadingAnchor
+      .constraint(equalTo: cancelContainerView.leadingAnchor)
+    let cancelButtonViewTrailingAnchorCancelContainerViewTrailingAnchorConstraint = cancelButtonView
+      .trailingAnchor
+      .constraint(equalTo: cancelContainerView.trailingAnchor)
 
     publishTextViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
+    view3ViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
+    viewViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
+    cancelContainerViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 
-    NSLayoutConstraint.activate([
-      titleContainerViewTopAnchorConstraint,
-      titleContainerViewLeadingAnchorConstraint,
-      titleContainerViewTrailingAnchorConstraint,
-      vSpacerViewTopAnchorConstraint,
-      vSpacerViewLeadingAnchorConstraint,
-      bodyTextViewTopAnchorConstraint,
-      bodyTextViewLeadingAnchorConstraint,
-      bodyTextViewTrailingAnchorConstraint,
-      vSpacer1ViewTopAnchorConstraint,
-      vSpacer1ViewLeadingAnchorConstraint,
-      view1ViewBottomAnchorConstraint,
-      view1ViewTopAnchorConstraint,
-      view1ViewLeadingAnchorConstraint,
-      view1ViewTrailingAnchorConstraint,
-      publishTextViewHeightAnchorParentConstraint,
-      publishTextViewLeadingAnchorConstraint,
-      publishTextViewTopAnchorConstraint,
-      publishTextViewBottomAnchorConstraint,
-      vSpacerViewHeightAnchorConstraint,
-      vSpacerViewWidthAnchorConstraint,
-      vSpacer1ViewHeightAnchorConstraint,
-      vSpacer1ViewWidthAnchorConstraint,
-      viewViewTopAnchorConstraint,
-      viewViewBottomAnchorConstraint,
-      viewViewTrailingAnchorConstraint,
-      viewViewWidthAnchorConstraint,
-      doneButtonViewTopAnchorConstraint,
-      doneButtonViewBottomAnchorConstraint,
-      doneButtonViewLeadingAnchorConstraint,
-      doneButtonViewTrailingAnchorConstraint
-    ])
+    self.view3ViewLeadingAnchorView1ViewLeadingAnchorConstraint = view3ViewLeadingAnchorView1ViewLeadingAnchorConstraint
+    self.cancelContainerViewHeightAnchorParentConstraint = cancelContainerViewHeightAnchorParentConstraint
+    self.cancelContainerViewLeadingAnchorView1ViewLeadingAnchorConstraint =
+      cancelContainerViewLeadingAnchorView1ViewLeadingAnchorConstraint
+    self.cancelContainerViewTopAnchorView1ViewTopAnchorConstraint =
+      cancelContainerViewTopAnchorView1ViewTopAnchorConstraint
+    self.cancelContainerViewBottomAnchorView1ViewBottomAnchorConstraint =
+      cancelContainerViewBottomAnchorView1ViewBottomAnchorConstraint
+    self.view3ViewLeadingAnchorCancelContainerViewTrailingAnchorConstraint =
+      view3ViewLeadingAnchorCancelContainerViewTrailingAnchorConstraint
+    self.cancelContainerViewWidthAnchorConstraint = cancelContainerViewWidthAnchorConstraint
+    self.cancelButtonViewTopAnchorCancelContainerViewTopAnchorConstraint =
+      cancelButtonViewTopAnchorCancelContainerViewTopAnchorConstraint
+    self.cancelButtonViewBottomAnchorCancelContainerViewBottomAnchorConstraint =
+      cancelButtonViewBottomAnchorCancelContainerViewBottomAnchorConstraint
+    self.cancelButtonViewLeadingAnchorCancelContainerViewLeadingAnchorConstraint =
+      cancelButtonViewLeadingAnchorCancelContainerViewLeadingAnchorConstraint
+    self.cancelButtonViewTrailingAnchorCancelContainerViewTrailingAnchorConstraint =
+      cancelButtonViewTrailingAnchorCancelContainerViewTrailingAnchorConstraint
+
+    NSLayoutConstraint.activate(
+      [
+        titleContainerViewTopAnchorConstraint,
+        titleContainerViewLeadingAnchorConstraint,
+        titleContainerViewTrailingAnchorConstraint,
+        vSpacerViewTopAnchorConstraint,
+        vSpacerViewLeadingAnchorConstraint,
+        bodyTextViewTopAnchorConstraint,
+        bodyTextViewLeadingAnchorConstraint,
+        bodyTextViewTrailingAnchorConstraint,
+        vSpacer1ViewTopAnchorConstraint,
+        vSpacer1ViewLeadingAnchorConstraint,
+        view1ViewBottomAnchorConstraint,
+        view1ViewTopAnchorConstraint,
+        view1ViewLeadingAnchorConstraint,
+        view1ViewTrailingAnchorConstraint,
+        publishTextViewHeightAnchorParentConstraint,
+        publishTextViewLeadingAnchorConstraint,
+        publishTextViewTopAnchorConstraint,
+        publishTextViewBottomAnchorConstraint,
+        vSpacerViewHeightAnchorConstraint,
+        vSpacerViewWidthAnchorConstraint,
+        vSpacer1ViewHeightAnchorConstraint,
+        vSpacer1ViewWidthAnchorConstraint,
+        view3ViewHeightAnchorParentConstraint,
+        viewViewHeightAnchorParentConstraint,
+        view3ViewTopAnchorConstraint,
+        view3ViewBottomAnchorConstraint,
+        viewViewTrailingAnchorConstraint,
+        viewViewLeadingAnchorConstraint,
+        viewViewTopAnchorConstraint,
+        viewViewBottomAnchorConstraint,
+        viewViewWidthAnchorConstraint,
+        doneButtonViewTopAnchorConstraint,
+        doneButtonViewBottomAnchorConstraint,
+        doneButtonViewLeadingAnchorConstraint,
+        doneButtonViewTrailingAnchorConstraint
+      ] +
+        conditionalConstraints(cancelContainerViewIsHidden: cancelContainerView.isHidden))
+  }
+
+  private func conditionalConstraints(cancelContainerViewIsHidden: Bool) -> [NSLayoutConstraint] {
+    var constraints: [NSLayoutConstraint?]
+
+    switch (cancelContainerViewIsHidden) {
+      case (true):
+        constraints = [view3ViewLeadingAnchorView1ViewLeadingAnchorConstraint]
+      case (false):
+        constraints = [
+          cancelContainerViewHeightAnchorParentConstraint,
+          cancelContainerViewLeadingAnchorView1ViewLeadingAnchorConstraint,
+          cancelContainerViewTopAnchorView1ViewTopAnchorConstraint,
+          cancelContainerViewBottomAnchorView1ViewBottomAnchorConstraint,
+          view3ViewLeadingAnchorCancelContainerViewTrailingAnchorConstraint,
+          cancelContainerViewWidthAnchorConstraint,
+          cancelButtonViewTopAnchorCancelContainerViewTopAnchorConstraint,
+          cancelButtonViewBottomAnchorCancelContainerViewBottomAnchorConstraint,
+          cancelButtonViewLeadingAnchorCancelContainerViewLeadingAnchorConstraint,
+          cancelButtonViewTrailingAnchorCancelContainerViewTrailingAnchorConstraint
+        ]
+    }
+
+    return constraints.compactMap({ $0 })
   }
 
   private func update() {
+    let cancelContainerViewIsHidden = cancelContainerView.isHidden
+
     publishTextView.attributedStringValue = publishTextViewTextStyle.apply(to: titleText)
     bodyTextView.attributedStringValue = bodyTextViewTextStyle.apply(to: bodyText)
     doneButtonView.onClick = handleOnClickDoneButton
+    cancelButtonView.onClick = handleOnClickDoneButton
+    doneButtonView.titleText = doneButtonTitle
+    cancelButtonView.titleText = cancelButtonTitle
+    cancelContainerView.isHidden = !showsCancelButton
+
+    if cancelContainerView.isHidden != cancelContainerViewIsHidden {
+      NSLayoutConstraint.deactivate(conditionalConstraints(cancelContainerViewIsHidden: cancelContainerViewIsHidden))
+      NSLayoutConstraint.activate(conditionalConstraints(cancelContainerViewIsHidden: cancelContainerView.isHidden))
+    }
   }
 
   private func handleOnClickDoneButton() {
     onClickDoneButton?()
+  }
+
+  private func handleOnClickCancelButton() {
+    onClickCancelButton?()
   }
 }
 
@@ -229,20 +409,39 @@ extension PublishInfo {
   public struct Parameters: Equatable {
     public var titleText: String
     public var bodyText: String
+    public var showsCancelButton: Bool
+    public var doneButtonTitle: String
+    public var cancelButtonTitle: String
     public var onClickDoneButton: (() -> Void)?
+    public var onClickCancelButton: (() -> Void)?
 
-    public init(titleText: String, bodyText: String, onClickDoneButton: (() -> Void)? = nil) {
+    public init(
+      titleText: String,
+      bodyText: String,
+      showsCancelButton: Bool,
+      doneButtonTitle: String,
+      cancelButtonTitle: String,
+      onClickDoneButton: (() -> Void)? = nil,
+      onClickCancelButton: (() -> Void)? = nil)
+    {
       self.titleText = titleText
       self.bodyText = bodyText
+      self.showsCancelButton = showsCancelButton
+      self.doneButtonTitle = doneButtonTitle
+      self.cancelButtonTitle = cancelButtonTitle
       self.onClickDoneButton = onClickDoneButton
+      self.onClickCancelButton = onClickCancelButton
     }
 
     public init() {
-      self.init(titleText: "", bodyText: "")
+      self.init(titleText: "", bodyText: "", showsCancelButton: false, doneButtonTitle: "", cancelButtonTitle: "")
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return lhs.titleText == rhs.titleText && lhs.bodyText == rhs.bodyText
+      return lhs.titleText == rhs.titleText &&
+        lhs.bodyText == rhs.bodyText &&
+          lhs.showsCancelButton == rhs.showsCancelButton &&
+            lhs.doneButtonTitle == rhs.doneButtonTitle && lhs.cancelButtonTitle == rhs.cancelButtonTitle
     }
   }
 }
@@ -266,12 +465,29 @@ extension PublishInfo {
       self.parameters = parameters
     }
 
-    public init(titleText: String, bodyText: String, onClickDoneButton: (() -> Void)? = nil) {
-      self.init(Parameters(titleText: titleText, bodyText: bodyText, onClickDoneButton: onClickDoneButton))
+    public init(
+      titleText: String,
+      bodyText: String,
+      showsCancelButton: Bool,
+      doneButtonTitle: String,
+      cancelButtonTitle: String,
+      onClickDoneButton: (() -> Void)? = nil,
+      onClickCancelButton: (() -> Void)? = nil)
+    {
+      self
+        .init(
+          Parameters(
+            titleText: titleText,
+            bodyText: bodyText,
+            showsCancelButton: showsCancelButton,
+            doneButtonTitle: doneButtonTitle,
+            cancelButtonTitle: cancelButtonTitle,
+            onClickDoneButton: onClickDoneButton,
+            onClickCancelButton: onClickCancelButton))
     }
 
     public init() {
-      self.init(titleText: "", bodyText: "")
+      self.init(titleText: "", bodyText: "", showsCancelButton: false, doneButtonTitle: "", cancelButtonTitle: "")
     }
   }
 }

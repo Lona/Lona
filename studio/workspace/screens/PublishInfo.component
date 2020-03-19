@@ -9,6 +9,15 @@
   ],
   "examples" : [
     {
+      "id" : "Cancellable",
+      "name" : "Cancellable",
+      "params" : {
+        "cancelButtonTitle" : "Cancel",
+        "doneButtonTitle" : "OK",
+        "showsCancelButton" : true
+      }
+    },
+    {
       "id" : "Default",
       "name" : "Default",
       "params" : {
@@ -52,6 +61,54 @@
         "onClickDoneButton"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "CancelButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickDoneButton"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "DoneButton",
+        "titleText"
+      ],
+      "content" : [
+        "parameters",
+        "doneButtonTitle"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "CancelButton",
+        "titleText"
+      ],
+      "content" : [
+        "parameters",
+        "cancelButtonTitle"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "CancelContainer",
+        "visible"
+      ],
+      "content" : [
+        "parameters",
+        "showsCancelButton"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -65,6 +122,24 @@
     },
     {
       "name" : "onClickDoneButton",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "showsCancelButton",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "doneButtonTitle",
+      "type" : "String"
+    },
+    {
+      "name" : "cancelButtonTitle",
+      "type" : "String"
+    },
+    {
+      "name" : "onClickCancelButton",
       "type" : {
         "name" : "Function"
       }
@@ -121,6 +196,30 @@
           {
             "children" : [
               {
+                "id" : "CancelButton",
+                "params" : {
+                  "titleText" : "Cancel"
+                },
+                "type" : "PrimaryButton"
+              }
+            ],
+            "id" : "CancelContainer",
+            "params" : {
+              "visible" : false,
+              "width" : 250
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "View 3",
+            "params" : {
+              "flex" : 1
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "children" : [
+              {
                 "id" : "DoneButton",
                 "params" : {
                   "titleText" : "OK"
@@ -137,8 +236,9 @@
         ],
         "id" : "View 1",
         "params" : {
-          "alignItems" : "flex-end",
-          "alignSelf" : "stretch"
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "justifyContent" : "flex-end"
         },
         "type" : "Lona:View"
       }

@@ -109,7 +109,7 @@ class OpenWorkspaceViewController: NSViewController {
             let screen = OpenWorkspace()
             screen.isLoggedIn = isLoggedIn
             screen.onClickGithubButton = {
-                if !NSWorkspace.shared.open(GITHUB_SIGNIN_URL(scopes: ["user:email", "read:org", "repo"])) {
+                if !NSWorkspace.shared.open(GITHUB_SIGNIN_URL(scopes: GITHUB_BASIC_AND_REPO_SCOPES)) {
                     print("couldn't open the  browser")
                 }
             }
@@ -119,7 +119,11 @@ class OpenWorkspaceViewController: NSViewController {
                 }
             }
             screen.onClickRemoteButton = {
-                self.flowView.withProgress(PublishingViewController.fetchRepositoriesAndOrganizations).finalResult({ result in
+                let promise = PublishingViewController.fetchRepositoriesAndOrganizations()
+
+                self.flowView.withProgress(promise)
+
+                promise.finalResult({ result in
                     switch result {
                     case .failure(let error):
                         Alert.runInformationalAlert(messageText: "Failed to connect to GitHub", informativeText: "Are you connected to the internet? \(error)")
@@ -199,7 +203,13 @@ class OpenWorkspaceViewController: NSViewController {
             }
             return screen
         case .error(title: let title, body: let body):
-            let screen = PublishInfo(titleText: title, bodyText: body)
+            let screen = PublishInfo(
+                titleText: title,
+                bodyText: body,
+                showsCancelButton: false,
+                doneButtonTitle: "OK",
+                cancelButtonTitle: ""
+            )
             screen.onClickDoneButton = self.onRequestClose
             return screen
         case .done:

@@ -8,18 +8,38 @@
 
 import AppKit
 
+public enum GitError: Error {
+    case generic(ProcessError)
+    case permissionDenied
+    case invalidRemoteURL(String)
+
+    public var localizedDescription: String {
+        switch self {
+        case .generic(let error):
+            return error.localizedDescription
+        case .permissionDenied:
+            return """
+Permission denied by GitHub.
+
+In order to publish with Lona, you'll need to be able to `push` to GitHub via the command line `git` command.
+"""
+        case .invalidRemoteURL(let url):
+            return "Invalid remote URL: \(url)"
+        }
+    }
+}
+
 public enum Git {
 
     // MARK: Private
 
     private static var launchPath: String = "/usr/bin/git"
 
-    private static func run(arguments: [String], currentDirectoryPath: String) -> Result<String, NSError> {
-
+    private static func run(arguments: [String], currentDirectoryPath: String) -> Result<String, ProcessError> {
         Swift.print("INFO: Running `\(Git.launchPath) \(arguments.joined(separator: " "))`")
 
         let result = Process.runSync(
-            configuration: Process.Configuration(
+            Process.Configuration(
                 launchPath: Git.launchPath,
                 arguments: arguments,
                 currentDirectoryPath: currentDirectoryPath
@@ -34,18 +54,20 @@ public enum Git {
         }
     }
 
-    private static func runAsync(arguments: [String], currentDirectoryPath: String) -> Promise<String, NSError> {
+    private static func runAsync(arguments: [String], currentDirectoryPath: String) -> Promise<String, ProcessError> {
 
         Swift.print("INFO: Running `\(Git.launchPath) \(arguments.joined(separator: " "))`")
 
         return Process.run(
-            configuration: Process.Configuration(
+            Process.Configuration(
                 launchPath: Git.launchPath,
                 arguments: arguments,
                 currentDirectoryPath: currentDirectoryPath
             )
         ).onSuccess({ data in
             return .success(data.utf8String() ?? "")
+        }).onFailure({ error in
+            return .failure(error)
         })
     }
 
@@ -66,11 +88,11 @@ public enum Git {
             self.currentDirectoryPath = currentDirectoryPath
         }
 
-        public func run(arguments: [String]) -> Result<String, NSError> {
+        public func run(arguments: [String]) -> Result<String, ProcessError> {
             return Git.run(arguments: arguments, currentDirectoryPath: currentDirectoryPath)
         }
 
-        public func runAsync(arguments: [String]) -> Promise<String, NSError> {
+        public func runAsync(arguments: [String]) -> Promise<String, ProcessError> {
             return Git.runAsync(arguments: arguments, currentDirectoryPath: currentDirectoryPath)
         }
     }
@@ -79,57 +101,69 @@ public enum Git {
 // MARK: Sync
 
 extension Git.Client {
-    public func initRepo() -> Result<String, NSError> {
+    public func initRepo() -> Result<String, ProcessError> {
         return run(arguments: ["init"])
     }
 
-    public func addAllFiles() -> Result<String, NSError> {
+    public func addAllFiles() -> Result<String, ProcessError> {
         return run(arguments: ["add", "."])
     }
 
-    public func commit(message: String) -> Result<String, NSError> {
+    public func commit(message: String) -> Result<String, ProcessError> {
         return run(arguments: ["commit", "-m", message])
     }
 
-    public func addRemote(name: String, url: URL) -> Result<String, NSError> {
+    public func addRemote(name: String, url: URL) -> Result<String, ProcessError> {
         return run(arguments: ["remote", "add", name, url.absoluteString])
     }
 
-    public func push(repository: String, refspec: String) -> Result<String, NSError> {
-        return run(arguments: ["push", repository, refspec])
+    public func push(repository: String, refspec: String) -> Result<String, GitError> {
+        return run(arguments: ["push", repository, refspec]).mapError({ error in
+            if error.code != 0, let errorString = error.errorOutput.utf8String(),
+                (
+                    errorString.contains("fatal: Authentication failed") ||
+                    errorString.contains("fatal: Could not read from remote repository.")
+                ) {
+                return .permissionDenied
+            } else {
+                return .generic(error)
+            }
+        })
     }
 
-    public func getRootDirectoryPath() -> Result<String, NSError> {
+    public func getRootDirectoryPath() -> Result<String, ProcessError> {
         return run(arguments: ["rev-parse", "--show-toplevel"]).map({ output in
             output.trimmingCharacters(in: .whitespacesAndNewlines)
         })
     }
 
-    public func getRemoteURL() -> Result<URL, NSError> {
+    public func getRemoteURL() -> Result<URL, GitError> {
         return run(arguments: ["remote", "get-url", Git.defaultOriginName]).map({ output in
             output.trimmingCharacters(in: .whitespacesAndNewlines)
-        }).flatMap({ urlString in
-            if let url = URL(string: urlString) {
-                return .success(url)
-            } else {
-                return .failure(NSError("Invalid URL: \(urlString)"))
-            }
         })
+            .mapError({ error in .generic(error) })
+            .flatMap({ urlString in
+                if let url = URL(string: urlString) {
+                    return .success(url)
+                } else {
+                    return .failure(.invalidRemoteURL(urlString))
+                }
+            })
     }
 
-    public func getHeadSHA() -> Result<String, NSError> {
+    public func getHeadSHA() -> Result<String, ProcessError> {
         return run(arguments: ["rev-parse", "HEAD"]).map({ output in
             output.trimmingCharacters(in: .whitespacesAndNewlines)
         })
     }
 
-    public func hasUncommittedChanges() -> Result<Bool, NSError> {
+    public func hasUncommittedChanges() -> Result<Bool, ProcessError> {
         return run(arguments: ["status", "--porcelain"]).map({ output in
             !output.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         })
     }
 
-    public func clone(repository: URL, localDirectoryPath: String) -> Result<String, NSError> {
+    public func clone(repository: URL, localDirectoryPath: String) -> Result<String, ProcessError> {
         return run(arguments: ["clone", repository.absoluteString, localDirectoryPath])
     }
 }
@@ -137,23 +171,29 @@ extension Git.Client {
 // MARK: Async
 
 extension Git.Client {
-    public func getRemoteSHAAsync() -> Promise<String, NSError> {
+    public func getRemoteSHAAsync() -> Promise<String, ProcessError> {
         return runAsync(arguments: ["ls-remote", Git.defaultOriginName, Git.defaultBranchName, "--porcelain"]).onSuccess({ result in
             return .success(String(result.prefix(40)))
         })
     }
 
-    public func isLocalBranchUpToDateWithRemote() -> Promise<Bool, NSError> {
+    public func isLocalBranchUpToDateWithRemote() -> Promise<Bool, GitError> {
         let headSHA = Git.client.getHeadSHA()
 
         return Git.client.getRemoteSHAAsync().onResult({ result in
             switch (headSHA, result) {
             case (.success(let headSHA), .success(let remoteSHA)):
-                return .success(headSHA == remoteSHA)
+                let isEmptyRepo = remoteSHA.isEmpty
+                return .success(headSHA == remoteSHA || isEmptyRepo)
             case (.failure(let error), _):
-                return .failure(NSError("Git failure: couldn't find git SHA for HEAD.\n\(error)"))
+                Swift.print("Git failure: couldn't find git SHA for HEAD.")
+                return .failure(.generic(error))
             case (_, .failure(let error)):
-                return .failure(NSError("Failed to connect to remote git repository. Are you connected to the internet?\n\(error)"))
+                if SSH.canConnectToGithub() {
+                    return .failure(.generic(error))
+                } else {
+                    return .failure(.permissionDenied)
+                }
             }
         })
     }

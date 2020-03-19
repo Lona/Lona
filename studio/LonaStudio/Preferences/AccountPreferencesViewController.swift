@@ -12,9 +12,14 @@ import MASPreferences
 
 let GITHUB_CLIENT_ID = Bundle.main.infoDictionary?["GITHUB_CLIENT_ID"] as! String
 let GOOGLE_CLIENT_ID = Bundle.main.infoDictionary?["GOOGLE_CLIENT_ID"] as! String
-func GITHUB_SIGNIN_URL(scopes: [String] = ["user:email"]) -> URL {
+
+let GITHUB_BASIC_SCOPES = ["user:email", "read:org"]
+let GITHUB_BASIC_AND_REPO_SCOPES = GITHUB_BASIC_SCOPES + ["repo"]
+
+func GITHUB_SIGNIN_URL(scopes: [String] = GITHUB_BASIC_SCOPES) -> URL {
   return URL(string: "https://github.com/login/oauth/authorize?scope=\(scopes.joined(separator: "%20"))&client_id=\(GITHUB_CLIENT_ID)&redirect_uri=\(encodeURIComponent("\(API_BASE_URL)/oauth/github/\(encodeURIComponent("lonastudio://oauth-callback"))"))")!
 }
+
 func GOOGLE_SIGNIN_URL(scopes: [String] = ["openid", "email", "profile"]) -> URL {
   return URL(string: "https://accounts.google.com/o/oauth2/v2/auth?client_id=\(GOOGLE_CLIENT_ID)&response_type=code&scope=\(scopes.joined(separator: "%20"))&redirect_uri=\(encodeURIComponent("\(API_BASE_URL)/oauth/github/\(encodeURIComponent("lonastudio://oauth-callback"))"))")!
 }
