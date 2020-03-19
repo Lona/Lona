@@ -110,7 +110,10 @@ class DocumentController: NSDocumentController {
         display displayDocument: Bool,
         completionHandler: @escaping (NSDocument?, Bool, Error?) -> Void
     ) {
-        if !ensureValidWorkspaceForOpeningFile(url: url) { return }
+        if !ensureValidWorkspaceForOpeningFile(url: url) {
+            print("Can't open this URL, this is not a valid workspace: \(url.absoluteString)")
+            return
+        }
 
         let realURL = FileManager.default.isDirectory(path: url.path)
             ? url.appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)

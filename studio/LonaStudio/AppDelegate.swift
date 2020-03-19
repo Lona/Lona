@@ -59,8 +59,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func application(_ sender: NSApplication, openFile filename: String) -> Bool {
         let fileURL = URL(fileURLWithPath: filename)
-
-        DocumentController.shared.openDocument(withContentsOf: fileURL, display: true, completionHandler: { _, _, _ in })
+        DocumentController.shared.openDocument(withContentsOf: fileURL, display: true).finalSuccess {_ in
+            self.hideWelcomeWindow(self)
+        }
 
         return true
     }
@@ -94,14 +95,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         AppDelegate.preferencesWindow?.showWindow(sender)
     }
 
-    @IBAction func showWorkspaceWindow(_ sender: AnyObject) {
-        DocumentController.shared.workspaceWindowControllers.first?.showWindow(nil)
-    }
-
     private var welcomeWindow = WelcomeWindow()
 
     @IBAction func showWelcomeWindow(_ sender: AnyObject) {
-        self.welcomeWindow.makeKeyAndOrderFront(nil)
+        welcomeWindow.makeKeyAndOrderFront(nil)
+    }
+
+    func hideWelcomeWindow(_ sender: AnyObject) {
+        welcomeWindow.contentViewController?.presentedViewControllers?[0].dismiss(sender)
+        welcomeWindow.close()
     }
 
     /*  Create a new component by duplicating the contents of an existing component
