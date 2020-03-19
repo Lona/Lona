@@ -119,9 +119,11 @@ extension Git.Client {
 
     public func push(repository: String, refspec: String) -> Result<String, GitError> {
         return run(arguments: ["push", repository, refspec]).mapError({ error in
-            if error.code == 128,
-                let errorString = error.errorOutput.utf8String(),
-                (errorString.contains("git@github.com: Permission denied (publickey)") || errorString.contains("Host key verification failed")) {
+            if error.code != 0, let errorString = error.errorOutput.utf8String(),
+                (
+                    errorString.contains("fatal: Authentication failed") ||
+                    errorString.contains("fatal: Could not read from remote repository.")
+                ) {
                 return .permissionDenied
             } else {
                 return .generic(error)
