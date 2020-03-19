@@ -99,7 +99,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func hideWelcomeWindow(_ sender: AnyObject) {
-        welcomeWindow.contentViewController?.presentedViewControllers?[0].dismiss(sender)
+        if let viewControllers = welcomeWindow.contentViewController?.presentedViewControllers {
+            viewControllers.forEach { $0.dismiss(sender) }
+        }
+        
         welcomeWindow.close()
     }
 

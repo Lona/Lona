@@ -63,9 +63,7 @@ class DocumentController: NSDocumentController {
         self._openDocument(withContentsOf: url, display: displayDocument, completionHandler: {
             document, documentWasAlreadyOpen, error in
             if displayDocument {
-                // hide the welcome window
-                let appDelegate = NSApplication.shared.delegate as? AppDelegate
-                appDelegate?.hideWelcomeWindow(self)
+                (NSApp.delegate as? AppDelegate)?.hideWelcomeWindow(self)
 
                 self.history.navigateTo(url)
             }
