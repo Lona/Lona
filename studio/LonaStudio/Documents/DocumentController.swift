@@ -58,14 +58,18 @@ class DocumentController: NSDocumentController {
     override func openDocument(
         withContentsOf url: URL,
         display displayDocument: Bool,
-        completionHandler: @escaping (NSDocument?, Bool, Error?) -> Void
+        completionHandler: ((NSDocument?, Bool, Error?) -> Void)?
     ) {
         self._openDocument(withContentsOf: url, display: displayDocument, completionHandler: {
             document, documentWasAlreadyOpen, error in
             if displayDocument {
+                // hide the welcome window
+                let appDelegate = NSApplication.shared.delegate as? AppDelegate
+                appDelegate?.hideWelcomeWindow(self)
+
                 self.history.navigateTo(url)
             }
-            completionHandler(document, documentWasAlreadyOpen, error)
+            completionHandler?(document, documentWasAlreadyOpen, error)
         })
     }
 
@@ -110,10 +114,7 @@ class DocumentController: NSDocumentController {
         display displayDocument: Bool,
         completionHandler: @escaping (NSDocument?, Bool, Error?) -> Void
     ) {
-        if !ensureValidWorkspaceForOpeningFile(url: url) {
-            print("Can't open this URL, this is not a valid workspace: \(url.absoluteString)")
-            return
-        }
+        if !ensureValidWorkspaceForOpeningFile(url: url) { return }
 
         let realURL = FileManager.default.isDirectory(path: url.path)
             ? url.appendingPathComponent(MarkdownDocument.INDEX_PAGE_NAME)

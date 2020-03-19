@@ -59,10 +59,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func application(_ sender: NSApplication, openFile filename: String) -> Bool {
         let fileURL = URL(fileURLWithPath: filename)
-        DocumentController.shared.openDocument(withContentsOf: fileURL, display: true).finalSuccess {_ in
-            self.hideWelcomeWindow(self)
-        }
-
+        DocumentController.shared.openDocument(withContentsOf: fileURL, display: true)
         return true
     }
 
