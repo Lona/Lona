@@ -4,6 +4,7 @@
   },
   "devices" : [
     {
+      "backgroundColor" : "rgb(220,220,220)",
       "height" : 28,
       "heightMode" : "At Least",
       "name" : "iPhone SE",
@@ -35,19 +36,53 @@
   ],
   "logic" : [
     {
+      "assignee" : [
+        "layers",
+        "VectorGraphic2",
+        "vector",
+        "inner",
+        "fill"
+      ],
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "iconFillAccent",
+          "type" : "Color"
+        }
+      },
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "VectorGraphic2",
+        "vector",
+        "outer",
+        "fill"
+      ],
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "iconFill",
+          "type" : "Color"
+        }
+      },
+      "type" : "AssignExpr"
+    },
+    {
       "body" : [
         {
           "assignee" : [
             "layers",
-            "VectorGraphic",
+            "VectorGraphic2",
             "vector",
-            "contents",
+            "inner",
             "fill"
           ],
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : "selectedIcon",
+              "data" : "systemSelection30",
               "type" : "Color"
             }
           },
@@ -56,66 +91,15 @@
         {
           "assignee" : [
             "layers",
-            "VectorGraphic",
+            "VectorGraphic2",
             "vector",
-            "outline",
-            "stroke"
-          ],
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "data" : "selectedIconStroke",
-              "type" : "Color"
-            }
-          },
-          "type" : "AssignExpr"
-        },
-        {
-          "assignee" : [
-            "layers",
-            "VectorGraphic",
-            "vector",
-            "outline",
+            "outer",
             "fill"
           ],
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : "selectedIcon",
-              "type" : "Color"
-            }
-          },
-          "type" : "AssignExpr"
-        },
-        {
-          "assignee" : [
-            "layers",
-            "VectorGraphic",
-            "vector",
-            "highlight",
-            "stroke"
-          ],
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "data" : "transparent",
-              "type" : "Color"
-            }
-          },
-          "type" : "AssignExpr"
-        },
-        {
-          "assignee" : [
-            "layers",
-            "VectorGraphic",
-            "vector",
-            "divider",
-            "stroke"
-          ],
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "data" : "selectedIconStroke",
+              "data" : "white",
               "type" : "Color"
             }
           },
@@ -149,20 +133,23 @@
   "root" : {
     "children" : [
       {
-        "id" : "VectorGraphic",
+        "id" : "VectorGraphic2",
         "params" : {
-          "height" : 24,
-          "image" : "file:\/\/.\/assets\/icon-folder.svg",
-          "width" : 24
+          "height" : 15,
+          "image" : "file:\/\/.\/assets\/icon-folder-2.svg",
+          "resizeMode" : "contain",
+          "width" : 19
         },
         "type" : "Lona:VectorGraphic"
       }
     ],
     "id" : "Container",
     "params" : {
-      "alignItems" : "center",
       "alignSelf" : "stretch",
-      "flexDirection" : "row"
+      "flex" : 1,
+      "flexDirection" : "row",
+      "paddingLeft" : 2,
+      "paddingTop" : 4
     },
     "type" : "Lona:View"
   }

@@ -32,104 +32,87 @@
   ],
   "logic" : [
     {
+      "assignee" : [
+        "layers",
+        "VectorGraphic",
+        "vector",
+        "outer",
+        "fill"
+      ],
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "iconFill",
+          "type" : "Color"
+        }
+      },
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "VectorGraphic",
+        "vector",
+        "inner",
+        "fill"
+      ],
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "iconFillAccent",
+          "type" : "Color"
+        }
+      },
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "VectorGraphic",
+        "vector",
+        "inner2",
+        "fill"
+      ],
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "iconFillAccent",
+          "type" : "Color"
+        }
+      },
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "VectorGraphic",
+        "vector",
+        "inner3",
+        "fill"
+      ],
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "iconFillAccent",
+          "type" : "Color"
+        }
+      },
+      "type" : "AssignExpr"
+    },
+    {
       "body" : [
         {
           "assignee" : [
             "layers",
             "VectorGraphic",
             "vector",
-            "outline",
-            "stroke"
-          ],
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "data" : "selectedIconStroke",
-              "type" : "Color"
-            }
-          },
-          "type" : "AssignExpr"
-        },
-        {
-          "assignee" : [
-            "layers",
-            "VectorGraphic",
-            "vector",
-            "line1",
-            "stroke"
-          ],
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "data" : "selectedIconStroke",
-              "type" : "Color"
-            }
-          },
-          "type" : "AssignExpr"
-        },
-        {
-          "assignee" : [
-            "layers",
-            "VectorGraphic",
-            "vector",
-            "line2",
-            "stroke"
-          ],
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "data" : "selectedIconStroke",
-              "type" : "Color"
-            }
-          },
-          "type" : "AssignExpr"
-        },
-        {
-          "assignee" : [
-            "layers",
-            "VectorGraphic",
-            "vector",
-            "line3",
-            "stroke"
-          ],
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "data" : "selectedIconStroke",
-              "type" : "Color"
-            }
-          },
-          "type" : "AssignExpr"
-        },
-        {
-          "assignee" : [
-            "layers",
-            "VectorGraphic",
-            "vector",
-            "line4",
-            "stroke"
-          ],
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "data" : "selectedIconStroke",
-              "type" : "Color"
-            }
-          },
-          "type" : "AssignExpr"
-        },
-        {
-          "assignee" : [
-            "layers",
-            "VectorGraphic",
-            "vector",
-            "outline",
+            "outer",
             "fill"
           ],
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : "selectedIcon",
+              "data" : "white",
               "type" : "Color"
             }
           },
@@ -140,13 +123,13 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "fold",
+            "inner",
             "fill"
           ],
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : "selectedIcon",
+              "data" : "systemSelection30",
               "type" : "Color"
             }
           },
@@ -157,13 +140,30 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "fold",
-            "stroke"
+            "inner2",
+            "fill"
           ],
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : "selectedIconStroke",
+              "data" : "systemSelection30",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "VectorGraphic",
+            "vector",
+            "inner3",
+            "fill"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "systemSelection30",
               "type" : "Color"
             }
           },
@@ -199,9 +199,10 @@
       {
         "id" : "VectorGraphic",
         "params" : {
-          "height" : 24,
-          "image" : "file:\/\/.\/assets\/icon-text-file.svg",
-          "width" : 24
+          "height" : 19,
+          "image" : "file:\/\/.\/assets\/icon-file-2.svg",
+          "resizeMode" : "contain",
+          "width" : 13
         },
         "type" : "Lona:VectorGraphic"
       }
@@ -210,7 +211,9 @@
     "params" : {
       "alignItems" : "center",
       "alignSelf" : "stretch",
-      "flexDirection" : "row"
+      "flex" : 1,
+      "flexDirection" : "row",
+      "paddingLeft" : 5
     },
     "type" : "Lona:View"
   }

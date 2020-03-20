@@ -1,15 +1,11 @@
 import AppKit
 import Foundation
 
-private class IconTextFileVector: NSBox {
-  public var foldFill = #colorLiteral(red: 0.933333333333, green: 0.933333333333, blue: 0.933333333333, alpha: 1)
-  public var foldStroke = #colorLiteral(red: 0.549019607843, green: 0.549019607843, blue: 0.549019607843, alpha: 1)
-  public var line1Stroke = #colorLiteral(red: 0.592156862745, green: 0.592156862745, blue: 0.592156862745, alpha: 1)
-  public var line2Stroke = #colorLiteral(red: 0.592156862745, green: 0.592156862745, blue: 0.592156862745, alpha: 1)
-  public var line3Stroke = #colorLiteral(red: 0.592156862745, green: 0.592156862745, blue: 0.592156862745, alpha: 1)
-  public var line4Stroke = #colorLiteral(red: 0.592156862745, green: 0.592156862745, blue: 0.592156862745, alpha: 1)
-  public var outlineFill = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-  public var outlineStroke = #colorLiteral(red: 0.549019607843, green: 0.549019607843, blue: 0.549019607843, alpha: 1)
+private class IconFile2Vector: NSBox {
+  public var inner2Fill = #colorLiteral(red: 0, green: 0.56862745098, blue: 1, alpha: 1)
+  public var inner3Fill = #colorLiteral(red: 0, green: 0.56862745098, blue: 1, alpha: 1)
+  public var innerFill = #colorLiteral(red: 0, green: 0.56862745098, blue: 1, alpha: 1)
+  public var outerFill = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
 
   override var isFlipped: Bool {
     return true
@@ -26,113 +22,117 @@ private class IconTextFileVector: NSBox {
   override func draw(_ dirtyRect: CGRect) {
     super.draw(dirtyRect)
 
-    let viewBox = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 24, height: 24))
+    let viewBox = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 13, height: 19))
     let croppedRect = viewBox.size.resized(within: bounds.size, usingResizingMode: resizingMode)
     let scale = croppedRect.width / viewBox.width
     func transform(point: CGPoint) -> CGPoint {
       return CGPoint(x: point.x * scale + croppedRect.minX, y: point.y * scale + croppedRect.minY)
     }
-    let outline = NSBezierPath()
-    outline.move(to: transform(point: CGPoint(x: 5.5, y: 2.5)))
-    outline.line(to: transform(point: CGPoint(x: 12.6715729, y: 2.5)))
-    outline.curve(
-      to: transform(point: CGPoint(x: 14.0857864, y: 3.08578644)),
-      controlPoint1: transform(point: CGPoint(x: 13.2020059, y: 2.5)),
-      controlPoint2: transform(point: CGPoint(x: 13.7107137, y: 2.71071368)))
-    outline.line(to: transform(point: CGPoint(x: 17.9142136, y: 6.91421356)))
-    outline.curve(
-      to: transform(point: CGPoint(x: 18.5, y: 8.32842712)),
-      controlPoint1: transform(point: CGPoint(x: 18.2892863, y: 7.28928632)),
-      controlPoint2: transform(point: CGPoint(x: 18.5, y: 7.79799415)))
-    outline.line(to: transform(point: CGPoint(x: 18.5, y: 20.5)))
-    outline.curve(
-      to: transform(point: CGPoint(x: 17.5, y: 21.5)),
-      controlPoint1: transform(point: CGPoint(x: 18.5, y: 21.0522847)),
-      controlPoint2: transform(point: CGPoint(x: 18.0522847, y: 21.5)))
-    outline.line(to: transform(point: CGPoint(x: 5.5, y: 21.5)))
-    outline.curve(
-      to: transform(point: CGPoint(x: 4.5, y: 20.5)),
-      controlPoint1: transform(point: CGPoint(x: 4.94771525, y: 21.5)),
-      controlPoint2: transform(point: CGPoint(x: 4.5, y: 21.0522847)))
-    outline.line(to: transform(point: CGPoint(x: 4.5, y: 3.5)))
-    outline.curve(
-      to: transform(point: CGPoint(x: 5.5, y: 2.5)),
-      controlPoint1: transform(point: CGPoint(x: 4.5, y: 2.94771525)),
-      controlPoint2: transform(point: CGPoint(x: 4.94771525, y: 2.5)))
-    outline.close()
-    outlineFill.setFill()
-    outlineStroke.setStroke()
-    outline.fill()
-    outline.lineWidth = 1 * scale
-    outline.lineCapStyle = .butt
-    outline.stroke()
-    let highlight = NSBezierPath()
-    highlight.move(to: transform(point: CGPoint(x: 5.5, y: 20.5)))
-    highlight.line(to: transform(point: CGPoint(x: 17.5, y: 20.5)))
-    #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.2).setStroke()
-    highlight.lineWidth = 1 * scale
-    highlight.lineCapStyle = .square
-    highlight.stroke()
-    let fold = NSBezierPath()
-    fold.move(to: transform(point: CGPoint(x: 17.0857864, y: 8.5)))
-    fold.line(to: transform(point: CGPoint(x: 13.5, y: 8.5)))
-    fold.curve(
-      to: transform(point: CGPoint(x: 12.5, y: 7.5)),
-      controlPoint1: transform(point: CGPoint(x: 12.9477153, y: 8.5)),
-      controlPoint2: transform(point: CGPoint(x: 12.5, y: 8.05228475)))
-    fold.line(to: transform(point: CGPoint(x: 12.5, y: 3.91421356)))
-    fold.curve(
-      to: transform(point: CGPoint(x: 13.5, y: 2.91421356)),
-      controlPoint1: transform(point: CGPoint(x: 12.5, y: 3.36192881)),
-      controlPoint2: transform(point: CGPoint(x: 12.9477153, y: 2.91421356)))
-    fold.curve(
-      to: transform(point: CGPoint(x: 14.2071068, y: 3.20710678)),
-      controlPoint1: transform(point: CGPoint(x: 13.7652165, y: 2.91421356)),
-      controlPoint2: transform(point: CGPoint(x: 14.0195704, y: 3.0195704)))
-    fold.line(to: transform(point: CGPoint(x: 17.7928932, y: 6.79289322)))
-    fold.curve(
-      to: transform(point: CGPoint(x: 17.7928932, y: 8.20710678)),
-      controlPoint1: transform(point: CGPoint(x: 18.1834175, y: 7.18341751)),
-      controlPoint2: transform(point: CGPoint(x: 18.1834175, y: 7.81658249)))
-    fold.curve(
-      to: transform(point: CGPoint(x: 17.0857864, y: 8.5)),
-      controlPoint1: transform(point: CGPoint(x: 17.6053568, y: 8.39464316)),
-      controlPoint2: transform(point: CGPoint(x: 17.3510029, y: 8.5)))
-    fold.close()
-    foldFill.setFill()
-    foldStroke.setStroke()
-    fold.fill()
-    fold.lineWidth = 1 * scale
-    fold.lineCapStyle = .butt
-    fold.stroke()
-    let line1 = NSBezierPath()
-    line1.move(to: transform(point: CGPoint(x: 7.5, y: 11.5)))
-    line1.line(to: transform(point: CGPoint(x: 15.5, y: 11.5)))
-    line1Stroke.setStroke()
-    line1.lineWidth = 1 * scale
-    line1.lineCapStyle = .square
-    line1.stroke()
-    let line2 = NSBezierPath()
-    line2.move(to: transform(point: CGPoint(x: 7.5, y: 13.5)))
-    line2.line(to: transform(point: CGPoint(x: 15.5, y: 13.5)))
-    line2Stroke.setStroke()
-    line2.lineWidth = 1 * scale
-    line2.lineCapStyle = .square
-    line2.stroke()
-    let line3 = NSBezierPath()
-    line3.move(to: transform(point: CGPoint(x: 7.5, y: 15.5)))
-    line3.line(to: transform(point: CGPoint(x: 15.5, y: 15.5)))
-    line3Stroke.setStroke()
-    line3.lineWidth = 1 * scale
-    line3.lineCapStyle = .square
-    line3.stroke()
-    let line4 = NSBezierPath()
-    line4.move(to: transform(point: CGPoint(x: 7.5, y: 17.5)))
-    line4.line(to: transform(point: CGPoint(x: 15.5, y: 17.5)))
-    line4Stroke.setStroke()
-    line4.lineWidth = 1 * scale
-    line4.lineCapStyle = .square
-    line4.stroke()
+    let outer = NSBezierPath()
+    outer.move(to: transform(point: CGPoint(x: 1, y: 0)))
+    outer.line(to: transform(point: CGPoint(x: 8.17157288, y: 0)))
+    outer.curve(
+      to: transform(point: CGPoint(x: 9.58578644, y: 0.585786438)),
+      controlPoint1: transform(point: CGPoint(x: 8.70200585, y: -9.74389576e-17)),
+      controlPoint2: transform(point: CGPoint(x: 9.21071368, y: 0.210713681)))
+    outer.line(to: transform(point: CGPoint(x: 12.4142136, y: 3.41421356)))
+    outer.curve(
+      to: transform(point: CGPoint(x: 13, y: 4.82842712)),
+      controlPoint1: transform(point: CGPoint(x: 12.7892863, y: 3.78928632)),
+      controlPoint2: transform(point: CGPoint(x: 13, y: 4.29799415)))
+    outer.line(to: transform(point: CGPoint(x: 13, y: 18)))
+    outer.curve(
+      to: transform(point: CGPoint(x: 12, y: 19)),
+      controlPoint1: transform(point: CGPoint(x: 13, y: 18.5522847)),
+      controlPoint2: transform(point: CGPoint(x: 12.5522847, y: 19)))
+    outer.line(to: transform(point: CGPoint(x: 1, y: 19)))
+    outer.curve(
+      to: transform(point: CGPoint(x: 0, y: 18)),
+      controlPoint1: transform(point: CGPoint(x: 0.44771525, y: 19)),
+      controlPoint2: transform(point: CGPoint(x: 6.76353751e-17, y: 18.5522847)))
+    outer.line(to: transform(point: CGPoint(x: 0, y: 1)))
+    outer.curve(
+      to: transform(point: CGPoint(x: 1, y: 0)),
+      controlPoint1: transform(point: CGPoint(x: -6.76353751e-17, y: 0.44771525)),
+      controlPoint2: transform(point: CGPoint(x: 0.44771525, y: 1.01453063e-16)))
+    outer.close()
+    outerFill.setFill()
+    outer.fill()
+    let inner = NSBezierPath()
+    inner.move(to: transform(point: CGPoint(x: 3, y: 8)))
+    inner.line(to: transform(point: CGPoint(x: 10, y: 8)))
+    inner.curve(
+      to: transform(point: CGPoint(x: 10, y: 8)),
+      controlPoint1: transform(point: CGPoint(x: 10, y: 8)),
+      controlPoint2: transform(point: CGPoint(x: 10, y: 8)))
+    inner.line(to: transform(point: CGPoint(x: 10, y: 9)))
+    inner.curve(
+      to: transform(point: CGPoint(x: 10, y: 9)),
+      controlPoint1: transform(point: CGPoint(x: 10, y: 9)),
+      controlPoint2: transform(point: CGPoint(x: 10, y: 9)))
+    inner.line(to: transform(point: CGPoint(x: 3, y: 9)))
+    inner.curve(
+      to: transform(point: CGPoint(x: 3, y: 9)),
+      controlPoint1: transform(point: CGPoint(x: 3, y: 9)),
+      controlPoint2: transform(point: CGPoint(x: 3, y: 9)))
+    inner.line(to: transform(point: CGPoint(x: 3, y: 8)))
+    inner.curve(
+      to: transform(point: CGPoint(x: 3, y: 8)),
+      controlPoint1: transform(point: CGPoint(x: 3, y: 8)),
+      controlPoint2: transform(point: CGPoint(x: 3, y: 8)))
+    inner.close()
+    innerFill.setFill()
+    inner.fill()
+    let inner2 = NSBezierPath()
+    inner2.move(to: transform(point: CGPoint(x: 3, y: 10)))
+    inner2.line(to: transform(point: CGPoint(x: 10, y: 10)))
+    inner2.curve(
+      to: transform(point: CGPoint(x: 10, y: 10)),
+      controlPoint1: transform(point: CGPoint(x: 10, y: 10)),
+      controlPoint2: transform(point: CGPoint(x: 10, y: 10)))
+    inner2.line(to: transform(point: CGPoint(x: 10, y: 11)))
+    inner2.curve(
+      to: transform(point: CGPoint(x: 10, y: 11)),
+      controlPoint1: transform(point: CGPoint(x: 10, y: 11)),
+      controlPoint2: transform(point: CGPoint(x: 10, y: 11)))
+    inner2.line(to: transform(point: CGPoint(x: 3, y: 11)))
+    inner2.curve(
+      to: transform(point: CGPoint(x: 3, y: 11)),
+      controlPoint1: transform(point: CGPoint(x: 3, y: 11)),
+      controlPoint2: transform(point: CGPoint(x: 3, y: 11)))
+    inner2.line(to: transform(point: CGPoint(x: 3, y: 10)))
+    inner2.curve(
+      to: transform(point: CGPoint(x: 3, y: 10)),
+      controlPoint1: transform(point: CGPoint(x: 3, y: 10)),
+      controlPoint2: transform(point: CGPoint(x: 3, y: 10)))
+    inner2.close()
+    inner2Fill.setFill()
+    inner2.fill()
+    let inner3 = NSBezierPath()
+    inner3.move(to: transform(point: CGPoint(x: 3, y: 12)))
+    inner3.line(to: transform(point: CGPoint(x: 10, y: 12)))
+    inner3.curve(
+      to: transform(point: CGPoint(x: 10, y: 12)),
+      controlPoint1: transform(point: CGPoint(x: 10, y: 12)),
+      controlPoint2: transform(point: CGPoint(x: 10, y: 12)))
+    inner3.line(to: transform(point: CGPoint(x: 10, y: 13)))
+    inner3.curve(
+      to: transform(point: CGPoint(x: 10, y: 13)),
+      controlPoint1: transform(point: CGPoint(x: 10, y: 13)),
+      controlPoint2: transform(point: CGPoint(x: 10, y: 13)))
+    inner3.line(to: transform(point: CGPoint(x: 3, y: 13)))
+    inner3.curve(
+      to: transform(point: CGPoint(x: 3, y: 13)),
+      controlPoint1: transform(point: CGPoint(x: 3, y: 13)),
+      controlPoint2: transform(point: CGPoint(x: 3, y: 13)))
+    inner3.line(to: transform(point: CGPoint(x: 3, y: 12)))
+    inner3.curve(
+      to: transform(point: CGPoint(x: 3, y: 12)),
+      controlPoint1: transform(point: CGPoint(x: 3, y: 12)),
+      controlPoint2: transform(point: CGPoint(x: 3, y: 12)))
+    inner3.close()
+    inner3Fill.setFill()
+    inner3.fill()
   }
 }
 
@@ -194,7 +194,7 @@ public class FileIcon: NSBox {
 
   // MARK: Private
 
-  private var vectorGraphicView = IconTextFileVector()
+  private var vectorGraphicView = IconFile2Vector()
 
   private func setUpViews() {
     boxType = .custom
@@ -205,24 +205,22 @@ public class FileIcon: NSBox {
     vectorGraphicView.contentViewMargins = .zero
 
     addSubview(vectorGraphicView)
+
+    vectorGraphicView.resizingMode = .scaleAspectFit
   }
 
   private func setUpConstraints() {
     translatesAutoresizingMaskIntoConstraints = false
     vectorGraphicView.translatesAutoresizingMaskIntoConstraints = false
 
-    let vectorGraphicViewHeightAnchorParentConstraint = vectorGraphicView
-      .heightAnchor
-      .constraint(lessThanOrEqualTo: heightAnchor)
-    let vectorGraphicViewLeadingAnchorConstraint = vectorGraphicView.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let vectorGraphicViewLeadingAnchorConstraint = vectorGraphicView
+      .leadingAnchor
+      .constraint(equalTo: leadingAnchor, constant: 5)
     let vectorGraphicViewCenterYAnchorConstraint = vectorGraphicView.centerYAnchor.constraint(equalTo: centerYAnchor)
-    let vectorGraphicViewHeightAnchorConstraint = vectorGraphicView.heightAnchor.constraint(equalToConstant: 24)
-    let vectorGraphicViewWidthAnchorConstraint = vectorGraphicView.widthAnchor.constraint(equalToConstant: 24)
-
-    vectorGraphicViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
+    let vectorGraphicViewHeightAnchorConstraint = vectorGraphicView.heightAnchor.constraint(equalToConstant: 19)
+    let vectorGraphicViewWidthAnchorConstraint = vectorGraphicView.widthAnchor.constraint(equalToConstant: 13)
 
     NSLayoutConstraint.activate([
-      vectorGraphicViewHeightAnchorParentConstraint,
       vectorGraphicViewLeadingAnchorConstraint,
       vectorGraphicViewCenterYAnchorConstraint,
       vectorGraphicViewHeightAnchorConstraint,
@@ -231,23 +229,19 @@ public class FileIcon: NSBox {
   }
 
   private func update() {
-    vectorGraphicView.foldFill = #colorLiteral(red: 0.933333333333, green: 0.933333333333, blue: 0.933333333333, alpha: 1)
-    vectorGraphicView.foldStroke = #colorLiteral(red: 0.549019607843, green: 0.549019607843, blue: 0.549019607843, alpha: 1)
-    vectorGraphicView.line1Stroke = #colorLiteral(red: 0.592156862745, green: 0.592156862745, blue: 0.592156862745, alpha: 1)
-    vectorGraphicView.line2Stroke = #colorLiteral(red: 0.592156862745, green: 0.592156862745, blue: 0.592156862745, alpha: 1)
-    vectorGraphicView.line3Stroke = #colorLiteral(red: 0.592156862745, green: 0.592156862745, blue: 0.592156862745, alpha: 1)
-    vectorGraphicView.line4Stroke = #colorLiteral(red: 0.592156862745, green: 0.592156862745, blue: 0.592156862745, alpha: 1)
-    vectorGraphicView.outlineFill = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    vectorGraphicView.outlineStroke = #colorLiteral(red: 0.549019607843, green: 0.549019607843, blue: 0.549019607843, alpha: 1)
+    vectorGraphicView.inner2Fill = #colorLiteral(red: 0, green: 0.56862745098, blue: 1, alpha: 1)
+    vectorGraphicView.inner3Fill = #colorLiteral(red: 0, green: 0.56862745098, blue: 1, alpha: 1)
+    vectorGraphicView.innerFill = #colorLiteral(red: 0, green: 0.56862745098, blue: 1, alpha: 1)
+    vectorGraphicView.outerFill = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+    vectorGraphicView.outerFill = Colors.iconFill
+    vectorGraphicView.innerFill = Colors.iconFillAccent
+    vectorGraphicView.inner2Fill = Colors.iconFillAccent
+    vectorGraphicView.inner3Fill = Colors.iconFillAccent
     if selected {
-      vectorGraphicView.outlineStroke = Colors.selectedIconStroke
-      vectorGraphicView.line1Stroke = Colors.selectedIconStroke
-      vectorGraphicView.line2Stroke = Colors.selectedIconStroke
-      vectorGraphicView.line3Stroke = Colors.selectedIconStroke
-      vectorGraphicView.line4Stroke = Colors.selectedIconStroke
-      vectorGraphicView.outlineFill = Colors.selectedIcon
-      vectorGraphicView.foldFill = Colors.selectedIcon
-      vectorGraphicView.foldStroke = Colors.selectedIconStroke
+      vectorGraphicView.outerFill = Colors.white
+      vectorGraphicView.innerFill = Colors.systemSelection30
+      vectorGraphicView.inner2Fill = Colors.systemSelection30
+      vectorGraphicView.inner3Fill = Colors.systemSelection30
     }
     vectorGraphicView.needsDisplay = true
   }

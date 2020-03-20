@@ -94,4 +94,30 @@ extension Colors {
     public static let divider: NSColor = {
         return NSSplitView.defaultDividerColor
     }()
+
+    public static let iconFill: NSColor = {
+        if #available(OSX 10.14, *) {
+            switch NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) {
+            case .some(.darkAqua):
+                return NSColor.parse(css: "#D8D8D8")!
+            default:
+                return NSColor.black.withAlphaComponent(0.5)
+            }
+        } else {
+            return NSColor.black.withAlphaComponent(0.5)
+        }
+    }()
+
+    public static let iconFillAccent: NSColor = {
+        if #available(OSX 10.14, *) {
+            switch NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) {
+            case .some(.darkAqua):
+                return NSColor.parse(css: "#9B9B9B")!
+            default:
+                return Colors.contentBackground.withAlphaComponent(0.70)
+            }
+        } else {
+            return Colors.contentBackground.withAlphaComponent(0.70)
+        }
+    }()
 }

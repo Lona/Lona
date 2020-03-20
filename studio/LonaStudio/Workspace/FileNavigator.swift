@@ -369,10 +369,6 @@ class FileNavigator: NSBox {
             } else {
                 iconView = FolderIcon()
             }
-        } else if path.hasSuffix("lona.json") {
-            iconView = LonaFileIcon()
-        } else if path.hasSuffix("colors.json") {
-            iconView = ColorsFileIcon()
         } else if path.hasSuffix(".component") || path.hasSuffix(".logic") || path.hasSuffix(".tokens") {
             let imageView = NSImageView(image: imageForFile(atPath: path, size: thumbnailSize) )
             imageView.imageScaling = .scaleProportionallyUpOrDown
@@ -402,48 +398,30 @@ class FileNavigator: NSBox {
         textView.maximumNumberOfLines = 1
         textView.lineBreakMode = .byTruncatingMiddle
 
-        if view.isDarkMode {
-            if let iconView = iconView as? FolderIcon {
-                iconView.selected = true
-            } else if let iconView = iconView as? LonaFileIcon {
-                iconView.selected = true
-            } else if let iconView = iconView as? ColorsFileIcon {
-                iconView.selected = true
-            } else if let iconView = iconView as? FileIcon {
-                iconView.selected = true
-            }
-        }
-
         view.onChangeBackgroundStyle = { style in
-            if view.isDarkMode { return }
-
             switch style {
             case .light:
                 if let iconView = iconView as? FolderIcon {
                     iconView.selected = false
-                } else if let iconView = iconView as? LonaFileIcon {
-                    iconView.selected = false
-                } else if let iconView = iconView as? ColorsFileIcon {
-                    iconView.selected = false
                 } else if let iconView = iconView as? FileIcon {
                     iconView.selected = false
                 }
-                textView.textColor = NSColor.controlTextColor
+                if !view.isDarkMode {
+                    textView.textColor = NSColor.controlTextColor
+                }
             case .dark:
                 if let iconView = iconView as? FolderIcon {
-                    iconView.selected = true
-                } else if let iconView = iconView as? LonaFileIcon {
-                    iconView.selected = true
-                } else if let iconView = iconView as? ColorsFileIcon {
                     iconView.selected = true
                 } else if let iconView = iconView as? FileIcon {
                     iconView.selected = true
                 }
 
-                if options.contains(.editable) {
-                    textView.textColor = NSColor.controlTextColor
-                } else {
-                    textView.textColor = .white
+                if !view.isDarkMode {
+                    if options.contains(.editable) {
+                        textView.textColor = NSColor.controlTextColor
+                    } else {
+                        textView.textColor = .white
+                    }
                 }
             default:
                 break

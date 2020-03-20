@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="13px" height="19px" viewBox="0 0 13 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>icon-file-2</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-Copy-4" transform="translate(-199.000000, -192.000000)">
+            <g id="icon-file-2" transform="translate(199.000000, 192.000000)">
+                <path d="M1,0 L8.17157288,0 C8.70200585,-9.74389576e-17 9.21071368,0.210713681 9.58578644,0.585786438 L12.4142136,3.41421356 C12.7892863,3.78928632 13,4.29799415 13,4.82842712 L13,18 C13,18.5522847 12.5522847,19 12,19 L1,19 C0.44771525,19 6.76353751e-17,18.5522847 0,18 L0,1 C-6.76353751e-17,0.44771525 0.44771525,1.01453063e-16 1,0 Z" id="Outer" fill="#FFFFFF"></path>
+                <rect id="Inner" fill-opacity="0.3" fill="#0091FF" x="3" y="8" width="7" height="1"></rect>
+                <rect id="Inner2" fill-opacity="0.3" fill="#0091FF" x="3" y="10" width="7" height="1"></rect>
+                <rect id="Inner3" fill-opacity="0.3" fill="#0091FF" x="3" y="12" width="7" height="1"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

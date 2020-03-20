@@ -107,6 +107,26 @@
       "value": "rgba(0,0,0,0.05)"
     },
     {
+      "id": "iconFill",
+      "name": "Icon Fill",
+      "value": "rgb(221,221,221)",
+      "metadata": {
+        "shouldGenerateCode": {
+          "macos": false
+        }
+      }
+    },
+    {
+      "id": "iconFillAccent",
+      "name": "Icon Fill Accent",
+      "value": "rgb(129,129,129)",
+      "metadata": {
+        "shouldGenerateCode": {
+          "macos": false
+        }
+      }
+    },
+    {
       "id": "selectedIcon",
       "name": "Selected Icon",
       "value": "rgba(255,255,255,0.35)"
