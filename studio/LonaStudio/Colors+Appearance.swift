@@ -101,10 +101,10 @@ extension Colors {
             case .some(.darkAqua):
                 return NSColor.parse(css: "#D8D8D8")!
             default:
-                return NSColor.black.withAlphaComponent(0.5)
+                return NSColor.black.withAlphaComponent(0.3)
             }
         } else {
-            return NSColor.black.withAlphaComponent(0.5)
+            return NSColor.black.withAlphaComponent(0.3)
         }
     }()
 
