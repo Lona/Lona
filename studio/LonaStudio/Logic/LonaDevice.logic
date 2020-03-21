@@ -1,0 +1,35 @@
+import Prelude
+
+/*
+ * # Lona Device
+ *
+ * Configure a device for previewing components. Each device can have a width and height.
+ */
+struct LonaDevice {
+  let name: String = ""
+  let width: Number = 0
+  let height: Number = 0
+}
+
+extension LonaDevice {
+  static let iPhoneSE: LonaDevice = LonaDevice(name: "iPhone SE", width: 320, height: 568)
+  static let iPhone8: LonaDevice = LonaDevice(name: "iPhone 8", width: 375, height: 667)
+  static let iPhone8Plus: LonaDevice = LonaDevice(name: "iPhone 8 Plus", width: 414, height: 736)
+  static let iPhoneXS: LonaDevice = LonaDevice(name: "iPhone XS", width: 375, height: 812)
+  static let iPhoneXR: LonaDevice = LonaDevice(name: "iPhone XR", width: 414, height: 896)
+  static let iPhoneXSMax: LonaDevice = LonaDevice(name: "iPhone XS Max", width: 414, height: 896)
+  static let iPad: LonaDevice = LonaDevice(name: "iPad", width: 768, height: 1024)
+  static let iPadPro10_5: LonaDevice = LonaDevice(name: "iPad Pro 10.5", width: 834, height: 1112)
+  static let iPadPro11: LonaDevice = LonaDevice(name: "iPad Pro 11", width: 834, height: 1194)
+  static let iPadPro12_9: LonaDevice = LonaDevice(name: "iPad Pro 12.9", width: 1024, height: 1366)
+  static let Pixel2: LonaDevice = LonaDevice(name: "Pixel 2", width: 412, height: 732)
+  static let Pixel2XL: LonaDevice = LonaDevice(name: "Pixel 2 XL", width: 360, height: 720)
+  static let GalaxyS8: LonaDevice = LonaDevice(name: "Galaxy S8", width: 360, height: 740)
+  static let Nexus7: LonaDevice = LonaDevice(name: "Nexus 7", width: 600, height: 960)
+  static let Nexus9: LonaDevice = LonaDevice(name: "Nexus 9", width: 768, height: 1024)
+  static let Nexus10: LonaDevice = LonaDevice(name: "Nexus 10", width: 800, height: 1280)
+  static let Desktop: LonaDevice = LonaDevice(name: "Desktop", width: 1024, height: 1024)
+  static let DesktopHD: LonaDevice = LonaDevice(name: "Desktop HD", width: 1440, height: 1024)
+}
+
+

@@ -342,7 +342,7 @@ class FileNavigator: NSBox {
 
         let url = URL(fileURLWithPath: path)
         switch url.pathExtension {
-        case "component", "logic", "tokens", "md":
+        case "component", "logic", "tokens", "md", "cmp":
             return url.deletingPathExtension().lastPathComponent
         default:
             return url.lastPathComponent

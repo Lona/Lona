@@ -63,13 +63,13 @@ public class LogicModule {
     private func compile() -> Compiled {
         let compiled = Compiled(program: self.program)
 
-        AppDelegate.debugWindow.rootNode = compiled.programNode
+        AppDelegate.debugController.rootNode = compiled.programNode
 
         let program: LGCSyntaxNode = compiled.programNode
 
         let scopeContext = Compiler.scopeContext(program)
 
-        AppDelegate.debugWindow.scopeContext = scopeContext
+        AppDelegate.debugController.scopeContext = scopeContext
 
         scopeContext.undefinedIdentifiers.forEach { errorId in
             if case .identifier(let identifierNode)? = program.find(id: errorId) {
@@ -93,13 +93,13 @@ public class LogicModule {
         let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
         let substitutionResult = Unification.unify(constraints: unificationContext.constraints)
 
-        AppDelegate.debugWindow.unificationContext = unificationContext
+        AppDelegate.debugController.unificationContext = unificationContext
 
         guard let substitution = try? substitutionResult.get() else {
             return compiled
         }
 
-        AppDelegate.debugWindow.substitution = substitution
+        AppDelegate.debugController.substitution = substitution
 
         compiled.unification = (unificationContext, substitution)
 
@@ -114,7 +114,7 @@ public class LogicModule {
 
         switch evaluationContext {
         case .success(let evaluation):
-            AppDelegate.debugWindow.evaluationContext = evaluation
+            AppDelegate.debugController.evaluationContext = evaluation
 
             compiled.evaluation = evaluation
 
@@ -217,6 +217,10 @@ public class LogicModule {
                 .declaration(
                     id: UUID(),
                     content: .importDeclaration(id: UUID(), name: .init(id: UUID(), name: "TextStyle"))
+                ),
+                .declaration(
+                    id: UUID(),
+                    content: .importDeclaration(id: UUID(), name: .init(id: UUID(), name: "LonaDevice"))
                 )
             ]
         )
