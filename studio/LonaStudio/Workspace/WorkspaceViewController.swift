@@ -203,8 +203,6 @@ class WorkspaceViewController: NSSplitViewController {
         return controller
     }()
 
-    private lazy var codeEditorViewController = CodeEditorViewController()
-
     private lazy var colorEditorViewController: ColorEditorViewController = {
         let controller = ColorEditorViewController()
 
@@ -416,7 +414,7 @@ class WorkspaceViewController: NSSplitViewController {
             }
         }
 
-        fileNavigator.performCreateComponent = { path in
+        fileNavigator.performCreateLegacyComponent = { path in
             let document = ComponentDocument()
 
             let fileURL = URL(fileURLWithPath: path)
@@ -424,6 +422,37 @@ class WorkspaceViewController: NSSplitViewController {
             document
                 .save(to: fileURL, ofType: "DocumentType", for: .saveOperation)
                 .onSuccess({ document in
+                    DocumentController.shared.openDocument(withContentsOf: fileURL, display: true)
+                })
+
+            return true
+        }
+
+        fileNavigator.performCreateComponent = { path in
+            let componentName = URL(fileURLWithPath: path).deletingPathExtension().lastPathComponent.sanitizedFileName
+            let documentContents = """
+extension \(componentName) {
+  let devices: Array<Number> = []
+}
+"""
+
+            let document = LogicDocument()
+
+            guard let json = LogicFile.convert(documentContents, kind: .logic, to: .json),
+                let data = json.data(using: .utf8) else { return false }
+
+            do {
+                document.content = try JSONDecoder().decode(LGCSyntaxNode.self, from: data)
+            } catch {
+                Swift.print(error)
+                return false
+            }
+
+            let fileURL = URL(fileURLWithPath: path)
+
+            document
+                .save(to: fileURL, ofType: "Component", for: .saveOperation)
+                .finalSuccess({ document in
                     DocumentController.shared.openDocument(withContentsOf: fileURL, display: true)
                 })
 
@@ -538,8 +567,6 @@ class WorkspaceViewController: NSSplitViewController {
 
     func update() {
         inspectorView.content = inspectedContent
-
-        codeEditorViewController.document = document
 
         guard let document = document else {
             if let path = fileNavigator.selectedFile, FileManager.default.isDirectory(path: path) {

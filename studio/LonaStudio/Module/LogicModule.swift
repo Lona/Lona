@@ -63,9 +63,13 @@ public class LogicModule {
     private func compile() -> Compiled {
         let compiled = Compiled(program: self.program)
 
+        AppDelegate.debugWindow.rootNode = compiled.programNode
+
         let program: LGCSyntaxNode = compiled.programNode
 
         let scopeContext = Compiler.scopeContext(program)
+
+        AppDelegate.debugWindow.scopeContext = scopeContext
 
         scopeContext.undefinedIdentifiers.forEach { errorId in
             if case .identifier(let identifierNode)? = program.find(id: errorId) {
@@ -89,9 +93,13 @@ public class LogicModule {
         let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
         let substitutionResult = Unification.unify(constraints: unificationContext.constraints)
 
+        AppDelegate.debugWindow.unificationContext = unificationContext
+
         guard let substitution = try? substitutionResult.get() else {
             return compiled
         }
+
+        AppDelegate.debugWindow.substitution = substitution
 
         compiled.unification = (unificationContext, substitution)
 
@@ -106,6 +114,8 @@ public class LogicModule {
 
         switch evaluationContext {
         case .success(let evaluation):
+            AppDelegate.debugWindow.evaluationContext = evaluation
+
             compiled.evaluation = evaluation
 
             if evaluation.hasCycle {
@@ -186,7 +196,7 @@ public class LogicModule {
 
     // MARK: Private Static
 
-    private static let logicRE = try! NSRegularExpression(pattern: #"\.(logic|tokens|md|mdx)$"#)
+    private static let logicRE = try! NSRegularExpression(pattern: #"\.(logic|tokens|md|mdx|cmp)$"#)
 
     private static let preludeProgram = LGCProgram(
         id: UUID(),
