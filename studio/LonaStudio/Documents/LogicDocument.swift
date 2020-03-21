@@ -10,6 +10,7 @@ import AppKit
 import Logic
 
 class LogicDocument: NSDocument {
+
     override init() {
         super.init()
 
@@ -62,11 +63,10 @@ class LogicDocument: NSDocument {
 
         let jsonData = try encoder.encode(content)
 
-        // Save in XML if possible, falling back to JSON if that fails
-        if let xmlData = LogicFile.convert(jsonData, kind: .logic, to: .xml) {
+        if let xmlData = LogicFile.convert(jsonData, kind: .logic, to: .source) {
             return xmlData
         } else {
-            Swift.print("Failed to save .logic file as XML")
+            Swift.print("Failed to save logic file as source")
             return jsonData
         }
     }

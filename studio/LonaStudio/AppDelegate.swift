@@ -9,6 +9,7 @@
 import Cocoa
 import LetsMove
 import MASPreferences
+import Logic
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -91,6 +92,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         AppDelegate.preferencesWindow?.showWindow(sender)
     }
+
+    @IBAction func showLogicDebuggingWindow(_ sender: AnyObject) {
+        AppDelegate.debugWindow.showWindow(nil)
+    }
+
+    static var debugWindow = DebugWindowController()
 
     private var welcomeWindow = WelcomeWindow()
 

@@ -110,6 +110,8 @@ class FileNavigator: NSBox {
 
     public var performCreateComponent: ((FileTree.Path) -> Bool)?
 
+    public var performCreateLegacyComponent: ((FileTree.Path) -> Bool)?
+
     public var performCreatePage: ((String, FileTree.Path) -> Void)?
 
     // MARK: - Private
@@ -193,8 +195,16 @@ class FileNavigator: NSBox {
                     guard let newFileName = Alert.runTextInputAlert(
                         messageText: "Enter a new component name",
                         placeholderText: "Component name") else { return }
-                    let newPath = FileNavigator.normalizeInputPath(parentPath: path, filename: newFileName, withExtension: "component")
+                    let newPath = FileNavigator.normalizeInputPath(parentPath: path, filename: newFileName, withExtension: "cmp")
                     _ = self.performCreateComponent?(newPath)
+                }))
+
+                menu.addItem(NSMenuItem(title: "New Legacy Component", onClick: { [unowned self] in
+                    guard let newFileName = Alert.runTextInputAlert(
+                        messageText: "Enter a new component name",
+                        placeholderText: "Component name") else { return }
+                    let newPath = FileNavigator.normalizeInputPath(parentPath: path, filename: newFileName, withExtension: "component")
+                    _ = self.performCreateLegacyComponent?(newPath)
                 }))
             }
 
@@ -369,7 +379,7 @@ class FileNavigator: NSBox {
             } else {
                 iconView = FolderIcon()
             }
-        } else if path.hasSuffix(".component") || path.hasSuffix(".logic") || path.hasSuffix(".tokens") {
+        } else if path.hasSuffix(".component") || path.hasSuffix(".logic") || path.hasSuffix(".tokens") || path.hasSuffix(".cmp") {
             let imageView = NSImageView(image: imageForFile(atPath: path, size: thumbnailSize) )
             imageView.imageScaling = .scaleProportionallyUpOrDown
             iconView = imageView
