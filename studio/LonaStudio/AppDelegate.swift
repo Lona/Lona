@@ -94,10 +94,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @IBAction func showLogicDebuggingWindow(_ sender: AnyObject) {
-        AppDelegate.debugWindow.showWindow(nil)
+        AppDelegate.debugController.showWindow(nil)
     }
 
-    static var debugWindow = DebugWindowController()
+    static var debugController: DebugWindowController = {
+        let controller = DebugWindowController()
+        controller.getLibraryContents = LogicLoader.load
+        controller.getLibraryURL = LogicLoader.url
+        return controller
+    }()
 
     private var welcomeWindow = WelcomeWindow()
 

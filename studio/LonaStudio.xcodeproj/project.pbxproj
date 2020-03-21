@@ -189,7 +189,6 @@
 		6B14C7BD23C4011B00EF85FA /* FileManager+Directory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B14C7BC23C4011B00EF85FA /* FileManager+Directory.swift */; };
 		6B14C7BF23C5109900EF85FA /* NoDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B14C7BE23C5109900EF85FA /* NoDocument.swift */; };
 		6B1DE3E622D7B1C100FC565E /* LogicCompilerConfigurationInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1DE3E522D7B1C000FC565E /* LogicCompilerConfigurationInput.swift */; };
-		6B1DE3E822D7BA0300FC565E /* CompilerConfiguration.logic in Resources */ = {isa = PBXBuildFile; fileRef = 6B1DE3E722D7BA0300FC565E /* CompilerConfiguration.logic */; };
 		6B1DE3EA22D7BA1F00FC565E /* LogicLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1DE3E922D7BA1F00FC565E /* LogicLoader.swift */; };
 		6B23A84721E6CC080001009E /* DocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B23A84621E6CC080001009E /* DocumentController.swift */; };
 		6B25041821E5510900AE7F97 /* ImageDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B25041621E5510900AE7F97 /* ImageDocument.swift */; };
@@ -303,6 +302,7 @@
 		6BA7831B2410AF87008F3761 /* OpenSyncLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA7831A2410AF87008F3761 /* OpenSyncLocation.swift */; };
 		6BABAFE52139C0EE002B8C8F /* Toolbar.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6BABAFE42139C0EE002B8C8F /* Toolbar.xcassets */; };
 		6BABAFE72139C341002B8C8F /* WorkspaceToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */; };
+		6BB7E2112426CCFA001261A3 /* LonaDevice.logic in Resources */ = {isa = PBXBuildFile; fileRef = 6BB7E2102426CCFA001261A3 /* LonaDevice.logic */; };
 		6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; };
 		6BBE0F6B212B26C900CEE8C1 /* FileTree.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6BC2D43D226162C4003A9F63 /* LabeledLogicInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2D43C226162C4003A9F63 /* LabeledLogicInput.swift */; };
@@ -593,7 +593,6 @@
 		6B14C7BC23C4011B00EF85FA /* FileManager+Directory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Directory.swift"; sourceTree = "<group>"; };
 		6B14C7BE23C5109900EF85FA /* NoDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoDocument.swift; sourceTree = "<group>"; };
 		6B1DE3E522D7B1C000FC565E /* LogicCompilerConfigurationInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicCompilerConfigurationInput.swift; sourceTree = "<group>"; };
-		6B1DE3E722D7BA0300FC565E /* CompilerConfiguration.logic */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CompilerConfiguration.logic; sourceTree = "<group>"; };
 		6B1DE3E922D7BA1F00FC565E /* LogicLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicLoader.swift; sourceTree = "<group>"; };
 		6B23A84621E6CC080001009E /* DocumentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentController.swift; sourceTree = "<group>"; };
 		6B25041621E5510900AE7F97 /* ImageDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageDocument.swift; sourceTree = "<group>"; };
@@ -703,6 +702,7 @@
 		6BA8985923271BE800AA8F78 /* LonaStudio.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LonaStudio.entitlements; sourceTree = "<group>"; };
 		6BABAFE42139C0EE002B8C8F /* Toolbar.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Toolbar.xcassets; sourceTree = "<group>"; };
 		6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceToolbar.swift; sourceTree = "<group>"; };
+		6BB7E2102426CCFA001261A3 /* LonaDevice.logic */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LonaDevice.logic; sourceTree = "<group>"; };
 		6BBE0F69212B26C900CEE8C1 /* FileTree.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FileTree.framework; path = Carthage/Build/Mac/FileTree.framework; sourceTree = "<group>"; };
 		6BC2D43C226162C4003A9F63 /* LabeledLogicInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledLogicInput.swift; sourceTree = "<group>"; };
 		6BC2D43E226245F9003A9F63 /* LogicInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicInput.swift; sourceTree = "<group>"; };
@@ -1338,7 +1338,7 @@
 		6B34149C225803F500CC65D1 /* Logic */ = {
 			isa = PBXGroup;
 			children = (
-				6B1DE3E722D7BA0300FC565E /* CompilerConfiguration.logic */,
+				6BB7E2102426CCFA001261A3 /* LonaDevice.logic */,
 				6B87001522EFBC42007C589C /* Logic+Builders.swift */,
 				6B1DE3E922D7BA1F00FC565E /* LogicLoader.swift */,
 				6BC2D4512263D80C003A9F63 /* Editors */,
@@ -1611,6 +1611,7 @@
 				6BC60631223F1947003E616B /* Logic.framework.dSYM in Resources */,
 				307D44182097DDAB004B57F5 /* icon-tab-docs@2x.png in Resources */,
 				307D44152097DDAB004B57F5 /* icon-tab-docs.png in Resources */,
+				6BB7E2112426CCFA001261A3 /* LonaDevice.logic in Resources */,
 				0304A71323F421F4009A1E82 /* getMe.graphql in Resources */,
 				6B73809D22C7B3BF007534A0 /* tokens-list@2x.png in Resources */,
 				301D7EDC1F47A29D0098AB0D /* Modules in Resources */,
@@ -1635,7 +1636,6 @@
 				30F870E220865859007ADA5B /* icon-documentation@2x.png in Resources */,
 				6BD96653217FB0DB0012F173 /* default-workspace-thumbnail@2x.png in Resources */,
 				6B0AEFC11EBF74D800F35BBF /* Main.storyboard in Resources */,
-				6B1DE3E822D7BA0300FC565E /* CompilerConfiguration.logic in Resources */,
 				30F870DC20865859007ADA5B /* icon-blank-document@2x.png in Resources */,
 				30F870E320865859007ADA5B /* LonaIcon_16x16.png in Resources */,
 				30F870E820865859007ADA5B /* LonaIcon_512x512.png in Resources */,

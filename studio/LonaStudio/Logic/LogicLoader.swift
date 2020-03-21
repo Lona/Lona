@@ -12,16 +12,21 @@ import Logic
 public enum LogicLoader {
     public static var cache: [String: LGCSyntaxNode] = [:]
 
+    public static func url(name: String) -> URL? {
+        return Bundle.main.url(forResource: name, withExtension: "logic") ?? Library.url(for: name)
+    }
+
     public static func load(name: String) -> LGCSyntaxNode? {
         if let cached = cache[name] { return cached }
 
         // Load from the Lona Studio bundle
-        if let libraryUrl = Bundle.main.url(forResource: name, withExtension: "logic"),
+        if let libraryUrl = url(name: name),
             let libraryScript = try? Data(contentsOf: libraryUrl),
-            let decoded = try? JSONDecoder().decode(LGCSyntaxNode.self, from: libraryScript) {
+            let json = LogicFile.convert(libraryScript, kind: .logic, to: .json),
+            let syntaxNode = try? JSONDecoder().decode(LGCSyntaxNode.self, from: json) {
 
-            cache[name] = decoded
-            return decoded
+            cache[name] = syntaxNode
+            return syntaxNode
         }
 
         // Fall back to the Logic bundle
