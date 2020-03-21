@@ -15,7 +15,8 @@ private let CANVAS_PASTEBOARD_TYPE = NSPasteboard.PasteboardType("lona.canvas")
 
 private class DraggableCanvasTableHeaderItem: CanvasTableHeaderItem {
     override func mouseDragged(with event: NSEvent) {
-        guard let dragPreview = imageRepresentation(),
+        guard (abs(event.deltaX) > 0 || abs(event.deltaY) > 0),
+            let dragPreview = imageRepresentation(),
             let headerItemViews = superview?.subviews.filter({ $0 is DraggableCanvasTableHeaderItem }),
             let index = headerItemViews.firstIndex(of: self) else { return }
 
