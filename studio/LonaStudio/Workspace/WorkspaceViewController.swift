@@ -506,7 +506,7 @@ extension \(componentName) {
     private lazy var sidebarItem = NSSplitViewItem(viewController: inspectorViewController)
 
     private func setUpLayout() {
-        let newSplitView = SubtleSplitView()
+        let newSplitView = NSSplitView()
         newSplitView.isVertical = splitView.isVertical
         newSplitView.dividerStyle = splitView.dividerStyle
         newSplitView.autosaveName = splitView.autosaveName

@@ -77,6 +77,10 @@ final class InspectorView: NSBox {
         borderType = .noBorder
         contentViewMargins = .zero
 
+        let fillColor = isDarkMode ? NSColor.controlBackgroundColor : NSColor.clear
+        self.fillColor = fillColor
+        headerView.fillColor = fillColor
+
         addSubview(headerView)
 
         scrollView.hasVerticalScroller = true
