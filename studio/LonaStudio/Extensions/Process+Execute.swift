@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct ProcessError: Error {
+public struct ProcessError: Error, CustomDebugStringConvertible {
     public var command: String
     public var code: Int
     public var output: Data
@@ -16,7 +16,12 @@ public struct ProcessError: Error {
 
     public var localizedDescription: String {
         let outputString = output.utf8String() ?? ""
-        return "`\(command)` failed with exit code \(code). \(outputString)"
+        let errorOutputString = errorOutput.utf8String() ?? ""
+        return "`\(command)` failed with exit code \(code).\n\n\(outputString)\n\n\(errorOutputString)"
+    }
+
+    public var debugDescription: String {
+        return localizedDescription
     }
 }
 
