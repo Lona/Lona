@@ -88,10 +88,7 @@ public class LayerListHeader: NSBox {
 
         let menu = NSMenu(items: ComponentMenu.menuItems())
         button.setMenu(menu, forSegment: 0)
-
-        if #available(OSX 10.13, *) {
-            button.setShowsMenuIndicator(true, forSegment: 0)
-        }
+        button.setShowsMenuIndicator(true, forSegment: 0)
 
         addSubview(button)
     }
@@ -103,8 +100,6 @@ public class LayerListHeader: NSBox {
         textComponentIcon.translatesAutoresizingMaskIntoConstraints = false
         imageComponentIcon.translatesAutoresizingMaskIntoConstraints = false
         vectorComponentIcon.translatesAutoresizingMaskIntoConstraints = false
-
-        heightAnchor.constraint(equalToConstant: 37).isActive = true
 
         button.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4).isActive = true

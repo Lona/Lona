@@ -85,6 +85,8 @@ class EditorViewController: NSViewController {
         }
     }
 
+    public static var navigationBarHeight: CGFloat = 38
+
     // MARK: Private
 
     private let contentContainerView = NSBox(frame: .zero)
@@ -165,7 +167,7 @@ class EditorViewController: NSViewController {
         navigationBar.topAnchor.constraint(equalTo: contentContainerView.topAnchor).isActive = true
         navigationBar.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 8).isActive = true
         navigationBar.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor, constant: -8).isActive = true
-        navigationBar.heightAnchor.constraint(equalToConstant: 38).isActive = true
+        navigationBar.heightAnchor.constraint(equalToConstant: EditorViewController.navigationBarHeight).isActive = true
 
         dividerView.topAnchor.constraint(equalTo: navigationBar.bottomAnchor).isActive = true
 
