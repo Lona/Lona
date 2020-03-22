@@ -201,13 +201,7 @@ class CoreComponentInspectorView: NSStackView {
     var fieldWidth: CGFloat { return halfFieldWidth * 2 + columnMargin }
 
     func renderLabel(withString value: String) -> NSTextField {
-        let label: NSTextField
-
-        if #available(OSX 10.12, *) {
-            label = NSTextField(labelWithString: value)
-        } else {
-            label = NSTextField()
-        }
+        let label = NSTextField(labelWithString: value)
 
         label.frame.origin.x = labelX
 

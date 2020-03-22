@@ -246,11 +246,7 @@ class WorkspaceToolbar: NSToolbar {
         segmented.setWidth(16, forSegment: 1)
         segmented.sizeToFit()
 
-        if #available(OSX 10.13, *) {
-            segmented.setShowsMenuIndicator(true, forSegment: 1)
-        } else {
-            // Fallback on earlier versions
-        }
+        segmented.setShowsMenuIndicator(true, forSegment: 1)
 
         segmented.isEnabled = true
         segmented.isEnabled(forSegment: 1)
