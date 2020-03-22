@@ -230,3 +230,48 @@ public class LogicModule {
 
     private static var programCache: [URL: LGCProgram] = [:]
 }
+
+// MARK: - Formatting
+
+extension LogicModule {
+    public var formattingOptions: LogicFormattingOptions {
+        let compiled = self.compiled
+
+        let formattingOptions: LogicFormattingOptions = LogicFormattingOptions(
+            style: .visual,
+            getError: ({ id in
+                if let error = compiled.errors.first(where: { $0.uuid == id }) {
+                    return error.message
+                } else {
+                    return nil
+                }
+            }),
+            getArguments: ({ id in
+                return StandardConfiguration.formatArguments(
+                    rootNode: compiled.programNode,
+                    id: id,
+                    unificationContext: compiled.unification?.0,
+                    substitution: compiled.unification?.1
+                )
+            }),
+            getColor: ({ id in
+                guard let evaluation = compiled.evaluation else { return nil }
+                guard let value = evaluation.evaluate(uuid: id) else { return nil }
+                guard let colorString = value.colorString, let color = NSColor.parse(css: colorString) else { return nil }
+                return (colorString, color)
+            }),
+            getTextStyle: ({ id in
+                guard let evaluation = compiled.evaluation else { return nil }
+                guard let value = evaluation.evaluate(uuid: id) else { return nil }
+                return value.textStyle
+            }),
+            getShadow: ({ id in
+                guard let evaluation = compiled.evaluation else { return nil }
+                guard let value = evaluation.evaluate(uuid: id) else { return nil }
+                return value.nsShadow
+            })
+        )
+
+        return formattingOptions
+    }
+}

@@ -7,6 +7,7 @@
 //
 
 import AppKit
+import Defaults
 import Logic
 
 // MARK: - LogicNumberInput
@@ -109,7 +110,7 @@ public class LogicCompilerConfigurationInput: NSView {
 
             let program = LGCSyntaxNode.program(LogicCompilerConfigurationInput.makeProgram(from: expression))
 
-            let formattingOptions = LogicFormattingOptions.init(style: LogicViewController.formattingStyle, locale: .en_US, getColor: { _ in nil })
+            let formattingOptions = LogicFormattingOptions.init(style: Defaults[.formattingStyle], locale: .en_US, getColor: { _ in nil })
             return StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: formattingOptions)?(query) ?? []
         }
     }
