@@ -21,7 +21,7 @@ func GITHUB_SIGNIN_URL(scopes: [String] = GITHUB_BASIC_SCOPES) -> URL {
 }
 
 func GOOGLE_SIGNIN_URL(scopes: [String] = ["openid", "email", "profile"]) -> URL {
-  return URL(string: "https://accounts.google.com/o/oauth2/v2/auth?client_id=\(GOOGLE_CLIENT_ID)&response_type=code&scope=\(scopes.joined(separator: "%20"))&redirect_uri=\(encodeURIComponent("\(API_BASE_URL)/oauth/github/\(encodeURIComponent("lonastudio://oauth-callback"))"))")!
+  return URL(string: "https://accounts.google.com/o/oauth2/v2/auth?client_id=\(GOOGLE_CLIENT_ID)&response_type=code&scope=\(scopes.joined(separator: "%20"))&redirect_uri=\(encodeURIComponent("\(API_BASE_URL)/oauth/google/\(encodeURIComponent("lonastudio://oauth-callback"))"))")!
 }
 
 func encodeURIComponent(_ string: String) -> String {
