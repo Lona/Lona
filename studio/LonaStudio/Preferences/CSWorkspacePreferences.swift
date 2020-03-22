@@ -108,11 +108,7 @@ class CSWorkspacePreferences: CSPreferencesFile {
 
     static var data: CSData = load()
 
-    static func reloadAllConfigurationFiles(closeDocuments: Bool) {
-        if closeDocuments {
-            NSDocumentController.shared.closeAllDocuments(withDelegate: nil, didCloseAllSelector: nil, contextInfo: nil)
-        }
-
+    static func reloadAllConfigurationFiles() {
         CSWorkspacePreferences.reload()
         CSUserTypes.reload()
         CSColors.reload()
