@@ -9,53 +9,19 @@
 import AppKit
 
 extension Colors {
-    public static let textColor: NSColor = {
-        if #available(OSX 10.13, *) {
-            return NSColor(named: "textColor")!
-        } else {
-            return NSColor.black
-        }
-    }()
+    public static let textColor = NSColor(named: "textColor")!
 
-    public static let mutedTextColor: NSColor = {
-        if #available(OSX 10.13, *) {
-            return NSColor(named: "textColor")!.withAlphaComponent(0.7)
-        } else {
-            return NSColor.black
-        }
-    }()
+    public static let mutedTextColor = NSColor(named: "textColor")!.withAlphaComponent(0.7)
 
-    public static let labelText: NSColor = {
-        if #available(OSX 10.13, *) {
-            return NSColor(named: "labelTextColor")!
-        } else {
-            return NSColor.parse(css: "#545454")!
-        }
-    }()
+    public static let labelText = NSColor(named: "labelTextColor")!
 
-    public static let windowBackground: NSColor = {
-        if #available(OSX 10.13, *) {
-            return NSColor(named: "windowBackgroundColor")!
-        } else {
-            return NSColor.white
-        }
-    }()
+    public static let windowBackground = NSColor(named: "windowBackgroundColor")!
 
-    public static let headerBackground: NSColor = {
-        if #available(OSX 10.13, *) {
-            return NSColor(named: "headerBackgroundColor")!
-        } else {
-            return NSColor.white
-        }
-    }()
+    public static let headerBackground = NSColor(named: "headerBackgroundColor")!
 
-    public static let controlBackground: NSColor = {
-        if #available(OSX 10.13, *) {
-            return NSColor(named: "controlBackgroundColor")!
-        } else {
-            return NSColor.white
-        }
-    }()
+    public static let controlBackground = NSColor(named: "controlBackgroundColor")!
+
+    public static let dividerSubtle = NSColor(named: "dividerSubtleColor")!
 
     public static let contentHeaderBackground: NSColor = {
         if #available(OSX 10.14, *) {
@@ -78,14 +44,6 @@ extension Colors {
             default:
                 return NSColor.white
             }
-        } else {
-            return NSColor.white
-        }
-    }()
-
-    public static let dividerSubtle: NSColor = {
-        if #available(OSX 10.13, *) {
-            return NSColor(named: "dividerSubtleColor")!
         } else {
             return NSColor.white
         }

@@ -55,11 +55,7 @@ class LogicDocument: NSDocument {
     public static func encode(_ content: LGCSyntaxNode) throws -> Data {
         let encoder = JSONEncoder()
 
-        if #available(OSX 10.13, *) {
-            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        } else {
-            encoder.outputFormatting = [.prettyPrinted]
-        }
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
 
         let jsonData = try encoder.encode(content)
 
