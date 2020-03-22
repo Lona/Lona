@@ -36,9 +36,18 @@ class WorkspaceWindowController: NSWindowController {
 
         let windowController = storyboard.instantiateController(withIdentifier: windowControllerId) as! WorkspaceWindowController
 
-        windowController.window?.backgroundColor = Colors.headerBackground
-        windowController.window?.tabbingMode = .preferred
-        windowController.window?.titleVisibility = .hidden
+        let toolbar = NSToolbar(identifier: "toolbar")
+        toolbar.allowsUserCustomization = false
+        toolbar.showsBaselineSeparator = false
+
+        if let window = windowController.window {
+            window.backgroundColor = Colors.headerBackground
+            window.tabbingMode = .preferred
+            window.titleVisibility = .hidden
+            window.titlebarAppearsTransparent = true
+            window.toolbar = toolbar
+        }
+
         windowController.contentViewController = workspaceViewController
 
         return windowController

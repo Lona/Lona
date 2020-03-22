@@ -99,7 +99,6 @@ class MarkdownViewController: NSViewController {
         containerView.borderType = .noBorder
         containerView.boxType = .custom
         containerView.contentViewMargins = .zero
-        containerView.fillColor = Colors.contentBackground
 
         containerView.addSubview(contentView)
 
