@@ -289,7 +289,7 @@ class FileNavigator: NSBox {
         translatesAutoresizingMaskIntoConstraints = false
         fileTree.translatesAutoresizingMaskIntoConstraints = false
 
-        fileTree.topAnchor.constraint(equalTo: topAnchor, constant: 24).isActive = true
+        fileTree.topAnchor.constraint(equalTo: topAnchor, constant: EditorViewController.navigationBarHeight - 1).isActive = true
         fileTree.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
         fileTree.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         fileTree.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
@@ -350,7 +350,7 @@ class FileNavigator: NSBox {
     }
 
     private func rowHeightForFile(atPath path: String) -> CGFloat {
-        return path == rootPath ? 38 : fileTree.defaultRowHeight
+        return path == rootPath ? EditorViewController.navigationBarHeight : fileTree.defaultRowHeight
     }
 
     private func rowViewForFile(atPath path: String, options: FileTree.RowViewOptions) -> NSView {

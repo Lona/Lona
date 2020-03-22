@@ -156,13 +156,12 @@ extension LayerListOutlineView {
         backgroundColor = NSColor.clear
         wantsLayer = true
         columnAutoresizingStyle = .firstColumnOnlyAutoresizingStyle
-        rowSizeStyle = NSTableView.RowSizeStyle.small
 
         dataSource = self
         delegate = self
 
         focusRingType = .none
-        intercellSpacing = NSSize(width: 10, height: 10)
+        rowHeight = 28
 
         registerForDraggedTypes([.lonaLayerIndex, .lonaLayerTemplateType, .fileTreeURL])
 
@@ -425,38 +424,54 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
         return self.outlineView(outlineView, numberOfChildrenOfItem: item) > 0
     }
 
-    func outlineView(_ outlineView: NSOutlineView, heightOfRowByItem item: Any) -> CGFloat {
-        return 18
-    }
-
     func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
-        let cellView = NSTableCellView()
+        let view = NSTableCellView()
 
         switch tableColumn!.identifier.rawValue {
         case "layer":
             if let layer = item as? CSLayer {
-                let textField = NSTextField()
+                let thumbnailSize = NSSize(width: 24, height: 24)
+                let thumbnailMargin: CGFloat = 0
 
-                textField.isEditable = true
-                textField.delegate = self
-                textField.isBordered = false
-                textField.drawsBackground = false
-                textField.stringValue = layer.name
+                let textView = NSTextField()
+
+                textView.isEditable = true
+                textView.delegate = self
+                textView.isBordered = false
+                textView.drawsBackground = false
+                textView.stringValue = layer.name
 
                 if case CSLayer.LayerType.custom = layer.type {
-                    textField.textColor = NSColor.parse(css: "rgb(101,53,160)")!
+                    textView.textColor = NSColor.systemPurple
                 }
 
-                cellView.textField = textField
-                cellView.addSubview(textField)
+                view.textField = textView
+                view.addSubview(textView)
 
-                if #available(OSX 10.12, *) {
-                    if let image = LayerThumbnail.image(for: layer) {
-                        let imageView = NSImageView(image: image)
-                        cellView.imageView = imageView
-                        cellView.addSubview(imageView)
-                    }
+                let image = LayerThumbnail.image(for: layer)
+
+                if let image = image {
+                    let iconView = NSImageView(image: image)
+                    view.imageView = iconView
+                    view.addSubview(iconView)
+
+                    iconView.translatesAutoresizingMaskIntoConstraints = false
+                    iconView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: thumbnailMargin).isActive = true
+                    iconView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+                    iconView.widthAnchor.constraint(equalToConstant: thumbnailSize.width).isActive = true
+                    iconView.heightAnchor.constraint(equalToConstant: thumbnailSize.height).isActive = true
                 }
+
+                textView.translatesAutoresizingMaskIntoConstraints = false
+                textView.leadingAnchor.constraint(
+                    equalTo: view.leadingAnchor,
+                    constant: image != nil ? thumbnailMargin * 2 + thumbnailSize.width : thumbnailMargin
+                ).isActive = true
+                textView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+                textView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+                textView.font = NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))
+                textView.maximumNumberOfLines = 1
+                textView.lineBreakMode = .byTruncatingMiddle
             }
         case "visible":
             if let layer = item as? CSLayer {
@@ -476,17 +491,17 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
                     })
                 }
 
-                cellView.addSubview(checkbox)
+                view.addSubview(checkbox)
 
-                cellView.translatesAutoresizingMaskIntoConstraints = false
+                view.translatesAutoresizingMaskIntoConstraints = false
                 checkbox.translatesAutoresizingMaskIntoConstraints = false
 
                 checkbox.title = ""
 
-                cellView.leadingAnchor.constraint(equalTo: checkbox.leadingAnchor).isActive = true
-                cellView.trailingAnchor.constraint(equalTo: checkbox.trailingAnchor).isActive = true
-                cellView.topAnchor.constraint(equalTo: checkbox.topAnchor).isActive = true
-                cellView.bottomAnchor.constraint(equalTo: checkbox.bottomAnchor).isActive = true
+                view.leadingAnchor.constraint(equalTo: checkbox.leadingAnchor).isActive = true
+                view.trailingAnchor.constraint(equalTo: checkbox.trailingAnchor).isActive = true
+                view.topAnchor.constraint(equalTo: checkbox.topAnchor).isActive = true
+                view.bottomAnchor.constraint(equalTo: checkbox.bottomAnchor).isActive = true
 
                 checkbox.tag = Constants.CheckBoxTag
                 checkbox.isHidden = true
@@ -495,7 +510,7 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
             break
         }
 
-        return cellView
+        return view
     }
 
     func outlineView(_ outlineView: NSOutlineView, pasteboardWriterForItem item: Any) -> NSPasteboardWriting? {
