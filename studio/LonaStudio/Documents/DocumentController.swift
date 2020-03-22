@@ -157,7 +157,6 @@ class DocumentController: NSDocumentController {
         documents.forEach { $0.close() }
     }
 }
-}
 
 // MARK: - Document helpers
 
