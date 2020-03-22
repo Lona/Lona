@@ -102,7 +102,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let viewControllers = welcomeWindow.contentViewController?.presentedViewControllers {
             viewControllers.forEach { $0.dismiss(sender) }
         }
-        
+
         welcomeWindow.close()
     }
 
