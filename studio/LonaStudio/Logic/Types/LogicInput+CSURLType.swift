@@ -39,7 +39,7 @@ extension LogicInput {
 
     static func suggestionsForURL(isOptional: Bool, isVector: Bool, node: LGCSyntaxNode, query: String) -> LogicEditor.ConfiguredSuggestions {
         let noneSuggestion = LogicSuggestionItem(
-            title: "None",
+            title: "No value",
             category: LGCExpression.Suggestion.variablesCategoryTitle,
             node: .expression(
                 .identifierExpression(
@@ -148,6 +148,6 @@ extension LogicInput {
                 ? []
                 : [customSuggestion] + dataSourceSuggestions + [randomProfileSuggestion].titleContains(prefix: query))
 
-        return .init(allSuggestions)
+        return .init(allSuggestions, windowConfiguration: .full)
     }
 }
