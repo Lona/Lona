@@ -46,47 +46,51 @@ It's best to use **camelCase** capitalization when choosing parameter names. Thi
         }
     }
 
-    static func makeParameterSuggestionsHandler(types: [CSType]) -> (LGCSyntaxNode, LGCSyntaxNode, String) -> [LogicSuggestionItem] {
+    static func makeParameterSuggestionsHandler(types: [CSType]) -> (LGCSyntaxNode, LGCSyntaxNode, String) -> LogicEditor.ConfiguredSuggestions {
         return { rootNode, syntaxNode, query in
             switch syntaxNode {
             case .functionParameterDefaultValue:
-                guard let parent = rootNode.pathTo(id: syntaxNode.uuid)?.dropLast().last else { return [] }
+                guard let parent = rootNode.pathTo(id: syntaxNode.uuid)?.dropLast().last else { return .init([]) }
 
                 switch parent {
                 case .functionParameter(.parameter(id: _, localName: _, annotation: let annotation, defaultValue: _, _)):
-                    guard let csType = annotation.csType(environmentTypes: types) else { return [] }
-                    return [
-                        LogicSuggestionItem(
-                            title: "No default",
-                            category: "NONE",
-                            node: .functionParameterDefaultValue(.none(id: UUID()))
-                        )
-                    ].titleContains(prefix: query) +
-                        LogicInput.suggestions(forType: csType, node: syntaxNode, query: query).map {
-                        var suggestion = $0
-                        switch suggestion.node {
-                        case .expression(let expression):
-                            suggestion.node = .functionParameterDefaultValue(.value(id: UUID(), expression: expression))
-                            return suggestion
-                        default:
-                            fatalError("Only expressions allowed")
-                        }
-                    }
+                    guard let csType = annotation.csType(environmentTypes: types) else { return .init([]) }
+                    return .init(
+                        [
+                            LogicSuggestionItem(
+                                title: "No default",
+                                category: "NONE",
+                                node: .functionParameterDefaultValue(.none(id: UUID()))
+                            )
+                        ].titleContains(prefix: query) +
+                            LogicInput.suggestions(forType: csType, node: syntaxNode, query: query).items.map {
+                                var suggestion = $0
+                                switch suggestion.node {
+                                case .expression(let expression):
+                                    suggestion.node = .functionParameterDefaultValue(.value(id: UUID(), expression: expression))
+                                    return suggestion
+                                default:
+                                    fatalError("Only expressions allowed")
+                                }
+                            }
+                    )
                 default:
-                    return []
+                    return .init([])
                 }
             case .typeAnnotation:
-                return typeAnnotationSuggestions(query: query, rootNode: rootNode, types: types)
+                return .init(typeAnnotationSuggestions(query: query, rootNode: rootNode, types: types))
             case .functionParameter:
                 let defaultItems = syntaxNode.suggestions(within: rootNode, for: query)
 
-                return defaultItems.map { item in
-                    var copy = item
-                    copy.category = "Component Parameter".uppercased()
-                    return copy
-                }
+                return .init(
+                    defaultItems.map { item in
+                        var copy = item
+                        copy.category = "Component Parameter".uppercased()
+                        return copy
+                    }
+                )
             default:
-                return []
+                return .init([])
             }
         }
     }

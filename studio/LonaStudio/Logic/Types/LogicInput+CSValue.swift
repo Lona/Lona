@@ -76,7 +76,7 @@ extension LogicInput {
         }
     }
 
-    static func suggestions(forType csType: CSType, node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
+    static func suggestions(forType csType: CSType, node: LGCSyntaxNode, query: String) -> LogicEditor.ConfiguredSuggestions {
         switch csType {
         case .bool:
             return Bool.expressionSuggestions(node: node, query: query)
@@ -95,20 +95,22 @@ extension LogicInput {
         case .named:
             return suggestions(forType: csType.unwrappedNamedType(), node: node, query: query)
         case .variant(let cases):
-            return cases.map { caseItem in
-                LogicSuggestionItem(
-                    title: caseItem.0,
-                    category: "Cases".uppercased(),
-                    node: .expression(
-                        .identifierExpression(
-                            id: UUID(),
-                            identifier: LGCIdentifier(id: UUID(), string: caseItem.0)
+            return .init(
+                cases.map { caseItem in
+                    LogicSuggestionItem(
+                        title: caseItem.0,
+                        category: "Cases".uppercased(),
+                        node: .expression(
+                            .identifierExpression(
+                                id: UUID(),
+                                identifier: LGCIdentifier(id: UUID(), string: caseItem.0)
+                            )
                         )
                     )
-                )
-            }.titleContains(prefix: query)
+                }.titleContains(prefix: query)
+            )
         default:
-            return []
+            return .init([])
         }
     }
 }

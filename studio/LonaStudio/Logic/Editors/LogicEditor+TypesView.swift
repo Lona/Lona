@@ -21,46 +21,50 @@ extension LogicEditor {
         }
     }
 
-    static func makeTypeSuggestionsHandler(types: [CSType]) -> (LGCSyntaxNode, LGCSyntaxNode, String) -> [LogicSuggestionItem] {
+    static func makeTypeSuggestionsHandler(types: [CSType]) -> (LGCSyntaxNode, LGCSyntaxNode, String) -> LogicEditor.ConfiguredSuggestions {
         return { rootNode, syntaxNode, query in
             switch syntaxNode {
             case .statement:
-                return [
-                    LogicSuggestionItem(
-                        title: "Enumeration",
-                        category: "Type Declarations".uppercased(),
-                        node: .statement(
-                            .declaration(
-                                id: UUID(),
-                                content: .enumeration(
+                return .init(
+                    [
+                        LogicSuggestionItem(
+                            title: "Enumeration",
+                            category: "Type Declarations".uppercased(),
+                            node: .statement(
+                                .declaration(
                                     id: UUID(),
-                                    name: LGCPattern(id: UUID(), name: "name"),
-                                    genericParameters: .empty,
-                                    cases: .next(
-                                        LGCEnumerationCase.placeholder(id: UUID()),
-                                        .empty
-                                    ),
-                                    comment: nil
+                                    content: .enumeration(
+                                        id: UUID(),
+                                        name: LGCPattern(id: UUID(), name: "name"),
+                                        genericParameters: .empty,
+                                        cases: .next(
+                                            LGCEnumerationCase.placeholder(id: UUID()),
+                                            .empty
+                                        ),
+                                        comment: nil
+                                    )
                                 )
                             )
                         )
-                    )
-                ]
+                    ]
+                )
             case .pattern:
-                return [
-                    LogicSuggestionItem(
-                        title: "Type name: \(query)",
-                        category: "Pattern".uppercased(),
-                        node: LGCSyntaxNode.pattern(LGCPattern(id: UUID(), name: query)),
-                        disabled: query.isEmpty
-                    )
-                ]
+                return .init(
+                    [
+                        LogicSuggestionItem(
+                            title: "Type name: \(query)",
+                            category: "Pattern".uppercased(),
+                            node: LGCSyntaxNode.pattern(LGCPattern(id: UUID(), name: query)),
+                            disabled: query.isEmpty
+                        )
+                    ]
+                )
             case .enumerationCase:
-                return syntaxNode.suggestions(within: rootNode, for: query)
+                return .init(syntaxNode.suggestions(within: rootNode, for: query))
             case .typeAnnotation:
-                return typeAnnotationSuggestions(query: query, rootNode: rootNode, types: types)
+                return .init(typeAnnotationSuggestions(query: query, rootNode: rootNode, types: types))
             default:
-                return []
+                return .init([])
             }
         }
     }
