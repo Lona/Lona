@@ -72,16 +72,23 @@ final class InspectorView: NSBox {
     // Flip the content within the scrollview so it starts at the top
     private let flippedView = FlippedView()
 
+    private var visualEffectView: NSVisualEffectView = .init()
+
     private func setUpViews() {
         boxType = .custom
         borderType = .noBorder
         contentViewMargins = .zero
 
-        let fillColor = isDarkMode ? NSColor.controlBackgroundColor : NSColor.clear
-        self.fillColor = fillColor
-        headerView.fillColor = fillColor
+        headerView.fillColor = isDarkMode ? NSColor.clear : headerView.fillColor
+        headerView.dividerColor = isDarkMode ? NSColor.clear : headerView.dividerColor
 
-        addSubview(headerView)
+        let parentView = isDarkMode ? visualEffectView : self
+
+        if parentView != self {
+            self.addSubview(parentView)
+        }
+
+        parentView.addSubview(headerView)
 
         scrollView.hasVerticalScroller = true
         scrollView.autohidesScrollers = true
@@ -91,27 +98,35 @@ final class InspectorView: NSBox {
         scrollView.addSubview(flippedView)
         scrollView.documentView = flippedView
 
-        addSubview(scrollView)
+        parentView.addSubview(scrollView)
     }
 
     private func setUpConstraints() {
         translatesAutoresizingMaskIntoConstraints = false
+        visualEffectView.translatesAutoresizingMaskIntoConstraints = false
         headerView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         flippedView.translatesAutoresizingMaskIntoConstraints = false
 
+        let parentView = isDarkMode ? visualEffectView : self
+
+        parentView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        parentView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        parentView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        parentView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+
         // The layout gets completely messed up without this
         flippedView.wantsLayer = true
 
-        headerView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        headerView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        headerView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        headerView.topAnchor.constraint(equalTo: parentView.topAnchor).isActive = true
+        headerView.leadingAnchor.constraint(equalTo: parentView.leadingAnchor).isActive = true
+        headerView.trailingAnchor.constraint(equalTo: parentView.trailingAnchor).isActive = true
 
         scrollView.topAnchor.constraint(equalTo: headerView.bottomAnchor).isActive = true
 
-        scrollView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        scrollView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        scrollView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        scrollView.bottomAnchor.constraint(equalTo: parentView.bottomAnchor).isActive = true
+        scrollView.leadingAnchor.constraint(equalTo: parentView.leadingAnchor).isActive = true
+        scrollView.trailingAnchor.constraint(equalTo: parentView.trailingAnchor).isActive = true
 
         flippedView.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
         flippedView.leftAnchor.constraint(equalTo: scrollView.leftAnchor, constant: 20).isActive = true

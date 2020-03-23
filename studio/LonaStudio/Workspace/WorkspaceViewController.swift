@@ -699,7 +699,8 @@ extension \(componentName) {
                 }
             }
         } else if let document = document as? LogicDocument {
-            inspectorViewVisible = false
+            inspectorViewVisible = true
+            editorViewController.showsHeaderDivider = true
 
             editorViewController.contentView = logicViewController.view
 
