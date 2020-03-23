@@ -129,8 +129,6 @@ class FileNavigator: NSBox {
 
         fillColor = Colors.headerBackground
 
-        visualEffectView.state = isDarkMode ? .followsWindowActiveState : .inactive
-
         fileTree.showRootFile = true
         fileTree.rowHeightForFile = { [unowned self] path in self.rowHeightForFile(atPath: path) }
         fileTree.rowViewForFile = { [unowned self] path, options in self.rowViewForFile(atPath: path, options: options) }
@@ -147,8 +145,13 @@ class FileNavigator: NSBox {
         }
         fileTree.onPressDelete = { [unowned self] path in self.deleteAlertForFile(atPath: path) }
 
-        addSubview(visualEffectView)
-        visualEffectView.addSubview(fileTree)
+        let parentView = isDarkMode ? visualEffectView : self
+
+        if parentView != self {
+            self.addSubview(parentView)
+        }
+
+        parentView.addSubview(fileTree)
     }
 
     private func deleteAlertForFile(atPath path: String) {
@@ -295,18 +298,20 @@ class FileNavigator: NSBox {
         visualEffectView.translatesAutoresizingMaskIntoConstraints = false
         fileTree.translatesAutoresizingMaskIntoConstraints = false
 
-        visualEffectView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        visualEffectView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        visualEffectView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        visualEffectView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        let parentView = isDarkMode ? visualEffectView : self
+
+        parentView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        parentView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        parentView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        parentView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
 
         fileTree.topAnchor.constraint(
-            equalTo: visualEffectView.topAnchor,
+            equalTo: parentView.topAnchor,
             constant: EditorViewController.navigationBarHeight - 1
         ).isActive = true
-        fileTree.bottomAnchor.constraint(equalTo: visualEffectView.bottomAnchor).isActive = true
-        fileTree.leadingAnchor.constraint(equalTo: visualEffectView.leadingAnchor).isActive = true
-        fileTree.trailingAnchor.constraint(equalTo: visualEffectView.trailingAnchor).isActive = true
+        fileTree.bottomAnchor.constraint(equalTo: parentView.bottomAnchor).isActive = true
+        fileTree.leadingAnchor.constraint(equalTo: parentView.leadingAnchor).isActive = true
+        fileTree.trailingAnchor.constraint(equalTo: parentView.trailingAnchor).isActive = true
     }
 
     private func update() {}

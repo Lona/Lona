@@ -350,7 +350,6 @@ class CoreComponentInspectorView: NSStackView {
         let inner = NSView()
         inner.heightAnchor.constraint(equalToConstant: 30).isActive = true
         inner.wantsLayer = true
-        inner.layer?.backgroundColor = Colors.headerBackground.cgColor
         inner.layer?.borderWidth = 1
         inner.layer?.borderColor = Colors.dividerSubtle.cgColor
         inner.layer?.cornerRadius = 3
@@ -371,7 +370,6 @@ class CoreComponentInspectorView: NSStackView {
         ], orientation: .vertical)
         padding.spacing = 2
         padding.wantsLayer = true
-        padding.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
         padding.layer?.borderWidth = 1
         padding.layer?.borderColor = NSColor.controlBackgroundColor.cgColor
         padding.layer?.cornerRadius = 3
