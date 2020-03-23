@@ -204,7 +204,7 @@ class FileNavigator: NSBox {
                     _ = self.performCreateComponent?(newPath)
                 }))
 
-                menu.addItem(NSMenuItem(title: "New Legacy Component", onClick: { [unowned self] in
+                menu.addItem(NSMenuItem(title: "New Flexbox Component", onClick: { [unowned self] in
                     guard let newFileName = Alert.runTextInputAlert(
                         messageText: "Enter a new component name",
                         placeholderText: "Component name") else { return }
