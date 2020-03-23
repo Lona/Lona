@@ -62,7 +62,7 @@ extension LogicInput {
         }
     }
 
-    static func suggestionsForColor(isOptional: Bool, node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
+    static func suggestionsForColor(isOptional: Bool, node: LGCSyntaxNode, query: String) -> LogicEditor.ConfiguredSuggestions {
         let noneSuggestion = LogicSuggestionItem(
             title: "None",
             category: "No Color".uppercased(),
@@ -127,7 +127,8 @@ extension LogicInput {
                 )
         }
 
-        return (isOptional && (query.isEmpty || "none".contains(lowercasedQuery)) ? [noneSuggestion] : []) +
-            systemColorSuggestions //+ customSuggestion
+        return .init(
+            (isOptional && (query.isEmpty || "none".contains(lowercasedQuery)) ? [noneSuggestion] : []) + systemColorSuggestions //+ customSuggestion
+        )
     }
 }

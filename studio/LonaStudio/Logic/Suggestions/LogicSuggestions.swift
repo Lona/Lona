@@ -10,57 +10,57 @@ import Foundation
 import Logic
 
 extension Bool {
-    static func expressionSuggestions(node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
+    static func expressionSuggestions(node: LGCSyntaxNode, query: String) -> LogicEditor.ConfiguredSuggestions {
         let trueSuggestion = LogicSuggestionItem(
             title: "true",
-            category: "Booleans".uppercased(),
+            category: LGCLiteral.Suggestion.categoryTitle,
             node: .expression(true.expressionNode)
         )
 
         let falseSuggestion = LogicSuggestionItem(
             title: "false",
-            category: "Booleans".uppercased(),
+            category: LGCLiteral.Suggestion.categoryTitle,
             node: .expression(false.expressionNode)
         )
 
-        return [trueSuggestion, falseSuggestion].titleContains(prefix: query)
+        return .init([trueSuggestion, falseSuggestion].titleContains(prefix: query), windowConfiguration: .inputAndList)
     }
 }
 
 extension Int {
-    static func expressionSuggestions(node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
+    static func expressionSuggestions(node: LGCSyntaxNode, query: String) -> LogicEditor.ConfiguredSuggestions {
         let customSuggestion = LogicSuggestionItem(
             title: "Whole Number: \(query)",
-            category: "Numbers".uppercased(),
+            category: LGCLiteral.Suggestion.categoryTitle,
             node: .expression((Int(query) ?? 0).expressionNode),
             disabled: Int(query) == nil
         )
 
-        return [customSuggestion]
+        return .init([customSuggestion])
     }
 }
 
 extension CGFloat {
-    static func expressionSuggestions(node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
+    static func expressionSuggestions(node: LGCSyntaxNode, query: String) -> LogicEditor.ConfiguredSuggestions {
         let customSuggestion = LogicSuggestionItem(
             title: "Number: \(query)",
-            category: "Numbers".uppercased(),
+            category: LGCLiteral.Suggestion.categoryTitle,
             node: .expression(CGFloat(Double(query) ?? 0).expressionNode),
             disabled: Double(query) == nil
         )
 
-        return [customSuggestion]
+        return .init([customSuggestion])
     }
 }
 
 extension String {
-    static func expressionSuggestions(node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
+    static func expressionSuggestions(node: LGCSyntaxNode, query: String) -> LogicEditor.ConfiguredSuggestions {
         let customSuggestion = LogicSuggestionItem(
             title: "String: \"\(query)\"",
             category: LGCLiteral.Suggestion.categoryTitle,
             node: .expression(query.expressionNode)
         )
 
-        return [customSuggestion]
+        return .init([customSuggestion])
     }
 }

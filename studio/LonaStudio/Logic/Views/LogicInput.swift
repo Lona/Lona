@@ -40,7 +40,7 @@ public class LogicInput: NSView {
         set { logicEditor.onChangeRootNode = newValue }
     }
 
-    public var suggestionsForNode: ((LGCSyntaxNode, LGCSyntaxNode, String) -> [LogicSuggestionItem]) {
+    public var suggestionsForNode: ((LGCSyntaxNode, LGCSyntaxNode, String) -> LogicEditor.ConfiguredSuggestions) {
         get { return logicEditor.suggestionsForNode }
         set { logicEditor.suggestionsForNode = newValue }
     }

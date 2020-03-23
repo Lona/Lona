@@ -15,7 +15,7 @@ extension LogicViewController {
         return StandardConfiguration.suggestions(rootNode: rootNode, node: node, formattingOptions: formattingOptions)
     })
 
-    public static let suggestionsForNode: ((LGCSyntaxNode, LGCSyntaxNode, String) -> [LogicSuggestionItem]) = { rootNode, node, query in
+    public static let suggestionsForNode: ((LGCSyntaxNode, LGCSyntaxNode, String) -> LogicEditor.ConfiguredSuggestions) = { rootNode, node, query in
         let module = LonaModule.current.logic
         let compiled = module.compiled
         let formattingOptions = module.formattingOptions
@@ -41,17 +41,17 @@ extension LogicViewController {
                             )
                         )
 
-                        return [shadowLiteralSuggestion] + suggestions
+                        return .init([shadowLiteralSuggestion] + suggestions)
                     }
                 default:
                     break
                 }
             }
 
-            return suggestions
+            return .init(suggestions)
         } else {
             // TODO: Should this be root node, or program node?
-            return node.suggestions(within: rootNode, for: query)
+            return .init(node.suggestions(within: rootNode, for: query))
         }
     }
 

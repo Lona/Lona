@@ -35,7 +35,7 @@ extension LogicInput {
         }
     }
 
-    static func suggestionsForTextStyle(isOptional: Bool, node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
+    static func suggestionsForTextStyle(isOptional: Bool, node: LGCSyntaxNode, query: String) -> LogicEditor.ConfiguredSuggestions {
         let noneSuggestion = LogicSuggestionItem(
             title: "None",
             category: LGCExpression.Suggestion.variablesCategoryTitle,
@@ -81,6 +81,8 @@ extension LogicInput {
                 )
         }
 
-        return (isOptional && (query.isEmpty || "none".contains(lowercasedQuery)) ? [noneSuggestion] : []) + systemSuggestions
+        return .init(
+            (isOptional && (query.isEmpty || "none".contains(lowercasedQuery)) ? [noneSuggestion] : []) + systemSuggestions
+        )
     }
 }

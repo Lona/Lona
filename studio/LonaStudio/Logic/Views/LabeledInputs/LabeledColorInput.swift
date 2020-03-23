@@ -138,11 +138,11 @@ public class LabeledColorInput: LabeledInput {
         }
 
         logicValueInput.suggestionsForNode = { rootNode, node, query in
-            guard case .expression(let expression) = node else { return [] }
+            guard case .expression(let expression) = node else { return .init([]) }
 
             let program: LGCSyntaxNode = .program(LabeledColorInput.makeExpressionProgram(from: expression).expandImports(importLoader: LogicLoader.load))
 
-            return StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: .normal)?(query) ?? []
+            return .init(StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: .normal)?(query) ?? [])
         }
 
         logicValueInput.logicEditor.formattingOptions.getArguments = { [unowned self] id in
