@@ -73,7 +73,7 @@ extension Colors {
     )
 
     public static let iconFillAccent: NSColor = .themed(
-        light: NSColor.parse(css: "#9B9B9B")!,
-        dark: Colors.contentBackground.withAlphaComponent(0.70)
+        light: Colors.contentBackground.withAlphaComponent(0.7),
+        dark: NSColor.parse(css: "#9B9B9B")!
     )
 }
