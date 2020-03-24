@@ -50,24 +50,47 @@ class LogicViewController: NSViewController {
     // MARK: Private
 
     private let logicEditor = LogicEditor()
+    private let componentEditor = CanvasAreaView()
+
     private let infoBar = InfoBar()
     private let divider = Divider()
     private let containerView = NSBox()
+    private let contentContainerView = NSBox()
 
-    private var colorValues: [UUID: String] = [:]
-    private var shadowValues: [UUID: NSShadow] = [:]
-    private var textStyleValues: [UUID: Logic.TextStyle] = [:]
+    private var editorType: LogicEditorType = Defaults[.logicEditorType] {
+        didSet { update() }
+    }
 
-    private let editorDisplayStyles: [LogicFormattingOptions.Style] = [.visual, .natural]
+    private var contentView: NSView? {
+        didSet {
+            if let contentView = contentView {
+                if contentView != oldValue {
+                    oldValue?.removeFromSuperview()
+                    contentView.removeFromSuperview()
+
+                    contentContainerView.addSubview(contentView)
+
+                    contentView.translatesAutoresizingMaskIntoConstraints = false
+
+                    contentView.topAnchor.constraint(equalTo: contentContainerView.topAnchor).isActive = true
+                    contentView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor).isActive = true
+                    contentView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor).isActive = true
+                    contentView.bottomAnchor.constraint(equalTo: contentContainerView.bottomAnchor).isActive = true
+                }
+            } else {
+                oldValue?.removeFromSuperview()
+            }
+        }
+    }
 
     private func setUpViews() {
         containerView.boxType = .custom
         containerView.borderType = .noBorder
         containerView.contentViewMargins = .zero
 
-        containerView.addSubview(logicEditor)
-        containerView.addSubview(infoBar)
-        containerView.addSubview(divider)
+        contentContainerView.boxType = .custom
+        contentContainerView.borderType = .noBorder
+        contentContainerView.contentViewMargins = .zero
 
         infoBar.fillColor = Colors.contentBackground
 
@@ -98,30 +121,30 @@ class LogicViewController: NSViewController {
             Defaults[.suggestionFilter] = value
         }
 
-        infoBar.dropdownIndex = editorDisplayStyles.firstIndex(of: Defaults[.formattingStyle]) ?? 0
-        infoBar.dropdownValues = editorDisplayStyles.map { $0.displayName }
         infoBar.onChangeDropdownIndex = { [unowned self] index in
-            Defaults[.formattingStyle] = self.editorDisplayStyles[index]
-            let newFormattingOptions = self.logicEditor.formattingOptions
-            newFormattingOptions.style = self.editorDisplayStyles[index]
-            self.logicEditor.formattingOptions = newFormattingOptions
-            self.infoBar.dropdownIndex = index
+            let newValue = LogicEditorType.allCases[index]
+            Defaults[.logicEditorType] = newValue
+            self.editorType = newValue
         }
+
+        containerView.addSubview(contentContainerView)
+        containerView.addSubview(infoBar)
+        containerView.addSubview(divider)
 
         self.view = containerView
     }
 
     private func setUpConstraints() {
         containerView.translatesAutoresizingMaskIntoConstraints = false
-        logicEditor.translatesAutoresizingMaskIntoConstraints = false
+        contentContainerView.translatesAutoresizingMaskIntoConstraints = false
         infoBar.translatesAutoresizingMaskIntoConstraints = false
         divider.translatesAutoresizingMaskIntoConstraints = false
 
-        logicEditor.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
-        logicEditor.leadingAnchor.constraint(equalTo: containerView.leadingAnchor).isActive = true
-        logicEditor.trailingAnchor.constraint(equalTo: containerView.trailingAnchor).isActive = true
+        contentContainerView.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
+        contentContainerView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor).isActive = true
+        contentContainerView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor).isActive = true
 
-        logicEditor.bottomAnchor.constraint(equalTo: divider.topAnchor).isActive = true
+        contentContainerView.bottomAnchor.constraint(equalTo: divider.topAnchor).isActive = true
 
         divider.heightAnchor.constraint(equalToConstant: 1).isActive = true
         divider.leadingAnchor.constraint(equalTo: containerView.leadingAnchor).isActive = true
@@ -135,13 +158,36 @@ class LogicViewController: NSViewController {
     }
 
     private func update() {
+        // Currently assigning rootNode should happen first, since other methods rely on it
+        logicEditor.rootNode = rootNode
+
+        infoBar.dropdownIndex = LogicEditorType.allCases.firstIndex(of: Defaults[.logicEditorType]) ?? 0
+        infoBar.dropdownValues = LogicEditorType.allCases.map { $0.rawValue }
+
+        switch editorType {
+        case .componentEditor:
+            let component: CSComponent = .makeDefaultComponent()
+            component.canvas = canvasList
+
+            componentEditor.parameters = CanvasAreaView.Parameters(
+                component: component,
+                showsAccessibilityOverlay: false,
+                onSelectLayer: {_ in},
+                selectedLayerName: nil
+            )
+
+            componentEditor.onSelectCanvasHeaderItem = onSelectCanvasHeaderItem
+
+            contentView = componentEditor
+        case .logicEditor:
+            contentView = logicEditor
+        }
+
         let module = LonaModule.current.logic
         let compiled = module.compiled
         let formattingOptions = module.formattingOptions
 
         logicEditor.formattingOptions = formattingOptions
-
-        logicEditor.rootNode = rootNode
 
         logicEditor.elementErrors = compiled.errors.filter { rootNode.find(id: $0.uuid) != nil }
 
@@ -165,13 +211,127 @@ class LogicViewController: NSViewController {
     }
 }
 
-public enum LogicEditorType: String, Codable {
-    case componentEditor
-    case codeEditor
+public enum LogicEditorType: String, Codable, CaseIterable {
+    case componentEditor = "Component Editor"
+    case logicEditor = "Logic Editor"
 }
 
 extension Defaults.Keys {
     static let suggestionFilter = Key<SuggestionView.SuggestionFilter>("Logic editor suggestion filter", default: .all)
     static let formattingStyle = Key<LogicFormattingOptions.Style>("Logic editor style", default: .visual)
     static let logicEditorType = Key<LogicEditorType>("Logic editor style", default: .componentEditor)
+}
+
+// MARK: - Canvases
+
+extension LogicViewController {
+    private var canvasExpressions: [LGCExpression] {
+        let rootNode = logicEditor.rootNode
+
+        let expressions: [LGCExpression]? = rootNode.reduce(initialResult: [], f: { result, node, config in
+            switch node {
+            case .declaration(.variable(id: _, name: let pattern, annotation: .some(let annotation), initializer: .some(let initializer), comment: _)) where pattern.name == "devices" && annotation.unificationType(genericsInScope: [:], getName: { "" }) == .cons(name: "Array", parameters: [.cons(name: "LonaDevice")]):
+                config.stopTraversal = true
+
+                switch initializer {
+                case .literalExpression(id: _, literal: .array(id: _, value: let array)):
+                    return array.map { $0 }
+                default:
+                    return nil
+                }
+            default:
+                return nil
+            }
+        })
+
+        return expressions ?? []
+    }
+
+    private var canvasList: [Canvas] {
+        let module = LonaModule.current.logic
+        let compiled = module.compiled
+
+        let canvases: [Canvas?]? = canvasExpressions.map({ expression in
+            switch compiled.evaluation?.evaluate(uuid: expression.uuid) {
+            case .some(let logicValue):
+                guard case .record(let members) = logicValue.memory else { return nil }
+
+                var name: String = ""
+
+                if let memberValue = members["name"], case .some(.string(let value)) = memberValue?.memory {
+                    name = value
+                }
+
+                return Canvas(device: .custom, name: name, heightMode: "At Least", exportScale: 1, backgroundColor: "")
+            case .none:
+                return nil
+            }
+        })
+
+        return canvases?.compactMap({ $0 }) ?? []
+    }
+
+    public func canvasExpressionSuggestions(for query: String, canvasIndex: Int) -> [LogicSuggestionItem] {
+        let module = LonaModule.current.logic
+        let compiled = module.compiled
+
+        return LogicViewController
+            .suggestionsForNode(compiled.programNode, .expression(self.canvasExpressions[canvasIndex]), query)
+            .items
+            .compactMap({ (item: LogicSuggestionItem) in
+                switch item.node {
+                case .expression(.memberExpression), .expression(.identifierExpression):
+                    return item
+                default:
+                    return nil
+                }
+            })
+    }
+
+    public func canvasExpressionSuggestionListItems(for query: String, canvasIndex: Int) -> [SuggestionListItem] {
+        canvasExpressionSuggestions(for: query, canvasIndex: canvasIndex).map({ (item: LogicSuggestionItem) in
+            return .row(item.title, nil, false, nil, nil)
+        })
+    }
+
+    public func onSelectCanvasHeaderItem(_ canvasIndex: Int) {
+        guard let window = self.componentEditor.window else { return }
+
+        let suggestionWindow = SuggestionWindow.shared
+
+        suggestionWindow.suggestionText = ""
+        suggestionWindow.suggestionItems = self.canvasExpressionSuggestionListItems(for: "", canvasIndex: canvasIndex)
+        suggestionWindow.placeholderText = "Choose device"
+        suggestionWindow.style = .contextMenu
+        suggestionWindow.onRequestHide = { suggestionWindow.orderOut(nil) }
+        suggestionWindow.onPressEscapeKey = { suggestionWindow.orderOut(nil) }
+        suggestionWindow.onSelectIndex = { index in
+            suggestionWindow.selectedIndex = index
+        }
+        suggestionWindow.onChangeSuggestionText = { text in
+            suggestionWindow.suggestionText = text
+            suggestionWindow.suggestionItems = self.canvasExpressionSuggestionListItems(for: text, canvasIndex: canvasIndex)
+        }
+        suggestionWindow.onSubmit = { index in
+            let suggestedNode = self.canvasExpressionSuggestions(for: suggestionWindow.suggestionText, canvasIndex: canvasIndex)[index].node
+            let newRootNode = self.logicEditor.rootNode.replace(id: self.canvasExpressions[canvasIndex].uuid, with: suggestedNode)
+            _ = self.onChangeRootNode?(newRootNode)
+
+            suggestionWindow.orderOut(nil)
+        }
+
+        window.addChildWindow(suggestionWindow, ordered: .above)
+
+        let windowRect = self.componentEditor.convert(self.componentEditor.headerRect(ofColumn: canvasIndex), to: nil)
+        let screenRect = window.convertToScreen(windowRect)
+        let adjustedRect = NSRect(
+            x: screenRect.midX - suggestionWindow.defaultContentWidth / 2,
+            y: screenRect.origin.y,
+            width: screenRect.width,
+            height: screenRect.height
+        )
+
+        suggestionWindow.anchorTo(rect: adjustedRect, verticalOffset: 4)
+        suggestionWindow.focusSearchField()
+    }
 }
