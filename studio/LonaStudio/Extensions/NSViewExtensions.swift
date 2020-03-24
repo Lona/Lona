@@ -34,16 +34,6 @@ private func imageData(from pixelBuffer: CVPixelBuffer) -> Data? {
 
 public extension NSView {
 
-    static func placeholder(ofSize size: CGFloat, withColor color: CGColor = CGColor.clear) -> NSView {
-        let view = NSView(frame: NSRect.square(ofSize: size))
-
-        view.wantsLayer = true
-        view.layer = CALayer()
-        view.layer?.backgroundColor = color
-
-        return view
-    }
-
     func centerWithin(_ other: NSView) {
         frame.origin.y = other.frame.height / 2 - frame.midY
     }

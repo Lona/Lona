@@ -52,7 +52,6 @@ class LogicListView {
     init(frame frameRect: NSRect) {
         editor = ListEditor<LogicNode>(frame: frameRect, options: [
             ListEditor.Option.backgroundColor(NSColor.white),
-            ListEditor.Option.drawsTopBorder(true),
             ListEditor.Option.onAddElement({ [unowned self] in self.editor?.add(element: LogicNode()) }),
             ListEditor.Option.onContextMenu({ [unowned self] item -> [NSMenuItem] in
                 return [

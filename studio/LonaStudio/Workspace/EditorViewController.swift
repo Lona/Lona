@@ -44,14 +44,14 @@ class EditorViewController: NSViewController {
         }
     }
 
-    public var breadcrumbs: [Breadcrumb] {
-        get { return navigationBar.breadcrumbs }
-        set { navigationBar.breadcrumbs = newValue }
+    public var breadcrumbs: [NavigationItem] {
+        get { return navigationBar.items }
+        set { navigationBar.items = newValue }
     }
 
     public var onClickBreadcrumb: ((UUID) -> Void)? {
-        get { return navigationBar.onClickBreadcrumb }
-        set { navigationBar.onClickBreadcrumb = newValue }
+        get { return navigationBar.onClickItem }
+        set { navigationBar.onClickItem = newValue }
     }
 
     public var onClickPublish: (() -> Void)? {
@@ -95,7 +95,7 @@ class EditorViewController: NSViewController {
 
     private let dividerView = NSBox()
 
-    private let publishButton = BreadcrumbItem(titleText: "Publish", icon: nil, isEnabled: true)
+    private let publishButton = NavigationItemView(titleText: "Publish", icon: nil, isEnabled: true)
 
     private let accessoryButtonContainer = NSStackView()
 
