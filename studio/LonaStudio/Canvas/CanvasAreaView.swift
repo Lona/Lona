@@ -43,14 +43,18 @@ public class CanvasAreaView: NSBox {
     public var onMoveCanvasHeaderItem: ((Int, Int) -> Void)?
 
     public var selectedHeaderItem: Int? {
-        get { return outlineView.selectedHeaderItem }
-        set { outlineView.selectedHeaderItem = newValue }
+        get { return tableView.selectedHeaderItem }
+        set { tableView.selectedHeaderItem = newValue }
+    }
+
+    public func headerRect(ofColumn column: Int) -> NSRect {
+        return convert(tableView.headerRect(ofColumn: column), from: tableView)
     }
 
     // MARK: Private
 
     private var scrollView = NSScrollView(frame: .zero)
-    private var outlineView = CanvasTableView()
+    private var tableView = CanvasTableView()
 
     func setUpViews() {
         boxType = .custom
@@ -58,18 +62,18 @@ public class CanvasAreaView: NSBox {
         contentViewMargins = .zero
         borderWidth = 0
 
-        outlineView.dataSource = outlineView
-        outlineView.delegate = outlineView
-        outlineView.onClickHeaderItem = { [unowned self] index in
+        tableView.dataSource = tableView
+        tableView.delegate = tableView
+        tableView.onClickHeaderItem = { [unowned self] index in
             self.onSelectCanvasHeaderItem?(index)
         }
-        outlineView.onDeleteHeaderItem = { [unowned self] index in
+        tableView.onDeleteHeaderItem = { [unowned self] index in
             self.onDeleteCanvasHeaderItem?(index)
         }
-        outlineView.onClickHeaderPlus = { [unowned self] in
+        tableView.onClickHeaderPlus = { [unowned self] in
             self.onAddCanvas?()
         }
-        outlineView.onMoveHeaderItem = { [unowned self] index, newIndex in
+        tableView.onMoveHeaderItem = { [unowned self] index, newIndex in
             self.onMoveCanvasHeaderItem?(index, newIndex)
         }
 
@@ -77,8 +81,8 @@ public class CanvasAreaView: NSBox {
         scrollView.hasHorizontalScroller = true
         scrollView.autohidesScrollers = true
         scrollView.drawsBackground = false
-        scrollView.addSubview(outlineView)
-        scrollView.documentView = outlineView
+        scrollView.addSubview(tableView)
+        scrollView.documentView = tableView
 
         addSubview(scrollView)
     }
@@ -105,14 +109,14 @@ public class CanvasAreaView: NSBox {
 
                 previousComponentSerialized = componentSerialized
 
-                outlineView.canvases = parameters?.component.computedCanvases() ?? []
-                outlineView.cases = parameters?.component.computedCases(for: nil) ?? []
-                outlineView.component = parameters?.component
-                outlineView.showsAccessibilityOverlay = parameters?.showsAccessibilityOverlay ?? false
-                outlineView.selectedLayerName = parameters?.selectedLayerName
+                tableView.canvases = parameters?.component.computedCanvases() ?? []
+                tableView.cases = parameters?.component.computedCases(for: nil) ?? []
+                tableView.component = parameters?.component
+                tableView.showsAccessibilityOverlay = parameters?.showsAccessibilityOverlay ?? false
+                tableView.selectedLayerName = parameters?.selectedLayerName
 
-                outlineView.updateHeader()
-                outlineView.reloadData()
+                tableView.updateHeader()
+                tableView.reloadData()
             }
         }
     }
@@ -141,7 +145,7 @@ public class CanvasAreaView: NSBox {
 
         let delta = (event.locationInWindow - dragOffset) / scrollView.magnification
         let flippedY = NSPoint(x: delta.x, y: -delta.y)
-        outlineView.scroll(scrollView.documentVisibleRect.origin - flippedY)
+        tableView.scroll(scrollView.documentVisibleRect.origin - flippedY)
 
         self.dragOffset = event.locationInWindow
     }

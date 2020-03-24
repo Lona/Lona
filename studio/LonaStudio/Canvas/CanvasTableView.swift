@@ -106,6 +106,13 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
         set { header.selectedItem = newValue }
     }
 
+    public func headerRect(ofColumn column: Int) -> NSRect {
+        var columnRect = rect(ofColumn: column)
+        columnRect.size.height = header.frame.height
+        columnRect.origin.y -= header.frame.height
+        return columnRect
+    }
+
     private func handleClickHeaderItem(_ index: Int) {
         onClickHeaderItem?(index)
     }
