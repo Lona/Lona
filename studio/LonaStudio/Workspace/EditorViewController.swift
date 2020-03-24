@@ -7,7 +7,7 @@
 //
 
 import AppKit
-import BreadcrumbBar
+import NavigationComponents
 import Foundation
 
 // MARK: - EditorViewController
