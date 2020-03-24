@@ -529,10 +529,10 @@ extension \(componentName) {
         addSplitViewItem(sidebarItem)
     }
 
-    private static func makeBreadcrumbs(for selectedFileURL: URL) -> (breadcrumbs: [Breadcrumb], handler: (UUID) -> Void) {
+    private static func makeBreadcrumbs(for selectedFileURL: URL) -> (breadcrumbs: [NavigationItem], handler: (UUID) -> Void) {
         let relativePathComponents = selectedFileURL.pathComponents.dropFirst(CSUserPreferences.workspaceURL.pathComponents.count)
 
-        let workspaceBreadcrumb = Breadcrumb(
+        let workspaceBreadcrumb = NavigationItem(
             id: UUID(),
             title: CSWorkspacePreferences.workspaceName,
             icon: NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
@@ -540,7 +540,7 @@ extension \(componentName) {
 
         var breadcrumbURLs: [UUID: URL] = [workspaceBreadcrumb.id: CSUserPreferences.workspaceURL]
 
-        let pageBreadcrumbs: [Breadcrumb] = relativePathComponents.enumerated().map { index, component in
+        let pageBreadcrumbs: [NavigationItem] = relativePathComponents.enumerated().map { index, component in
             let url = relativePathComponents.dropLast(relativePathComponents.count - index - 1).reduce(CSUserPreferences.workspaceURL, { (result, item) in
                 result.appendingPathComponent(item)
             })
@@ -555,7 +555,7 @@ extension \(componentName) {
 
             let title = component.hasSuffix(".md") ? String(component.dropLast(3)) : component
 
-            return Breadcrumb(id: id, title: title, icon: icon)
+            return NavigationItem(id: id, title: title, icon: icon)
         }
 
         let breadcrumbs = [workspaceBreadcrumb] + pageBreadcrumbs

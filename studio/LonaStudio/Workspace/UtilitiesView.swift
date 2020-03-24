@@ -143,7 +143,6 @@ class UtilitiesView: NSBox {
         case .types:
             if typesListEditorView == nil {
                 typesListEditorView = LogicEditor.makeTypeEditorView()
-                typesListEditorView?.addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
                 typesListEditorView?.fillColor = Colors.contentBackground
 
                 typesListEditorView?.onChangeRootNode = { [unowned self] rootNode in

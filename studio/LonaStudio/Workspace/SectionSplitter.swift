@@ -6,98 +6,107 @@
 //  Copyright © 2017 Devin Abbott. All rights reserved.
 //
 
-import Foundation
-import Cocoa
+import AppKit
 
-extension NSRect {
-    static func square(ofSize size: CGFloat) -> NSRect {
-        return NSRect(x: 0, y: 0, width: size, height: size)
-    }
-}
+public class SectionSplitter: NSSplitView {
 
-class SectionSplitter: NSSplitView {
-    var splitterView: NSView?
-    var passthroughViews: [NSView] = []
+    // MARK: Lifecycle
 
-    override var dividerThickness: CGFloat { return 30 }
+    override public init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
 
-    override func drawDivider(in rect: NSRect) {
-        lockFocus()
-        NSSplitView.defaultDividerColor.set()
-        rect.fill()
-        unlockFocus()
-
-        splitterView?.ygNode?.width = rect.width
-        splitterView?.ygNode?.height = rect.height
-
-        splitterView?.layoutWithYoga()
-
-        splitterView?.frame = rect
+        setUpViews()
+        setUpConstraints()
     }
 
-    override func hitTest(_ point: NSPoint) -> NSView? {
-        for view in passthroughViews {
-            let flippedPoint = NSPoint(x: point.x, y: self.frame.height - point.y)
+    required public init?(coder: NSCoder) {
+        super.init(coder: coder)
 
-//            Swift.print("Point", flippedPoint, "|", "View", splitterView!.frame.origin)
-            let origin = splitterView!.frame.origin
-            let frame = view.frame.offsetBy(dx: origin.x, dy: origin.y)
+        setUpViews()
+        setUpConstraints()
+    }
 
-//            Swift.print("Test", point, frame)
-            if frame.contains(flippedPoint) {
-//                Swift.print("Found", flippedPoint, view)
-                return view
+    // MARK: Public
+
+    public var splitterView: NSView? {
+        didSet {
+            if let splitterView = splitterView {
+                if splitterView != oldValue {
+                    oldValue?.removeFromSuperview()
+
+                    splitterContainerView.addSubview(splitterView)
+
+                    splitterView.translatesAutoresizingMaskIntoConstraints = false
+
+                    splitterView.centerYAnchor.constraint(equalTo: splitterContainerView.centerYAnchor).isActive = true
+                    splitterView.centerXAnchor.constraint(equalTo: splitterContainerView.centerXAnchor).isActive = true
+                }
+            } else {
+                oldValue?.removeFromSuperview()
+            }
+        }
+    }
+
+    // MARK: Private
+
+    private var splitterContainerView = NSView()
+
+    private let topDividerView = NSBox()
+
+    private let bottomDividerView = NSBox()
+
+    private func setUpViews() {
+        arrangesAllSubviews = false
+
+        topDividerView.boxType = .custom
+        topDividerView.borderType = .noBorder
+        topDividerView.contentViewMargins = .zero
+        topDividerView.fillColor = Colors.divider
+
+        bottomDividerView.boxType = .custom
+        bottomDividerView.borderType = .noBorder
+        bottomDividerView.contentViewMargins = .zero
+//        bottomDividerView.fillColor = Colors.divider
+
+        addSubview(splitterContainerView)
+        splitterContainerView.addSubview(topDividerView)
+        splitterContainerView.addSubview(bottomDividerView)
+    }
+
+    private func setUpConstraints() {
+        topDividerView.translatesAutoresizingMaskIntoConstraints = false
+        bottomDividerView.translatesAutoresizingMaskIntoConstraints = false
+
+        topDividerView.topAnchor.constraint(equalTo: splitterContainerView.topAnchor).isActive = true
+        topDividerView.leadingAnchor.constraint(equalTo: splitterContainerView.leadingAnchor).isActive = true
+        topDividerView.trailingAnchor.constraint(equalTo: splitterContainerView.trailingAnchor).isActive = true
+        topDividerView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+
+        bottomDividerView.bottomAnchor.constraint(equalTo: splitterContainerView.bottomAnchor).isActive = true
+        bottomDividerView.leadingAnchor.constraint(equalTo: splitterContainerView.leadingAnchor).isActive = true
+        bottomDividerView.trailingAnchor.constraint(equalTo: splitterContainerView.trailingAnchor).isActive = true
+        bottomDividerView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+    }
+
+    // MARK: Overrides
+
+    override public var dividerThickness: CGFloat { return 44 }
+
+    override public func drawDivider(in rect: NSRect) {
+        splitterContainerView.frame = rect
+    }
+
+    override public func hitTest(_ point: NSPoint) -> NSView? {
+        for view in splitterContainerView.subviews {
+            guard let superview = superview, let parent = view.superview else { continue }
+
+            let convertedPoint = parent.convert(point, from: superview)
+
+            if let result = view.hitTest(convertedPoint) {
+                return result
             }
         }
 
         return super.hitTest(point)
-    }
-
-    func setup() {
-        arrangesAllSubviews = false
-
-        let view = FlippedView()
-
-        view.useYogaLayout = true
-        view.ygNode?.justifyContent = .center
-        view.ygNode?.alignItems = .center
-
-//        view.wantsLayer = true
-//        view.layer = CALayer()
-//        view.layer?.backgroundColor = CGColor.white
-
-        let border = NSView(frame: NSRect.square(ofSize: 30))
-
-        border.useYogaLayout = true
-        border.ygNode?.top = 0
-        border.ygNode?.left = 0
-        border.ygNode?.right = 0
-        border.ygNode?.height = 1
-        border.ygNode?.width = -1
-        border.ygNode?.position = .absolute
-
-        border.wantsLayer = true
-        border.layer = CALayer()
-        border.layer?.backgroundColor = NSSplitView.defaultDividerColor.cgColor
-
-        view.addSubview(border)
-
-        addSubview(view)
-        splitterView = view
-    }
-
-    func addSubviewToDivider(_ view: NSView) {
-        splitterView?.addSubview(view)
-        passthroughViews.append(view)
-    }
-
-    override init(frame frameRect: NSRect) {
-        super.init(frame: frameRect)
-        setup()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setup()
     }
 }
