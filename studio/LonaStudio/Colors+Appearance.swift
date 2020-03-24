@@ -8,6 +8,35 @@
 
 import AppKit
 
+extension NSColor {
+    public static func themed(
+        light lightColor: NSColor,
+        dark darkColor: NSColor
+    ) -> NSColor {
+        if #available(OSX 10.15, *) {
+            // 10.15 lets us update a color dynamically based on current theme
+            return self.init(name: nil, dynamicProvider: { appearance in
+                switch appearance.bestMatch(from: [.aqua, .darkAqua]) {
+                case .some(.darkAqua):
+                    return darkColor
+                default:
+                    return lightColor
+                }
+            })
+        } else if #available(OSX 10.14, *) {
+            // In 10.14 we can set a color once based on app theme
+            switch NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) {
+            case .some(.darkAqua):
+                return darkColor
+            default:
+                return lightColor
+            }
+        } else {
+            return lightColor
+        }
+    }
+}
+
 extension Colors {
     public static let textColor = NSColor(named: "textColor")!
 
@@ -21,61 +50,30 @@ extension Colors {
 
     public static let controlBackground = NSColor(named: "controlBackgroundColor")!
 
-    public static let dividerSubtle = NSColor(named: "dividerSubtleColor")!
+    public static let divider = NSSplitView.defaultDividerColor
 
-    public static let contentHeaderBackground: NSColor = {
-        if #available(OSX 10.14, *) {
-            switch NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) {
-            case .some(.darkAqua):
-                return NSColor.controlBackgroundColor
-            default:
-                return NSColor.white
-            }
-        } else {
-            return NSColor.white
-        }
-    }()
+    public static let dividerSubtle: NSColor = .themed(
+        light: NSColor(named: "dividerSubtleColor")!,
+        dark: Colors.divider
+    )
 
-    public static let contentBackground: NSColor = {
-        if #available(OSX 10.14, *) {
-            switch NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) {
-            case .some(.darkAqua):
-                return NSColor.controlBackgroundColor
-            default:
-                return NSColor.white
-            }
-        } else {
-            return NSColor.white
-        }
-    }()
+    public static let contentHeaderBackground: NSColor = .themed(
+        light: .white,
+        dark: .controlBackgroundColor
+    )
 
-    public static let divider: NSColor = {
-        return NSSplitView.defaultDividerColor
-    }()
+    public static let contentBackground: NSColor = .themed(
+        light: .white,
+        dark: .controlBackgroundColor
+    )
 
-    public static let iconFill: NSColor = {
-        if #available(OSX 10.14, *) {
-            switch NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) {
-            case .some(.darkAqua):
-                return NSColor.parse(css: "#D8D8D8")!
-            default:
-                return NSColor.black.withAlphaComponent(0.3)
-            }
-        } else {
-            return NSColor.black.withAlphaComponent(0.3)
-        }
-    }()
+    public static let iconFill: NSColor = .themed(
+        light: NSColor.black.withAlphaComponent(0.3),
+        dark: NSColor.parse(css: "#D8D8D8")!
+    )
 
-    public static let iconFillAccent: NSColor = {
-        if #available(OSX 10.14, *) {
-            switch NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) {
-            case .some(.darkAqua):
-                return NSColor.parse(css: "#9B9B9B")!
-            default:
-                return Colors.contentBackground.withAlphaComponent(0.70)
-            }
-        } else {
-            return Colors.contentBackground.withAlphaComponent(0.70)
-        }
-    }()
+    public static let iconFillAccent: NSColor = .themed(
+        light: NSColor.parse(css: "#9B9B9B")!,
+        dark: Colors.contentBackground.withAlphaComponent(0.70)
+    )
 }
