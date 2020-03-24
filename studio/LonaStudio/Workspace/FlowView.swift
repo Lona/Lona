@@ -6,7 +6,7 @@
 //
 
 import AppKit
-import BreadcrumbBar
+import NavigationComponents
 
 // MARK: - FlowView
 

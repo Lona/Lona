@@ -188,6 +188,7 @@
 		6B1086FD217A38110024AE56 /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1086FC217A38110024AE56 /* LRUCache.swift */; };
 		6B14C7BD23C4011B00EF85FA /* FileManager+Directory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B14C7BC23C4011B00EF85FA /* FileManager+Directory.swift */; };
 		6B14C7BF23C5109900EF85FA /* NoDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B14C7BE23C5109900EF85FA /* NoDocument.swift */; };
+		6B1BE004242AB60500489E08 /* ThemedColor in Frameworks */ = {isa = PBXBuildFile; productRef = 6B1BE003242AB60500489E08 /* ThemedColor */; };
 		6B1DE3E622D7B1C100FC565E /* LogicCompilerConfigurationInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1DE3E522D7B1C000FC565E /* LogicCompilerConfigurationInput.swift */; };
 		6B1DE3EA22D7BA1F00FC565E /* LogicLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1DE3E922D7BA1F00FC565E /* LogicLoader.swift */; };
 		6B23A84721E6CC080001009E /* DocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B23A84621E6CC080001009E /* DocumentController.swift */; };
@@ -234,6 +235,7 @@
 		6B5886872134D6BB00CCA69F /* ControlledComponents.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6B5886852134D6BB00CCA69F /* ControlledComponents.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6B58868B2134D9E800CCA69F /* ColorInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5886892134D9E800CCA69F /* ColorInspector.swift */; };
 		6B58868D2134DD3F00CCA69F /* CoreTextInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B58868C2134DD3F00CCA69F /* CoreTextInput.swift */; };
+		6B58EA30242ABDA300491DAF /* NavigationComponents in Frameworks */ = {isa = PBXBuildFile; productRef = 6B58EA2F242ABDA300491DAF /* NavigationComponents */; };
 		6B59893F21B86B27004DD3B1 /* RenderableElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B59893E21B86B27004DD3B1 /* RenderableElement.swift */; };
 		6B5A6AC822FB860A00CA004E /* LogicPreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5A6AC722FB860900CA004E /* LogicPreviewCard.swift */; };
 		6B5D4D2B213E19B9004F8AC3 /* EditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5D4D2A213E19B9004F8AC3 /* EditorViewController.swift */; };
@@ -324,7 +326,6 @@
 		6BC6062C223F191A003E616B /* Logic.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BC60626223F1878003E616B /* Logic.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6BC60631223F1947003E616B /* Logic.framework.dSYM in Resources */ = {isa = PBXBuildFile; fileRef = 6BC60630223F1947003E616B /* Logic.framework.dSYM */; };
 		6BC60632223F194E003E616B /* Logic.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6BC60630223F1947003E616B /* Logic.framework.dSYM */; };
-		6BCCE31123E27034004C482E /* BreadcrumbBar in Frameworks */ = {isa = PBXBuildFile; productRef = 6BCCE31023E27034004C482E /* BreadcrumbBar */; };
 		6BCCE31423E762EB004C482E /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE31323E762EB004C482E /* History.swift */; };
 		6BCCE33223F322D7004C482E /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33123F322D7004C482E /* PrimaryButton.swift */; };
 		6BCCE33423F34BEF004C482E /* PublishNeedsAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCCE33323F34BEE004C482E /* PublishNeedsAuth.swift */; };
@@ -782,10 +783,11 @@
 			files = (
 				6BB7E2162426D78B001261A3 /* Defaults in Frameworks */,
 				0314F4B823F41C54009CE468 /* Apollo in Frameworks */,
+				6B58EA30242ABDA300491DAF /* NavigationComponents in Frameworks */,
 				6BA6E895212F92B0009CD33C /* Witness.framework in Frameworks */,
 				6BC6062B223F191A003E616B /* Logic.framework in Frameworks */,
+				6B1BE004242AB60500489E08 /* ThemedColor in Frameworks */,
 				6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */,
-				6BCCE31123E27034004C482E /* BreadcrumbBar in Frameworks */,
 				6B5886862134D6BB00CCA69F /* ControlledComponents.framework in Frameworks */,
 				6B2DC1AB21361C4700679668 /* ColorPicker.framework in Frameworks */,
 				6BF894D32214E3DD000CD863 /* Differ.framework in Frameworks */,
@@ -1525,9 +1527,10 @@
 			);
 			name = LonaStudio;
 			packageProductDependencies = (
-				6BCCE31023E27034004C482E /* BreadcrumbBar */,
 				0314F4B723F41C54009CE468 /* Apollo */,
 				6BB7E2152426D78B001261A3 /* Defaults */,
+				6B1BE003242AB60500489E08 /* ThemedColor */,
+				6B58EA2F242ABDA300491DAF /* NavigationComponents */,
 			);
 			productName = ComponentStudio;
 			productReference = 6B0AEFB41EBF74D800F35BBF /* LonaStudio.app */;
@@ -1592,9 +1595,10 @@
 			);
 			mainGroup = 6B0AEFAB1EBF74D700F35BBF;
 			packageReferences = (
-				6BCCE30F23E27034004C482E /* XCRemoteSwiftPackageReference "BreadcrumbBar" */,
 				0314F4B623F41C54009CE468 /* XCRemoteSwiftPackageReference "apollo-ios" */,
 				6BB7E2142426D78B001261A3 /* XCRemoteSwiftPackageReference "Defaults" */,
+				6B1BE002242AB60500489E08 /* XCRemoteSwiftPackageReference "ThemedColor" */,
+				6B58EA2E242ABDA300491DAF /* XCRemoteSwiftPackageReference "NavigationComponents" */,
 			);
 			productRefGroup = 6B0AEFB51EBF74D800F35BBF /* Products */;
 			projectDirPath = "";
@@ -2389,20 +2393,28 @@
 				minimumVersion = 0.21.0;
 			};
 		};
+		6B1BE002242AB60500489E08 /* XCRemoteSwiftPackageReference "ThemedColor" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Lona/ThemedColor.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		6B58EA2E242ABDA300491DAF /* XCRemoteSwiftPackageReference "NavigationComponents" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Lona/NavigationComponents.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		6BB7E2142426D78B001261A3 /* XCRemoteSwiftPackageReference "Defaults" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/Defaults";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 3.1.1;
-			};
-		};
-		6BCCE30F23E27034004C482E /* XCRemoteSwiftPackageReference "BreadcrumbBar" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/dabbott/BreadcrumbBar.git";
-			requirement = {
-				branch = master;
-				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -2413,15 +2425,20 @@
 			package = 0314F4B623F41C54009CE468 /* XCRemoteSwiftPackageReference "apollo-ios" */;
 			productName = Apollo;
 		};
+		6B1BE003242AB60500489E08 /* ThemedColor */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6B1BE002242AB60500489E08 /* XCRemoteSwiftPackageReference "ThemedColor" */;
+			productName = ThemedColor;
+		};
+		6B58EA2F242ABDA300491DAF /* NavigationComponents */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6B58EA2E242ABDA300491DAF /* XCRemoteSwiftPackageReference "NavigationComponents" */;
+			productName = NavigationComponents;
+		};
 		6BB7E2152426D78B001261A3 /* Defaults */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 6BB7E2142426D78B001261A3 /* XCRemoteSwiftPackageReference "Defaults" */;
 			productName = Defaults;
-		};
-		6BCCE31023E27034004C482E /* BreadcrumbBar */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 6BCCE30F23E27034004C482E /* XCRemoteSwiftPackageReference "BreadcrumbBar" */;
-			productName = BreadcrumbBar;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
