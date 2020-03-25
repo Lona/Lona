@@ -73,10 +73,6 @@ class LogicDocument: NSDocument {
 
     override func read(from data: Data, ofType typeName: String) throws {
         content = try LogicDocument.read(from: data)
-
-        if let url = fileURL {
-            LogicModule.invalidateCaches(url: url, newValue: program)
-        }
     }
 
     public static func read(from data: Data) throws -> LGCSyntaxNode {
@@ -92,8 +88,15 @@ class LogicDocument: NSDocument {
     }
 
     override func save(to url: URL, ofType typeName: String, for saveOperation: NSDocument.SaveOperationType, completionHandler: @escaping (Error?) -> Void) {
+        let dataOnDisk = try? Data(contentsOf: url)
+
         super.save(to: url, ofType: typeName, for: saveOperation, completionHandler: completionHandler)
 
-        LogicModule.invalidateCaches(url: url, newValue: program)
+        let newData = try? self.data(ofType: typeName)
+
+        // only invalidate if what was on the disk is different from what we saved
+        if dataOnDisk != newData {
+          LogicModule.invalidateCaches(url: url, newValue: program)
+        }
     }
 }

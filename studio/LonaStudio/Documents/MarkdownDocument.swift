@@ -126,16 +126,19 @@ class MarkdownDocument: NSDocument {
         self._content = (content.last == nil || content.last?.isEmpty == false)
             ? content + [BlockEditor.Block.makeDefaultEmptyBlock()]
             : content
-
-        if let url = fileURL {
-            LogicModule.invalidateCaches(url: url, newValue: program)
-        }
     }
 
     override func save(to url: URL, ofType typeName: String, for saveOperation: NSDocument.SaveOperationType, completionHandler: @escaping (Error?) -> Void) {
+        let dataOnDisk = try? Data(contentsOf: url)
+
         super.save(to: url, ofType: typeName, for: saveOperation, completionHandler: completionHandler)
 
-        LogicModule.invalidateCaches(url: url, newValue: program)
+        let newData = try? self.data(ofType: typeName)
+
+        // only invalidate if what was on the disk is different from what we saved
+        if dataOnDisk != newData {
+          LogicModule.invalidateCaches(url: url, newValue: program)
+        }
     }
 
     func save(to url: URL, for saveOperation: NSDocument.SaveOperationType) -> Promise<Void, NSError> {
