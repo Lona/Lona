@@ -9,6 +9,7 @@
 import AppKit
 import Defaults
 import Logic
+import NavigationComponents
 
 // MARK: - LogicViewController
 
@@ -49,8 +50,19 @@ class LogicViewController: NSViewController {
 
     // MARK: Private
 
+    private let componentViewController = MainSectionViewController()
+
     private let logicEditor = LogicEditor()
-    private let componentEditor = CanvasAreaView()
+    private let canvasAreaView = CanvasAreaView()
+    private let parametersTabItem = NavigationItem(id: UUID(), title: "Parameters", icon: nil)
+    private let logicTabItem = NavigationItem(id: UUID(), title: "Logic", icon: nil)
+    private let examplesTabItem = NavigationItem(id: UUID(), title: "Examples", icon: nil)
+    private lazy var tabItems: [NavigationItem] = {
+        [parametersTabItem, logicTabItem, examplesTabItem]
+    }()
+    private let tabView = NavigationItemStack()
+    private lazy var activeTab: UUID = { parametersTabItem.id }()
+    private let parameterEditor = LogicEditor()
 
     private let infoBar = InfoBar()
     private let divider = Divider()
@@ -127,6 +139,10 @@ class LogicViewController: NSViewController {
             self.editorType = newValue
         }
 
+        tabView.items = tabItems
+        tabView.style = .tabs
+        tabView.activeItem = parametersTabItem.id
+
         containerView.addSubview(contentContainerView)
         containerView.addSubview(infoBar)
         containerView.addSubview(divider)
@@ -139,6 +155,7 @@ class LogicViewController: NSViewController {
         contentContainerView.translatesAutoresizingMaskIntoConstraints = false
         infoBar.translatesAutoresizingMaskIntoConstraints = false
         divider.translatesAutoresizingMaskIntoConstraints = false
+        tabView.translatesAutoresizingMaskIntoConstraints = false
 
         contentContainerView.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
         contentContainerView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor).isActive = true
@@ -161,6 +178,10 @@ class LogicViewController: NSViewController {
         // Currently assigning rootNode should happen first, since other methods rely on it
         logicEditor.rootNode = rootNode
 
+        let module = LonaModule.current.logic
+        let compiled = module.compiled
+        let formattingOptions = module.formattingOptions
+
         infoBar.dropdownIndex = LogicEditorType.allCases.firstIndex(of: Defaults[.logicEditorType]) ?? 0
         infoBar.dropdownValues = LogicEditorType.allCases.map { $0.rawValue }
 
@@ -169,23 +190,50 @@ class LogicViewController: NSViewController {
             let component: CSComponent = .makeDefaultComponent()
             component.canvas = canvasList
 
-            componentEditor.parameters = CanvasAreaView.Parameters(
+            canvasAreaView.parameters = CanvasAreaView.Parameters(
                 component: component,
                 showsAccessibilityOverlay: false,
                 onSelectLayer: {_ in},
                 selectedLayerName: nil
             )
 
-            componentEditor.onSelectCanvasHeaderItem = onSelectCanvasHeaderItem
+            canvasAreaView.onSelectCanvasHeaderItem = onSelectCanvasHeaderItem
 
-            contentView = componentEditor
+            componentViewController.topView = canvasAreaView
+            componentViewController.dividerView = tabView
+
+            switch activeTab {
+            case parametersTabItem.id:
+                if let (parameters, declarationId) = functionParameters {
+                    let topLevelParameters = LGCTopLevelParameters(id: UUID(), parameters: .init(parameters))
+                    parameterEditor.rootNode = .topLevelParameters(topLevelParameters)
+
+                    parameterEditor.onChangeRootNode = { [unowned self] parameterRoot in
+                        guard case .topLevelParameters(let newTopLevelParameters) = parameterRoot else { return false }
+
+                        guard let newRootNode = self.updateFunctionDeclaration(id: declarationId, newParameters: newTopLevelParameters.parameters) else { return false }
+
+                        self.onChangeRootNode?(newRootNode)
+
+                        return true
+                    }
+                }
+
+                parameterEditor.formattingOptions = formattingOptions
+
+                parameterEditor.suggestionsForNode = LogicViewController.suggestionsForNode
+
+                parameterEditor.documentationForSuggestion = LogicViewController.documentationForSuggestion
+
+                componentViewController.bottomView = parameterEditor
+            default:
+                componentViewController.bottomView = nil
+            }
+
+            contentView = componentViewController.view
         case .logicEditor:
             contentView = logicEditor
         }
-
-        let module = LonaModule.current.logic
-        let compiled = module.compiled
-        let formattingOptions = module.formattingOptions
 
         logicEditor.formattingOptions = formattingOptions
 
@@ -295,7 +343,7 @@ extension LogicViewController {
     }
 
     public func onSelectCanvasHeaderItem(_ canvasIndex: Int) {
-        guard let window = self.componentEditor.window else { return }
+        guard let window = self.canvasAreaView.window else { return }
 
         let suggestionWindow = SuggestionWindow.shared
 
@@ -314,7 +362,7 @@ extension LogicViewController {
         }
         suggestionWindow.onSubmit = { index in
             let suggestedNode = self.canvasExpressionSuggestions(for: suggestionWindow.suggestionText, canvasIndex: canvasIndex)[index].node
-            let newRootNode = self.logicEditor.rootNode.replace(id: self.canvasExpressions[canvasIndex].uuid, with: suggestedNode)
+            let newRootNode = self.rootNode.replace(id: self.canvasExpressions[canvasIndex].uuid, with: suggestedNode)
             _ = self.onChangeRootNode?(newRootNode)
 
             suggestionWindow.orderOut(nil)
@@ -322,7 +370,7 @@ extension LogicViewController {
 
         window.addChildWindow(suggestionWindow, ordered: .above)
 
-        let windowRect = self.componentEditor.convert(self.componentEditor.headerRect(ofColumn: canvasIndex), to: nil)
+        let windowRect = self.canvasAreaView.convert(self.canvasAreaView.headerRect(ofColumn: canvasIndex), to: nil)
         let screenRect = window.convertToScreen(windowRect)
         let adjustedRect = NSRect(
             x: screenRect.midX - suggestionWindow.defaultContentWidth / 2,
@@ -333,5 +381,43 @@ extension LogicViewController {
 
         suggestionWindow.anchorTo(rect: adjustedRect, verticalOffset: 4)
         suggestionWindow.focusSearchField()
+    }
+}
+
+// MARK: - Parameters
+
+extension LogicViewController {
+    private var functionParameters: (parameters: [LGCFunctionParameter], declarationId: UUID)? {
+        let rootNode = logicEditor.rootNode
+
+        return rootNode.reduce(initialResult: nil, f: { result, node, config in
+            switch node {
+            case .declaration(.function(id: let id, name: _, returnType: _, genericParameters: _, parameters: let parameters, block: _, comment: _)):
+                // TODO: Test returnType == Element and maybe check name too
+                config.stopTraversal = true
+
+                return (parameters.map { $0 }, id)
+            default:
+                return nil
+            }
+        })
+    }
+
+    private func updateFunctionDeclaration(id originalDeclarationId: UUID, newParameters: LGCList<LGCFunctionParameter>) -> LGCSyntaxNode? {
+        guard case .declaration(.function(let functionValue)) = self.rootNode.find(id: originalDeclarationId) else { return nil }
+
+        let newDeclarationNode: LGCSyntaxNode = .declaration(
+            .function(
+                id: UUID(),
+                name: functionValue.name,
+                returnType: functionValue.returnType,
+                genericParameters: functionValue.genericParameters,
+                parameters: newParameters,
+                block: functionValue.block,
+                comment: functionValue.comment
+            )
+        )
+
+        return self.rootNode.replace(id: originalDeclarationId, with: newDeclarationNode)
     }
 }

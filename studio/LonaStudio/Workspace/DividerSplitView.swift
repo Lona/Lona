@@ -1,5 +1,5 @@
 //
-//  SectionSplitter.swift
+//  DividerSplitView.swift
 //  ComponentStudio
 //
 //  Created by devin_abbott on 5/27/17.
@@ -8,7 +8,7 @@
 
 import AppKit
 
-public class SectionSplitter: NSSplitView {
+public class DividerSplitView: NSSplitView {
 
     // MARK: Lifecycle
 
@@ -28,18 +28,18 @@ public class SectionSplitter: NSSplitView {
 
     // MARK: Public
 
-    public var splitterView: NSView? {
+    public var dividerView: NSView? {
         didSet {
-            if let splitterView = splitterView {
+            if let splitterView = dividerView {
                 if splitterView != oldValue {
                     oldValue?.removeFromSuperview()
 
-                    splitterContainerView.addSubview(splitterView)
+                    dividerContainerView.addSubview(splitterView)
 
                     splitterView.translatesAutoresizingMaskIntoConstraints = false
 
-                    splitterView.centerYAnchor.constraint(equalTo: splitterContainerView.centerYAnchor).isActive = true
-                    splitterView.centerXAnchor.constraint(equalTo: splitterContainerView.centerXAnchor).isActive = true
+                    splitterView.centerYAnchor.constraint(equalTo: dividerContainerView.centerYAnchor).isActive = true
+                    splitterView.centerXAnchor.constraint(equalTo: dividerContainerView.centerXAnchor).isActive = true
                 }
             } else {
                 oldValue?.removeFromSuperview()
@@ -49,7 +49,7 @@ public class SectionSplitter: NSSplitView {
 
     // MARK: Private
 
-    private var splitterContainerView = NSView()
+    private var dividerContainerView = NSView()
 
     private let topDividerView = NSBox()
 
@@ -66,38 +66,38 @@ public class SectionSplitter: NSSplitView {
         bottomDividerView.boxType = .custom
         bottomDividerView.borderType = .noBorder
         bottomDividerView.contentViewMargins = .zero
-//        bottomDividerView.fillColor = Colors.divider
+        bottomDividerView.fillColor = Colors.divider
 
-        addSubview(splitterContainerView)
-        splitterContainerView.addSubview(topDividerView)
-        splitterContainerView.addSubview(bottomDividerView)
+        addSubview(dividerContainerView)
+        dividerContainerView.addSubview(topDividerView)
+        dividerContainerView.addSubview(bottomDividerView)
     }
 
     private func setUpConstraints() {
         topDividerView.translatesAutoresizingMaskIntoConstraints = false
         bottomDividerView.translatesAutoresizingMaskIntoConstraints = false
 
-        topDividerView.topAnchor.constraint(equalTo: splitterContainerView.topAnchor).isActive = true
-        topDividerView.leadingAnchor.constraint(equalTo: splitterContainerView.leadingAnchor).isActive = true
-        topDividerView.trailingAnchor.constraint(equalTo: splitterContainerView.trailingAnchor).isActive = true
+        topDividerView.topAnchor.constraint(equalTo: dividerContainerView.topAnchor).isActive = true
+        topDividerView.leadingAnchor.constraint(equalTo: dividerContainerView.leadingAnchor).isActive = true
+        topDividerView.trailingAnchor.constraint(equalTo: dividerContainerView.trailingAnchor).isActive = true
         topDividerView.heightAnchor.constraint(equalToConstant: 1).isActive = true
 
-        bottomDividerView.bottomAnchor.constraint(equalTo: splitterContainerView.bottomAnchor).isActive = true
-        bottomDividerView.leadingAnchor.constraint(equalTo: splitterContainerView.leadingAnchor).isActive = true
-        bottomDividerView.trailingAnchor.constraint(equalTo: splitterContainerView.trailingAnchor).isActive = true
+        bottomDividerView.bottomAnchor.constraint(equalTo: dividerContainerView.bottomAnchor).isActive = true
+        bottomDividerView.leadingAnchor.constraint(equalTo: dividerContainerView.leadingAnchor).isActive = true
+        bottomDividerView.trailingAnchor.constraint(equalTo: dividerContainerView.trailingAnchor).isActive = true
         bottomDividerView.heightAnchor.constraint(equalToConstant: 1).isActive = true
     }
 
     // MARK: Overrides
 
-    override public var dividerThickness: CGFloat { return 44 }
+    override public var dividerThickness: CGFloat { return 32 }
 
     override public func drawDivider(in rect: NSRect) {
-        splitterContainerView.frame = rect
+        dividerContainerView.frame = rect
     }
 
     override public func hitTest(_ point: NSPoint) -> NSView? {
-        for view in splitterContainerView.subviews {
+        for view in dividerContainerView.subviews {
             guard let superview = superview, let parent = view.superview else { continue }
 
             let convertedPoint = parent.convert(point, from: superview)

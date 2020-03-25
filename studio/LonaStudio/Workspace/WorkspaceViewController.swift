@@ -436,6 +436,9 @@ extension \(componentName) {
     LonaDevice.iPhone8,
     LonaDevice.Pixel2
   ]
+  func \(componentName)(titleText: String) -> Number {
+    return 3
+  }
 }
 """
 

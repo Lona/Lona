@@ -164,8 +164,8 @@ class ComponentEditorViewController: NSSplitViewController {
             tabView.activeItem = id
         }
 
-        let splitView = SectionSplitter()
-        splitView.splitterView = tabView
+        let splitView = DividerSplitView()
+        splitView.dividerView = tabView
 
         splitView.isVertical = false
         splitView.dividerStyle = .thin
@@ -286,14 +286,24 @@ extension NavigationItemStack.Style {
 
         style.dividerPadding = 8
 
+        return style
+    }()
+
+    public static var roundTabs: NavigationItemStack.Style = {
+        let cornerRadius: CGFloat = 13
+        let padding = NSEdgeInsets(top: 4, left: 10, bottom: 4, right: 10)
+
+        var style = NavigationItemStack.Style.segmentedControl
+
+        style.dividerPadding = 8
+
         style.itemStyle.backgroundColor = NSColor.textColor.withAlphaComponent(0.03)
-        style.itemStyle.textColor = .disabledControlTextColor
-        style.itemStyle.cornerRadius = 13
-        style.itemStyle.padding = .init(top: 4, left: 10, bottom: 4, right: 10)
+        style.itemStyle.cornerRadius = cornerRadius
+        style.itemStyle.padding = padding
 
         style.activeItemStyle.backgroundColor = NSColor.textColor.withAlphaComponent(0.08)
-        style.activeItemStyle.cornerRadius = 13
-        style.activeItemStyle.padding = .init(top: 4, left: 10, bottom: 4, right: 10)
+        style.activeItemStyle.cornerRadius = cornerRadius
+        style.activeItemStyle.padding = padding
 
         return style
     }()
