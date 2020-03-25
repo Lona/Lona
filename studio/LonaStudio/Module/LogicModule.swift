@@ -152,9 +152,12 @@ public class LogicModule {
     }
 
     public static func updateFile(url: URL, value: LGCProgram) {
-        // TODO: Remove only those modules which rely on this url
-        compiledCache.removeAll(keepingCapacity: true)
-        programCache[url] = value
+        let cached = programCache[url]
+        if !(cached?.isEquivalentTo(value) ?? false) {
+          // TODO: Remove only those modules which rely on this url
+          compiledCache.removeAll(keepingCapacity: true)
+          programCache[url] = value
+        }
     }
 
     public static func load(url: URL) -> LGCProgram? {
