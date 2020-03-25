@@ -28,8 +28,8 @@
 		036A4EA221E1FD3B00948DBD /* KeyHandlingCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA121E1FD3B00948DBD /* KeyHandlingCollectionView.swift */; };
 		036A4EA421E21DA500948DBD /* AddTextStyleSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA321E21DA400948DBD /* AddTextStyleSheet.swift */; };
 		036A4EA921E2469D00948DBD /* DirectoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA821E2469D00948DBD /* DirectoryViewController.swift */; };
-		0383231D2400660F0091C6F5 /* lona-schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 0383231C2400660F0091C6F5 /* lona-schema.json */; };
 		039952C721E50D31008310DB /* MarkdownEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039952C621E50D31008310DB /* MarkdownEditor.swift */; };
+		03D436C124280CF60097A9F2 /* lona-schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 03D436C024280CF50097A9F2 /* lona-schema.json */; };
 		03E1AE8B240FA75C0061E93A /* getDeploymentStatus.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 03E1AE8A240FA75C0061E93A /* getDeploymentStatus.graphql */; };
 		03E1AE8D240FAB180061E93A /* github-schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 03E1AE8C240FAB180061E93A /* github-schema.json */; };
 		300302741EDC7FA90085E140 /* CSStatementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300302731EDC7FA90085E140 /* CSStatementView.swift */; };
@@ -435,8 +435,8 @@
 		036A4EA121E1FD3B00948DBD /* KeyHandlingCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyHandlingCollectionView.swift; sourceTree = "<group>"; };
 		036A4EA321E21DA400948DBD /* AddTextStyleSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddTextStyleSheet.swift; sourceTree = "<group>"; };
 		036A4EA821E2469D00948DBD /* DirectoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectoryViewController.swift; sourceTree = "<group>"; };
-		0383231C2400660F0091C6F5 /* lona-schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "lona-schema.json"; sourceTree = "<group>"; };
 		039952C621E50D31008310DB /* MarkdownEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownEditor.swift; sourceTree = "<group>"; };
+		03D436C024280CF50097A9F2 /* lona-schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "lona-schema.json"; sourceTree = "<group>"; };
 		03E1AE8A240FA75C0061E93A /* getDeploymentStatus.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = getDeploymentStatus.graphql; sourceTree = "<group>"; };
 		03E1AE8C240FAB180061E93A /* github-schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "github-schema.json"; sourceTree = "<group>"; };
 		300302731EDC7FA90085E140 /* CSStatementView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSStatementView.swift; sourceTree = "<group>"; };
@@ -815,7 +815,7 @@
 			children = (
 				0304A71623F424B1009A1E82 /* Network.swift */,
 				03E1AE8C240FAB180061E93A /* github-schema.json */,
-				0383231C2400660F0091C6F5 /* lona-schema.json */,
+				03D436C024280CF50097A9F2 /* lona-schema.json */,
 				0304A72623FD28A1009A1E82 /* GitHubAPI.swift */,
 				0304A71E23FD26CE009A1E82 /* LonaAPI.swift */,
 				0304A72323FD2712009A1E82 /* GitHub */,
@@ -1618,6 +1618,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03D436C124280CF60097A9F2 /* lona-schema.json in Resources */,
 				307D4420209B6CEA004B57F5 /* Web in Resources */,
 				6B6E47512405F86D0067B2FF /* lona-app-install-step2.png in Resources */,
 				03E1AE8B240FA75C0061E93A /* getDeploymentStatus.graphql in Resources */,
@@ -1643,7 +1644,6 @@
 				0304A72923FD48AC009A1E82 /* createRepository.graphql in Resources */,
 				0304A71B23FA8B18009A1E82 /* addRepo.graphql in Resources */,
 				30F870DE20865859007ADA5B /* LonaIcon_32x32.png in Resources */,
-				0383231D2400660F0091C6F5 /* lona-schema.json in Resources */,
 				6B7380A022C7B3BF007534A0 /* themed-tokens-list@2x.png in Resources */,
 				303C3FEB20A396BB008E1541 /* icon-plus.png in Resources */,
 				30F870E720865859007ADA5B /* icon-material-design-example@2x.png in Resources */,
