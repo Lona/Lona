@@ -15,8 +15,9 @@ extension LogicViewController {
         let compiled = module.compiled
         let formattingOptions = module.formattingOptions
 
-        // Get scope within this file
-        let currentScopeContext = Compiler.scopeContext(rootNode, targetId: node.uuid)
+        // TODO: We should expose a way to only scan the scope for this file.
+        // Namespace variables are global and don't need to be scanned again
+        let currentScopeContext = Compiler.scopeContext(compiled.programNode, targetId: node.uuid)
 
         guard let scopeContext = compiled.scope,
             let unification = compiled.unification,
