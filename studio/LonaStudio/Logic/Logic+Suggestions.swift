@@ -10,19 +10,31 @@ import AppKit
 import Logic
 
 extension LogicViewController {
-    public static let makeStandardSuggestionBuilder: (LGCSyntaxNode, LGCSyntaxNode, LogicFormattingOptions) -> ((String) -> [LogicSuggestionItem]?)? = Memoize.one({
-        rootNode, node, formattingOptions in
-        return StandardConfiguration.suggestions(rootNode: rootNode, node: node, formattingOptions: formattingOptions)
-    })
-
     public static let suggestionsForNode: ((LGCSyntaxNode, LGCSyntaxNode, String) -> LogicEditor.ConfiguredSuggestions) = { rootNode, node, query in
         let module = LonaModule.current.logic
         let compiled = module.compiled
         let formattingOptions = module.formattingOptions
 
-        let suggestionBuilder = LogicViewController.makeStandardSuggestionBuilder(compiled.programNode, node, formattingOptions)
+        // Get scope within this file
+        let currentScopeContext = Compiler.scopeContext(rootNode, targetId: node.uuid)
 
-        if let suggestionBuilder = suggestionBuilder, let suggestions = suggestionBuilder(query) {
+        guard let scopeContext = compiled.scope,
+            let unification = compiled.unification,
+            let evaluation = compiled.evaluation else { return .init([]) }
+
+        let suggestions = StandardConfiguration.suggestions(
+            rootNode: rootNode,
+            node: node,
+            query: query,
+            currentScopeContext: currentScopeContext,
+            scopeContext: scopeContext,
+            unificationContext: unification.0,
+            substitution: unification.1,
+            evaluationContext: evaluation,
+            formattingOptions: formattingOptions
+        )
+
+        if let suggestions = suggestions {
             if let (context, substitution) = compiled.unification, let type = context.nodes[node.uuid] {
                 let unifiedType = Unification.substitute(substitution, in: type)
 

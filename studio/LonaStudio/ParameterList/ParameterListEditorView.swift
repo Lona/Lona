@@ -61,7 +61,7 @@ class ParameterListEditorView: NSView {
 
     private func setUpViews() {
         addSubview(logicEditor)
-        
+
         logicEditor.onChangeRootNode = { [unowned self] rootNode in
             self.onChange(ParameterListEditorView.makeParameterList(from: rootNode, types: self.types))
 

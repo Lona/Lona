@@ -20,6 +20,7 @@ public class LogicModule {
         public var programNode: LGCSyntaxNode
         public var program: LGCProgram
         public var errors: [LogicEditor.ElementError] = []
+        public var scope: Compiler.ScopeContext?
         public var unification: (Compiler.UnificationContext, Unification.Substitution)?
         public var evaluation: Compiler.EvaluationContext?
     }
@@ -68,6 +69,8 @@ public class LogicModule {
         let program: LGCSyntaxNode = compiled.programNode
 
         let scopeContext = Compiler.scopeContext(program)
+
+        compiled.scope = scopeContext
 
         AppDelegate.debugController.scopeContext = scopeContext
 
