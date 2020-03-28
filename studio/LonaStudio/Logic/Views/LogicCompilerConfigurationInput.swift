@@ -124,7 +124,14 @@ public class LogicCompilerConfigurationInput: NSView {
 
         guard case .success(let substitution) = Unification.unify(constraints: unificationContext.constraints) else { return nil }
 
-        let result = Compiler.evaluate(program, rootNode: program, scopeContext: scopeContext, unificationContext: unificationContext, substitution: substitution, context: .init())
+        let result = Compiler.compile(
+            program,
+            rootNode: program,
+            scopeContext: scopeContext,
+            unificationContext: unificationContext,
+            substitution: substitution,
+            context: .init()
+        )
 
         switch result {
         case .success(let evaluationContext):
@@ -139,8 +146,8 @@ public class LogicCompilerConfigurationInput: NSView {
         if let value = self.logicValue(rootNode: rootNode) {
             switch value.memory {
             case .record(values: let pairs):
-                let target = pairs.value(for: "target")
-                let framework = pairs.value(for: "framework")
+                let target = pairs["target"]
+                let framework = pairs["framework"]
                 switch (target, framework) {
                 case (.some(.some(let targetValue)), .some(.some(let frameworkValue))):
                     let targetMemory = targetValue.memory

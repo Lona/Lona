@@ -63,7 +63,14 @@ public class LabeledColorInput: LabeledInput {
             return nil
         }
 
-        let result = Compiler.evaluate(program, rootNode: program, scopeContext: scopeContext, unificationContext: unificationContext, substitution: substitution, context: .init())
+        let result = Compiler.compile(
+            program,
+            rootNode: program,
+            scopeContext: scopeContext,
+            unificationContext: unificationContext,
+            substitution: substitution,
+            context: .init()
+        )
 
         switch result {
         case .success(let evaluationContext):

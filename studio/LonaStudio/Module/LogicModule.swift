@@ -106,7 +106,7 @@ public class LogicModule {
 
         compiled.unification = (unificationContext, substitution)
 
-        let evaluationContext = Compiler.evaluate(
+        let evaluationContext = Compiler.compile(
             program,
             rootNode: program,
             scopeContext: scopeContext,
