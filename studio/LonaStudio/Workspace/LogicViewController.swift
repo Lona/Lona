@@ -18,6 +18,8 @@ class LogicViewController: NSViewController {
     // MARK: Lifecycle
 
     override init(nibName nibNameOrNil: NSNib.Name?, bundle nibBundleOrNil: Bundle?) {
+        self.activeTab = parametersTabItem.id
+
         super.init(nibName: nil, bundle: nil)
 
         setUpViews()
@@ -27,6 +29,8 @@ class LogicViewController: NSViewController {
     }
 
     required init?(coder: NSCoder) {
+        self.activeTab = parametersTabItem.id
+
         super.init(coder: coder)
 
         setUpViews()
@@ -61,8 +65,11 @@ class LogicViewController: NSViewController {
         [parametersTabItem, logicTabItem, examplesTabItem]
     }()
     private let tabView = NavigationItemStack()
-    private lazy var activeTab: UUID = { parametersTabItem.id }()
+    private var activeTab: UUID {
+        didSet { update() }
+    }
     private let parameterEditor = LogicEditor()
+    private let componentLogicEditor = LogicEditor()
 
     private let infoBar = InfoBar()
     private let divider = Divider()
@@ -143,6 +150,10 @@ class LogicViewController: NSViewController {
         tabView.style = .tabs
         tabView.activeItem = parametersTabItem.id
 
+        tabView.onClickItem = { [unowned self] id in
+            self.activeTab = id
+        }
+
         containerView.addSubview(contentContainerView)
         containerView.addSubview(infoBar)
         containerView.addSubview(divider)
@@ -202,18 +213,21 @@ class LogicViewController: NSViewController {
             componentViewController.topView = canvasAreaView
             componentViewController.dividerView = tabView
 
+            tabView.activeItem = activeTab
+
             switch activeTab {
             case parametersTabItem.id:
-                if let (parameters, declarationId) = functionParameters {
-                    let topLevelParameters = LGCTopLevelParameters(id: UUID(), parameters: .init(parameters))
+                if let declaration = LogicViewController.componentFunctionDeclaration(rootNode), let parameters = declaration.functionParameters {
+                    let topLevelParameters = LGCTopLevelParameters(id: UUID(), parameters: parameters)
+
                     parameterEditor.rootNode = .topLevelParameters(topLevelParameters)
 
-                    parameterEditor.onChangeRootNode = { [unowned self] parameterRoot in
-                        guard case .topLevelParameters(let newTopLevelParameters) = parameterRoot else { return false }
+                    parameterEditor.onChangeRootNode = { [unowned self] localRoot in
+                        guard case .topLevelParameters(let newTopLevelParameters) = localRoot else { return false }
 
-                        guard let newRootNode = self.updateFunctionDeclaration(id: declarationId, newParameters: newTopLevelParameters.parameters) else { return false }
+                        guard let newFunctionDeclaration = declaration.functionWith(parameters: newTopLevelParameters.parameters) else { return false }
 
-                        self.onChangeRootNode?(newRootNode)
+                        self.onChangeRootNode?(self.rootNode.replace(id: declaration.uuid, with: .declaration(newFunctionDeclaration)))
 
                         return true
                     }
@@ -226,6 +240,32 @@ class LogicViewController: NSViewController {
                 parameterEditor.documentationForSuggestion = LogicViewController.documentationForSuggestion
 
                 componentViewController.bottomView = parameterEditor
+            case logicTabItem.id:
+                if let declaration = LogicViewController.componentFunctionDeclaration(rootNode),
+                    let block = declaration.functionStatementsBeforeReturnStatement {
+
+                    let program = LGCProgram(id: UUID(), block: block)
+
+                    componentLogicEditor.rootNode = .program(program)
+
+                    componentLogicEditor.onChangeRootNode = { [unowned self] localRoot in
+                        guard case .program(let newProgram) = localRoot else { return false }
+
+                        guard let newFunctionDeclaration = declaration.functionWithStatementsBeforeReturnStatement(block: newProgram.block) else { return false }
+
+                        self.onChangeRootNode?(self.rootNode.replace(id: declaration.uuid, with: .declaration(newFunctionDeclaration)))
+
+                        return true
+                    }
+                }
+
+                componentLogicEditor.formattingOptions = formattingOptions
+
+                componentLogicEditor.suggestionsForNode = LogicViewController.suggestionsForNode
+
+                componentLogicEditor.documentationForSuggestion = LogicViewController.documentationForSuggestion
+
+                componentViewController.bottomView = componentLogicEditor
             default:
                 componentViewController.bottomView = nil
             }
@@ -250,7 +290,7 @@ class LogicViewController: NSViewController {
 
         logicEditor.decorationForNodeID = { [unowned self] id in
             return LogicViewController.decorationForNodeID(
-                rootNode: self.logicEditor.rootNode, // We only need to look within this logic file
+                rootNode: self.rootNode, // We only need to look within this logic file
                 formattingOptions: formattingOptions,
                 evaluationContext: compiled.evaluation,
                 id: id
@@ -274,8 +314,6 @@ extension Defaults.Keys {
 
 extension LogicViewController {
     private var canvasExpressions: [LGCExpression] {
-        let rootNode = logicEditor.rootNode
-
         let expressions: [LGCExpression]? = rootNode.reduce(initialResult: [], f: { result, node, config in
             switch node {
             case .declaration(.variable(id: _, name: let pattern, annotation: .some(let annotation), initializer: .some(let initializer), comment: _)) where pattern.name == "devices" && annotation.unificationType(genericsInScope: [:], getName: { "" }) == .cons(name: "Array", parameters: [.cons(name: "LonaDevice")]):
@@ -384,40 +422,71 @@ extension LogicViewController {
     }
 }
 
-// MARK: - Parameters
+// MARK: - Components
 
 extension LogicViewController {
-    private var functionParameters: (parameters: [LGCFunctionParameter], declarationId: UUID)? {
-        let rootNode = logicEditor.rootNode
-
+    private static func componentFunctionDeclaration(_ rootNode: LGCSyntaxNode) -> LGCDeclaration? {
         return rootNode.reduce(initialResult: nil, f: { result, node, config in
             switch node {
-            case .declaration(.function(id: let id, name: _, returnType: _, genericParameters: _, parameters: let parameters, block: _, comment: _)):
-                // TODO: Test returnType == Element and maybe check name too
-                config.stopTraversal = true
+            case .declaration(let declaration):
+                switch declaration {
+                case .function:
+                    // TODO: Test returnType == Element and maybe check name too
+                    config.stopTraversal = true
 
-                return (parameters.map { $0 }, id)
+                    return declaration
+                default:
+                    return nil
+                }
             default:
                 return nil
             }
         })
     }
+}
 
-    private func updateFunctionDeclaration(id originalDeclarationId: UUID, newParameters: LGCList<LGCFunctionParameter>) -> LGCSyntaxNode? {
-        guard case .declaration(.function(let functionValue)) = self.rootNode.find(id: originalDeclarationId) else { return nil }
+// MARK: - LGCDeclaration
 
-        let newDeclarationNode: LGCSyntaxNode = .declaration(
-            .function(
-                id: UUID(),
-                name: functionValue.name,
-                returnType: functionValue.returnType,
-                genericParameters: functionValue.genericParameters,
-                parameters: newParameters,
-                block: functionValue.block,
-                comment: functionValue.comment
-            )
+extension LGCDeclaration {
+    public var functionParameters: LGCList<LGCFunctionParameter>? {
+        guard case .function(let function) = self else { return nil }
+        return function.parameters
+    }
+
+    public var functionBlock: LGCList<LGCStatement>? {
+        guard case .function(let function) = self else { return nil }
+        return function.block
+    }
+
+    public func functionWith(parameters: LGCList<LGCFunctionParameter>? = nil, block: LGCList<LGCStatement>? = nil) -> LGCDeclaration? {
+        guard case .function(let function) = self else { return nil }
+
+        return .function(
+            id: function.id,
+            name: function.name,
+            returnType: function.returnType,
+            genericParameters: function.genericParameters,
+            parameters: parameters ?? function.parameters,
+            block: block ?? function.block,
+            comment: function.comment
         )
+    }
 
-        return self.rootNode.replace(id: originalDeclarationId, with: newDeclarationNode)
+    public var functionStatementsBeforeReturnStatement: LGCList<LGCStatement>? {
+        guard case .function(let function) = self else { return nil }
+        let prefix = function.block.prefix(while: {
+            if case .returnStatement = $0 { return false }
+            return true
+        })
+        return LGCList(Array(prefix)).normalizedPlaceholders
+    }
+
+    public func functionWithStatementsBeforeReturnStatement(block: LGCList<LGCStatement>) -> LGCDeclaration? {
+        guard case .function(let function) = self else { return nil }
+        let suffix = function.block.drop(while: {
+            if case .returnStatement = $0 { return false }
+            return true
+        })
+        return functionWith(block: LGCList(Array(block) + Array(suffix)).normalizedPlaceholders)
     }
 }
