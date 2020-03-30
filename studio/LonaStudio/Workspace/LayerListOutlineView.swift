@@ -403,6 +403,10 @@ extension LayerListOutlineView {
 // MARK: - NSOutlineViewDataSource
 
 extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
+    func outlineView(_ outlineView: NSOutlineView, rowViewForItem item: Any) -> NSTableRowView? {
+        return FileTreeRowView(style: .rounded)
+    }
+
     func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
         if item == nil {
             return 1

@@ -59,6 +59,7 @@ class LogicViewController: NSViewController {
 
     private let logicEditor = LogicEditor()
     private let canvasAreaView = CanvasAreaView()
+    private let elementEditor = ElementEditor()
     private let parametersTabItem = NavigationItem(id: UUID(), title: "Parameters", icon: nil)
     private let logicTabItem = NavigationItem(id: UUID(), title: "Logic", icon: nil)
     private let examplesTabItem = NavigationItem(id: UUID(), title: "Examples", icon: nil)
@@ -160,6 +161,7 @@ class LogicViewController: NSViewController {
         containerView.addSubview(divider)
 
         componentViewController.topView = layerViewController.view
+        layerViewController.leftView = elementEditor
 
         self.view = containerView
     }
@@ -218,9 +220,21 @@ class LogicViewController: NSViewController {
 
             tabView.activeItem = activeTab
 
+            let componentDeclaration = LogicViewController.componentFunctionDeclaration(rootNode)
+
+//            if let declaration = componentDeclaration {
+//                elementEditor.rootItem = LogicViewController.componentElements(inFunctionDeclaration: declaration)
+//            }
+
+            elementEditor.rootItem = ElementItem(id: UUID(), type: "View", name: "myView", children: [
+                ElementItem(id: UUID(), type: "Text", name: "Title"),
+                ElementItem(id: UUID(), type: "Spacer", name: "Divider"),
+                ElementItem(id: UUID(), type: "Text", name: "Subtitle")
+            ])
+
             switch activeTab {
             case parametersTabItem.id:
-                if let declaration = LogicViewController.componentFunctionDeclaration(rootNode), let parameters = declaration.functionParameters {
+                if let declaration = componentDeclaration, let parameters = declaration.functionParameters {
                     let topLevelParameters = LGCTopLevelParameters(id: UUID(), parameters: parameters)
 
                     parameterEditor.rootNode = .topLevelParameters(topLevelParameters)
@@ -446,11 +460,71 @@ extension LogicViewController {
             }
         })
     }
+
+    private static func componentElements(inFunctionDeclaration declaration: LGCDeclaration) -> ElementItem? {
+        return declaration.returnStatement?.expression?.elementItem()
+    }
+}
+
+// MARK: - LGCExpression
+
+extension LGCExpression {
+    public func elementItem() -> ElementItem? {
+        switch self {
+        case .functionCallExpression(id: let id, expression: let expression, arguments: let arguments):
+            let functionName = (expression.flattenedMemberExpression ?? []).map({ $0.string }).joined(separator: ".")
+            let customLabel: String? = arguments.reduce(nil) { (result, arg) in
+                if result != nil { return result }
+
+                switch arg {
+                case .argument(id: _, label: .some("__name"), expression: .literalExpression(id: _, literal: .string(id: _, value: let stringLiteral))):
+                    return stringLiteral
+                default:
+                    return nil
+                }
+            }
+            let childrenExpressions: LGCList<LGCExpression> = arguments.reduce(.empty) { (result, arg) in
+                if result != .empty { return result }
+
+                switch arg {
+                case .argument(id: _, label: .some("children"), expression: .literalExpression(id: _, literal: .array(id: _, value: let arrayBody))):
+                    return arrayBody
+                default:
+                    return .empty
+                }
+            }
+            let childrenItems = childrenExpressions.compactMap({ $0.elementItem() })
+            return ElementItem(id: id, type: functionName, name: customLabel ?? "Name", visible: true, children: childrenItems)
+        default:
+            return nil
+        }
+    }
+}
+
+// MARK: - LGCStatement
+
+extension LGCStatement {
+    public var expression: LGCExpression? {
+        switch self {
+        case .expressionStatement(id: _, expression: let expression):
+            return expression
+        default:
+            return nil
+        }
+    }
 }
 
 // MARK: - LGCDeclaration
 
 extension LGCDeclaration {
+    public var returnStatement: LGCStatement? {
+        guard case .function(_, _, _, _, _, let block, _) = self else { return nil }
+        return block.first(where: {
+            if case .returnStatement = $0 { return true }
+            return false
+        })
+    }
+
     public var functionParameters: LGCList<LGCFunctionParameter>? {
         guard case .function(_, _, _, _, let parameters, _, _) = self else { return nil }
         return parameters

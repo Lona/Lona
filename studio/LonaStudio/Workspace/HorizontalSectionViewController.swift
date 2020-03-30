@@ -84,10 +84,8 @@ class HorizontalSectionViewController: NSSplitViewController {
     }()
 
     private func setUpLayout() {
-//        minimumThicknessForInlineSidebars = 120
-
-//        leftItem.canCollapse = true
         leftItem.minimumThickness = 120
+        leftItem.maximumThickness = 250
         addSplitViewItem(leftItem)
 
         rightItem.minimumThickness = 300

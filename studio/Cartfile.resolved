@@ -1,6 +1,6 @@
 github "Lona/ColorPicker" "08ff046d9bcee4ad85581748fb02cce7497dec4a"
 github "Lona/ControlledComponents" "262f562cec208a96a6627857400205363429d6e0"
-github "Lona/FileTree" "25c44b035b53623129326b701c35ad7fdfcab641"
+github "Lona/FileTree" "57d94a13563f26f2d923ccf045e7cf9c4016548c"
 github "Lona/Logic" "c9a6bf481d637b25cc6ed651d50fbbdabb497684"
 github "davecom/SwiftGraph" "1e1f9997f58291db31d646a909644c4fa3162d06"
 github "dylan/colors" "0.9.10"

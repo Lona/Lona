@@ -11,10 +11,10 @@ import FileTree
 import Foundation
 import Logic
 
-private class FileTreeCellView: NSTableCellView, NSTextFieldDelegate {
+public class FileTreeCellView: NSTableCellView, NSTextFieldDelegate {
     public var onChangeBackgroundStyle: ((NSView.BackgroundStyle) -> Void)?
 
-    override var backgroundStyle: NSView.BackgroundStyle {
+    public override var backgroundStyle: NSView.BackgroundStyle {
         didSet { onChangeBackgroundStyle?(backgroundStyle) }
     }
 
@@ -130,6 +130,7 @@ class FileNavigator: NSBox {
         fillColor = Colors.headerBackground
 
         fileTree.showRootFile = true
+        fileTree.rowStyle = .rounded
         fileTree.rowHeightForFile = { [unowned self] path in self.rowHeightForFile(atPath: path) }
         fileTree.rowViewForFile = { [unowned self] path, options in self.rowViewForFile(atPath: path, options: options) }
         fileTree.imageForFile = { [unowned self] path, size in self.imageForFile(atPath: path, size: size) }

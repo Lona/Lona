@@ -235,6 +235,10 @@ public class LogicModule {
                 .declaration(
                     id: UUID(),
                     content: .importDeclaration(id: UUID(), name: .init(id: UUID(), name: "LonaDevice"))
+                ),
+                .declaration(
+                    id: UUID(),
+                    content: .importDeclaration(id: UUID(), name: .init(id: UUID(), name: "Element"))
                 )
             ]
         )
