@@ -14,8 +14,8 @@ class MainSectionViewController: NSSplitViewController {
 
     // MARK: Lifecycle
 
-    override init(nibName nibNameOrNil: NSNib.Name?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    init() {
+        super.init(nibName: nil, bundle: nil)
 
         setUpViews()
         setUpLayout()

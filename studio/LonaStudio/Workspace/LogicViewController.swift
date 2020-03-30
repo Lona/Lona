@@ -55,6 +55,7 @@ class LogicViewController: NSViewController {
     // MARK: Private
 
     private let componentViewController = MainSectionViewController()
+    private let layerViewController = HorizontalSectionViewController()
 
     private let logicEditor = LogicEditor()
     private let canvasAreaView = CanvasAreaView()
@@ -158,6 +159,8 @@ class LogicViewController: NSViewController {
         containerView.addSubview(infoBar)
         containerView.addSubview(divider)
 
+        componentViewController.topView = layerViewController.view
+
         self.view = containerView
     }
 
@@ -210,7 +213,7 @@ class LogicViewController: NSViewController {
 
             canvasAreaView.onSelectCanvasHeaderItem = onSelectCanvasHeaderItem
 
-            componentViewController.topView = canvasAreaView
+            layerViewController.rightView = canvasAreaView
             componentViewController.dividerView = tabView
 
             tabView.activeItem = activeTab

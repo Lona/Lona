@@ -281,6 +281,7 @@
 		6B82AD29242056FF004C6BC0 /* RESTClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B82AD28242056FF004C6BC0 /* RESTClient.swift */; };
 		6B87001622EFBC42007C589C /* Logic+Builders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B87001522EFBC42007C589C /* Logic+Builders.swift */; };
 		6B892C6022CAB81600D0AEDA /* GeneratedOutputPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B892C5F22CAB81500D0AEDA /* GeneratedOutputPreview.swift */; };
+		6B8AE8A2243262DC006E140C /* HorizontalSectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8AE8A1243262DC006E140C /* HorizontalSectionViewController.swift */; };
 		6B8D1E8823FCE9AF00EA6E40 /* NSError+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D1E8723FCE9AF00EA6E40 /* NSError+String.swift */; };
 		6B8D7DA021BED32E0087A3F7 /* LayoutInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D7D9D21BED32E0087A3F7 /* LayoutInspector.swift */; };
 		6B8D7DA321BF04B60087A3F7 /* InspectorSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D7DA221BF04B60087A3F7 /* InspectorSectionHeader.swift */; };
@@ -685,6 +686,7 @@
 		6B82AD28242056FF004C6BC0 /* RESTClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RESTClient.swift; sourceTree = "<group>"; };
 		6B87001522EFBC42007C589C /* Logic+Builders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Logic+Builders.swift"; sourceTree = "<group>"; };
 		6B892C5F22CAB81500D0AEDA /* GeneratedOutputPreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneratedOutputPreview.swift; sourceTree = "<group>"; };
+		6B8AE8A1243262DC006E140C /* HorizontalSectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalSectionViewController.swift; sourceTree = "<group>"; };
 		6B8D1E8723FCE9AF00EA6E40 /* NSError+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSError+String.swift"; sourceTree = "<group>"; };
 		6B8D7D9D21BED32E0087A3F7 /* LayoutInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutInspector.swift; sourceTree = "<group>"; };
 		6B8D7DA221BF04B60087A3F7 /* InspectorSectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InspectorSectionHeader.swift; sourceTree = "<group>"; };
@@ -901,6 +903,7 @@
 				6BA5BBD82174F2A500F086A7 /* FileNavigator.swift */,
 				6B6E47542407201D0067B2FF /* FlippedScrollView.swift */,
 				6BA78310241087D8008F3761 /* FlowView.swift */,
+				6B8AE8A1243262DC006E140C /* HorizontalSectionViewController.swift */,
 				036A4E9921E1F5FB00948DBD /* ImagePreview.swift */,
 				036A4E8D21E0EF0100948DBD /* ImageViewController.swift */,
 				036A4EA121E1FD3B00948DBD /* KeyHandlingCollectionView.swift */,
@@ -1964,6 +1967,7 @@
 				6BE99D7823CD2F4300E35E35 /* Promise.swift in Sources */,
 				6B5D4D2D213E1CB0004F8AC3 /* EditorHeader.swift in Sources */,
 				300302761EDCDA030085E140 /* LogicListView.swift in Sources */,
+				6B8AE8A2243262DC006E140C /* HorizontalSectionViewController.swift in Sources */,
 				304478BC1F32923700FD06E0 /* NSPointExtensions.swift in Sources */,
 				3040EFC81F2FAC9C007C5368 /* Operators.swift in Sources */,
 				6B3414AC225BBD0600CC65D1 /* DraggableIconButton.swift in Sources */,
