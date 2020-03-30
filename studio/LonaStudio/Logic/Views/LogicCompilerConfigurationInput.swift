@@ -111,7 +111,13 @@ public class LogicCompilerConfigurationInput: NSView {
             let program = LGCSyntaxNode.program(LogicCompilerConfigurationInput.makeProgram(from: expression))
 
             let formattingOptions = LogicFormattingOptions.init(style: Defaults[.formattingStyle], locale: .en_US, getColor: { _ in nil })
-            return .init(StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: formattingOptions)?(query) ?? [])
+
+            switch StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: formattingOptions) {
+            case .success(let builder):
+                return .init(builder(query) ?? [])
+            case .failure:
+                return .init([])
+            }
         }
     }
 
@@ -119,7 +125,7 @@ public class LogicCompilerConfigurationInput: NSView {
         guard case .expression(let expression) = rootNode else { return nil }
 
         let program: LGCSyntaxNode = .program(LogicCompilerConfigurationInput.makeProgram(from: expression))
-        let scopeContext = Compiler.scopeContext(program)
+        guard let scopeContext = try? Compiler.scopeContext(program).get() else { return nil }
         let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
 
         guard case .success(let substitution) = Unification.unify(constraints: unificationContext.constraints) else { return nil }

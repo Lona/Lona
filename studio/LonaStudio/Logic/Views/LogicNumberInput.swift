@@ -80,13 +80,12 @@ public class LogicNumberInput: NSView {
 
             let program: LGCSyntaxNode = .program(LogicNumberInput.makeProgram(from: expression).expandImports(importLoader: LogicLoader.load))
 
-            return .init(
-                StandardConfiguration.suggestions(
-                    rootNode: program,
-                    node: node,
-                    formattingOptions: self.logicEditor.formattingOptions
-                )?(query) ?? []
-            )
+            switch StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: self.logicEditor.formattingOptions) {
+            case .success(let builder):
+                return .init(builder(query) ?? [])
+            case .failure:
+                return .init([])
+            }
         }
     }
 
@@ -94,7 +93,7 @@ public class LogicNumberInput: NSView {
         guard case .expression(let expression) = node else { return nil }
 
         let program: LGCSyntaxNode = .program(LogicNumberInput.makeProgram(from: expression).expandImports(importLoader: LogicLoader.load))
-        let scopeContext = Compiler.scopeContext(program)
+        guard let scopeContext = try? Compiler.scopeContext(program).get() else { return nil }
         let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
 
         guard case .success(let substitution) = Unification.unify(constraints: unificationContext.constraints) else {

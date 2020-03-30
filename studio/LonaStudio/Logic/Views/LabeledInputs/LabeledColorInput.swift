@@ -56,7 +56,7 @@ public class LabeledColorInput: LabeledInput {
         guard case .expression(let expression) = node else { return nil }
 
         let program: LGCSyntaxNode = .program(LabeledColorInput.makeExpressionProgram(from: expression).expandImports(importLoader: LogicLoader.load))
-        let scopeContext = Compiler.scopeContext(program)
+        guard let scopeContext = try? Compiler.scopeContext(program).get() else { return nil }
         let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
 
         guard case .success(let substitution) = Unification.unify(constraints: unificationContext.constraints) else {
@@ -149,7 +149,12 @@ public class LabeledColorInput: LabeledInput {
 
             let program: LGCSyntaxNode = .program(LabeledColorInput.makeExpressionProgram(from: expression).expandImports(importLoader: LogicLoader.load))
 
-            return .init(StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: .normal)?(query) ?? [])
+            switch StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: .normal) {
+            case .success(let builder):
+                return .init(builder(query) ?? [])
+            case .failure:
+                return .init([])
+            }
         }
 
         logicValueInput.logicEditor.formattingOptions.getArguments = { [unowned self] id in

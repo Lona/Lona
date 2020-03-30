@@ -68,7 +68,15 @@ public class LogicModule {
 
         let program: LGCSyntaxNode = compiled.programNode
 
-        let scopeContext = Compiler.scopeContext(program)
+        let scopeContext: Compiler.ScopeContext
+
+        switch Compiler.scopeContext(program) {
+        case .success(let value):
+            scopeContext = value
+        case .failure(let error):
+            Swift.print("ERROR: Compiler.scopeContext, \(error.localizedDescription)")
+            return compiled
+        }
 
         compiled.scope = scopeContext
 
