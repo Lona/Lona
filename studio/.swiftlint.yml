@@ -12,6 +12,7 @@ disabled_rules:
   - function_body_length
   - function_parameter_count
   - identifier_name
+  - implicit_getter
   - implicitly_unwrapped_optional
   - large_tuple
   - legacy_cggeometry_functions

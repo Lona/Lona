@@ -205,8 +205,13 @@ class PublishingViewController: NSViewController {
         switch history.current {
         case .needsAuth:
             initializeState()
-        case .needsRepoScope(let value):
-            createRepoOrRequestPermissions(organizationId: value.organizationId, githubOrganizationId: value.githubOrganizationId, githubRepositoryName: value.githubRepositoryName, isPrivate: value.isPrivate)
+        case .needsRepoScope(let organizationId, let githubOrganizationId, let githubRepositoryName, let isPrivate):
+            createRepoOrRequestPermissions(
+                organizationId: organizationId,
+                githubOrganizationId: githubOrganizationId,
+                githubRepositoryName: githubRepositoryName,
+                isPrivate: isPrivate
+            )
         case .needsPublicKeyScope:
             switch SSH.localKey() {
             case .success(nil):
@@ -477,7 +482,7 @@ If your team or company already has a Lona organization, an organization owner c
                         switch result {
                         case .failure(let error):
                             Alert.runInformationalAlert(messageText: "Failed to connect to GitHub", informativeText: "Are you connected to the internet? \(error)")
-                        case .success(let repositories, _):
+                        case .success((let repositories, _)):
                             if repositories.contains(where: { Git.URL.isSameGitRepository($0.url, repository.url) && $0.activated }) {
                                 switch self.addRemoteAndPush(url: repository.url) {
                                 case .success(let state):
@@ -598,7 +603,7 @@ If you'd like, we can automatically configure your git credentials (SSH keys) on
                         switch repositoriesAndOrganizations {
                         case .failure(let error):
                             self.history = .init(.error(title: "Failed to find connected repository", body: "Are you sure you're connected to the internet? \(error)"))
-                        case .success(let repositories, _):
+                        case .success((let repositories, _)):
                             if let found = repositories.first(where: { Git.URL.isSameGitRepository($0.url, url) }) {
                                 if found.activated {
                                     switch self.addRemoteAndPush(url: url) {

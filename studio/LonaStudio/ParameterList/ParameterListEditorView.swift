@@ -94,15 +94,15 @@ extension ParameterListEditorView {
                 switch param {
                 case .placeholder:
                     return nil
-                case .parameter(let value):
-                    guard let csType = value.annotation.csType(environmentTypes: types) else { return nil }
+                case .parameter(_, let localName, let annotation, let defaultValue, _):
+                    guard let csType = annotation.csType(environmentTypes: types) else { return nil }
 
-                    switch value.defaultValue {
+                    switch defaultValue {
                     case .none:
-                        return CSParameter(name: value.localName.name, type: csType)
+                        return CSParameter(name: localName.name, type: csType)
                     case .value(id: _, expression: let expression):
                         return CSParameter(
-                            name: value.localName.name,
+                            name: localName.name,
                             type: csType,
                             defaultValue: LogicInput.makeValue(forType: csType, node: .expression(expression)))
                     }

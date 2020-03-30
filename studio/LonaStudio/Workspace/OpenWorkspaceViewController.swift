@@ -128,7 +128,7 @@ class OpenWorkspaceViewController: NSViewController {
                         switch result {
                         case .failure(let error):
                             Alert.runInformationalAlert(messageText: "Failed to connect to GitHub", informativeText: "Are you connected to the internet? \(error)")
-                        case .success(let repositories, _):
+                        case .success((let repositories, _)):
                             self.history.navigateTo(.chooseRepo(repositories: repositories))
                         }
                     }

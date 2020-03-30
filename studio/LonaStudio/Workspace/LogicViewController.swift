@@ -449,32 +449,32 @@ extension LogicViewController {
 
 extension LGCDeclaration {
     public var functionParameters: LGCList<LGCFunctionParameter>? {
-        guard case .function(let function) = self else { return nil }
-        return function.parameters
+        guard case .function(_, _, _, _, let parameters, _, _) = self else { return nil }
+        return parameters
     }
 
     public var functionBlock: LGCList<LGCStatement>? {
-        guard case .function(let function) = self else { return nil }
-        return function.block
+        guard case .function(_, _, _, _, _, let block, _) = self else { return nil }
+        return block
     }
 
-    public func functionWith(parameters: LGCList<LGCFunctionParameter>? = nil, block: LGCList<LGCStatement>? = nil) -> LGCDeclaration? {
-        guard case .function(let function) = self else { return nil }
+    public func functionWith(parameters newParameters: LGCList<LGCFunctionParameter>? = nil, block newBlock: LGCList<LGCStatement>? = nil) -> LGCDeclaration? {
+        guard case let .function(id, name, returnType, genericParameters, parameters, block, comment) = self else { return nil }
 
         return .function(
-            id: function.id,
-            name: function.name,
-            returnType: function.returnType,
-            genericParameters: function.genericParameters,
-            parameters: parameters ?? function.parameters,
-            block: block ?? function.block,
-            comment: function.comment
+            id: id,
+            name: name,
+            returnType: returnType,
+            genericParameters: genericParameters,
+            parameters: newParameters ?? parameters,
+            block: newBlock ?? block,
+            comment: comment
         )
     }
 
     public var functionStatementsBeforeReturnStatement: LGCList<LGCStatement>? {
-        guard case .function(let function) = self else { return nil }
-        let prefix = function.block.prefix(while: {
+        guard case .function(_, _, _, _, _, let block, _) = self else { return nil }
+        let prefix = block.prefix(while: {
             if case .returnStatement = $0 { return false }
             return true
         })
@@ -482,8 +482,8 @@ extension LGCDeclaration {
     }
 
     public func functionWithStatementsBeforeReturnStatement(block: LGCList<LGCStatement>) -> LGCDeclaration? {
-        guard case .function(let function) = self else { return nil }
-        let suffix = function.block.drop(while: {
+        guard case .function(_, _, _, _, _, let block, _) = self else { return nil }
+        let suffix = block.drop(while: {
             if case .returnStatement = $0 { return false }
             return true
         })

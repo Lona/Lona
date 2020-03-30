@@ -39,14 +39,14 @@ extension LGCDeclaration {
 
     var csType: CSType? {
         switch self {
-        case .enumeration(let enumeration):
+        case .enumeration(_, let name, _, let cases, _):
             return .named(
-                enumeration.name.name,
+                name.name,
                 .variant(
-                    enumeration.cases.map {
+                    cases.map {
                         switch $0 {
-                        case .enumerationCase(let enumerationCase):
-                            return (enumerationCase.name.name, enumerationCase.associatedValueTypes.first?.csType() ?? .unit)
+                        case .enumerationCase(_, let caseName, let associatedValueTypes, _):
+                            return (caseName.name, associatedValueTypes.first?.csType() ?? .unit)
                         case .placeholder:
                             return nil
                         }

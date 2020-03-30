@@ -184,8 +184,8 @@ extension UtilitiesView {
                 switch statement {
                 case .placeholder:
                     return nil
-                case .declaration(let declaration):
-                    return declaration.content.csType!
+                case .declaration(_, let content):
+                    return content.csType!
                 default:
                     fatalError("Not supported")
                 }
