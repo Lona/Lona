@@ -432,13 +432,16 @@ class WorkspaceViewController: NSSplitViewController {
             let componentName = URL(fileURLWithPath: path).deletingPathExtension().lastPathComponent.sanitizedFileName
             let documentContents = """
 extension \(componentName) {
-  static let devices: Array<LonaDevice> = [
+  func \(componentName)() -> Element {
+    return View(__name: "Container")
+  }
+  let devices: Array<LonaDevice> = [
     LonaDevice.iPhone8,
     LonaDevice.Pixel2
   ]
-  func \(componentName)(titleText: String) -> Number {
-    return 3
-  }
+  let examples: Array<Element> = [
+    \(componentName)()
+  ]
 }
 """
 
