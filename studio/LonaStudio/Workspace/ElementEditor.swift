@@ -64,16 +64,18 @@ public class ElementEditor: NSBox {
         }
     }
 
-    public var rootItem: ElementItem = .init(id: UUID(), type: "", name: "") {
+    public var rootItem: ElementItem? {
         didSet {
             elementForID.removeAll(keepingCapacity: true)
             parentForID.removeAll(keepingCapacity: true)
 
-            rootItem.forEachDescendant(config: .init()) { (item, _) in
-                self.elementForID[item.id] = item
+            if let rootItem = rootItem {
+                rootItem.forEachDescendant(config: .init()) { (item, _) in
+                    self.elementForID[item.id] = item
 
-                item.children.forEach { child in
-                    self.parentForID[child.id] = item
+                    item.children.forEach { child in
+                        self.parentForID[child.id] = item
+                    }
                 }
             }
 
@@ -251,6 +253,8 @@ extension ElementEditor: NSOutlineViewDelegate {
 
 extension ElementEditor: NSOutlineViewDataSource {
     public func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
+        if rootItem == nil { return 0 }
+
         if item == nil { return 1 }
 
         let item = item as! ElementItem
@@ -265,7 +269,7 @@ extension ElementEditor: NSOutlineViewDataSource {
     }
 
     public func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
-        if item == nil { return rootItem }
+        if item == nil { return rootItem! }
 
         let item = item as! ElementItem
 

@@ -222,15 +222,15 @@ class LogicViewController: NSViewController {
 
             let componentDeclaration = LogicViewController.componentFunctionDeclaration(rootNode)
 
-//            if let declaration = componentDeclaration {
-//                elementEditor.rootItem = LogicViewController.componentElements(inFunctionDeclaration: declaration)
-//            }
+            if let declaration = componentDeclaration {
+                elementEditor.rootItem = LogicViewController.componentElements(inFunctionDeclaration: declaration)
+            }
 
-            elementEditor.rootItem = ElementItem(id: UUID(), type: "View", name: "myView", children: [
-                ElementItem(id: UUID(), type: "Text", name: "Title"),
-                ElementItem(id: UUID(), type: "Spacer", name: "Divider"),
-                ElementItem(id: UUID(), type: "Text", name: "Subtitle")
-            ])
+//            elementEditor.rootItem = ElementItem(id: UUID(), type: "View", name: "myView", children: [
+//                ElementItem(id: UUID(), type: "Text", name: "Title"),
+//                ElementItem(id: UUID(), type: "Spacer", name: "Divider"),
+//                ElementItem(id: UUID(), type: "Text", name: "Subtitle")
+//            ])
 
             switch activeTab {
             case parametersTabItem.id:
@@ -462,17 +462,27 @@ extension LogicViewController {
     }
 
     private static func componentElements(inFunctionDeclaration declaration: LGCDeclaration) -> ElementItem? {
-        return declaration.returnStatement?.expression?.elementItem()
+        return declaration.returnStatement?.returnedExpression?.elementItem()
     }
 }
 
 // MARK: - LGCExpression
 
 extension LGCExpression {
+    public var qualifiedDisplayName: String {
+        switch self {
+        case .identifierExpression(id: _, identifier: let identifier):
+            return identifier.string
+        case .memberExpression:
+            return (flattenedMemberExpression ?? []).map({ $0.string }).joined(separator: ".")
+        default:
+            return "<computed value>"
+        }
+    }
+
     public func elementItem() -> ElementItem? {
         switch self {
         case .functionCallExpression(id: let id, expression: let expression, arguments: let arguments):
-            let functionName = (expression.flattenedMemberExpression ?? []).map({ $0.string }).joined(separator: ".")
             let customLabel: String? = arguments.reduce(nil) { (result, arg) in
                 if result != nil { return result }
 
@@ -494,6 +504,7 @@ extension LGCExpression {
                 }
             }
             let childrenItems = childrenExpressions.compactMap({ $0.elementItem() })
+            let functionName = expression.qualifiedDisplayName
             return ElementItem(id: id, type: functionName, name: customLabel ?? "Name", visible: true, children: childrenItems)
         default:
             return nil
@@ -504,9 +515,9 @@ extension LGCExpression {
 // MARK: - LGCStatement
 
 extension LGCStatement {
-    public var expression: LGCExpression? {
+    public var returnedExpression: LGCExpression? {
         switch self {
-        case .expressionStatement(id: _, expression: let expression):
+        case .returnStatement(id: _, expression: let expression):
             return expression
         default:
             return nil
