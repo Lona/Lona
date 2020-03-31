@@ -332,8 +332,8 @@ extension ElementEditor {
 
         suggestionWindow.suggestionText = currentName
         suggestionWindow.suggestionItems = []
-        suggestionWindow.placeholderText = "Choose device"
-        suggestionWindow.style = .contextMenu
+        suggestionWindow.placeholderText = "Type a new element name and press Enter"
+        suggestionWindow.style = .textInput
         suggestionWindow.onRequestHide = { suggestionWindow.orderOut(nil) }
         suggestionWindow.onPressEscapeKey = { suggestionWindow.orderOut(nil) }
         suggestionWindow.onSelectIndex = { index in
@@ -347,9 +347,6 @@ extension ElementEditor {
             suggestionWindow.onPressEnter = nil
             suggestionWindow.orderOut(nil)
             onSubmit(suggestionWindow.suggestionText)
-//            let suggestedNode = self.canvasExpressionSuggestions(for: suggestionWindow.suggestionText, canvasIndex: canvasIndex)[index].node
-//            let newRootNode = self.rootNode.replace(id: self.canvasExpressions[canvasIndex].uuid, with: suggestedNode)
-//            _ = self.onChangeRootNode?(newRootNode)
         }
 
         window.addChildWindow(suggestionWindow, ordered: .above)
