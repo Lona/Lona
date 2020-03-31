@@ -224,27 +224,43 @@ class LogicViewController: NSViewController {
 
             if let declaration = componentDeclaration {
                 elementEditor.rootItem = LogicViewController.componentElements(inFunctionDeclaration: declaration)
-            }
 
-//            elementEditor.rootItem = ElementItem(id: UUID(), type: "View", name: "myView", children: [
-//                ElementItem(id: UUID(), type: "Text", name: "Title"),
-//                ElementItem(id: UUID(), type: "Spacer", name: "Divider"),
-//                ElementItem(id: UUID(), type: "Text", name: "Subtitle")
-//            ])
+                elementEditor.onRenameItem = { [unowned self] item, name in
+                    guard case let .expression(.functionCallExpression(callID, expression, arguments)) = self.rootNode.find(id: item.id) else { return }
+
+                    let newArgument: LGCFunctionCallArgument = .argument(
+                        id: UUID(),
+                        label: "__name",
+                        expression: .literalExpression(id: UUID(), literal: .string(id: UUID(), value: name))
+                    )
+
+                    if let nameArgumentID = arguments.firstArgument(labeled: "__name")?.uuid {
+                        self.onChangeRootNode?(self.rootNode.replace(id: nameArgumentID, with: newArgument.node))
+                    } else {
+                        let newFunctionCall: LGCExpression = .functionCallExpression(
+                            id: UUID(),
+                            expression: expression,
+                            arguments: .next(newArgument, arguments)
+                        )
+
+                        self.onChangeRootNode?(self.rootNode.replace(id: callID, with: newFunctionCall.node))
+                    }
+                }
+            }
 
             switch activeTab {
             case parametersTabItem.id:
                 if let declaration = componentDeclaration, let parameters = declaration.functionParameters {
                     let topLevelParameters = LGCTopLevelParameters(id: UUID(), parameters: parameters)
 
-                    parameterEditor.rootNode = .topLevelParameters(topLevelParameters)
+                    parameterEditor.rootNode = topLevelParameters.node
 
                     parameterEditor.onChangeRootNode = { [unowned self] localRoot in
                         guard case .topLevelParameters(let newTopLevelParameters) = localRoot else { return false }
 
                         guard let newFunctionDeclaration = declaration.functionWith(parameters: newTopLevelParameters.parameters) else { return false }
 
-                        self.onChangeRootNode?(self.rootNode.replace(id: declaration.uuid, with: .declaration(newFunctionDeclaration)))
+                        self.onChangeRootNode?(self.rootNode.replace(id: declaration.uuid, with: newFunctionDeclaration.node))
 
                         return true
                     }
@@ -270,7 +286,7 @@ class LogicViewController: NSViewController {
 
                         guard let newFunctionDeclaration = declaration.functionWithStatementsBeforeReturnStatement(block: newProgram.block) else { return false }
 
-                        self.onChangeRootNode?(self.rootNode.replace(id: declaration.uuid, with: .declaration(newFunctionDeclaration)))
+                        self.onChangeRootNode?(self.rootNode.replace(id: declaration.uuid, with: newFunctionDeclaration.node))
 
                         return true
                     }
@@ -466,6 +482,41 @@ extension LogicViewController {
     }
 }
 
+// MARK: - LGCArgument
+
+extension LGCFunctionCallArgument {
+    public var stringValue: String? {
+        switch self {
+        case .argument(id: _, label: _, expression: .literalExpression(id: _, literal: .string(id: _, value: let stringLiteral))):
+            return stringLiteral
+        default:
+            return nil
+        }
+    }
+
+    public var arrayValue: LGCList<LGCExpression>? {
+        switch self {
+        case .argument(id: _, label: _, expression: .literalExpression(id: _, literal: .array(id: _, value: let arrayLiteral))):
+            return arrayLiteral
+        default:
+            return nil
+        }
+    }
+}
+
+extension LGCList where T == LGCFunctionCallArgument {
+    public func firstArgument(labeled label: String) -> LGCFunctionCallArgument? {
+        return self.first { (arg) -> Bool in
+            switch arg {
+            case .argument(id: _, label: .some(label), expression: _):
+                return true
+            default:
+                return false
+            }
+        }
+    }
+}
+
 // MARK: - LGCExpression
 
 extension LGCExpression {
@@ -483,29 +534,11 @@ extension LGCExpression {
     public func elementItem() -> ElementItem? {
         switch self {
         case .functionCallExpression(id: let id, expression: let expression, arguments: let arguments):
-            let customLabel: String? = arguments.reduce(nil) { (result, arg) in
-                if result != nil { return result }
-
-                switch arg {
-                case .argument(id: _, label: .some("__name"), expression: .literalExpression(id: _, literal: .string(id: _, value: let stringLiteral))):
-                    return stringLiteral
-                default:
-                    return nil
-                }
-            }
-            let childrenExpressions: LGCList<LGCExpression> = arguments.reduce(.empty) { (result, arg) in
-                if result != .empty { return result }
-
-                switch arg {
-                case .argument(id: _, label: .some("children"), expression: .literalExpression(id: _, literal: .array(id: _, value: let arrayBody))):
-                    return arrayBody
-                default:
-                    return .empty
-                }
-            }
+            let customLabel: String? = arguments.firstArgument(labeled: "__name")?.stringValue
+            let childrenExpressions: LGCList<LGCExpression> = arguments.firstArgument(labeled: "children")?.arrayValue ?? .empty
             let childrenItems = childrenExpressions.compactMap({ $0.elementItem() })
             let functionName = expression.qualifiedDisplayName
-            return ElementItem(id: id, type: functionName, name: customLabel ?? "Name", visible: true, children: childrenItems)
+            return ElementItem(id: id, type: functionName, name: customLabel, visible: true, children: childrenItems)
         default:
             return nil
         }

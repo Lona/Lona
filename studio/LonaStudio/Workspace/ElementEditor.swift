@@ -11,8 +11,14 @@ import FileTree
 import Logic
 import NavigationComponents
 
+class ElementButton: NavigationItemView {
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+        return true
+    }
+}
+
 public final class ElementItem {
-    public init(id: UUID, type: String, name: String, visible: Bool = true, children: [ElementItem] = []) {
+    public init(id: UUID, type: String, name: String? = nil, visible: Bool = true, children: [ElementItem] = []) {
         self.id = id
         self.type = type
         self.name = name
@@ -22,7 +28,7 @@ public final class ElementItem {
 
     public var id: UUID
     public var type: String
-    public var name: String
+    public var name: String?
     public var visible: Bool
     public var children: [ElementItem]
 }
@@ -58,6 +64,8 @@ public class ElementEditor: NSBox {
 
     // MARK: Public
 
+    public var onRenameItem: ((ElementItem, String) -> Void)?
+
     public var selectedItem: ElementItem? {
         didSet {
             self.setSelectedItem(selectedItem, oldPath: oldValue)
@@ -69,8 +77,17 @@ public class ElementEditor: NSBox {
             elementForID.removeAll(keepingCapacity: true)
             parentForID.removeAll(keepingCapacity: true)
 
+            var prefixMap: [String: Int] = [:]
+
             if let rootItem = rootItem {
                 rootItem.forEachDescendant(config: .init()) { (item, _) in
+                    if item.name == nil {
+                        let counter = (prefixMap[item.type] ?? 0) + 1
+                        Swift.print("item name", item.type, counter)
+                        self.automaticNameForID[item.id] = item.type + String(describing: counter)
+                        prefixMap[item.type] = counter
+                    }
+
                     self.elementForID[item.id] = item
 
                     item.children.forEach { child in
@@ -80,6 +97,7 @@ public class ElementEditor: NSBox {
             }
 
             outlineView.reloadData()
+            outlineView.expandItem(nil, expandChildren: true)
         }
     }
 
@@ -126,8 +144,9 @@ public class ElementEditor: NSBox {
 
     private var elementForID: [UUID: ElementItem] = [:]
     private var parentForID: [UUID: ElementItem] = [:]
+    private var automaticNameForID: [UUID: String] = [:]
 
-    private var outlineView = ElementOutlineView(style: .singleColumn)
+    private var outlineView = NSOutlineView(style: .singleColumn)
     private var scrollView = NSScrollView(frame: .zero)
     private var headerView = LayerListHeader()
     private var dividerView = NSBox()
@@ -174,18 +193,18 @@ public class ElementEditor: NSBox {
         outlineView.sizeToFit()
 
         addSubview(scrollView)
-
-        outlineView.onSelect = { row in
-            Swift.print("select", row)
-
-            let element = self.outlineView.item(atRow: row) as? ElementItem
-
-            self.selectedItem = element
-        }
-
-        outlineView.onAction = { row in
-            Swift.print("action", row)
-        }
+//
+//        outlineView.onSelect = { row in
+//            Swift.print("select", row)
+//
+//            let element = self.outlineView.item(atRow: row) as? ElementItem
+//
+//            self.selectedItem = element
+//        }
+//
+//        outlineView.onAction = { row in
+//            Swift.print("action", row)
+//        }
     }
 
     private func setUpConstraints() {
@@ -219,7 +238,7 @@ public class ElementEditor: NSBox {
 
 extension ElementEditor: NSOutlineViewDelegate {
     public func outlineView(_ outlineView: NSOutlineView, rowViewForItem item: Any) -> NSTableRowView? {
-        return FileTreeRowView(style: .rounded)
+        return ElementEditorRowView(style: .rounded)
     }
 
     public func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
@@ -227,11 +246,18 @@ extension ElementEditor: NSOutlineViewDelegate {
 
         let view = FileTreeCellView()
 
-        let typeView = NavigationItemView(titleText: item.type)
-        typeView.style.backgroundColor = NSColor.textColor.withAlphaComponent(0.08)
+        let typeView = ElementButton(titleText: item.type)
+        var typeViewStyle: NavigationItemView.Style = .treeRowButton
+        typeViewStyle.backgroundColor = NSColor.textColor.withAlphaComponent(0.08)
+        typeView.style = typeViewStyle
 //        typeView.style.padding = .init(top: 4, left: 8, bottom: 4, right: 8)
 
-        let nameView = NavigationItemView(titleText: item.name)
+        let nameView = ElementButton(titleText: item.name ?? automaticNameForID[item.id] ?? "<no name>")
+        var nameViewStyle: NavigationItemView.Style = .treeRowButton
+        if item.name == nil, let newColor = nameView.style.textColor.shadow(withLevel: 0.5) {
+            nameViewStyle.textColor = newColor
+        }
+        nameView.style = nameViewStyle
 
         view.addSubview(typeView)
         view.addSubview(nameView)
@@ -246,6 +272,15 @@ extension ElementEditor: NSOutlineViewDelegate {
 
         nameView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         nameView.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -4).isActive = true
+
+        nameView.isEnabled = true
+        nameView.onClick = { [unowned self] in
+            self.showNameEditor(
+                currentName: item.name ?? self.automaticNameForID[item.id] ?? "",
+                at: nameView.convert(nameView.bounds, to: nil),
+                onSubmit: ({ [unowned self] newName in self.onRenameItem?(item, newName) })
+            )
+        }
 
         return view
     }
@@ -277,7 +312,64 @@ extension ElementEditor: NSOutlineViewDataSource {
     }
 }
 
-class ElementOutlineView: ControlledOutlineView {
-
+class ElementEditorRowView: FileTreeRowView {
+//    override func hitTest(_ point: NSPoint) -> NSView? {
+//        let result = super.hitTest(point)
+//        Swift.print("ht", point, result?.superview?.superview)
+//        return result?.superview?.superview
+//    }
 }
 
+//class ElementOutlineView: ControlledOutlineView {}
+
+// MARK: - Suggestions
+
+extension ElementEditor {
+    func showNameEditor(currentName: String, at windowRect: NSRect, onSubmit: @escaping (String) -> Void) {
+        guard let window = self.window else { return }
+
+        let suggestionWindow = SuggestionWindow.shared
+
+        suggestionWindow.suggestionText = currentName
+        suggestionWindow.suggestionItems = []
+        suggestionWindow.placeholderText = "Choose device"
+        suggestionWindow.style = .contextMenu
+        suggestionWindow.onRequestHide = { suggestionWindow.orderOut(nil) }
+        suggestionWindow.onPressEscapeKey = { suggestionWindow.orderOut(nil) }
+        suggestionWindow.onSelectIndex = { index in
+            suggestionWindow.selectedIndex = index
+        }
+        suggestionWindow.onChangeSuggestionText = { text in
+            suggestionWindow.suggestionText = text
+            suggestionWindow.suggestionItems = []
+        }
+        suggestionWindow.onPressEnter = {
+            suggestionWindow.orderOut(nil)
+            onSubmit(suggestionWindow.suggestionText)
+//            let suggestedNode = self.canvasExpressionSuggestions(for: suggestionWindow.suggestionText, canvasIndex: canvasIndex)[index].node
+//            let newRootNode = self.rootNode.replace(id: self.canvasExpressions[canvasIndex].uuid, with: suggestedNode)
+//            _ = self.onChangeRootNode?(newRootNode)
+        }
+
+        window.addChildWindow(suggestionWindow, ordered: .above)
+
+        let screenRect = window.convertToScreen(windowRect)
+        let adjustedRect = NSRect(
+            x: screenRect.minX - 12 + 4,
+            y: screenRect.origin.y,
+            width: screenRect.width,
+            height: screenRect.height
+        )
+
+        suggestionWindow.anchorTo(rect: adjustedRect, verticalOffset: 4)
+        suggestionWindow.focusSearchField()
+    }
+}
+
+extension NavigationItemView.Style {
+    public static var treeRowButton: NavigationItemView.Style = {
+        var style: NavigationItemView.Style = .default
+        style.font = NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))
+        return style
+    }()
+}
