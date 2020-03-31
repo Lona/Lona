@@ -344,6 +344,7 @@ extension ElementEditor {
             suggestionWindow.suggestionItems = []
         }
         suggestionWindow.onPressEnter = {
+            suggestionWindow.onPressEnter = nil
             suggestionWindow.orderOut(nil)
             onSubmit(suggestionWindow.suggestionText)
 //            let suggestedNode = self.canvasExpressionSuggestions(for: suggestionWindow.suggestionText, canvasIndex: canvasIndex)[index].node
