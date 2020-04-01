@@ -344,9 +344,11 @@ extension ElementEditor {
             suggestionWindow.suggestionItems = []
         }
         suggestionWindow.onPressEnter = {
+            onSubmit(suggestionWindow.suggestionText)
+        }
+        suggestionWindow.onRequestHide = {
             suggestionWindow.onPressEnter = nil
             suggestionWindow.orderOut(nil)
-            onSubmit(suggestionWindow.suggestionText)
         }
 
         window.addChildWindow(suggestionWindow, ordered: .above)
