@@ -101,9 +101,6 @@ public class LayerListHeader: NSBox {
         imageComponentIcon.translatesAutoresizingMaskIntoConstraints = false
         vectorComponentIcon.translatesAutoresizingMaskIntoConstraints = false
 
-        button.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4).isActive = true
-
         viewComponentIcon.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 13).isActive = true
         viewComponentIcon.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 1).isActive = true
         viewComponentIcon.widthAnchor.constraint(equalToConstant: 12).isActive = true
@@ -123,6 +120,11 @@ public class LayerListHeader: NSBox {
         vectorComponentIcon.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 1).isActive = true
         vectorComponentIcon.widthAnchor.constraint(equalToConstant: 12).isActive = true
         vectorComponentIcon.heightAnchor.constraint(equalToConstant: 12).isActive = true
+
+        button.leadingAnchor.constraint(greaterThanOrEqualTo: vectorComponentIcon.trailingAnchor, constant: 10).isActive = true
+
+        button.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4).isActive = true
     }
 
     private func update() {}
