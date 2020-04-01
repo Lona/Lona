@@ -203,15 +203,35 @@ class LogicViewController: NSViewController {
 
         switch editorType {
         case .componentEditor:
-            let component: CSComponent = .makeDefaultComponent()
-            component.canvas = canvasList
-
-            canvasAreaView.parameters = CanvasAreaView.Parameters(
-                component: component,
+            var canvasAreaParameters = CanvasAreaView.Parameters(
+                columns: [],
                 showsAccessibilityOverlay: false,
-                onSelectLayer: {_ in},
                 selectedLayerName: nil
             )
+
+            if let examplesDeclaration = rootNode.findVariableDeclaration(name: "examples"),
+                let examplesName = examplesDeclaration.variablePattern,
+                let examplesValue = compiled.evaluation?.evaluate(uuid: examplesName.uuid),
+                let examplesArray = examplesValue.array {
+
+                let layers = examplesArray.map({ $0.renderableElement() ?? CSLayer() })
+
+                canvasAreaParameters.columns = canvasList.map { canvas in
+                    return .init(title: canvas.name, rows: layers.map { rootLayer in
+                        Swift.print(canvas, rootLayer)
+                        return .init(
+                            canvas: canvas,
+                            rootLayer: rootLayer,
+                            config: .init(),
+                            options: .init([
+                                .renderCanvasShadow(true)
+                            ])
+                        )
+                    })
+                }
+            }
+
+            canvasAreaView.parameters = canvasAreaParameters
 
             canvasAreaView.onSelectCanvasHeaderItem = onSelectCanvasHeaderItem
 
@@ -376,12 +396,30 @@ extension LogicViewController {
                 guard case .record(let members) = logicValue.memory else { return nil }
 
                 var name: String = ""
+                var width: Double = 375
+//                var height: Double = 100
 
                 if let memberValue = members["name"], case .some(.string(let value)) = memberValue?.memory {
                     name = value
                 }
 
-                return Canvas(device: .custom, name: name, heightMode: "At Least", exportScale: 1, backgroundColor: "")
+                if let memberValue = members["width"], case .some(.number(let value)) = memberValue?.memory {
+                    width = Double(value)
+                }
+
+//                if let memberValue = members["height"], case .some(.number(let value)) = memberValue?.memory {
+//                    height = Double(value)
+//                }
+
+                return Canvas(
+                    visible: true,
+                    name: name,
+                    width: width,
+                    height: 1,
+                    heightMode: "At Least",
+                    exportScale: 1,
+                    backgroundColor: ""
+                )
             case .none:
                 return nil
             }
@@ -561,6 +599,15 @@ extension LGCStatement {
 // MARK: - LGCDeclaration
 
 extension LGCDeclaration {
+    public var variablePattern: LGCPattern? {
+        switch self {
+        case .variable(_, let pattern, _, _, _):
+            return pattern
+        default:
+            return nil
+        }
+    }
+
     public var returnStatement: LGCStatement? {
         guard case .function(_, _, _, _, _, let block, _) = self else { return nil }
         return block.first(where: {
@@ -609,5 +656,83 @@ extension LGCDeclaration {
             return true
         })
         return functionWith(block: LGCList(Array(block) + Array(suffix)).normalizedPlaceholders)
+    }
+}
+
+// MARK: LGCSyntaxNode
+
+extension LGCSyntaxNode {
+    public func findVariableDeclaration(name: String, typeAnnotation: LGCTypeAnnotation? = nil) -> LGCDeclaration? {
+        return self.reduce(initialResult: nil, f: { result, node, config in
+            switch node {
+            case .declaration(let declaration):
+                switch declaration {
+                case .variable(_, let pattern, let annotation, _, _)
+                    where pattern.name == name && (typeAnnotation == nil || annotation.isEquivalentTo(typeAnnotation)):
+
+                    config.stopTraversal = true
+                    return declaration
+                default:
+                    return nil
+                }
+            default:
+                return nil
+            }
+        })
+    }
+}
+
+// MARK: - Logic Value
+
+extension LogicValue {
+    func renderableElement() -> CSLayer? {
+        guard case .record(let members) = self.memory,
+            case .some(.string(let typeName)) = members["type"]??.memory,
+            case .some(.array(let parametersArrayValue)) = members["parameters"]??.memory
+            else { return nil }
+
+        let parameters: [String: LogicValue] = parametersArrayValue.reduce(into: [:]) { (result, value) in
+            guard case .enum(caseName: _, associatedValues: let associatedValues) = value.memory else { return }
+            guard case .string(let parameterName) = associatedValues.first?.memory else { return }
+            result[parameterName] = associatedValues[1]
+        }
+
+        let layer = CSLayer()
+
+        switch typeName {
+        case "LonaView":
+            layer.type = .view
+        case "LonaText":
+            layer.type = .text
+
+            if case .some(.string(let text)) = parameters["value"]?.memory {
+                layer.text = text
+            }
+        default:
+            return nil
+        }
+
+        layer.backgroundColor = parameters["backgroundColor"]?.colorString
+
+        if case .some(.number(let paddingTop)) = parameters["paddingTop"]?.memory {
+            layer.paddingTop = Double(paddingTop)
+        }
+        if case .some(.number(let paddingRight)) = parameters["paddingRight"]?.memory {
+            layer.paddingRight = Double(paddingRight)
+        }
+        if case .some(.number(let paddingBottom)) = parameters["paddingBottom"]?.memory {
+            layer.paddingBottom = Double(paddingBottom)
+        }
+        if case .some(.number(let paddingLeft)) = parameters["paddingLeft"]?.memory {
+            layer.paddingLeft = Double(paddingLeft)
+        }
+
+        if case .some(.array(let childrenArrayValue)) = parameters["children"]?.memory {
+            layer.children = childrenArrayValue.compactMap { $0.renderableElement() }
+        }
+
+        Swift.print(layer.type, layer.parameters)
+
+        return layer
     }
 }

@@ -500,7 +500,11 @@ extension CanvasView {
 // MARK: - Parameters
 
 extension CanvasView {
-    struct Parameters {
+    struct Parameters: Equatable {
+        static func == (lhs: CanvasView.Parameters, rhs: CanvasView.Parameters) -> Bool {
+            return lhs.canvas == rhs.canvas && lhs.rootLayer == rhs.rootLayer
+        }
+
         var canvas: Canvas?
         var rootLayer: CSLayer?
         var config: ComponentConfiguration?

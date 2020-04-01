@@ -51,6 +51,17 @@ public class CanvasAreaView: NSBox {
         return convert(tableView.headerRect(ofColumn: column), from: tableView)
     }
 
+    var parameters: Parameters? {
+        didSet {
+            if parameters != oldValue {
+                tableView.data = parameters?.columns ?? []
+
+                tableView.updateHeader()
+                tableView.reloadData()
+            }
+        }
+    }
+
     // MARK: Private
 
     private var scrollView = NSScrollView(frame: .zero)
@@ -95,30 +106,6 @@ public class CanvasAreaView: NSBox {
         bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
         leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
         trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
-    }
-
-    private var previousComponentSerialized: CSData?
-
-    var parameters: Parameters? {
-        didSet {
-            let componentSerialized = parameters?.component.toData()
-
-            if componentSerialized != previousComponentSerialized ||
-                parameters?.selectedLayerName != oldValue?.selectedLayerName ||
-                parameters?.showsAccessibilityOverlay != oldValue?.showsAccessibilityOverlay {
-
-                previousComponentSerialized = componentSerialized
-
-                tableView.canvases = parameters?.component.computedCanvases() ?? []
-                tableView.cases = parameters?.component.computedCases(for: nil) ?? []
-                tableView.component = parameters?.component
-                tableView.showsAccessibilityOverlay = parameters?.showsAccessibilityOverlay ?? false
-                tableView.selectedLayerName = parameters?.selectedLayerName
-
-                tableView.updateHeader()
-                tableView.reloadData()
-            }
-        }
     }
 
     // MARK: Panning & Zooming
@@ -174,10 +161,9 @@ public class CanvasAreaView: NSBox {
 }
 
 extension CanvasAreaView {
-    struct Parameters {
-        var component: CSComponent
+    struct Parameters: Equatable {
+        var columns: [CanvasTableView.Column]
         var showsAccessibilityOverlay: Bool
-        var onSelectLayer: (CSLayer) -> Void
         var selectedLayerName: String?
     }
 }

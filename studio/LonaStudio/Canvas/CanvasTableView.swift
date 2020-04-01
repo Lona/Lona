@@ -11,6 +11,11 @@ import Foundation
 
 class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
 
+    struct Column: Equatable {
+        var title: String
+        var rows: [CanvasView.Parameters]
+    }
+
     override func drawGrid(inClipRect clipRect: NSRect) { }
 
     var canvasAreaBackgroundColor: NSColor {
@@ -83,15 +88,7 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
 
     // MARK: Public
 
-    var canvases: [Canvas] = []
-
-    var showsAccessibilityOverlay: Bool = false
-
-    var selectedLayerName: String?
-
-    var cases: [CSCaseEntry] = []
-
-    var component: CSComponent?
+    var data: [Column] = []
 
     var onClickHeaderItem: ((Int) -> Void)?
 
@@ -141,8 +138,9 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
 
     // Call this after changing canvases to update the labels
     func updateHeader() {
-        let columns: [NSTableColumn] = canvases.map { canvas in
-            return NSTableColumn(title: canvas.computedName, width: CGFloat(canvas.width) + CanvasView.margin * 2)
+        let columns: [NSTableColumn] = data.map { column in
+            let canvasWidth = column.rows.compactMap({ $0.canvas?.computedWidth }).max() ?? 0
+            return NSTableColumn(title: column.title, width: canvasWidth + CanvasView.margin * 2)
         } + [extraColumn]
 
         if columns.count == tableColumns.count && zip(columns, tableColumns).allSatisfy({ a, b in
@@ -182,11 +180,11 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
     // MARK: Data Source
 
     func numberOfRows(in tableView: NSTableView) -> Int {
-        return cases.count
+        return data.map({ column in column.rows.count }).max() ?? 0
     }
 
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-        let heights = canvases.enumerated().map { index, _ in
+        let heights = data.enumerated().map { index, _ in
             return measureCellAt(row: row, column: index).height
         }
 
@@ -197,38 +195,19 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
 
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         guard
-            let column = tableColumn,
-            let columnIndex = tableColumns.firstIndex(of: column),
-            let component = self.component
+            let tableColumn = tableColumn,
+            let column = tableColumns.firstIndex(of: tableColumn)
         else { return NSView() }
 
-        let canvasIndex = columnIndex
-        let caseIndex = row
+        if column >= data.count { return nil }
 
-        guard caseIndex < cases.count && canvasIndex < canvases.count else { return NSView() }
+        let dataColumn = data[column]
 
-        let canvas = canvases[canvasIndex]
-        let `case` = cases[caseIndex]
+        if row >= dataColumn.rows.count { return nil }
 
-        let rootLayer = component.rootLayer
+        let parameters = dataColumn.rows[row]
 
-        let config = ComponentConfiguration(
-            component: component,
-            arguments: `case`.value.objectValue,
-            canvas: canvas
-        )
-
-        let parameters = CanvasView.Parameters(
-            canvas: canvas,
-            rootLayer: rootLayer,
-            config: config,
-            options: RenderOptions([
-                .showsAccessibilityOverlay(showsAccessibilityOverlay),
-                .renderCanvasShadow(true),
-                .selectedLayerName(selectedLayerName)
-                ]))
-
-        return getCachedCanvasViewAt(row: caseIndex, column: canvasIndex, parameters: parameters)
+        return getCachedCanvasViewAt(row: row, column: column, parameters: parameters)
     }
 
     // MARK: Private
@@ -251,31 +230,18 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
     }
 
     private func measureCellAt(row: Int, column: Int) -> NSSize {
+        let parameters = data[column].rows[row]
 
-        guard let component = component else { return .zero }
-
-        let canvasIndex = column
-        let caseIndex = row
-
-        guard caseIndex < cases.count && canvasIndex < canvases.count else { return .zero }
-
-        let canvas = canvases[canvasIndex]
-        let `case` = cases[caseIndex]
-
-        let rootLayer = component.rootLayer
-
-        let config = ComponentConfiguration(
-            component: component,
-            arguments: `case`.value.objectValue,
-            canvas: canvas)
+        guard let rootLayer = parameters.rootLayer, let config = parameters.config, let canvas = parameters.canvas else { return .zero }
 
         let configuredRootLayer = CanvasView.configureRoot(layer: rootLayer, with: config)
-        guard let layout = CanvasView.layoutRoot(canvas: canvas, configuredRootLayer: configuredRootLayer, config: config) else { return NSSize.zero }
+        guard let layout = CanvasView.layoutRoot(canvas: canvas, configuredRootLayer: configuredRootLayer, config: config) else { return .zero }
 
         layout.rootNode.free(recursive: true)
 
         return NSSize(
             width: CGFloat(canvas.width) + CanvasView.margin * 2,
-            height: layout.height + CanvasView.margin * 2)
+            height: layout.height + CanvasView.margin * 2
+        )
     }
 }

@@ -256,10 +256,37 @@ class ComponentEditorViewController: NSSplitViewController {
     private func updateCanvasCollectionView() {
         guard let component = component else { return }
 
+        // We need referential equality to be different
+        let rootLayerCopy = component.rootLayer.copy() as! CSLayer
+
+        let columns: [CanvasTableView.Column] = component.computedCanvases().map { canvas in
+            CanvasTableView.Column(
+                title: canvas.computedName,
+                rows: component.computedCases(for: canvas).map { `case` in
+                    let config = ComponentConfiguration(
+                        component: component,
+                        arguments: `case`.value.objectValue,
+                        canvas: canvas
+                    )
+
+                    return CanvasView.Parameters(
+                        canvas: canvas,
+                        rootLayer: rootLayerCopy,
+                        config: config,
+                        options: RenderOptions([
+                            .showsAccessibilityOverlay(showsAccessibilityOverlay),
+                            .renderCanvasShadow(true),
+                            .selectedLayerName(selectedLayerName)
+                        ])
+                    )
+                }
+            )
+        }
+
         canvasAreaView.parameters = CanvasAreaView.Parameters(
-            component: component,
+            columns: columns,
             showsAccessibilityOverlay: showsAccessibilityOverlay,
-            onSelectLayer: { self.onInspectLayer?($0) },
+//            onSelectLayer: { self.onInspectLayer?($0) },
             selectedLayerName: selectedLayerName)
     }
 
