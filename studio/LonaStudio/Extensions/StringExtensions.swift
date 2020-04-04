@@ -132,3 +132,30 @@ extension String: RawRepresentable {
 
     public var rawValue: String { return self }
 }
+
+extension String {
+    var camelCasedComponents: [String] {
+        var string = ""
+        var components: [String] = []
+
+        for index in indices {
+            // If we switch from uppercase to lowercase, append the previous word
+            if index > startIndex {
+                let prev = self.index(before: index)
+
+                if self[prev].isLowercase && self[index].isUppercase {
+                    components.append(string)
+                    string = ""
+                }
+            }
+
+            string += String(self[index])
+        }
+
+        if !string.isEmpty {
+            components.append(string)
+        }
+
+        return components
+    }
+}

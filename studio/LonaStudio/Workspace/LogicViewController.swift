@@ -52,6 +52,8 @@ class LogicViewController: NSViewController {
 
     public var onChangeRootNode: ((LGCSyntaxNode) -> Void)?
 
+    public var onInspect: ((InspectorView.Content?) -> Void)?
+
     // MARK: Private
 
     private let componentViewController = MainSectionViewController()
@@ -243,6 +245,8 @@ class LogicViewController: NSViewController {
             let componentDeclaration = LogicViewController.componentFunctionDeclaration(rootNode)
 
             if let declaration = componentDeclaration {
+//                Swift.print("OK", compiled.programNode.find(id: declaration.uuid))
+
                 elementEditor.rootItem = LogicViewController.componentElements(inFunctionDeclaration: declaration)
 
                 elementEditor.onRenameItem = { [unowned self] item, name in
@@ -265,6 +269,33 @@ class LogicViewController: NSViewController {
 
                         self.onChangeRootNode?(self.rootNode.replace(id: callID, with: newFunctionCall.node))
                     }
+                }
+
+                elementEditor.onSelectItem = { [unowned self] item in
+                    guard let item = item else {
+                        self.onInspect?(nil)
+                        return
+                    }
+
+                    guard case let .expression(.functionCallExpression(_, callee, arguments)) = self.rootNode.find(id: item.id) else { return }
+
+                    guard let (unification, substitution) = compiled.unification else { return }
+
+                    guard let type = unification.nodes[callee.uuid] else { return }
+
+                    let resolvedType = Unification.substitute(substitution, in: type)
+
+                    guard case let .fun(argTypes, _) = resolvedType else { return }
+
+                    let inspectables: [LogicInspectableExpression] = argTypes.compactMap { arg in
+                        guard let label = arg.label, label != "__name", label != "children" else { return nil }
+                        let value = arguments.firstArgument(labeled: label)?.expression
+                        return LogicInspectableExpression(name: label, type: arg.type, expression: value)
+                    }
+
+                    self.elementEditor.selectedItem = item
+
+                    self.onInspect?(.logicFunction(inspectables))
                 }
             }
 
@@ -536,6 +567,15 @@ extension LGCFunctionCallArgument {
         switch self {
         case .argument(id: _, label: _, expression: .literalExpression(id: _, literal: .array(id: _, value: let arrayLiteral))):
             return arrayLiteral
+        default:
+            return nil
+        }
+    }
+
+    public var expression: LGCExpression? {
+        switch self {
+        case .argument(id: _, label: _, expression: let expression):
+            return expression
         default:
             return nil
         }

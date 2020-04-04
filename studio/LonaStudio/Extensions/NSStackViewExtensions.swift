@@ -66,7 +66,7 @@ extension NSStackView {
         for view in views { addArrangedSubview(view, stretched: stretched) }
     }
 
-    func addArrangedSubview(_ view: NSView, stretched: Bool) {
+    func addArrangedSubview(_ view: NSView, stretched: Bool, padding: CGFloat = 0) {
         addArrangedSubview(view)
 
         if stretched {
@@ -74,7 +74,9 @@ extension NSStackView {
             case .horizontal:
                 view.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
             case .vertical:
-                view.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true
+                view.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: padding).isActive = true
+                view.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -padding).isActive = true
+//                view.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true
             @unknown default:
                 print("unknown orientation")
             }

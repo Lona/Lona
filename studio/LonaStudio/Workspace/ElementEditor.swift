@@ -66,6 +66,8 @@ public class ElementEditor: NSBox {
 
     public var onRenameItem: ((ElementItem, String) -> Void)?
 
+    public var onSelectItem: ((ElementItem?) -> Void)?
+
     public var selectedItem: ElementItem? {
         didSet {
             self.setSelectedItem(selectedItem, oldPath: oldValue)
@@ -146,7 +148,7 @@ public class ElementEditor: NSBox {
     private var parentForID: [UUID: ElementItem] = [:]
     private var automaticNameForID: [UUID: String] = [:]
 
-    private var outlineView = NSOutlineView(style: .singleColumn)
+    private var outlineView = ControlledOutlineView(style: .singleColumn)
     private var scrollView = NSScrollView(frame: .zero)
     private var headerView = LayerListHeader()
     private var dividerView = NSBox()
@@ -193,18 +195,11 @@ public class ElementEditor: NSBox {
         outlineView.sizeToFit()
 
         addSubview(scrollView)
-//
-//        outlineView.onSelect = { row in
-//            Swift.print("select", row)
-//
-//            let element = self.outlineView.item(atRow: row) as? ElementItem
-//
-//            self.selectedItem = element
-//        }
-//
-//        outlineView.onAction = { row in
-//            Swift.print("action", row)
-//        }
+
+        outlineView.onSelect = { [unowned self] row in
+            let element = self.outlineView.item(atRow: row) as? ElementItem
+            self.onSelectItem?(element)
+        }
     }
 
     private func setUpConstraints() {

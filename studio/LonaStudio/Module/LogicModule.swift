@@ -176,18 +176,18 @@ public class LogicModule {
             return cached
         }
 
-        guard let data = try? Data(contentsOf: url) else {
-            Swift.print("Failed to load \(url)")
-            return nil
-        }
-
         func getProgram() -> LGCProgram? {
             if url.pathExtension == "md" || url.pathExtension == "mdx" {
+                guard let data = try? Data(contentsOf: url) else {
+                    Swift.print("Failed to load \(url)")
+                    return nil
+                }
+
                 guard let mdxRoot = MarkdownFile.makeMDXRoot(data) else { return nil }
 
                 return mdxRoot.program()
             } else {
-                guard let syntaxNode = try? LogicDocument.read(from: data) else {
+                guard let syntaxNode = try? LogicDocument.read(from: url) else {
                     Swift.print("Failed to decode \(url)")
                     return nil
                 }

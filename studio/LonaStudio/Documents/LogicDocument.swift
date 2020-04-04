@@ -72,10 +72,10 @@ class LogicDocument: NSDocument {
     }
 
     override func read(from data: Data, ofType typeName: String) throws {
-        content = try LogicDocument.read(from: data)
+        content = try LogicDocument.read(from: fileURL!)
     }
 
-    public static func read(from data: Data) throws -> LGCSyntaxNode {
+    private static func read(from data: Data) throws -> LGCSyntaxNode {
         guard let jsonData = LogicFile.convert(data, kind: .logic, to: .json) else {
             throw NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotOpenFile, userInfo: nil)
         }
@@ -84,8 +84,27 @@ class LogicDocument: NSDocument {
 
         // Normalize the imported data
         // TODO: Figure out why multiple placeholders are loaded
-        return decoded.replace(id: UUID(), with: .literal(.boolean(id: UUID(), value: true)))
+        let content = decoded.replace(id: UUID(), with: .literal(.boolean(id: UUID(), value: true)))
+
+        return content
+
     }
+
+    public static func read(from url: URL) throws -> LGCSyntaxNode {
+        let data = try Data(contentsOf: url)
+
+        let content = try read(from: data)
+
+        if let cached = readCache[url], cached.isEquivalentTo(content) {
+            return cached
+        } else {
+            readCache[url] = content
+
+            return content
+        }
+    }
+
+    private static var readCache: [URL: LGCSyntaxNode] = [:]
 
     override func save(to url: URL, ofType typeName: String, for saveOperation: NSDocument.SaveOperationType, completionHandler: @escaping (Error?) -> Void) {
         let dataOnDisk = try? Data(contentsOf: url)

@@ -289,6 +289,7 @@ class WorkspaceViewController: NSSplitViewController {
     private lazy var inspectorViewController: NSViewController = {
         return NSViewController(view: inspectorView)
     }()
+
     private var inspectorViewVisible: Bool {
         get {
             return splitViewItems.contains(sidebarItem)
@@ -509,7 +510,7 @@ extension \(componentName) {
 
     private lazy var contentListItem = NSSplitViewItem(contentListWithViewController: fileNavigatorViewController)
     private lazy var mainItem = NSSplitViewItem(viewController: editorViewController)
-    private lazy var sidebarItem = NSSplitViewItem(viewController: inspectorViewController)
+    private lazy var sidebarItem = NSSplitViewItem(sidebarWithViewController: inspectorViewController)
 
     private func setUpLayout() {
         let newSplitView = SubtleSplitView()
@@ -530,8 +531,9 @@ extension \(componentName) {
 
         sidebarItem.collapseBehavior = .preferResizingSiblingsWithFixedSplitView
         sidebarItem.canCollapse = false
-        sidebarItem.minimumThickness = 280
-        sidebarItem.maximumThickness = 280
+        sidebarItem.minimumThickness = 240
+        sidebarItem.maximumThickness = 350
+        sidebarItem.holdingPriority = .defaultLow + 10
         addSplitViewItem(sidebarItem)
     }
 
@@ -727,6 +729,53 @@ extension \(componentName) {
                         self.update()
                     }
                 )
+            }
+            logicViewController.onInspect = { content in
+                self.inspectedContent = content
+                self.inspectorView.content = content
+            }
+            inspectorView.onChangeContent = { newContent, changeType in
+                if UndoManager.shared.isUndoing || UndoManager.shared.isRedoing {
+                    return
+                }
+
+                guard let oldContent = self.inspectedContent else { return }
+
+                switch (oldContent, newContent) {
+                case (.logicFunction(let oldItems), .logicFunction(let newItems)):
+
+                    // Perform update using indexes in case the id was changed
+                    guard let index = zip(oldItems, newItems).enumerated().first(where: {
+                        $0.element.0 != $0.element.1
+                    })?.offset else { return }
+
+                    let oldItem = oldItems[index]
+                    guard let oldExpression = oldItem.expression,
+                        let newExpression = newItems[index].expression else { return }
+
+                    let oldRootNode = document.content
+
+                    // TODO: Improve this. It may be conflicting with the textfield's built-in undo
+                    UndoManager.shared.run(
+                        name: "Edit \(oldItem.name)",
+                        execute: {[unowned self] isRedo in
+                            document.updateChangeCount(isRedo ? .changeRedone : .changeDone)
+                            document.content = oldRootNode.replace(id: oldExpression.uuid, with: newExpression.node)
+                            self.inspectedContent = .logicFunction(newItems)
+                            self.inspectorView.content = .logicFunction(newItems)
+                            self.update()
+                        },
+                        undo: {[unowned self] in
+                            document.updateChangeCount(.changeUndone)
+                            document.content = oldRootNode
+                            self.inspectedContent = .logicFunction(newItems)
+                            self.inspectorView.content = .logicFunction(newItems)
+                            self.update()
+                        }
+                    )
+                default:
+                    break
+                }
             }
         } else if let document = document as? JSONDocument {
             inspectorViewVisible = true
