@@ -80,6 +80,31 @@ public class LogicInspectorView: NSBox {
         for (index, item) in items.enumerated() {
             let itemView = LogicInspectorHeaderBlock(titleText: item.name, buttonType: item.expression == nil ? .plus : .minus)
 
+            itemView.onPressButton = { [unowned self] in
+                if item.expression == nil {
+                    let newItems = self.items.map({
+                        $0 == item
+                            ? LogicInspectableExpression(
+                                name: $0.name,
+                                type: $0.type,
+                                expression: .identifierExpression(
+                                    id: UUID(),
+                                    identifier: .init(id: UUID(), string: $0.name, isPlaceholder: true)
+                                )
+                            )
+                            : $0
+                    })
+                    self.onChangeItems?(newItems)
+                } else {
+                    let newItems = self.items.map({
+                        $0 == item
+                            ? LogicInspectableExpression(name: $0.name, type: $0.type, expression: nil)
+                            : $0
+                    })
+                    self.onChangeItems?(newItems)
+                }
+            }
+
             stackView.addArrangedSubview(itemView)
 
             if let expression = item.expression {
@@ -110,12 +135,19 @@ public class LogicInspectorView: NSBox {
 }
 
 private class DividerView: NSView {
+
+    let backgroundColor = NSColor.themed(
+        light: Colors.headerBackground.shadow(withLevel: 0.05)!,
+        dark: NSColor.black
+    )
+
     override var intrinsicContentSize: NSSize {
         return .init(width: NSView.noIntrinsicMetric, height: 1)
     }
 
     override func draw(_ dirtyRect: NSRect) {
-        NSColor.black.setFill()
+        backgroundColor.setFill()
+
         dirtyRect.fill()
     }
 }
@@ -162,9 +194,10 @@ public class LogicInspectorGenericValueBlock: NSBox {
         borderType = .noBorder
         contentViewMargins = .zero
 
-        if isDarkMode {
-            fillColor = NSColor.darkGray.shadow(withLevel: 0.9)!
-        }
+        fillColor = .themed(
+            light: Colors.headerBackground,
+            dark: NSColor.black.highlight(withLevel: 0.05)!
+        )
 
         logicEditorView.showsLineButtons = false
         logicEditorView.showsDropdown = false
@@ -266,6 +299,11 @@ public class LogicInspectorHeaderBlock: NSBox {
 
     public var buttonType: ButtonType?
 
+    public var onPressButton: (() -> Void)? {
+        get { buttonView.onClick }
+        set { buttonView.onClick = newValue }
+    }
+
     // MARK: Private
 
     private let titleView = NavigationItemView()
@@ -289,9 +327,10 @@ public class LogicInspectorHeaderBlock: NSBox {
         addSubview(titleView)
         addSubview(buttonView)
 
-        if isDarkMode {
-            fillColor = NSColor.darkGray.shadow(withLevel: 0.8)!
-        }
+        fillColor = .themed(
+            light: NSColor.white,
+            dark: NSColor.black.highlight(withLevel: 0.08)!
+        )
     }
 
     private func setUpConstraints() {

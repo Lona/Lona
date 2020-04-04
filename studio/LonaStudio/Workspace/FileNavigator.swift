@@ -130,7 +130,7 @@ class FileNavigator: NSBox {
         fillColor = Colors.headerBackground
 
         fileTree.showRootFile = true
-        fileTree.rowStyle = .rounded
+        fileTree.defaultRowStyle = .rounded
         fileTree.rowHeightForFile = { [unowned self] path in self.rowHeightForFile(atPath: path) }
         fileTree.rowViewForFile = { [unowned self] path, options in self.rowViewForFile(atPath: path, options: options) }
         fileTree.imageForFile = { [unowned self] path, size in self.imageForFile(atPath: path, size: size) }

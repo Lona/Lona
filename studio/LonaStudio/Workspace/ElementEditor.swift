@@ -340,6 +340,8 @@ extension ElementEditor {
         }
         suggestionWindow.onPressEnter = {
             onSubmit(suggestionWindow.suggestionText)
+            suggestionWindow.onPressEnter = nil
+            suggestionWindow.orderOut(nil)
         }
         suggestionWindow.onRequestHide = {
             suggestionWindow.onPressEnter = nil

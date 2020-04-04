@@ -250,25 +250,14 @@ class LogicViewController: NSViewController {
                 elementEditor.rootItem = LogicViewController.componentElements(inFunctionDeclaration: declaration)
 
                 elementEditor.onRenameItem = { [unowned self] item, name in
-                    guard case let .expression(.functionCallExpression(callID, expression, arguments)) = self.rootNode.find(id: item.id) else { return }
+                    guard case let .expression(expression) = self.rootNode.find(id: item.id) else { return }
 
-                    let newArgument: LGCFunctionCallArgument = .argument(
-                        id: UUID(),
+                    let newExpression = expression.withFunctionCallArgument(
                         label: "__name",
                         expression: .literalExpression(id: UUID(), literal: .string(id: UUID(), value: name))
                     )
 
-                    if let nameArgumentID = arguments.firstArgument(labeled: "__name")?.uuid {
-                        self.onChangeRootNode?(self.rootNode.replace(id: nameArgumentID, with: newArgument.node))
-                    } else {
-                        let newFunctionCall: LGCExpression = .functionCallExpression(
-                            id: UUID(),
-                            expression: expression,
-                            arguments: .next(newArgument, arguments)
-                        )
-
-                        self.onChangeRootNode?(self.rootNode.replace(id: callID, with: newFunctionCall.node))
-                    }
+                    self.onChangeRootNode?(self.rootNode.replace(id: item.id, with: newExpression.node))
                 }
 
                 elementEditor.onSelectItem = { [unowned self] item in
@@ -277,25 +266,11 @@ class LogicViewController: NSViewController {
                         return
                     }
 
-                    guard case let .expression(.functionCallExpression(_, callee, arguments)) = self.rootNode.find(id: item.id) else { return }
-
-                    guard let (unification, substitution) = compiled.unification else { return }
-
-                    guard let type = unification.nodes[callee.uuid] else { return }
-
-                    let resolvedType = Unification.substitute(substitution, in: type)
-
-                    guard case let .fun(argTypes, _) = resolvedType else { return }
-
-                    let inspectables: [LogicInspectableExpression] = argTypes.compactMap { arg in
-                        guard let label = arg.label, label != "__name", label != "children" else { return nil }
-                        let value = arguments.firstArgument(labeled: label)?.expression
-                        return LogicInspectableExpression(name: label, type: arg.type, expression: value)
-                    }
+                    guard case let .expression(expression) = self.rootNode.find(id: item.id) else { return }
 
                     self.elementEditor.selectedItem = item
 
-                    self.onInspect?(.logicFunction(inspectables))
+                    self.onInspect?(.logicFunctionCall(expression))
                 }
             }
 
@@ -549,6 +524,28 @@ extension LogicViewController {
     private static func componentElements(inFunctionDeclaration declaration: LGCDeclaration) -> ElementItem? {
         return declaration.returnStatement?.returnedExpression?.elementItem()
     }
+
+    public static func inspectableExpressions(expression: LGCExpression) -> [LogicInspectableExpression]? {
+        let compiled = LonaModule.current.logic.compiled
+
+        guard case let .functionCallExpression(_, callee, arguments) = expression else { return nil }
+
+        guard let (unification, substitution) = compiled.unification else { return nil }
+
+        guard let type = unification.nodes[callee.uuid] else { return nil }
+
+        let resolvedType = Unification.substitute(substitution, in: type)
+
+        guard case let .fun(argTypes, _) = resolvedType else { return nil }
+
+        let inspectables: [LogicInspectableExpression] = argTypes.compactMap { arg in
+            guard let label = arg.label, label != "__name", label != "children" else { return nil }
+            let value = arguments.firstArgument(labeled: label)?.expression
+            return LogicInspectableExpression(name: label, type: arg.type, expression: value)
+        }
+
+        return inspectables
+    }
 }
 
 // MARK: - LGCArgument
@@ -593,6 +590,17 @@ extension LGCList where T == LGCFunctionCallArgument {
             }
         }
     }
+
+    public func firstIndexOfArgument(labeled label: String) -> Int? {
+        return self.firstIndex { (arg) -> Bool in
+            switch arg {
+            case .argument(id: _, label: .some(label), expression: _):
+                return true
+            default:
+                return false
+            }
+        }
+    }
 }
 
 // MARK: - LGCExpression
@@ -620,6 +628,32 @@ extension LGCExpression {
         default:
             return nil
         }
+    }
+
+    public func withFunctionCallArgument(label: String, expression argumentExpression: LGCExpression?) -> LGCExpression {
+        guard case let .functionCallExpression(callID, callExpression, oldArguments) = self else {
+            fatalError("Not a function call: \(self)")
+        }
+
+        var newArguments: [LGCFunctionCallArgument] = .init(oldArguments)
+
+        if let matchingIndex = oldArguments.firstIndexOfArgument(labeled: label) {
+            if let argumentExpression = argumentExpression {
+                newArguments[matchingIndex] = .argument(id: UUID(), label: label, expression: argumentExpression)
+            } else {
+                newArguments.remove(at: matchingIndex)
+            }
+        } else if let argumentExpression = argumentExpression {
+            newArguments.append(.argument(id: UUID(), label: label, expression: argumentExpression))
+        }
+
+        let newFunctionCall: LGCExpression = .functionCallExpression(
+            id: callID,
+            expression: callExpression,
+            arguments: .init(newArguments)
+        )
+
+        return newFunctionCall.copy(deep: true)
     }
 }
 

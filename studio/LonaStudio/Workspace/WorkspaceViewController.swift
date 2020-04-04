@@ -510,7 +510,7 @@ extension \(componentName) {
 
     private lazy var contentListItem = NSSplitViewItem(contentListWithViewController: fileNavigatorViewController)
     private lazy var mainItem = NSSplitViewItem(viewController: editorViewController)
-    private lazy var sidebarItem = NSSplitViewItem(sidebarWithViewController: inspectorViewController)
+    private lazy var sidebarItem = NSSplitViewItem(viewController: inspectorViewController)
 
     private func setUpLayout() {
         let newSplitView = SubtleSplitView()
@@ -742,34 +742,24 @@ extension \(componentName) {
                 guard let oldContent = self.inspectedContent else { return }
 
                 switch (oldContent, newContent) {
-                case (.logicFunction(let oldItems), .logicFunction(let newItems)):
-
-                    // Perform update using indexes in case the id was changed
-                    guard let index = zip(oldItems, newItems).enumerated().first(where: {
-                        $0.element.0 != $0.element.1
-                    })?.offset else { return }
-
-                    let oldItem = oldItems[index]
-                    guard let oldExpression = oldItem.expression,
-                        let newExpression = newItems[index].expression else { return }
+                case (.logicFunctionCall(let oldFunction), .logicFunctionCall(let newFunction)):
 
                     let oldRootNode = document.content
 
-                    // TODO: Improve this. It may be conflicting with the textfield's built-in undo
                     UndoManager.shared.run(
-                        name: "Edit \(oldItem.name)",
+                        name: "Edit Component",
                         execute: {[unowned self] isRedo in
                             document.updateChangeCount(isRedo ? .changeRedone : .changeDone)
-                            document.content = oldRootNode.replace(id: oldExpression.uuid, with: newExpression.node)
-                            self.inspectedContent = .logicFunction(newItems)
-                            self.inspectorView.content = .logicFunction(newItems)
+                            document.content = oldRootNode.replace(id: oldFunction.uuid, with: newFunction.node)
+                            self.inspectedContent = .logicFunctionCall(newFunction)
+                            self.inspectorView.content = .logicFunctionCall(newFunction)
                             self.update()
                         },
                         undo: {[unowned self] in
                             document.updateChangeCount(.changeUndone)
                             document.content = oldRootNode
-                            self.inspectedContent = .logicFunction(newItems)
-                            self.inspectorView.content = .logicFunction(newItems)
+                            self.inspectedContent = .logicFunctionCall(oldFunction)
+                            self.inspectorView.content = .logicFunctionCall(oldFunction)
                             self.update()
                         }
                     )

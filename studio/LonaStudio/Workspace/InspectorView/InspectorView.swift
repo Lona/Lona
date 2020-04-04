@@ -23,7 +23,7 @@ final class InspectorView: NSView {
         case color(CSColor)
         case textStyle(CSTextStyle)
         case canvas(Canvas)
-        case logicFunction([LogicInspectableExpression])
+        case logicFunctionCall(LGCExpression)
 
         init?(_ color: CSColor?) {
             guard let color = color else { return nil }
@@ -103,8 +103,8 @@ final class InspectorView: NSView {
     private func setUpViews() {
         addSubview(themedSidebarView)
 
-        headerView.fillColor = isDarkMode ? NSColor.clear : headerView.fillColor
-        headerView.dividerColor = isDarkMode ? NSColor.clear : headerView.dividerColor
+        headerView.fillColor = .themed(light: Colors.headerBackground, dark: NSColor.clear)
+        headerView.dividerColor = .themed(light: Colors.headerBackground, dark: NSColor.clear)
 
         scrollView.hasVerticalScroller = true
         scrollView.autohidesScrollers = true
@@ -155,12 +155,24 @@ final class InspectorView: NSView {
         }
 
         switch content {
-        case .logicFunction(let items):
+        case .logicFunctionCall(let functionCall):
             innerContentView = logicInspectorView
+
+            let items = LogicViewController.inspectableExpressions(expression: functionCall) ?? []
+
             logicInspectorView.items = items
 
             logicInspectorView.onChangeItems = { [unowned self] newItems in
-                self.onChangeContent?(.logicFunction(newItems), InspectorView.ChangeType.full)
+
+                // Perform update using indexes in case the id was changed
+                guard let index = zip(items, newItems).enumerated().first(where: {
+                    $0.element.0 != $0.element.1
+                })?.offset else { return }
+
+                let newItem = newItems[index]
+                let newFunctionCall = functionCall.withFunctionCallArgument(label: newItem.name, expression: newItem.expression)
+
+                self.onChangeContent?(.logicFunctionCall(newFunctionCall), InspectorView.ChangeType.full)
             }
         case .layer(let content):
             headerView.titleText = content.name
