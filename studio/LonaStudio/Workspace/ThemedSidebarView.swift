@@ -79,7 +79,7 @@ private class BackgroundView: NSView {
     }
 
     var backgroundColor: NSColor = .themed(
-        light: Colors.headerBackground,
+        light: NSColor.white,
         dark: NSColor.black.highlight(withLevel: 0.08)!
     )
 

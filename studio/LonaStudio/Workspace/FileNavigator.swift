@@ -120,7 +120,7 @@ class FileNavigator: NSBox {
         return FileTree(rootPath: rootPath)
     }()
 
-    private var visualEffectView: NSVisualEffectView = .init()
+    private var themedSidebarView: ThemedSidebarView = .init()
 
     private func setUpViews() {
         boxType = .custom
@@ -146,13 +146,8 @@ class FileNavigator: NSBox {
         }
         fileTree.onPressDelete = { [unowned self] path in self.deleteAlertForFile(atPath: path) }
 
-        let parentView = isDarkMode ? visualEffectView : self
-
-        if parentView != self {
-            self.addSubview(parentView)
-        }
-
-        parentView.addSubview(fileTree)
+        addSubview(themedSidebarView)
+        themedSidebarView.addSubview(fileTree)
     }
 
     private func deleteAlertForFile(atPath path: String) {
@@ -296,23 +291,21 @@ class FileNavigator: NSBox {
 
     private func setUpConstraints() {
         translatesAutoresizingMaskIntoConstraints = false
-        visualEffectView.translatesAutoresizingMaskIntoConstraints = false
+        themedSidebarView.translatesAutoresizingMaskIntoConstraints = false
         fileTree.translatesAutoresizingMaskIntoConstraints = false
 
-        let parentView = isDarkMode ? visualEffectView : self
-
-        parentView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        parentView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        parentView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        parentView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        themedSidebarView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        themedSidebarView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        themedSidebarView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        themedSidebarView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
 
         fileTree.topAnchor.constraint(
-            equalTo: parentView.topAnchor,
+            equalTo: themedSidebarView.topAnchor,
             constant: EditorViewController.navigationBarHeight - 1
         ).isActive = true
-        fileTree.bottomAnchor.constraint(equalTo: parentView.bottomAnchor).isActive = true
-        fileTree.leadingAnchor.constraint(equalTo: parentView.leadingAnchor).isActive = true
-        fileTree.trailingAnchor.constraint(equalTo: parentView.trailingAnchor).isActive = true
+        fileTree.bottomAnchor.constraint(equalTo: themedSidebarView.bottomAnchor).isActive = true
+        fileTree.leadingAnchor.constraint(equalTo: themedSidebarView.leadingAnchor).isActive = true
+        fileTree.trailingAnchor.constraint(equalTo: themedSidebarView.trailingAnchor).isActive = true
     }
 
     private func update() {}
