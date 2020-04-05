@@ -48,4 +48,21 @@ extension Colors {
         light: Colors.contentBackground.withAlphaComponent(0.7),
         dark: NSColor.parse(css: "#9B9B9B")!
     )
+
+    // MARK: Vibrant
+
+    public static let vibrantDivider = NSColor.themed(
+        light: Colors.headerBackground.shadow(withLevel: 0.08)!,
+        dark: NSColor.black
+    )
+
+    public static let vibrantWell = NSColor.themed(
+        light: Colors.headerBackground.shadow(withLevel: 0.05)!,
+        dark: NSColor.black.highlight(withLevel: 0.05)!
+    )
+
+    public static let vibrantRaised = NSColor.themed(
+        light: Colors.headerBackground,
+        dark: NSColor.black.highlight(withLevel: 0.08)!
+    )
 }

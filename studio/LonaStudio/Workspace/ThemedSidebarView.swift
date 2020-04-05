@@ -31,10 +31,12 @@ public class ThemedSidebarView: NSView {
     public override func viewDidChangeEffectiveAppearance() {
         if isDarkMode {
             visualEffectView.state = .followsWindowActiveState
-            visualEffectView.appearance = NSAppearance(appearanceNamed: .vibrantDark, bundle: nil)
+            visualEffectView.material = .appearanceBased
         } else {
             visualEffectView.state = .inactive
-            visualEffectView.appearance = NSAppearance(appearanceNamed: .vibrantLight, bundle: nil)
+            if #available(OSX 10.14, *) {
+                visualEffectView.material = .contentBackground
+            }
         }
     }
 
@@ -72,19 +74,20 @@ public class ThemedSidebarView: NSView {
     }
 }
 
-private class BackgroundView: NSView {
+public class BackgroundView: NSView {
 
-    override var allowsVibrancy: Bool {
-        return isDarkMode
+    public var backgroundColor = Colors.vibrantRaised {
+        didSet {
+            needsDisplay = true
+        }
     }
 
-    var backgroundColor: NSColor = .themed(
-        light: NSColor.white,
-        dark: NSColor.black.highlight(withLevel: 0.08)!
-    )
-
-    override func draw(_ dirtyRect: NSRect) {
+    public override func draw(_ dirtyRect: NSRect) {
         backgroundColor.setFill()
         dirtyRect.fill()
+    }
+
+    public override var allowsVibrancy: Bool {
+        return isDarkMode
     }
 }

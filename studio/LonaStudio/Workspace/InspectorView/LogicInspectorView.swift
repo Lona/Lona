@@ -136,17 +136,12 @@ public class LogicInspectorView: NSBox {
 
 private class DividerView: NSView {
 
-    let backgroundColor = NSColor.themed(
-        light: Colors.headerBackground.shadow(withLevel: 0.05)!,
-        dark: NSColor.black
-    )
-
     override var intrinsicContentSize: NSSize {
         return .init(width: NSView.noIntrinsicMetric, height: 1)
     }
 
     override func draw(_ dirtyRect: NSRect) {
-        backgroundColor.setFill()
+        Colors.vibrantDivider.setFill()
 
         dirtyRect.fill()
     }
@@ -194,10 +189,7 @@ public class LogicInspectorGenericValueBlock: NSBox {
         borderType = .noBorder
         contentViewMargins = .zero
 
-        fillColor = .themed(
-            light: Colors.headerBackground,
-            dark: NSColor.black.highlight(withLevel: 0.05)!
-        )
+        fillColor = Colors.vibrantWell
 
         logicEditorView.showsLineButtons = false
         logicEditorView.showsDropdown = false
@@ -327,10 +319,7 @@ public class LogicInspectorHeaderBlock: NSBox {
         addSubview(titleView)
         addSubview(buttonView)
 
-        fillColor = .themed(
-            light: NSColor.white,
-            dark: NSColor.black.highlight(withLevel: 0.08)!
-        )
+        fillColor = Colors.vibrantRaised
     }
 
     private func setUpConstraints() {
