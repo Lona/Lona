@@ -303,7 +303,7 @@ public class LogicInspectorHeaderBlock: NSBox {
     private let titleTextStyle: TextStyle = .init(
         weight: .medium,
         size: NSFont.systemFontSize(for: .small),
-        color: .themed(color: NSColor.textColor.withAlphaComponent(0.8))
+        color: NSColor.themed(color: NSColor.textColor.withAlphaComponent(0.8))
     )
 
     private let buttonView = NavigationItemView()

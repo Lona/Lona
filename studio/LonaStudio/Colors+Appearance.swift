@@ -24,27 +24,27 @@ extension Colors {
 
     public static let divider = NSSplitView.defaultDividerColor
 
-    public static let dividerSubtle: NSColor = .themed(
+    public static let dividerSubtle = NSColor.themed(
         light: NSColor(named: "dividerSubtleColor")!,
         dark: Colors.divider
     )
 
-    public static let contentHeaderBackground: NSColor = .themed(
+    public static let contentHeaderBackground = NSColor.themed(
         light: .white,
         dark: .controlBackgroundColor
     )
 
-    public static let contentBackground: NSColor = .themed(
+    public static let contentBackground = NSColor.themed(
         light: .white,
         dark: .controlBackgroundColor
     )
 
-    public static let iconFill: NSColor = .themed(
+    public static let iconFill = NSColor.themed(
         light: NSColor.black.withAlphaComponent(0.3),
         dark: NSColor.parse(css: "#D8D8D8")!
     )
 
-    public static let iconFillAccent: NSColor = .themed(
+    public static let iconFillAccent = NSColor.themed(
         light: Colors.contentBackground.withAlphaComponent(0.7),
         dark: NSColor.parse(css: "#9B9B9B")!
     )

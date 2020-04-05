@@ -103,8 +103,8 @@ final class InspectorView: NSView {
     private func setUpViews() {
         addSubview(themedSidebarView)
 
-        headerView.fillColor = .themed(light: Colors.headerBackground, dark: NSColor.clear)
-        headerView.dividerColor = .themed(light: Colors.headerBackground, dark: NSColor.clear)
+        headerView.fillColor = NSColor.themed(light: Colors.headerBackground, dark: NSColor.clear)
+        headerView.dividerColor = NSColor.themed(light: Colors.headerBackground, dark: NSColor.clear)
 
         scrollView.hasVerticalScroller = true
         scrollView.autohidesScrollers = true
