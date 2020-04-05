@@ -347,7 +347,6 @@ class ListEditor<Element>: NSView where Element: DataNode {
         let toolbar = NSView()
         toolbar.translatesAutoresizingMaskIntoConstraints = false
         toolbar.backgroundFill = NSColor.controlBackgroundColor.cgColor
-        toolbar.addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
 
         return toolbar
     }

@@ -33,8 +33,6 @@ class CaseList {
 
     init(frame frameRect: NSRect) {
         editor = ListEditor<CSCase>(frame: frameRect, options: [
-            ListEditor.Option.backgroundColor(NSColor.white),
-            ListEditor.Option.drawsTopBorder(true),
             ListEditor.Option.onAddElement({ self.editor?.add(element: CSCase()) }),
             ListEditor.Option.onContextMenu({ item -> [NSMenuItem] in
                 return [

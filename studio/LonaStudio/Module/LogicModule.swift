@@ -20,6 +20,7 @@ public class LogicModule {
         public var programNode: LGCSyntaxNode
         public var program: LGCProgram
         public var errors: [LogicEditor.ElementError] = []
+        public var scope: Compiler.ScopeContext?
         public var unification: (Compiler.UnificationContext, Unification.Substitution)?
         public var evaluation: Compiler.EvaluationContext?
     }
@@ -63,9 +64,23 @@ public class LogicModule {
     private func compile() -> Compiled {
         let compiled = Compiled(program: self.program)
 
+        AppDelegate.debugController.rootNode = compiled.programNode
+
         let program: LGCSyntaxNode = compiled.programNode
 
-        let scopeContext = Compiler.scopeContext(program)
+        let scopeContext: Compiler.ScopeContext
+
+        switch Compiler.scopeContext(program) {
+        case .success(let value):
+            scopeContext = value
+        case .failure(let error):
+            Swift.print("ERROR: Compiler.scopeContext, \(error.localizedDescription)")
+            return compiled
+        }
+
+        compiled.scope = scopeContext
+
+        AppDelegate.debugController.scopeContext = scopeContext
 
         scopeContext.undefinedIdentifiers.forEach { errorId in
             if case .identifier(let identifierNode)? = program.find(id: errorId) {
@@ -89,13 +104,17 @@ public class LogicModule {
         let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
         let substitutionResult = Unification.unify(constraints: unificationContext.constraints)
 
+        AppDelegate.debugController.unificationContext = unificationContext
+
         guard let substitution = try? substitutionResult.get() else {
             return compiled
         }
 
+        AppDelegate.debugController.substitution = substitution
+
         compiled.unification = (unificationContext, substitution)
 
-        let evaluationContext = Compiler.evaluate(
+        let evaluationContext = Compiler.compile(
             program,
             rootNode: program,
             scopeContext: scopeContext,
@@ -106,6 +125,8 @@ public class LogicModule {
 
         switch evaluationContext {
         case .success(let evaluation):
+            AppDelegate.debugController.evaluationContext = evaluation
+
             compiled.evaluation = evaluation
 
             if evaluation.hasCycle {
@@ -142,9 +163,12 @@ public class LogicModule {
     }
 
     public static func updateFile(url: URL, value: LGCProgram) {
-        // TODO: Remove only those modules which rely on this url
-        compiledCache.removeAll(keepingCapacity: true)
-        programCache[url] = value
+        let cached = programCache[url]
+        if !cached.isEquivalentTo(value) {
+          // TODO: Remove only those modules which rely on this url
+          compiledCache.removeAll(keepingCapacity: true)
+          programCache[url] = value
+        }
     }
 
     public static func load(url: URL) -> LGCProgram? {
@@ -152,18 +176,18 @@ public class LogicModule {
             return cached
         }
 
-        guard let data = try? Data(contentsOf: url) else {
-            Swift.print("Failed to load \(url)")
-            return nil
-        }
-
         func getProgram() -> LGCProgram? {
             if url.pathExtension == "md" || url.pathExtension == "mdx" {
+                guard let data = try? Data(contentsOf: url) else {
+                    Swift.print("Failed to load \(url)")
+                    return nil
+                }
+
                 guard let mdxRoot = MarkdownFile.makeMDXRoot(data) else { return nil }
 
                 return mdxRoot.program()
             } else {
-                guard let syntaxNode = try? LogicDocument.read(from: data) else {
+                guard let syntaxNode = try? LogicDocument.read(from: url) else {
                     Swift.print("Failed to decode \(url)")
                     return nil
                 }
@@ -186,7 +210,7 @@ public class LogicModule {
 
     // MARK: Private Static
 
-    private static let logicRE = try! NSRegularExpression(pattern: #"\.(logic|tokens|md|mdx)$"#)
+    private static let logicRE = try! NSRegularExpression(pattern: #"\.(logic|tokens|md|mdx|cmp)$"#)
 
     private static let preludeProgram = LGCProgram(
         id: UUID(),
@@ -207,6 +231,14 @@ public class LogicModule {
                 .declaration(
                     id: UUID(),
                     content: .importDeclaration(id: UUID(), name: .init(id: UUID(), name: "TextStyle"))
+                ),
+                .declaration(
+                    id: UUID(),
+                    content: .importDeclaration(id: UUID(), name: .init(id: UUID(), name: "LonaDevice"))
+                ),
+                .declaration(
+                    id: UUID(),
+                    content: .importDeclaration(id: UUID(), name: .init(id: UUID(), name: "Element"))
                 )
             ]
         )
@@ -215,4 +247,49 @@ public class LogicModule {
     private static var compiledCache: [URL: Compiled] = [:]
 
     private static var programCache: [URL: LGCProgram] = [:]
+}
+
+// MARK: - Formatting
+
+extension LogicModule {
+    public var formattingOptions: LogicFormattingOptions {
+        let compiled = self.compiled
+
+        let formattingOptions: LogicFormattingOptions = LogicFormattingOptions(
+            style: .visual,
+            getError: ({ id in
+                if let error = compiled.errors.first(where: { $0.uuid == id }) {
+                    return error.message
+                } else {
+                    return nil
+                }
+            }),
+            getArguments: ({ id in
+                return StandardConfiguration.formatArguments(
+                    rootNode: compiled.programNode,
+                    id: id,
+                    unificationContext: compiled.unification?.0,
+                    substitution: compiled.unification?.1
+                )
+            }),
+            getColor: ({ id in
+                guard let evaluation = compiled.evaluation else { return nil }
+                guard let value = evaluation.evaluate(uuid: id) else { return nil }
+                guard let colorString = value.colorString, let color = NSColor.parse(css: colorString) else { return nil }
+                return (colorString, color)
+            }),
+            getTextStyle: ({ id in
+                guard let evaluation = compiled.evaluation else { return nil }
+                guard let value = evaluation.evaluate(uuid: id) else { return nil }
+                return value.textStyle
+            }),
+            getShadow: ({ id in
+                guard let evaluation = compiled.evaluation else { return nil }
+                guard let value = evaluation.evaluate(uuid: id) else { return nil }
+                return value.nsShadow
+            })
+        )
+
+        return formattingOptions
+    }
 }

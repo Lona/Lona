@@ -28,6 +28,13 @@ extension LogicInput {
             return expression(forTextStyleString: csValue.data.string ?? "default")
         case .named:
             return expression(forValue: csValue.unwrappedNamedType())
+        case .variant where csValue.type.isOptional():
+            switch csValue.tag() {
+            case "Some":
+                return expression(forValue: csValue.unwrapVariant()!)
+            default:
+                return .identifierExpression(id: UUID(), identifier: .init("none"))
+            }
         case .variant:
             return .identifierExpression(id: UUID(), identifier: LGCIdentifier(id: UUID(), string: csValue.tag()))
         default:
@@ -62,6 +69,10 @@ extension LogicInput {
             }
         case (.named, _):
             return makeValue(forType: csType.unwrappedNamedType(), node: node)
+        case (.variant, .expression(.identifierExpression(_, identifier: let identifier))) where csType.isOptional() && identifier.string == "none":
+            return CSUnitValue.wrap(in: csType, tagged: "None")
+        case (.variant, _) where csType.isOptional():
+            return makeValue(forType: csType.unwrapOptional()!, node: node).wrap(in: csType, tagged: "Some")
         case (.variant, _):
             switch node {
             case .expression(.identifierExpression(id: _, identifier: let identifier)):
@@ -76,7 +87,7 @@ extension LogicInput {
         }
     }
 
-    static func suggestions(forType csType: CSType, node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
+    static func suggestions(forType csType: CSType, node: LGCSyntaxNode, query: String) -> LogicEditor.ConfiguredSuggestions {
         switch csType {
         case .bool:
             return Bool.expressionSuggestions(node: node, query: query)
@@ -94,21 +105,33 @@ extension LogicInput {
             return suggestionsForTextStyle(isOptional: false, node: node, query: query)
         case .named:
             return suggestions(forType: csType.unwrappedNamedType(), node: node, query: query)
+        case .variant where csType.isOptional():
+            let valueSuggestions = suggestions(forType: csType.unwrapOptional()!, node: node, query: query)
+            let noneSuggestion = LogicSuggestionItem(
+                title: "No value",
+                category: LGCLiteral.Suggestion.categoryTitle,
+                node: .identifier(.init("none"))
+            )
+            let items = query.isEmpty ? [noneSuggestion] + valueSuggestions.items : valueSuggestions.items
+
+            return .init(items, windowConfiguration: .full, placeholderText: valueSuggestions.placeholderText)
         case .variant(let cases):
-            return cases.map { caseItem in
-                LogicSuggestionItem(
-                    title: caseItem.0,
-                    category: "Cases".uppercased(),
-                    node: .expression(
-                        .identifierExpression(
-                            id: UUID(),
-                            identifier: LGCIdentifier(id: UUID(), string: caseItem.0)
+            return .init(
+                cases.map { caseItem in
+                    LogicSuggestionItem(
+                        title: caseItem.0,
+                        category: "Cases".uppercased(),
+                        node: .expression(
+                            .identifierExpression(
+                                id: UUID(),
+                                identifier: LGCIdentifier(id: UUID(), string: caseItem.0)
+                            )
                         )
                     )
-                )
-            }.titleContains(prefix: query)
+                }.titleContains(prefix: query)
+            )
         default:
-            return []
+            return .init([])
         }
     }
 }

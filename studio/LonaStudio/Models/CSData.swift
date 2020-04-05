@@ -274,18 +274,10 @@ enum CSData: Equatable, CustomDebugStringConvertible {
             break
         }
 
-        let options: JSONSerialization.WritingOptions
-
-        if #available(OSX 10.13, *) {
-            options = [
-                JSONSerialization.WritingOptions.prettyPrinted,
-                JSONSerialization.WritingOptions.sortedKeys
-            ]
-        } else {
-            options = [
-                JSONSerialization.WritingOptions.prettyPrinted
-            ]
-        }
+        let options: JSONSerialization.WritingOptions = [
+            JSONSerialization.WritingOptions.prettyPrinted,
+            JSONSerialization.WritingOptions.sortedKeys
+        ]
 
         return try? JSONSerialization.data(withJSONObject: toAny(), options: options)
     }

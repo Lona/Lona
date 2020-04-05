@@ -201,62 +201,11 @@ class CoreComponentInspectorView: NSStackView {
     var fieldWidth: CGFloat { return halfFieldWidth * 2 + columnMargin }
 
     func renderLabel(withString value: String) -> NSTextField {
-        let label: NSTextField
-
-        if #available(OSX 10.12, *) {
-            label = NSTextField(labelWithString: value)
-        } else {
-            label = NSTextField()
-        }
+        let label = NSTextField(labelWithString: value)
 
         label.frame.origin.x = labelX
 
         return label
-    }
-
-    func renderRow(children: [NSView]) -> NSView {
-        let view = NSView(frame: NSRect(x: 0, y: 0, width: frame.size.width, height: 30))
-        view.useYogaLayout = true
-
-        children.forEach({ view.addSubview($0) })
-        children.forEach({ $0.frame.origin.y = view.frame.height / 2 - $0.frame.midY })
-
-        return view
-    }
-
-    func renderSectionHeader(withTitle value: String) -> NSView {
-        let view = NSView(frame: NSRect(x: 0, y: 0, width: frame.size.width, height: 30))
-        view.useYogaLayout = true
-
-        view.wantsLayer = true
-        view.layer = CALayer()
-//        view.layer?.backgroundColor = CGColor.white
-
-        let border = CALayer()
-        border.frame = CGRect(x: 0, y: 0, width: frame.size.width, height: 1)
-        border.backgroundColor = #colorLiteral(red: 0.8379167914, green: 0.8385563493, blue: 0.8380157948, alpha: 1).cgColor
-
-        view.layer?.addSublayer(border)
-
-        let label = renderLabel(withString: value)
-        label.centerWithin(view)
-        label.font = NSFont.boldSystemFont(ofSize: 12)
-        label.frame.size.width = frame.size.width
-
-        view.addSubview(label)
-
-        return view
-    }
-
-    func renderDivider() -> NSView {
-        let view = NSView(frame: NSRect(x: 0, y: 0, width: frame.size.width, height: 1))
-        view.useYogaLayout = true
-
-        view.wantsLayer = true
-        view.layer = CALayer()
-        view.layer?.backgroundColor = #colorLiteral(red: 0.8379167914, green: 0.8385563493, blue: 0.8380157948, alpha: 1).cgColor
-
-        return view
     }
 
     class BorderedStackView: NSStackView {
@@ -356,7 +305,6 @@ class CoreComponentInspectorView: NSStackView {
         let inner = NSView()
         inner.heightAnchor.constraint(equalToConstant: 30).isActive = true
         inner.wantsLayer = true
-        inner.layer?.backgroundColor = Colors.headerBackground.cgColor
         inner.layer?.borderWidth = 1
         inner.layer?.borderColor = Colors.dividerSubtle.cgColor
         inner.layer?.cornerRadius = 3
@@ -377,7 +325,6 @@ class CoreComponentInspectorView: NSStackView {
         ], orientation: .vertical)
         padding.spacing = 2
         padding.wantsLayer = true
-        padding.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
         padding.layer?.borderWidth = 1
         padding.layer?.borderColor = NSColor.controlBackgroundColor.cgColor
         padding.layer?.cornerRadius = 3
@@ -467,7 +414,6 @@ class CoreComponentInspectorView: NSStackView {
 
     func renderImageSection() -> DisclosureContentRow {
         imageView.constrain(aspectRatio: 1)
-        imageView.widthAnchor.constraint(equalToConstant: 240).isActive = true
 
         let imageSection = renderSection(title: "Image", views: [
             imageURLView,
@@ -495,7 +441,6 @@ class CoreComponentInspectorView: NSStackView {
     func renderAnimationSection() -> DisclosureContentRow {
         animationViewContainer.translatesAutoresizingMaskIntoConstraints = false
         animationViewContainer.constrain(aspectRatio: 1)
-        animationViewContainer.widthAnchor.constraint(equalToConstant: 240).isActive = true
 
         let button = Button(titleText: "Browse...")
         button.onPress = {
@@ -606,7 +551,7 @@ class CoreComponentInspectorView: NSStackView {
         ]
 
         for section in sections {
-            addArrangedSubview(section, stretched: true)
+            addArrangedSubview(section, stretched: true, padding: 20)
         }
     }
 

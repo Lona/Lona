@@ -7,6 +7,7 @@
 //
 
 import AppKit
+import NavigationComponents
 import Foundation
 
 class ComponentEditorViewController: NSSplitViewController {
@@ -147,26 +148,24 @@ class ComponentEditorViewController: NSSplitViewController {
             self.onMoveCanvas?(index, newIndex)
         }
 
-        let tabs = SegmentedControlField(
-            frame: NSRect(x: 0, y: 0, width: 500, height: 24),
-            values: [
-                UtilitiesView.Tab.parameters.rawValue,
-                UtilitiesView.Tab.logic.rawValue,
-                UtilitiesView.Tab.examples.rawValue,
-                UtilitiesView.Tab.types.rawValue,
-                UtilitiesView.Tab.details.rawValue
-            ])
-        tabs.segmentWidth = 97
-        tabs.useYogaLayout = true
-        tabs.segmentStyle = .roundRect
-        tabs.onChange = { value in
-            guard let tab = UtilitiesView.Tab(rawValue: value) else { return }
-            self.utilitiesView.currentTab = tab
-        }
-        tabs.value = UtilitiesView.Tab.parameters.rawValue
+        let tabItems = [
+            NavigationItem(id: UUID(), title: UtilitiesView.Tab.parameters.rawValue, icon: nil),
+            NavigationItem(id: UUID(), title: UtilitiesView.Tab.logic.rawValue, icon: nil),
+            NavigationItem(id: UUID(), title: UtilitiesView.Tab.examples.rawValue, icon: nil),
+            NavigationItem(id: UUID(), title: UtilitiesView.Tab.types.rawValue, icon: nil)
+        ]
 
-        let splitView = SectionSplitter()
-        splitView.addSubviewToDivider(tabs)
+        let tabView = NavigationItemStack(items: tabItems, activeItem: tabItems[0].id)
+        tabView.style = .tabs
+        tabView.onClickItem = { id in
+            guard let tabItem = tabItems.first(where: { $0.id == id }),
+                let tab = UtilitiesView.Tab(rawValue: tabItem.title) else { return }
+            self.utilitiesView.currentTab = tab
+            tabView.activeItem = id
+        }
+
+        let splitView = DividerSplitView()
+        splitView.dividerView = tabView
 
         splitView.isVertical = false
         splitView.dividerStyle = .thin
@@ -257,10 +256,37 @@ class ComponentEditorViewController: NSSplitViewController {
     private func updateCanvasCollectionView() {
         guard let component = component else { return }
 
+        // We need referential equality to be different
+        let rootLayerCopy = component.rootLayer.copy() as! CSLayer
+
+        let columns: [CanvasTableView.Column] = component.computedCanvases().map { canvas in
+            CanvasTableView.Column(
+                title: canvas.computedName,
+                rows: component.computedCases(for: canvas).map { `case` in
+                    let config = ComponentConfiguration(
+                        component: component,
+                        arguments: `case`.value.objectValue,
+                        canvas: canvas
+                    )
+
+                    return CanvasView.Parameters(
+                        canvas: canvas,
+                        rootLayer: rootLayerCopy,
+                        config: config,
+                        options: RenderOptions([
+                            .showsAccessibilityOverlay(showsAccessibilityOverlay),
+                            .renderCanvasShadow(true),
+                            .selectedLayerName(selectedLayerName)
+                        ])
+                    )
+                }
+            )
+        }
+
         canvasAreaView.parameters = CanvasAreaView.Parameters(
-            component: component,
+            columns: columns,
             showsAccessibilityOverlay: showsAccessibilityOverlay,
-            onSelectLayer: { self.onInspectLayer?($0) },
+//            onSelectLayer: { self.onInspectLayer?($0) },
             selectedLayerName: selectedLayerName)
     }
 
@@ -279,4 +305,33 @@ class ComponentEditorViewController: NSSplitViewController {
         self.onChangeUtilitiesViewVisible?(self.bottomItem.isCollapsed)
         splitView.needsDisplay = true
     }
+}
+
+extension NavigationItemStack.Style {
+    public static var tabs: NavigationItemStack.Style = {
+        var style = NavigationItemStack.Style.segmentedControl
+
+        style.dividerPadding = 8
+
+        return style
+    }()
+
+    public static var roundTabs: NavigationItemStack.Style = {
+        let cornerRadius: CGFloat = 13
+        let padding = NSEdgeInsets(top: 4, left: 10, bottom: 4, right: 10)
+
+        var style = NavigationItemStack.Style.segmentedControl
+
+        style.dividerPadding = 8
+
+        style.itemStyle.backgroundColor = NSColor.textColor.withAlphaComponent(0.03)
+        style.itemStyle.cornerRadius = cornerRadius
+        style.itemStyle.padding = padding
+
+        style.activeItemStyle.backgroundColor = NSColor.textColor.withAlphaComponent(0.08)
+        style.activeItemStyle.cornerRadius = cornerRadius
+        style.activeItemStyle.padding = padding
+
+        return style
+    }()
 }

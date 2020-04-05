@@ -1,0 +1,52 @@
+import Prelude
+
+import Color
+
+import TextStyle
+
+enum ElementParameter {
+  case boolean(String, Boolean)
+  case number(String, Number)
+  case string(String, String)
+  case color(String, Color)
+  case textStyle(String, TextStyle)
+  case elements(String, Array<Element>)
+}
+
+struct Padding {
+  let top: Number = 0
+  let right: Number = 0
+  let bottom: Number = 0
+  let left: Number = 0
+}
+
+extension Padding {
+  func size(value: Number) -> Padding {
+    return Padding(top: value, right: value, bottom: value, left: value)
+  }
+}
+
+struct Element {
+  let type: String = ""
+  let parameters: Array<ElementParameter> = [
+
+  ]
+}
+
+func View(__name: String, backgroundColor: Color, padding: Padding, children: Array<Element>) -> Element {
+  return Element(type: "LonaView", parameters: [
+    ElementParameter.color("backgroundColor", backgroundColor),
+    ElementParameter.number("paddingTop", Padding.top(padding)),
+    ElementParameter.number("paddingRight", Padding.right(padding)),
+    ElementParameter.number("paddingBottom", Padding.bottom(padding)),
+    ElementParameter.number("paddingLeft", Padding.left(padding)),
+    ElementParameter.elements("children", children)
+  ])
+}
+
+func Text(__name: String, value: String, style: TextStyle) -> Element {
+  return Element(type: "LonaText", parameters: [
+    ElementParameter.string("value", value),
+    ElementParameter.textStyle("style", style)
+  ])
+}

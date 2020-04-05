@@ -143,7 +143,6 @@ class UtilitiesView: NSBox {
         case .types:
             if typesListEditorView == nil {
                 typesListEditorView = LogicEditor.makeTypeEditorView()
-                typesListEditorView?.addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
                 typesListEditorView?.fillColor = Colors.contentBackground
 
                 typesListEditorView?.onChangeRootNode = { [unowned self] rootNode in
@@ -185,8 +184,8 @@ extension UtilitiesView {
                 switch statement {
                 case .placeholder:
                     return nil
-                case .declaration(let declaration):
-                    return declaration.content.csType!
+                case .declaration(_, let content):
+                    return content.csType!
                 default:
                     fatalError("Not supported")
                 }

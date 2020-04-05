@@ -11,10 +11,10 @@ import FileTree
 import Foundation
 import Logic
 
-private class FileTreeCellView: NSTableCellView, NSTextFieldDelegate {
+public class FileTreeCellView: NSTableCellView, NSTextFieldDelegate {
     public var onChangeBackgroundStyle: ((NSView.BackgroundStyle) -> Void)?
 
-    override var backgroundStyle: NSView.BackgroundStyle {
+    public override var backgroundStyle: NSView.BackgroundStyle {
         didSet { onChangeBackgroundStyle?(backgroundStyle) }
     }
 
@@ -110,6 +110,8 @@ class FileNavigator: NSBox {
 
     public var performCreateComponent: ((FileTree.Path) -> Bool)?
 
+    public var performCreateLegacyComponent: ((FileTree.Path) -> Bool)?
+
     public var performCreatePage: ((String, FileTree.Path) -> Void)?
 
     // MARK: - Private
@@ -117,6 +119,8 @@ class FileNavigator: NSBox {
     private lazy var fileTree: FileTree = {
         return FileTree(rootPath: rootPath)
     }()
+
+    private var themedSidebarView: ThemedSidebarView = .init()
 
     private func setUpViews() {
         boxType = .custom
@@ -126,6 +130,7 @@ class FileNavigator: NSBox {
         fillColor = Colors.headerBackground
 
         fileTree.showRootFile = true
+        fileTree.defaultRowStyle = .rounded
         fileTree.rowHeightForFile = { [unowned self] path in self.rowHeightForFile(atPath: path) }
         fileTree.rowViewForFile = { [unowned self] path, options in self.rowViewForFile(atPath: path, options: options) }
         fileTree.imageForFile = { [unowned self] path, size in self.imageForFile(atPath: path, size: size) }
@@ -141,7 +146,8 @@ class FileNavigator: NSBox {
         }
         fileTree.onPressDelete = { [unowned self] path in self.deleteAlertForFile(atPath: path) }
 
-        addSubview(fileTree)
+        addSubview(themedSidebarView)
+        themedSidebarView.addSubview(fileTree)
     }
 
     private func deleteAlertForFile(atPath path: String) {
@@ -193,8 +199,16 @@ class FileNavigator: NSBox {
                     guard let newFileName = Alert.runTextInputAlert(
                         messageText: "Enter a new component name",
                         placeholderText: "Component name") else { return }
-                    let newPath = FileNavigator.normalizeInputPath(parentPath: path, filename: newFileName, withExtension: "component")
+                    let newPath = FileNavigator.normalizeInputPath(parentPath: path, filename: newFileName, withExtension: "cmp")
                     _ = self.performCreateComponent?(newPath)
+                }))
+
+                menu.addItem(NSMenuItem(title: "New Flexbox Component", onClick: { [unowned self] in
+                    guard let newFileName = Alert.runTextInputAlert(
+                        messageText: "Enter a new component name",
+                        placeholderText: "Component name") else { return }
+                    let newPath = FileNavigator.normalizeInputPath(parentPath: path, filename: newFileName, withExtension: "component")
+                    _ = self.performCreateLegacyComponent?(newPath)
                 }))
             }
 
@@ -277,12 +291,21 @@ class FileNavigator: NSBox {
 
     private func setUpConstraints() {
         translatesAutoresizingMaskIntoConstraints = false
+        themedSidebarView.translatesAutoresizingMaskIntoConstraints = false
         fileTree.translatesAutoresizingMaskIntoConstraints = false
 
-        fileTree.topAnchor.constraint(equalTo: topAnchor, constant: 24).isActive = true
-        fileTree.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        fileTree.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        fileTree.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        themedSidebarView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        themedSidebarView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        themedSidebarView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        themedSidebarView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+
+        fileTree.topAnchor.constraint(
+            equalTo: themedSidebarView.topAnchor,
+            constant: EditorViewController.navigationBarHeight - 1
+        ).isActive = true
+        fileTree.bottomAnchor.constraint(equalTo: themedSidebarView.bottomAnchor).isActive = true
+        fileTree.leadingAnchor.constraint(equalTo: themedSidebarView.leadingAnchor).isActive = true
+        fileTree.trailingAnchor.constraint(equalTo: themedSidebarView.trailingAnchor).isActive = true
     }
 
     private func update() {}
@@ -332,7 +355,7 @@ class FileNavigator: NSBox {
 
         let url = URL(fileURLWithPath: path)
         switch url.pathExtension {
-        case "component", "logic", "tokens", "md":
+        case "component", "logic", "tokens", "md", "cmp":
             return url.deletingPathExtension().lastPathComponent
         default:
             return url.lastPathComponent
@@ -340,7 +363,7 @@ class FileNavigator: NSBox {
     }
 
     private func rowHeightForFile(atPath path: String) -> CGFloat {
-        return path == rootPath ? 38 : fileTree.defaultRowHeight
+        return path == rootPath ? EditorViewController.navigationBarHeight : fileTree.defaultRowHeight
     }
 
     private func rowViewForFile(atPath path: String, options: FileTree.RowViewOptions) -> NSView {
@@ -369,7 +392,7 @@ class FileNavigator: NSBox {
             } else {
                 iconView = FolderIcon()
             }
-        } else if path.hasSuffix(".component") || path.hasSuffix(".logic") || path.hasSuffix(".tokens") {
+        } else if path.hasSuffix(".component") || path.hasSuffix(".logic") || path.hasSuffix(".tokens") || path.hasSuffix(".cmp") {
             let imageView = NSImageView(image: imageForFile(atPath: path, size: thumbnailSize) )
             imageView.imageScaling = .scaleProportionallyUpOrDown
             iconView = imageView

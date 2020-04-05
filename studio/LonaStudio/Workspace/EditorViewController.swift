@@ -7,7 +7,7 @@
 //
 
 import AppKit
-import BreadcrumbBar
+import NavigationComponents
 import Foundation
 
 // MARK: - EditorViewController
@@ -44,14 +44,14 @@ class EditorViewController: NSViewController {
         }
     }
 
-    public var breadcrumbs: [Breadcrumb] {
-        get { return navigationBar.breadcrumbs }
-        set { navigationBar.breadcrumbs = newValue }
+    public var breadcrumbs: [NavigationItem] {
+        get { return navigationBar.items }
+        set { navigationBar.items = newValue }
     }
 
     public var onClickBreadcrumb: ((UUID) -> Void)? {
-        get { return navigationBar.onClickBreadcrumb }
-        set { navigationBar.onClickBreadcrumb = newValue }
+        get { return navigationBar.onClickItem }
+        set { navigationBar.onClickItem = newValue }
     }
 
     public var onClickPublish: (() -> Void)? {
@@ -85,6 +85,8 @@ class EditorViewController: NSViewController {
         }
     }
 
+    public static var navigationBarHeight: CGFloat = 38
+
     // MARK: Private
 
     private let contentContainerView = NSBox(frame: .zero)
@@ -93,7 +95,7 @@ class EditorViewController: NSViewController {
 
     private let dividerView = NSBox()
 
-    private let publishButton = BreadcrumbItem(titleText: "Publish", icon: nil, isEnabled: true)
+    private let publishButton = NavigationItemView(titleText: "Publish", icon: nil, isEnabled: true)
 
     private let accessoryButtonContainer = NSStackView()
 
@@ -165,7 +167,7 @@ class EditorViewController: NSViewController {
         navigationBar.topAnchor.constraint(equalTo: contentContainerView.topAnchor).isActive = true
         navigationBar.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 8).isActive = true
         navigationBar.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor, constant: -8).isActive = true
-        navigationBar.heightAnchor.constraint(equalToConstant: 38).isActive = true
+        navigationBar.heightAnchor.constraint(equalToConstant: EditorViewController.navigationBarHeight).isActive = true
 
         dividerView.topAnchor.constraint(equalTo: navigationBar.bottomAnchor).isActive = true
 

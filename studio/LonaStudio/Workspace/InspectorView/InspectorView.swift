@@ -9,8 +9,9 @@
 import Cocoa
 import Colors
 import ColorPicker
+import Logic
 
-final class InspectorView: NSBox {
+final class InspectorView: NSView {
 
     enum ChangeType {
         case canvas
@@ -22,6 +23,7 @@ final class InspectorView: NSBox {
         case color(CSColor)
         case textStyle(CSTextStyle)
         case canvas(Canvas)
+        case logicFunctionCall(LGCExpression)
 
         init?(_ color: CSColor?) {
             guard let color = color else { return nil }
@@ -61,82 +63,122 @@ final class InspectorView: NSBox {
 
     // MARK: Private
 
+    private let themedSidebarView = ThemedSidebarView()
+
     private let headerView = EditorHeader(
         titleText: "Parameters",
         subtitleText: "",
         dividerColor: .clear,
-        fileIcon: nil)
+        fileIcon: nil
+    )
 
-    private let scrollView = NSScrollView(frame: .zero)
+    private let scrollView = FlippedScrollView()
 
-    // Flip the content within the scrollview so it starts at the top
-    private let flippedView = FlippedView()
+    private var innerContentConstraints: [NSLayoutConstraint] = []
+
+    private var innerContentView: NSView? {
+        didSet {
+            if innerContentView != oldValue {
+                oldValue?.removeFromSuperview()
+                scrollView.documentView = nil
+                innerContentConstraints.forEach { $0.isActive = false }
+
+                if let innerContentView = innerContentView {
+                    innerContentView.translatesAutoresizingMaskIntoConstraints = false
+
+                    scrollView.addSubview(innerContentView)
+                    scrollView.documentView = innerContentView
+
+                    innerContentConstraints = [
+                        innerContentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+                        innerContentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor)
+                    ]
+
+                    NSLayoutConstraint.activate(innerContentConstraints)
+                }
+            }
+        }
+    }
 
     private func setUpViews() {
-        boxType = .custom
-        borderType = .noBorder
-        contentViewMargins = .zero
+        addSubview(themedSidebarView)
 
-        addSubview(headerView)
+        headerView.fillColor = NSColor.themed(light: Colors.headerBackground, dark: NSColor.clear)
+        headerView.dividerColor = NSColor.themed(light: Colors.headerBackground, dark: NSColor.clear)
 
         scrollView.hasVerticalScroller = true
         scrollView.autohidesScrollers = true
         scrollView.drawsBackground = false
         scrollView.automaticallyAdjustsContentInsets = false
-        scrollView.contentInsets = NSEdgeInsets(top: 0, left: 20, bottom: 0, right: 0)
-        scrollView.addSubview(flippedView)
-        scrollView.documentView = flippedView
 
-        addSubview(scrollView)
+        themedSidebarView.addSubview(headerView)
+        themedSidebarView.addSubview(scrollView)
     }
 
     private func setUpConstraints() {
         translatesAutoresizingMaskIntoConstraints = false
+        themedSidebarView.translatesAutoresizingMaskIntoConstraints = false
         headerView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-        flippedView.translatesAutoresizingMaskIntoConstraints = false
 
-        // The layout gets completely messed up without this
-        flippedView.wantsLayer = true
+        themedSidebarView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        themedSidebarView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        themedSidebarView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        themedSidebarView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
 
-        headerView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        headerView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        headerView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        headerView.topAnchor.constraint(equalTo: themedSidebarView.topAnchor).isActive = true
+        headerView.leadingAnchor.constraint(equalTo: themedSidebarView.leadingAnchor).isActive = true
+        headerView.trailingAnchor.constraint(equalTo: themedSidebarView.trailingAnchor).isActive = true
 
         scrollView.topAnchor.constraint(equalTo: headerView.bottomAnchor).isActive = true
 
-        scrollView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        scrollView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        scrollView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-
-        flippedView.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
-        flippedView.leftAnchor.constraint(equalTo: scrollView.leftAnchor, constant: 20).isActive = true
-        flippedView.rightAnchor.constraint(equalTo: scrollView.rightAnchor, constant: -20).isActive = true
-
-//        flippedView.leftAnchor.constraint(equalTo: scrollView.contentView.leftAnchor, constant: 20).isActive = true
-//        flippedView.rightAnchor.constraint(equalTo: scrollView.contentView.rightAnchor, constant: -20).isActive = true
+        scrollView.bottomAnchor.constraint(equalTo: themedSidebarView.bottomAnchor).isActive = true
+        scrollView.leadingAnchor.constraint(equalTo: themedSidebarView.leadingAnchor).isActive = true
+        scrollView.trailingAnchor.constraint(equalTo: themedSidebarView.trailingAnchor).isActive = true
     }
 
-    private var inspectorView = NSView()
+    private lazy var logicInspectorView = LogicInspectorView()
+
+    private lazy var colorInspectorView = ColorInspector()
+
+    private lazy var textStyleInspector = TextStyleInspector()
+
+    private lazy var coreComponentInspectorView = CoreComponentInspectorView(layer: .init())
+
+    private lazy var canvasInspectorView = CanvasInspector()
 
     func update() {
         guard let content = content else {
             headerView.titleText = ""
             headerView.subtitleText = ""
-
-            inspectorView.removeFromSuperview()
-            inspectorView = NSView()
             return
         }
 
         switch content {
+        case .logicFunctionCall(let functionCall):
+            innerContentView = logicInspectorView
+
+            let items = LogicViewController.inspectableExpressions(expression: functionCall) ?? []
+
+            logicInspectorView.items = items
+
+            logicInspectorView.onChangeItems = { [unowned self] newItems in
+
+                // Perform update using indexes in case the id was changed
+                guard let index = zip(items, newItems).enumerated().first(where: {
+                    $0.element.0 != $0.element.1
+                })?.offset else { return }
+
+                let newItem = newItems[index]
+                let newFunctionCall = functionCall.withFunctionCallArgument(label: newItem.name, expression: newItem.expression)
+
+                self.onChangeContent?(.logicFunctionCall(newFunctionCall), InspectorView.ChangeType.full)
+            }
         case .layer(let content):
             headerView.titleText = content.name
             headerView.subtitleText = " — \(content.type.displayName)"
 
             if case CSLayer.LayerType.custom = content.type, let componentLayer = content as? CSComponentLayer {
-                inspectorView.removeFromSuperview()
-
                 let componentInspectorView = CustomComponentInspectorView()
                 componentInspectorView.layerName = componentLayer.name
                 componentInspectorView.parameters = componentLayer.component.parameters
@@ -150,42 +192,27 @@ final class InspectorView: NSBox {
                     componentInspectorView.parameters = componentLayer.component.parameters
                     componentInspectorView.parameterValues = componentLayer.parameters
                 }
-                inspectorView = componentInspectorView
+                innerContentView = componentInspectorView
             } else {
-                if let layerInspector = flippedView.subviews.first as? CoreComponentInspectorView {
+                if let layerInspector = innerContentView as? CoreComponentInspectorView {
                     layerInspector.csLayer = content
                     layerInspector.onChangeLayer = {[unowned self] csLayer in
                         self.onChangeContent?(.layer(csLayer), .canvas)
                     }
-
                 } else {
-                    inspectorView.removeFromSuperview()
-
                     let layerInspector = CoreComponentInspectorView(layer: content)
                     layerInspector.onChangeLayer = {[unowned self] csLayer in
                         self.onChangeContent?(.layer(csLayer), .canvas)
                     }
-
-                    inspectorView = layerInspector
+                    innerContentView = layerInspector
                 }
             }
-
-            flippedView.addSubview(inspectorView)
-
-            inspectorView.widthAnchor.constraint(equalTo: flippedView.widthAnchor).isActive = true
-            inspectorView.heightAnchor.constraint(equalTo: flippedView.heightAnchor).isActive = true
-
         case .color(let color):
-            let alreadyShowingColorInspector = inspectorView is ColorInspector
-
-            if !alreadyShowingColorInspector {
-                inspectorView.removeFromSuperview()
-            }
+            innerContentView = colorInspectorView
+            let editor = colorInspectorView
 
             headerView.titleText = color.name
             headerView.subtitleText = " — Color"
-
-            let editor = (inspectorView as? ColorInspector) ?? ColorInspector()
 
             editor.idText = color.id
             editor.nameText = color.name
@@ -231,29 +258,12 @@ final class InspectorView: NSBox {
                 updated.comment = value.isEmpty ? nil : value
                 self.onChangeContent?(.color(updated), .canvas)
             }
-
-            if !alreadyShowingColorInspector {
-                inspectorView = editor
-
-                flippedView.addSubview(inspectorView)
-
-                inspectorView.widthAnchor.constraint(equalTo: flippedView.widthAnchor).isActive = true
-                inspectorView.heightAnchor.constraint(equalTo: flippedView.heightAnchor).isActive = true
-                inspectorView.topAnchor.constraint(equalTo: flippedView.topAnchor).isActive = true
-                inspectorView.bottomAnchor.constraint(equalTo: flippedView.bottomAnchor).isActive = true
-            }
-
         case .textStyle(let textStyle):
-            let alreadyShowingTextStyleInspector = inspectorView is TextStyleInspector
-
-            if !alreadyShowingTextStyleInspector {
-                inspectorView.removeFromSuperview()
-            }
+            innerContentView = textStyleInspector
+            let editor = textStyleInspector
 
             headerView.titleText = textStyle.name
             headerView.subtitleText = " — Text Style"
-
-            let editor = (inspectorView as? TextStyleInspector) ?? TextStyleInspector()
 
             editor.idText = textStyle.id
             editor.nameText = textStyle.name
@@ -325,25 +335,9 @@ final class InspectorView: NSBox {
                 updated.letterSpacing = Double(value)
                 self.onChangeContent?(.textStyle(updated), .canvas)
             }
-
-            if !alreadyShowingTextStyleInspector {
-                inspectorView = editor
-
-                flippedView.addSubview(inspectorView)
-
-                inspectorView.widthAnchor.constraint(equalTo: flippedView.widthAnchor).isActive = true
-                inspectorView.heightAnchor.constraint(equalTo: flippedView.heightAnchor).isActive = true
-                inspectorView.topAnchor.constraint(equalTo: flippedView.topAnchor).isActive = true
-                inspectorView.bottomAnchor.constraint(equalTo: flippedView.bottomAnchor).isActive = true
-            }
         case .canvas(let canvas):
-            let alreadyShowing = inspectorView is CanvasInspector
-
-            if !alreadyShowing {
-                inspectorView.removeFromSuperview()
-            }
-
-            let canvasInspector = (inspectorView as? CanvasInspector) ?? CanvasInspector()
+            innerContentView = canvasInspectorView
+            let canvasInspector = canvasInspectorView
 
             let devicePresets = ["Custom"] + Canvas.devicePresets.map { $0.name }
 
@@ -455,15 +449,6 @@ final class InspectorView: NSBox {
 
                 self.onChangeContent?(.canvas(newCanvas), .canvas)
             }
-
-            inspectorView = canvasInspector
-
-            flippedView.addSubview(inspectorView)
-
-            inspectorView.leadingAnchor.constraint(equalTo: flippedView.leadingAnchor).isActive = true
-            inspectorView.trailingAnchor.constraint(equalTo: flippedView.trailingAnchor).isActive = true
-            inspectorView.topAnchor.constraint(equalTo: flippedView.topAnchor).isActive = true
-            inspectorView.bottomAnchor.constraint(equalTo: flippedView.bottomAnchor).isActive = true
         }
     }
 }

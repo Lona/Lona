@@ -61,7 +61,6 @@ class ParameterListEditorView: NSView {
 
     private func setUpViews() {
         addSubview(logicEditor)
-        addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
 
         logicEditor.onChangeRootNode = { [unowned self] rootNode in
             self.onChange(ParameterListEditorView.makeParameterList(from: rootNode, types: self.types))
@@ -95,15 +94,15 @@ extension ParameterListEditorView {
                 switch param {
                 case .placeholder:
                     return nil
-                case .parameter(let value):
-                    guard let csType = value.annotation.csType(environmentTypes: types) else { return nil }
+                case .parameter(_, let localName, let annotation, let defaultValue, _):
+                    guard let csType = annotation.csType(environmentTypes: types) else { return nil }
 
-                    switch value.defaultValue {
+                    switch defaultValue {
                     case .none:
-                        return CSParameter(name: value.localName.name, type: csType)
+                        return CSParameter(name: localName.name, type: csType)
                     case .value(id: _, expression: let expression):
                         return CSParameter(
-                            name: value.localName.name,
+                            name: localName.name,
                             type: csType,
                             defaultValue: LogicInput.makeValue(forType: csType, node: .expression(expression)))
                     }

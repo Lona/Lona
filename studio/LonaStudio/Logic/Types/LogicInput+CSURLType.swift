@@ -37,9 +37,9 @@ extension LogicInput {
 
     private static let sizeRE = try! NSRegularExpression(pattern: #"(\d+)\s*[ x]?\s*(\d+)?"#)
 
-    static func suggestionsForURL(isOptional: Bool, isVector: Bool, node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
+    static func suggestionsForURL(isOptional: Bool, isVector: Bool, node: LGCSyntaxNode, query: String) -> LogicEditor.ConfiguredSuggestions {
         let noneSuggestion = LogicSuggestionItem(
-            title: "None",
+            title: "No value",
             category: LGCExpression.Suggestion.variablesCategoryTitle,
             node: .expression(
                 .identifierExpression(
@@ -143,9 +143,11 @@ extension LogicInput {
             )
         )
 
-        return (isOptional && (query.isEmpty || "none".contains(lowercasedQuery)) ? [noneSuggestion] : []) + assetSuggestions.titleContains(prefix: query) +
+        let allSuggestions = (isOptional && (query.isEmpty || "none".contains(lowercasedQuery)) ? [noneSuggestion] : []) + assetSuggestions.titleContains(prefix: query) +
             (isVector
                 ? []
                 : [customSuggestion] + dataSourceSuggestions + [randomProfileSuggestion].titleContains(prefix: query))
+
+        return .init(allSuggestions, windowConfiguration: .full)
     }
 }

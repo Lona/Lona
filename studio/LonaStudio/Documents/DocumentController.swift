@@ -152,6 +152,10 @@ class DocumentController: NSDocumentController {
             completionHandler(document, documentWasAlreadyOpen, error)
         })
     }
+
+    public func closeAllDocumentsImmediately() {
+        documents.forEach { $0.close() }
+    }
 }
 
 // MARK: - Document helpers
@@ -354,13 +358,15 @@ extension DocumentController {
 
     private func setWorkspace(url: URL) -> Bool {
         if url.isLonaWorkspace() {
+            closeAllDocumentsImmediately()
+
             history.reset()
 
             noteNewRecentDocumentURL(url)
 
             CSUserPreferences.workspaceURL = url
 
-            CSWorkspacePreferences.reloadAllConfigurationFiles(closeDocuments: true)
+            CSWorkspacePreferences.reloadAllConfigurationFiles()
 
             AppDelegate.reloadPreferencesWindow()
 

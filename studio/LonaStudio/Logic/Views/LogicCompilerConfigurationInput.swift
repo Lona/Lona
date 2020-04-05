@@ -7,6 +7,7 @@
 //
 
 import AppKit
+import Defaults
 import Logic
 
 // MARK: - LogicNumberInput
@@ -105,12 +106,18 @@ public class LogicCompilerConfigurationInput: NSView {
 
     private func update() {
         logicEditor.suggestionsForNode = { rootNode, node, query in
-            guard case .expression(let expression) = rootNode else { return [] }
+            guard case .expression(let expression) = rootNode else { return .init([]) }
 
             let program = LGCSyntaxNode.program(LogicCompilerConfigurationInput.makeProgram(from: expression))
 
-            let formattingOptions = LogicFormattingOptions.init(style: LogicViewController.formattingStyle, locale: .en_US, getColor: { _ in nil })
-            return StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: formattingOptions)?(query) ?? []
+            let formattingOptions = LogicFormattingOptions.init(style: Defaults[.formattingStyle], locale: .en_US, getColor: { _ in nil })
+
+            switch StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: formattingOptions) {
+            case .success(let builder):
+                return .init(builder(query) ?? [])
+            case .failure:
+                return .init([])
+            }
         }
     }
 
@@ -118,12 +125,19 @@ public class LogicCompilerConfigurationInput: NSView {
         guard case .expression(let expression) = rootNode else { return nil }
 
         let program: LGCSyntaxNode = .program(LogicCompilerConfigurationInput.makeProgram(from: expression))
-        let scopeContext = Compiler.scopeContext(program)
+        guard let scopeContext = try? Compiler.scopeContext(program).get() else { return nil }
         let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
 
         guard case .success(let substitution) = Unification.unify(constraints: unificationContext.constraints) else { return nil }
 
-        let result = Compiler.evaluate(program, rootNode: program, scopeContext: scopeContext, unificationContext: unificationContext, substitution: substitution, context: .init())
+        let result = Compiler.compile(
+            program,
+            rootNode: program,
+            scopeContext: scopeContext,
+            unificationContext: unificationContext,
+            substitution: substitution,
+            context: .init()
+        )
 
         switch result {
         case .success(let evaluationContext):
@@ -138,8 +152,8 @@ public class LogicCompilerConfigurationInput: NSView {
         if let value = self.logicValue(rootNode: rootNode) {
             switch value.memory {
             case .record(values: let pairs):
-                let target = pairs.value(for: "target")
-                let framework = pairs.value(for: "framework")
+                let target = pairs["target"]
+                let framework = pairs["framework"]
                 switch (target, framework) {
                 case (.some(.some(let targetValue)), .some(.some(let frameworkValue))):
                     let targetMemory = targetValue.memory

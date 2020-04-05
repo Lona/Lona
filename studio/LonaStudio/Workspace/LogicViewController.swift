@@ -7,7 +7,9 @@
 //
 
 import AppKit
+import Defaults
 import Logic
+import NavigationComponents
 
 // MARK: - LogicViewController
 
@@ -16,6 +18,8 @@ class LogicViewController: NSViewController {
     // MARK: Lifecycle
 
     override init(nibName nibNameOrNil: NSNib.Name?, bundle nibBundleOrNil: Bundle?) {
+        self.activeTab = parametersTabItem.id
+
         super.init(nibName: nil, bundle: nil)
 
         setUpViews()
@@ -25,6 +29,8 @@ class LogicViewController: NSViewController {
     }
 
     required init?(coder: NSCoder) {
+        self.activeTab = parametersTabItem.id
+
         super.init(coder: coder)
 
         setUpViews()
@@ -46,28 +52,68 @@ class LogicViewController: NSViewController {
 
     public var onChangeRootNode: ((LGCSyntaxNode) -> Void)?
 
+    public var onInspect: ((InspectorView.Content?) -> Void)?
+
     // MARK: Private
 
+    private let componentViewController = MainSectionViewController()
+    private let layerViewController = HorizontalSectionViewController()
+
     private let logicEditor = LogicEditor()
+    private let canvasAreaView = CanvasAreaView()
+    private let elementEditor = ElementEditor()
+    private let parametersTabItem = NavigationItem(id: UUID(), title: "Parameters", icon: nil)
+    private let logicTabItem = NavigationItem(id: UUID(), title: "Logic", icon: nil)
+    private let examplesTabItem = NavigationItem(id: UUID(), title: "Examples", icon: nil)
+    private lazy var tabItems: [NavigationItem] = {
+        [parametersTabItem, logicTabItem, examplesTabItem]
+    }()
+    private let tabView = NavigationItemStack()
+    private var activeTab: UUID {
+        didSet { update() }
+    }
+    private let parameterEditor = LogicEditor()
+    private let componentLogicEditor = LogicEditor()
+
     private let infoBar = InfoBar()
     private let divider = Divider()
     private let containerView = NSBox()
+    private let contentContainerView = NSBox()
 
-    private var imports: Set<String> = Set()
-    private var colorValues: [UUID: String] = [:]
-    private var shadowValues: [UUID: NSShadow] = [:]
-    private var textStyleValues: [UUID: Logic.TextStyle] = [:]
+    private var editorType: LogicEditorType = Defaults[.logicEditorType] {
+        didSet { update() }
+    }
 
-    private let editorDisplayStyles: [LogicFormattingOptions.Style] = [.visual, .natural]
+    private var contentView: NSView? {
+        didSet {
+            if let contentView = contentView {
+                if contentView != oldValue {
+                    oldValue?.removeFromSuperview()
+                    contentView.removeFromSuperview()
+
+                    contentContainerView.addSubview(contentView)
+
+                    contentView.translatesAutoresizingMaskIntoConstraints = false
+
+                    contentView.topAnchor.constraint(equalTo: contentContainerView.topAnchor).isActive = true
+                    contentView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor).isActive = true
+                    contentView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor).isActive = true
+                    contentView.bottomAnchor.constraint(equalTo: contentContainerView.bottomAnchor).isActive = true
+                }
+            } else {
+                oldValue?.removeFromSuperview()
+            }
+        }
+    }
 
     private func setUpViews() {
         containerView.boxType = .custom
         containerView.borderType = .noBorder
         containerView.contentViewMargins = .zero
 
-        containerView.addSubview(logicEditor)
-        containerView.addSubview(infoBar)
-        containerView.addSubview(divider)
+        contentContainerView.boxType = .custom
+        contentContainerView.borderType = .noBorder
+        contentContainerView.contentViewMargins = .zero
 
         infoBar.fillColor = Colors.contentBackground
 
@@ -79,7 +125,7 @@ class LogicViewController: NSViewController {
         logicEditor.showsFilterBar = true
         logicEditor.showsMinimap = true
         logicEditor.showsLineButtons = true
-        logicEditor.suggestionFilter = LogicViewController.suggestionFilter
+        logicEditor.suggestionFilter = Defaults[.suggestionFilter]
         TooltipWindow.contentInsets = .init(top: 4, left: 8, bottom: 6, right: 8)
 
         logicEditor.onInsertBelow = { [unowned self] rootNode, node in
@@ -95,72 +141,45 @@ class LogicViewController: NSViewController {
 
         logicEditor.onChangeSuggestionFilter = { [unowned self] value in
             self.logicEditor.suggestionFilter = value
-            LogicViewController.suggestionFilter = value
+            Defaults[.suggestionFilter] = value
         }
 
-        logicEditor.formattingOptions = LogicFormattingOptions(
-            style: LogicViewController.formattingStyle,
-            getError: ({ [unowned self ] id in
-                if let error = self.logicEditor.elementErrors.first(where: { $0.uuid == id }) {
-                    return error.message
-                } else {
-                    return nil
-                }
-            }),
-            getArguments: ({ [unowned self] id in
-                let unification = LonaModule.current.logic.compiled.unification
-
-                let rootNode = self.logicEditor.rootNode
-
-                return StandardConfiguration.formatArguments(
-                    rootNode: rootNode,
-                    id: id,
-                    unificationContext: unification?.0,
-                    substitution: unification?.1
-                )
-            }),
-            getColor: ({ id in
-                guard let evaluation = LonaModule.current.logic.compiled.evaluation else { return nil }
-                guard let value = evaluation.evaluate(uuid: id) else { return nil }
-                guard let colorString = value.colorString, let color = NSColor.parse(css: colorString) else { return nil }
-                return (colorString, color)
-            }),
-            getTextStyle: ({ id in
-                guard let evaluation = LonaModule.current.logic.compiled.evaluation else { return nil }
-                guard let value = evaluation.evaluate(uuid: id) else { return nil }
-                return value.textStyle
-            }),
-            getShadow: ({ id in
-                guard let evaluation = LonaModule.current.logic.compiled.evaluation else { return nil }
-                guard let value = evaluation.evaluate(uuid: id) else { return nil }
-                return value.nsShadow
-            })
-        )
-
-        infoBar.dropdownIndex = editorDisplayStyles.firstIndex(of: LogicViewController.formattingStyle) ?? 0
-        infoBar.dropdownValues = editorDisplayStyles.map { $0.displayName }
         infoBar.onChangeDropdownIndex = { [unowned self] index in
-            LogicViewController.formattingStyle = self.editorDisplayStyles[index]
-            let newFormattingOptions = self.logicEditor.formattingOptions
-            newFormattingOptions.style = self.editorDisplayStyles[index]
-            self.logicEditor.formattingOptions = newFormattingOptions
-            self.infoBar.dropdownIndex = index
+            let newValue = LogicEditorType.allCases[index]
+            Defaults[.logicEditorType] = newValue
+            self.editorType = newValue
         }
+
+        tabView.items = tabItems
+        tabView.style = .tabs
+        tabView.activeItem = parametersTabItem.id
+
+        tabView.onClickItem = { [unowned self] id in
+            self.activeTab = id
+        }
+
+        containerView.addSubview(contentContainerView)
+        containerView.addSubview(infoBar)
+        containerView.addSubview(divider)
+
+        componentViewController.topView = layerViewController.view
+        layerViewController.leftView = elementEditor
 
         self.view = containerView
     }
 
     private func setUpConstraints() {
         containerView.translatesAutoresizingMaskIntoConstraints = false
-        logicEditor.translatesAutoresizingMaskIntoConstraints = false
+        contentContainerView.translatesAutoresizingMaskIntoConstraints = false
         infoBar.translatesAutoresizingMaskIntoConstraints = false
         divider.translatesAutoresizingMaskIntoConstraints = false
+        tabView.translatesAutoresizingMaskIntoConstraints = false
 
-        logicEditor.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
-        logicEditor.leadingAnchor.constraint(equalTo: containerView.leadingAnchor).isActive = true
-        logicEditor.trailingAnchor.constraint(equalTo: containerView.trailingAnchor).isActive = true
+        contentContainerView.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
+        contentContainerView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor).isActive = true
+        contentContainerView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor).isActive = true
 
-        logicEditor.bottomAnchor.constraint(equalTo: divider.topAnchor).isActive = true
+        contentContainerView.bottomAnchor.constraint(equalTo: divider.topAnchor).isActive = true
 
         divider.heightAnchor.constraint(equalToConstant: 1).isActive = true
         divider.leadingAnchor.constraint(equalTo: containerView.leadingAnchor).isActive = true
@@ -174,18 +193,148 @@ class LogicViewController: NSViewController {
     }
 
     private func update() {
-        let compiled = LonaModule.current.logic.compiled
-
+        // Currently assigning rootNode should happen first, since other methods rely on it
         logicEditor.rootNode = rootNode
 
-        let imports = rootNode.reduce(initialResult: Set<String>()) { (result, node, config) -> Set<String> in
-            switch node {
-            case .declaration(.importDeclaration(_, name: let name)):
-                return result.union([name.name])
-            default:
-                return result
+        let module = LonaModule.current.logic
+        let compiled = module.compiled
+        let formattingOptions = module.formattingOptions
+
+        infoBar.dropdownIndex = LogicEditorType.allCases.firstIndex(of: Defaults[.logicEditorType]) ?? 0
+        infoBar.dropdownValues = LogicEditorType.allCases.map { $0.rawValue }
+
+        switch editorType {
+        case .componentEditor:
+            var canvasAreaParameters = CanvasAreaView.Parameters(
+                columns: [],
+                showsAccessibilityOverlay: false,
+                selectedLayerName: nil
+            )
+
+            if let examplesDeclaration = rootNode.findVariableDeclaration(name: "examples"),
+                let examplesName = examplesDeclaration.variablePattern,
+                let examplesValue = compiled.evaluation?.evaluate(uuid: examplesName.uuid),
+                let examplesArray = examplesValue.array {
+
+                let layers = examplesArray.map({ $0.renderableElement() ?? CSLayer() })
+
+                canvasAreaParameters.columns = canvasList.map { canvas in
+                    return .init(title: canvas.name, rows: layers.map { rootLayer in
+                        Swift.print(canvas, rootLayer)
+                        return .init(
+                            canvas: canvas,
+                            rootLayer: rootLayer,
+                            config: .init(),
+                            options: .init([
+                                .renderCanvasShadow(true)
+                            ])
+                        )
+                    })
+                }
             }
+
+            canvasAreaView.parameters = canvasAreaParameters
+
+            canvasAreaView.onSelectCanvasHeaderItem = onSelectCanvasHeaderItem
+
+            layerViewController.rightView = canvasAreaView
+            componentViewController.dividerView = tabView
+
+            tabView.activeItem = activeTab
+
+            let componentDeclaration = LogicViewController.componentFunctionDeclaration(rootNode)
+
+            if let declaration = componentDeclaration {
+//                Swift.print("OK", compiled.programNode.find(id: declaration.uuid))
+
+                elementEditor.rootItem = LogicViewController.componentElements(inFunctionDeclaration: declaration)
+
+                elementEditor.onRenameItem = { [unowned self] item, name in
+                    guard case let .expression(expression) = self.rootNode.find(id: item.id) else { return }
+
+                    let newExpression = expression.withFunctionCallArgument(
+                        label: "__name",
+                        expression: .literalExpression(id: UUID(), literal: .string(id: UUID(), value: name))
+                    )
+
+                    self.onChangeRootNode?(self.rootNode.replace(id: item.id, with: newExpression.node))
+                }
+
+                elementEditor.onSelectItem = { [unowned self] item in
+                    guard let item = item else {
+                        self.onInspect?(nil)
+                        return
+                    }
+
+                    guard case let .expression(expression) = self.rootNode.find(id: item.id) else { return }
+
+                    self.elementEditor.selectedItem = item
+
+                    self.onInspect?(.logicFunctionCall(expression))
+                }
+            }
+
+            switch activeTab {
+            case parametersTabItem.id:
+                if let declaration = componentDeclaration, let parameters = declaration.functionParameters {
+                    let topLevelParameters = LGCTopLevelParameters(id: UUID(), parameters: parameters)
+
+                    parameterEditor.rootNode = topLevelParameters.node
+
+                    parameterEditor.onChangeRootNode = { [unowned self] localRoot in
+                        guard case .topLevelParameters(let newTopLevelParameters) = localRoot else { return false }
+
+                        guard let newFunctionDeclaration = declaration.functionWith(parameters: newTopLevelParameters.parameters) else { return false }
+
+                        self.onChangeRootNode?(self.rootNode.replace(id: declaration.uuid, with: newFunctionDeclaration.node))
+
+                        return true
+                    }
+                }
+
+                parameterEditor.formattingOptions = formattingOptions
+
+                parameterEditor.suggestionsForNode = LogicViewController.suggestionsForNode
+
+                parameterEditor.documentationForSuggestion = LogicViewController.documentationForSuggestion
+
+                componentViewController.bottomView = parameterEditor
+            case logicTabItem.id:
+                if let declaration = LogicViewController.componentFunctionDeclaration(rootNode),
+                    let block = declaration.functionStatementsBeforeReturnStatement {
+
+                    let program = LGCProgram(id: UUID(), block: block)
+
+                    componentLogicEditor.rootNode = .program(program)
+
+                    componentLogicEditor.onChangeRootNode = { [unowned self] localRoot in
+                        guard case .program(let newProgram) = localRoot else { return false }
+
+                        guard let newFunctionDeclaration = declaration.functionWithStatementsBeforeReturnStatement(block: newProgram.block) else { return false }
+
+                        self.onChangeRootNode?(self.rootNode.replace(id: declaration.uuid, with: newFunctionDeclaration.node))
+
+                        return true
+                    }
+                }
+
+                componentLogicEditor.formattingOptions = formattingOptions
+
+                componentLogicEditor.suggestionsForNode = LogicViewController.suggestionsForNode
+
+                componentLogicEditor.documentationForSuggestion = LogicViewController.documentationForSuggestion
+
+                componentViewController.bottomView = componentLogicEditor
+            default:
+                componentViewController.bottomView = nil
+            }
+
+            contentView = componentViewController.view
+        case .logicEditor:
+            contentView = logicEditor
         }
+
+        logicEditor.formattingOptions = formattingOptions
 
         logicEditor.elementErrors = compiled.errors.filter { rootNode.find(id: $0.uuid) != nil }
 
@@ -194,518 +343,470 @@ class LogicViewController: NSViewController {
             return true
         }
 
-        logicEditor.suggestionsForNode = { rootNode, node, query in
-            let compiled = LonaModule.current.logic.compiled
+        logicEditor.suggestionsForNode = LogicViewController.suggestionsForNode
 
-            let recommended = LogicViewController.recommendedSuggestions(
-                rootNode: compiled.programNode,
-                selectedNode: node,
-                query: query,
-                imports: imports
-            )
-
-            return recommended
-        }
-
-        logicEditor.documentationForSuggestion = { rootNode, suggestionItem, query, formattingOptions, builder in
-            switch suggestionItem.node {
-            case .expression(.literalExpression(id: _, literal: .color(id: _, value: let css))),
-                 .literal(.color(id: _, value: let css)):
-
-                let decodeValue: (Data?) -> SwiftColor = { data in
-                    if let data = data, let cssString = String(data: data, encoding: .utf8) {
-                        return SwiftColor(cssString: cssString)
-                    } else {
-                        // Improve the empty state by setting alpha to 1 initially
-                        if css == "" {
-                            return SwiftColor(red: 0, green: 0, blue: 0)
-                        }
-                        return SwiftColor(cssString: css)
-                    }
-                }
-
-                var colorValue = decodeValue(builder.initialValue)
-                let view = ColorSuggestionEditor(colorValue: colorValue)
-
-                view.onChangeColorValue = { color in
-                    colorValue = color
-
-                    // Setting the color to nil is a hack to force the color picker to re-draw even if the color values are equal.
-                    // The Color library tests for equality in a way that prevents us from changing the hue of the color when the
-                    // saturation and lightness are 0.
-                    view.colorValue = nil
-                    view.colorValue = colorValue
-
-                    builder.setListItem(.colorRow(name: "Color", code: color.cssString, color.NSColor, false))
-
-                    if let data = colorValue.cssString.data(using: .utf8) {
-                        builder.onChangeValue(data)
-                    }
-                }
-
-                view.onSubmit = {
-                    builder.onSubmit()
-                }
-
-                builder.setNodeBuilder({ data in
-                    let cssValue = data != nil ? decodeValue(data).cssString : css
-                    let literal = LGCLiteral.color(id: UUID(), value: cssValue)
-                    switch suggestionItem.node {
-                    case .literal:
-                        return .literal(literal)
-                    case .expression:
-                        return .expression(.literalExpression(id: UUID(), literal: literal))
-                    default:
-                        fatalError("Unsupported node")
-                    }
-                })
-
-                return view
-            default:
-                return LogicEditor.defaultDocumentationForSuggestion(rootNode, suggestionItem, query, formattingOptions, builder)
-            }
-        }
+        logicEditor.documentationForSuggestion = LogicViewController.documentationForSuggestion
 
         logicEditor.decorationForNodeID = { [unowned self] id in
-            guard let node = self.logicEditor.rootNode.find(id: id) else { return nil }
-
-            if let colorValue = LonaModule.current.logic.compiled.evaluation?.evaluate(uuid: id)?.colorString {
-                if self.logicEditor.formattingOptions.style == .visual,
-                    let path = self.logicEditor.rootNode.pathTo(id: id),
-                    let parent = path.dropLast().last {
-
-                    // Don't show color decoration on the variable name
-                    switch parent {
-                    case .declaration(.variable):
-                        return nil
-                    default:
-                        break
-                    }
-
-                    // Don't show color decoration of literal value if we're already showing a swatch preview
-                    if let grandParent = path.dropLast().dropLast().last {
-                        switch (grandParent, parent, node) {
-                        case (.declaration(.variable), .expression(.literalExpression), .literal(.color)):
-                            return nil
-                        default:
-                            break
-                        }
-                    }
-                }
-
-                return .color(NSColor.parse(css: colorValue) ?? NSColor.black)
-            }
-
-            switch node {
-            case .literal(.color(id: _, value: let code)):
-                return .color(NSColor.parse(css: code) ?? .clear)
-            default:
-                return nil
-            }
-        }
-    }
-
-    public static func makeGetColor(rootNode: LGCSyntaxNode) -> (UUID) -> (String, NSColor)? {
-        return { id in
-            guard let node = rootNode.find(id: id) else { return nil }
-            switch node {
-            case .expression(.literalExpression(_, literal: .color(_, value: let value))):
-                return (value, NSColor.parse(css: value) ?? .clear)
-            default:
-                return nil
-            }
-        }
-    }
-
-    public static func makeFormattingOptions(rootNode: LGCSyntaxNode) -> LogicFormattingOptions {
-        return .init(style: formattingStyle, locale: .en_US, getColor: makeGetColor(rootNode: rootNode))
-    }
-
-    public static func recommendedSuggestions(rootNode: LGCSyntaxNode, selectedNode: LGCSyntaxNode, query: String, imports: Set<String>) -> [LogicSuggestionItem] {
-        var all: [LogicSuggestionItem]
-        if let suggestionBuilder = StandardConfiguration.suggestions(
-            rootNode: rootNode,
-            node: selectedNode,
-            formattingOptions: makeFormattingOptions(rootNode: rootNode)
-            ),
-            let suggestions = suggestionBuilder(query) {
-            all = suggestions
-        } else {
-            switch selectedNode {
-            case .declaration:
-                all = [
-                    LGCDeclaration.Suggestion.variable(query: query),
-                    LGCDeclaration.Suggestion.namespace(query: query),
-                    LGCDeclaration.Suggestion.record(query: query),
-                    LGCDeclaration.Suggestion.enum(query: query),
-                    LGCDeclaration.Suggestion.import
-                    ].compactMap { $0 }
-            default:
-                all = LogicEditor.defaultSuggestionsForNode(rootNode, selectedNode, query)
-            }
-        }
-
-        switch selectedNode {
-        case .declaration:
-            let variableId = UUID()
-            let valueId = UUID()
-            let colorVariable = LogicSuggestionItem(
-                title: "Color Variable\(query.isEmpty ? "" : ": " + query)",
-                category: "Declarations".uppercased(),
-                node: LGCSyntaxNode.declaration(
-                    LGCDeclaration.variable(
-                        id: UUID(),
-                        name: LGCPattern(id: variableId, name: query.isEmpty ? "name" : query),
-                        annotation: LGCTypeAnnotation.typeIdentifier(
-                            id: UUID(),
-                            identifier: LGCIdentifier(id: UUID(), string: "Color", isPlaceholder: false),
-                            genericArguments: .empty
-                        ),
-                        initializer: .literalExpression(id: valueId, literal: .color(id: UUID(), value: "white")),
-                        comment: nil
-                    )
-                ),
-                suggestionFilters: [.recommended, .all],
-                nextFocusId: query.isEmpty ? variableId : valueId,
-                documentation: ({ builder in
-                    return LightMark.makeScrollView(markdown: """
-I> Type a variable name and then press enter!
-
-# Color Variable
-
-Define a color variable that can be used throughout your design system and UI components.
-
-## Example
-
-We might define a variable, `ocean`, to represent the hex code `#69D2E7`:
-
-```logic
-<Declarations>
-  <Variable name="ocean" type="Color" value="#69D2E7"/>
-</Declarations>
-```
-
-## Naming Conventions
-
-There are a variety of naming conventions for colors, each with their own strengths and weaknesses. For more details and recommendations on naming conventions, see [this documentation page](http://google.com).
-
-""", renderingOptions: .init(formattingOptions: .normal))
-                })
+            return LogicViewController.decorationForNodeID(
+                rootNode: self.rootNode, // We only need to look within this logic file
+                formattingOptions: formattingOptions,
+                evaluationContext: compiled.evaluation,
+                id: id
             )
-
-            let shadowVariable = LogicSuggestionItem(
-                title: "Shadow Variable\(query.isEmpty ? "" : ": " + query)",
-                category: "Declarations".uppercased(),
-                node: LGCSyntaxNode.declaration(
-                    LGCDeclaration.variable(
-                        id: UUID(),
-                        name: LGCPattern(id: variableId, name: query.isEmpty ? "name" : query),
-                        annotation: LGCTypeAnnotation.typeIdentifier(
-                            id: UUID(),
-                            identifier: LGCIdentifier(id: UUID(), string: "Shadow", isPlaceholder: false),
-                            genericArguments: .empty
-                        ),
-                        initializer: .identifierExpression(
-                            id: UUID(),
-                            identifier: LGCIdentifier(id: valueId, string: "value", isPlaceholder: true)
-                        ),
-                        comment: nil
-                    )
-                ),
-                suggestionFilters: [.recommended, .all],
-                nextFocusId: query.isEmpty ? variableId : valueId,
-                documentation: ({ builder in
-                    return LightMark.makeScrollView(markdown: """
-I> Type a variable name and then press enter!
-
-# Shadow Variable
-
-Define a shadow variable that can be used throughout your design system and UI components.
-""", renderingOptions: .init(formattingOptions: builder.formattingOptions))
-                })
-            )
-
-            let textStyleVariable = LogicSuggestionItem(
-                title: "Text Style Variable\(query.isEmpty ? "" : ": " + query)",
-                category: "Declarations".uppercased(),
-                node: LGCSyntaxNode.declaration(
-                    LGCDeclaration.variable(
-                        id: UUID(),
-                        name: LGCPattern(id: variableId, name: query.isEmpty ? "name" : query),
-                        annotation: LGCTypeAnnotation.typeIdentifier(
-                            id: UUID(),
-                            identifier: LGCIdentifier(id: UUID(), string: "TextStyle", isPlaceholder: false),
-                            genericArguments: .empty
-                        ),
-                        initializer: .identifierExpression(
-                            id: UUID(),
-                            identifier: LGCIdentifier(id: valueId, string: "value", isPlaceholder: true)
-                        ),
-                        comment: nil
-                    )
-                ),
-                suggestionFilters: [.recommended, .all],
-                nextFocusId: query.isEmpty ? variableId : valueId,
-                documentation: ({ builder in
-                    return LightMark.makeScrollView(markdown: """
-I> Type a variable name and then press enter!
-
-# Text Style Variable
-
-Define a text style variable that can be used throughout your design system and UI components.
-""", renderingOptions: .init(formattingOptions: builder.formattingOptions))
-                })
-            )
-
-            let patternId = UUID()
-
-            let namespace = LogicSuggestionItem(
-                title: "Variable Group\(query.isEmpty ? "" : ": " + query)",
-                category: "Declarations".uppercased(),
-                node: LGCSyntaxNode.declaration(
-                    LGCDeclaration.namespace(
-                        id: UUID(),
-                        name: LGCPattern(id: patternId, name: query.isEmpty ? "Name" : query),
-                        declarations: .next(LGCDeclaration.placeholder(id: valueId), .empty)
-                    )
-                ),
-                suggestionFilters: [.recommended],
-                nextFocusId: query.isEmpty ? patternId : valueId,
-                documentation: ({ builder in
-                    LightMark.makeScrollView(markdown: """
-I> Type a variable group name and then press enter!
-
-# Variable Group
-
-A group of variables and other declarations, sometimes called a namespace.
-
-This will generate fairly different code for each platform, so if you're curious to see what it turns into, open the split preview pane.
-""", renderingOptions: .init(formattingOptions: builder.formattingOptions))
-                })
-            )
-
-            var suggestedVariables: [LogicSuggestionItem] = []
-
-            if imports.contains("Color") || imports.contains("TextStyle") || imports.contains("Shadow") {
-                suggestedVariables.append(colorVariable)
-            }
-            if imports.contains("Shadow") {
-                suggestedVariables.append(shadowVariable)
-            }
-            if imports.contains("TextStyle") {
-                suggestedVariables.append(textStyleVariable)
-            }
-
-            return (suggestedVariables + [namespace]).titleContains(prefix: query) + all
-        default:
-            break
-        }
-
-        return all.map {
-            var node = $0
-            node.suggestionFilters = [.recommended, .all]
-            return node
-        }
-    }
-
-    private static var formattingStyleKey = "Logic editor style"
-
-    static var formattingStyle: LogicFormattingOptions.Style {
-        get {
-            guard let rawValue = UserDefaults.standard.string(forKey: formattingStyleKey),
-                let value = LogicFormattingOptions.Style(rawValue: rawValue) else {
-                return LogicFormattingOptions.Style.visual
-            }
-            return value
-        }
-        set {
-            UserDefaults.standard.set(newValue.rawValue, forKey: formattingStyleKey)
-        }
-    }
-
-    private static var suggestionFilterKey = "Logic editor suggestion filter"
-
-    static var suggestionFilter: SuggestionView.SuggestionFilter {
-        get {
-            guard let rawValue = UserDefaults.standard.string(forKey: suggestionFilterKey) else {
-                return .recommended
-            }
-            switch rawValue {
-            case "all":
-                return .all
-            default:
-                return .recommended
-            }
-        }
-        set {
-            var rawValue: String
-            switch newValue {
-            case .all:
-                rawValue = "all"
-            case .recommended:
-                rawValue = "recommended"
-            }
-            UserDefaults.standard.set(rawValue, forKey: suggestionFilterKey)
         }
     }
 }
 
+public enum LogicEditorType: String, Codable, CaseIterable {
+    case componentEditor = "Component Editor"
+    case logicEditor = "Logic Editor"
+}
+
+extension Defaults.Keys {
+    static let suggestionFilter = Key<SuggestionView.SuggestionFilter>("Logic editor suggestion filter", default: .all)
+    static let formattingStyle = Key<LogicFormattingOptions.Style>("Logic editor style", default: .visual)
+    static let logicEditorType = Key<LogicEditorType>("Logic editor style", default: .componentEditor)
+}
+
+// MARK: - Canvases
+
 extension LogicViewController {
+    private var canvasExpressions: [LGCExpression] {
+        let expressions: [LGCExpression]? = rootNode.reduce(initialResult: [], f: { result, node, config in
+            switch node {
+            case .declaration(.variable(id: _, name: let pattern, annotation: .some(let annotation), initializer: .some(let initializer), comment: _)) where pattern.name == "devices" && annotation.unificationType(genericsInScope: [:], getName: { "" }) == .cons(name: "Array", parameters: [.cons(name: "LonaDevice")]):
+                config.stopTraversal = true
 
-    // MARK: Public
-
-    public enum ThumbnailStyle: Int {
-        case standard, bordered
-    }
-
-    public static func thumbnail(
-        for url: URL,
-        within size: NSSize,
-        canvasSize: NSSize = .init(width: 800, height: 200),
-        viewportRect: NSRect = .init(x: 0, y: 0, width: 200, height: 200),
-        style: ThumbnailStyle) -> NSImage {
-        let key = cacheKey(size: size)
-
-        if let image = thumbnailImageCache[url]?[key] {
-            return image
-        } else {
-            let image = makeThumbnail(for: url, within: size, canvasSize: canvasSize, viewportRect: viewportRect, style: style)
-
-            if thumbnailImageCache[url] == nil {
-                thumbnailImageCache[url] = [:]
-            }
-
-            thumbnailImageCache[url]?[key] = image
-
-            return image
-        }
-    }
-
-    // MARK: Private
-
-    public static func invalidateThumbnail(url: URL) {
-        thumbnailImageCache.removeValue(forKey: url)
-    }
-
-    private static var thumbnailImageCache: [URL: [Int: NSImage]] = [:]
-
-    private static func cacheKey(size: NSSize) -> Int {
-        var hasher = Hasher()
-        hasher.combine(size.width)
-        hasher.combine(size.height)
-        return hasher.finalize()
-    }
-
-    private static func makeThumbnail(
-        for url: URL,
-        within size: NSSize,
-        canvasSize: NSSize,
-        viewportRect: NSRect,
-        style: ThumbnailStyle
-        ) -> NSImage {
-        guard let rootNode = LogicModule.load(url: url) else { return NSImage() }
-
-        let compiled = LonaModule.current.logic.compiled
-
-        let formattingOptions = LogicFormattingOptions(
-            style: LogicViewController.formattingStyle,
-            getColor: ({ id in
-                guard let colorString = compiled.evaluation?.evaluate(uuid: id)?.colorString,
-                    let color = NSColor.parse(css: colorString) else { return nil }
-                return (colorString, color)
-            })
-        )
-
-        let getElementDecoration: (UUID) -> LogicElement.Decoration? = { uuid in
-            return decorationForNodeID(
-                rootNode: compiled.programNode,
-                formattingOptions: formattingOptions,
-                evaluationContext: compiled.evaluation,
-                id: uuid
-            )
-        }
-
-        guard let pdfData = LogicCanvasView.pdf(
-            size: canvasSize,
-            mediaBox: viewportRect,
-            formattedContent: .init(LGCSyntaxNode.program(rootNode).formatted(using: formattingOptions)),
-            getElementDecoration: getElementDecoration) else { return NSImage() }
-
-        let image = NSImage(size: size, flipped: false, drawingHandler: { rect in
-            NSGraphicsContext.saveGraphicsState()
-
-            switch style {
-            case .bordered:
-                let inset = NSSize(width: 1, height: 1)
-                let insetRect = rect.insetBy(dx: inset.width, dy: inset.height)
-
-                let outline = NSBezierPath(roundedRect: insetRect, xRadius: 2, yRadius: 2)
-                outline.lineWidth = 2
-
-                NSColor.parse(css: "rgb(210,210,212)")!.setStroke()
-                NSColor.white.withAlphaComponent(0.9).setFill()
-
-                outline.fill()
-                outline.setClip()
-
-                if let pdfImage = NSImage(data: pdfData) {
-                    pdfImage.draw(in: NSRect(x: inset.width, y: inset.height, width: rect.width, height: rect.height))
+                switch initializer {
+                case .literalExpression(id: _, literal: .array(id: _, value: let array)):
+                    return array.map { $0 }
+                default:
+                    return nil
                 }
-
-                outline.stroke()
-            case .standard:
-                if let pdfImage = NSImage(data: pdfData) {
-                    pdfImage.draw(in: rect)
-                }
+            default:
+                return nil
             }
-
-            NSGraphicsContext.restoreGraphicsState()
-            return true
         })
 
-        return image
+        return expressions ?? []
     }
 
-    private static func decorationForNodeID(
-        rootNode: LGCSyntaxNode,
-        formattingOptions: LogicFormattingOptions,
-        evaluationContext: Compiler.EvaluationContext?,
-        id: UUID
-        ) -> LogicElement.Decoration? {
-        guard let node = rootNode.find(id: id) else { return nil }
+    private var canvasList: [Canvas] {
+        let module = LonaModule.current.logic
+        let compiled = module.compiled
 
-        if let colorValue = evaluationContext?.evaluate(uuid: node.uuid)?.colorString {
-            if formattingOptions.style == .visual,
-                let path = rootNode.pathTo(id: id),
-                let parent = path.dropLast().last {
+        let canvases: [Canvas?]? = canvasExpressions.map({ expression in
+            switch compiled.evaluation?.evaluate(uuid: expression.uuid) {
+            case .some(let logicValue):
+                guard case .record(let members) = logicValue.memory else { return nil }
 
-                // Don't show color decoration on the variable name
-                switch parent {
-                case .declaration(.variable):
-                    return nil
-                default:
-                    break
+                var name: String = ""
+                var width: Double = 375
+//                var height: Double = 100
+
+                if let memberValue = members["name"], case .some(.string(let value)) = memberValue?.memory {
+                    name = value
                 }
 
-                // Don't show color decoration of literal value if we're already showing a swatch preview
-                if let grandParent = path.dropLast().dropLast().last {
-                    switch (grandParent, parent, node) {
-                    case (.declaration(.variable), .expression(.literalExpression), .literal(.color)):
-                        return nil
-                    default:
-                        break
-                    }
+                if let memberValue = members["width"], case .some(.number(let value)) = memberValue?.memory {
+                    width = Double(value)
                 }
+
+//                if let memberValue = members["height"], case .some(.number(let value)) = memberValue?.memory {
+//                    height = Double(value)
+//                }
+
+                return Canvas(
+                    visible: true,
+                    name: name,
+                    width: width,
+                    height: 1,
+                    heightMode: "At Least",
+                    exportScale: 1,
+                    backgroundColor: ""
+                )
+            case .none:
+                return nil
             }
+        })
 
-            return .color(NSColor.parse(css: colorValue) ?? NSColor.black)
+        return canvases?.compactMap({ $0 }) ?? []
+    }
+
+    public func canvasExpressionSuggestions(for query: String, canvasIndex: Int) -> [LogicSuggestionItem] {
+        let module = LonaModule.current.logic
+        let compiled = module.compiled
+
+        return LogicViewController
+            .suggestionsForNode(compiled.programNode, .expression(self.canvasExpressions[canvasIndex]), query)
+            .items
+            .compactMap({ (item: LogicSuggestionItem) in
+                switch item.node {
+                case .expression(.memberExpression), .expression(.identifierExpression):
+                    return item
+                default:
+                    return nil
+                }
+            })
+    }
+
+    public func canvasExpressionSuggestionListItems(for query: String, canvasIndex: Int) -> [SuggestionListItem] {
+        canvasExpressionSuggestions(for: query, canvasIndex: canvasIndex).map({ (item: LogicSuggestionItem) in
+            return .row(item.title, nil, false, nil, nil)
+        })
+    }
+
+    public func onSelectCanvasHeaderItem(_ canvasIndex: Int) {
+        guard let window = self.canvasAreaView.window else { return }
+
+        let suggestionWindow = SuggestionWindow.shared
+
+        suggestionWindow.suggestionText = ""
+        suggestionWindow.suggestionItems = self.canvasExpressionSuggestionListItems(for: "", canvasIndex: canvasIndex)
+        suggestionWindow.placeholderText = "Choose device"
+        suggestionWindow.style = .contextMenu
+        suggestionWindow.onRequestHide = { suggestionWindow.orderOut(nil) }
+        suggestionWindow.onPressEscapeKey = { suggestionWindow.orderOut(nil) }
+        suggestionWindow.onSelectIndex = { index in
+            suggestionWindow.selectedIndex = index
+        }
+        suggestionWindow.onChangeSuggestionText = { text in
+            suggestionWindow.suggestionText = text
+            suggestionWindow.suggestionItems = self.canvasExpressionSuggestionListItems(for: text, canvasIndex: canvasIndex)
+        }
+        suggestionWindow.onSubmit = { index in
+            let suggestedNode = self.canvasExpressionSuggestions(for: suggestionWindow.suggestionText, canvasIndex: canvasIndex)[index].node
+            let newRootNode = self.rootNode.replace(id: self.canvasExpressions[canvasIndex].uuid, with: suggestedNode)
+            _ = self.onChangeRootNode?(newRootNode)
+
+            suggestionWindow.orderOut(nil)
         }
 
-        switch node {
-        case .literal(.color(id: _, value: let code)):
-            return .color(NSColor.parse(css: code) ?? .clear)
+        window.addChildWindow(suggestionWindow, ordered: .above)
+
+        let windowRect = self.canvasAreaView.convert(self.canvasAreaView.headerRect(ofColumn: canvasIndex), to: nil)
+        let screenRect = window.convertToScreen(windowRect)
+        let adjustedRect = NSRect(
+            x: screenRect.midX - suggestionWindow.defaultContentWidth / 2,
+            y: screenRect.origin.y,
+            width: screenRect.width,
+            height: screenRect.height
+        )
+
+        suggestionWindow.anchorTo(rect: adjustedRect, verticalOffset: 4)
+        suggestionWindow.focusSearchField()
+    }
+}
+
+// MARK: - Components
+
+extension LogicViewController {
+    private static func componentFunctionDeclaration(_ rootNode: LGCSyntaxNode) -> LGCDeclaration? {
+        return rootNode.reduce(initialResult: nil, f: { result, node, config in
+            switch node {
+            case .declaration(let declaration):
+                switch declaration {
+                case .function:
+                    // TODO: Test returnType == Element and maybe check name too
+                    config.stopTraversal = true
+
+                    return declaration
+                default:
+                    return nil
+                }
+            default:
+                return nil
+            }
+        })
+    }
+
+    private static func componentElements(inFunctionDeclaration declaration: LGCDeclaration) -> ElementItem? {
+        return declaration.returnStatement?.returnedExpression?.elementItem()
+    }
+
+    public static func inspectableExpressions(expression: LGCExpression) -> [LogicInspectableExpression]? {
+        let compiled = LonaModule.current.logic.compiled
+
+        guard case let .functionCallExpression(_, callee, arguments) = expression else { return nil }
+
+        guard let (unification, substitution) = compiled.unification else { return nil }
+
+        guard let type = unification.nodes[callee.uuid] else { return nil }
+
+        let resolvedType = Unification.substitute(substitution, in: type)
+
+        guard case let .fun(argTypes, _) = resolvedType else { return nil }
+
+        let inspectables: [LogicInspectableExpression] = argTypes.compactMap { arg in
+            guard let label = arg.label, label != "__name", label != "children" else { return nil }
+            let value = arguments.firstArgument(labeled: label)?.expression
+            return LogicInspectableExpression(name: label, type: arg.type, expression: value)
+        }
+
+        return inspectables
+    }
+}
+
+// MARK: - LGCArgument
+
+extension LGCFunctionCallArgument {
+    public var stringValue: String? {
+        switch self {
+        case .argument(id: _, label: _, expression: .literalExpression(id: _, literal: .string(id: _, value: let stringLiteral))):
+            return stringLiteral
         default:
             return nil
         }
+    }
+
+    public var arrayValue: LGCList<LGCExpression>? {
+        switch self {
+        case .argument(id: _, label: _, expression: .literalExpression(id: _, literal: .array(id: _, value: let arrayLiteral))):
+            return arrayLiteral
+        default:
+            return nil
+        }
+    }
+
+    public var expression: LGCExpression? {
+        switch self {
+        case .argument(id: _, label: _, expression: let expression):
+            return expression
+        default:
+            return nil
+        }
+    }
+}
+
+extension LGCList where T == LGCFunctionCallArgument {
+    public func firstArgument(labeled label: String) -> LGCFunctionCallArgument? {
+        return self.first { (arg) -> Bool in
+            switch arg {
+            case .argument(id: _, label: .some(label), expression: _):
+                return true
+            default:
+                return false
+            }
+        }
+    }
+
+    public func firstIndexOfArgument(labeled label: String) -> Int? {
+        return self.firstIndex { (arg) -> Bool in
+            switch arg {
+            case .argument(id: _, label: .some(label), expression: _):
+                return true
+            default:
+                return false
+            }
+        }
+    }
+}
+
+// MARK: - LGCExpression
+
+extension LGCExpression {
+    public var qualifiedDisplayName: String {
+        switch self {
+        case .identifierExpression(id: _, identifier: let identifier):
+            return identifier.string
+        case .memberExpression:
+            return (flattenedMemberExpression ?? []).map({ $0.string }).joined(separator: ".")
+        default:
+            return "<computed value>"
+        }
+    }
+
+    public func elementItem() -> ElementItem? {
+        switch self {
+        case .functionCallExpression(id: let id, expression: let expression, arguments: let arguments):
+            let customLabel: String? = arguments.firstArgument(labeled: "__name")?.stringValue
+            let childrenExpressions: LGCList<LGCExpression> = arguments.firstArgument(labeled: "children")?.arrayValue ?? .empty
+            let childrenItems = childrenExpressions.compactMap({ $0.elementItem() })
+            let functionName = expression.qualifiedDisplayName
+            return ElementItem(id: id, type: functionName, name: customLabel, visible: true, children: childrenItems)
+        default:
+            return nil
+        }
+    }
+
+    public func withFunctionCallArgument(label: String, expression argumentExpression: LGCExpression?) -> LGCExpression {
+        guard case let .functionCallExpression(callID, callExpression, oldArguments) = self else {
+            fatalError("Not a function call: \(self)")
+        }
+
+        var newArguments: [LGCFunctionCallArgument] = .init(oldArguments)
+
+        if let matchingIndex = oldArguments.firstIndexOfArgument(labeled: label) {
+            if let argumentExpression = argumentExpression {
+                newArguments[matchingIndex] = .argument(id: UUID(), label: label, expression: argumentExpression)
+            } else {
+                newArguments.remove(at: matchingIndex)
+            }
+        } else if let argumentExpression = argumentExpression {
+            newArguments.append(.argument(id: UUID(), label: label, expression: argumentExpression))
+        }
+
+        let newFunctionCall: LGCExpression = .functionCallExpression(
+            id: callID,
+            expression: callExpression,
+            arguments: .init(newArguments)
+        )
+
+        return newFunctionCall.copy(deep: true)
+    }
+}
+
+// MARK: - LGCStatement
+
+extension LGCStatement {
+    public var returnedExpression: LGCExpression? {
+        switch self {
+        case .returnStatement(id: _, expression: let expression):
+            return expression
+        default:
+            return nil
+        }
+    }
+}
+
+// MARK: - LGCDeclaration
+
+extension LGCDeclaration {
+    public var variablePattern: LGCPattern? {
+        switch self {
+        case .variable(_, let pattern, _, _, _):
+            return pattern
+        default:
+            return nil
+        }
+    }
+
+    public var returnStatement: LGCStatement? {
+        guard case .function(_, _, _, _, _, let block, _) = self else { return nil }
+        return block.first(where: {
+            if case .returnStatement = $0 { return true }
+            return false
+        })
+    }
+
+    public var functionParameters: LGCList<LGCFunctionParameter>? {
+        guard case .function(_, _, _, _, let parameters, _, _) = self else { return nil }
+        return parameters
+    }
+
+    public var functionBlock: LGCList<LGCStatement>? {
+        guard case .function(_, _, _, _, _, let block, _) = self else { return nil }
+        return block
+    }
+
+    public func functionWith(parameters newParameters: LGCList<LGCFunctionParameter>? = nil, block newBlock: LGCList<LGCStatement>? = nil) -> LGCDeclaration? {
+        guard case let .function(id, name, returnType, genericParameters, parameters, block, comment) = self else { return nil }
+
+        return .function(
+            id: id,
+            name: name,
+            returnType: returnType,
+            genericParameters: genericParameters,
+            parameters: newParameters ?? parameters,
+            block: newBlock ?? block,
+            comment: comment
+        )
+    }
+
+    public var functionStatementsBeforeReturnStatement: LGCList<LGCStatement>? {
+        guard case .function(_, _, _, _, _, let block, _) = self else { return nil }
+        let prefix = block.prefix(while: {
+            if case .returnStatement = $0 { return false }
+            return true
+        })
+        return LGCList(Array(prefix)).normalizedPlaceholders
+    }
+
+    public func functionWithStatementsBeforeReturnStatement(block: LGCList<LGCStatement>) -> LGCDeclaration? {
+        guard case .function(_, _, _, _, _, let block, _) = self else { return nil }
+        let suffix = block.drop(while: {
+            if case .returnStatement = $0 { return false }
+            return true
+        })
+        return functionWith(block: LGCList(Array(block) + Array(suffix)).normalizedPlaceholders)
+    }
+}
+
+// MARK: LGCSyntaxNode
+
+extension LGCSyntaxNode {
+    public func findVariableDeclaration(name: String, typeAnnotation: LGCTypeAnnotation? = nil) -> LGCDeclaration? {
+        return self.reduce(initialResult: nil, f: { result, node, config in
+            switch node {
+            case .declaration(let declaration):
+                switch declaration {
+                case .variable(_, let pattern, let annotation, _, _)
+                    where pattern.name == name && (typeAnnotation == nil || annotation.isEquivalentTo(typeAnnotation)):
+
+                    config.stopTraversal = true
+                    return declaration
+                default:
+                    return nil
+                }
+            default:
+                return nil
+            }
+        })
+    }
+}
+
+// MARK: - Logic Value
+
+extension LogicValue {
+    func renderableElement() -> CSLayer? {
+        guard case .record(let members) = self.memory,
+            case .some(.string(let typeName)) = members["type"]??.memory,
+            case .some(.array(let parametersArrayValue)) = members["parameters"]??.memory
+            else { return nil }
+
+        let parameters: [String: LogicValue] = parametersArrayValue.reduce(into: [:]) { (result, value) in
+            guard case .enum(caseName: _, associatedValues: let associatedValues) = value.memory else { return }
+            guard case .string(let parameterName) = associatedValues.first?.memory else { return }
+            result[parameterName] = associatedValues[1]
+        }
+
+        let layer = CSLayer()
+
+        switch typeName {
+        case "LonaView":
+            layer.type = .view
+        case "LonaText":
+            layer.type = .text
+
+            if case .some(.string(let text)) = parameters["value"]?.memory {
+                layer.text = text
+            }
+        default:
+            return nil
+        }
+
+        layer.backgroundColor = parameters["backgroundColor"]?.colorString
+
+        if case .some(.number(let paddingTop)) = parameters["paddingTop"]?.memory {
+            layer.paddingTop = Double(paddingTop)
+        }
+        if case .some(.number(let paddingRight)) = parameters["paddingRight"]?.memory {
+            layer.paddingRight = Double(paddingRight)
+        }
+        if case .some(.number(let paddingBottom)) = parameters["paddingBottom"]?.memory {
+            layer.paddingBottom = Double(paddingBottom)
+        }
+        if case .some(.number(let paddingLeft)) = parameters["paddingLeft"]?.memory {
+            layer.paddingLeft = Double(paddingLeft)
+        }
+
+        if case .some(.array(let childrenArrayValue)) = parameters["children"]?.memory {
+            layer.children = childrenArrayValue.compactMap { $0.renderableElement() }
+        }
+
+        Swift.print(layer.type, layer.parameters)
+
+        return layer
     }
 }

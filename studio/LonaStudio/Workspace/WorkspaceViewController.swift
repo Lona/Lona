@@ -7,7 +7,7 @@
 //
 
 import AppKit
-import BreadcrumbBar
+import NavigationComponents
 import FileTree
 import Foundation
 import Logic
@@ -203,8 +203,6 @@ class WorkspaceViewController: NSSplitViewController {
         return controller
     }()
 
-    private lazy var codeEditorViewController = CodeEditorViewController()
-
     private lazy var colorEditorViewController: ColorEditorViewController = {
         let controller = ColorEditorViewController()
 
@@ -291,6 +289,7 @@ class WorkspaceViewController: NSSplitViewController {
     private lazy var inspectorViewController: NSViewController = {
         return NSViewController(view: inspectorView)
     }()
+
     private var inspectorViewVisible: Bool {
         get {
             return splitViewItems.contains(sidebarItem)
@@ -416,7 +415,7 @@ class WorkspaceViewController: NSSplitViewController {
             }
         }
 
-        fileNavigator.performCreateComponent = { path in
+        fileNavigator.performCreateLegacyComponent = { path in
             let document = ComponentDocument()
 
             let fileURL = URL(fileURLWithPath: path)
@@ -424,6 +423,46 @@ class WorkspaceViewController: NSSplitViewController {
             document
                 .save(to: fileURL, ofType: "DocumentType", for: .saveOperation)
                 .onSuccess({ document in
+                    DocumentController.shared.openDocument(withContentsOf: fileURL, display: true)
+                })
+
+            return true
+        }
+
+        fileNavigator.performCreateComponent = { path in
+            let componentName = URL(fileURLWithPath: path).deletingPathExtension().lastPathComponent.sanitizedFileName
+            let documentContents = """
+extension \(componentName) {
+  func \(componentName)() -> Element {
+    return View(__name: "Container")
+  }
+  let devices: Array<LonaDevice> = [
+    LonaDevice.iPhone8,
+    LonaDevice.Pixel2
+  ]
+  let examples: Array<Element> = [
+    \(componentName)()
+  ]
+}
+"""
+
+            let document = LogicDocument()
+
+            guard let json = LogicFile.convert(documentContents, kind: .logic, to: .json),
+                let data = json.data(using: .utf8) else { return false }
+
+            do {
+                document.content = try JSONDecoder().decode(LGCSyntaxNode.self, from: data)
+            } catch {
+                Swift.print(error)
+                return false
+            }
+
+            let fileURL = URL(fileURLWithPath: path)
+
+            document
+                .save(to: fileURL, ofType: "Component", for: .saveOperation)
+                .finalSuccess({ document in
                     DocumentController.shared.openDocument(withContentsOf: fileURL, display: true)
                 })
 
@@ -492,15 +531,16 @@ class WorkspaceViewController: NSSplitViewController {
 
         sidebarItem.collapseBehavior = .preferResizingSiblingsWithFixedSplitView
         sidebarItem.canCollapse = false
-        sidebarItem.minimumThickness = 280
-        sidebarItem.maximumThickness = 280
+        sidebarItem.minimumThickness = 240
+        sidebarItem.maximumThickness = 350
+        sidebarItem.holdingPriority = .defaultLow + 10
         addSplitViewItem(sidebarItem)
     }
 
-    private static func makeBreadcrumbs(for selectedFileURL: URL) -> (breadcrumbs: [Breadcrumb], handler: (UUID) -> Void) {
+    private static func makeBreadcrumbs(for selectedFileURL: URL) -> (breadcrumbs: [NavigationItem], handler: (UUID) -> Void) {
         let relativePathComponents = selectedFileURL.pathComponents.dropFirst(CSUserPreferences.workspaceURL.pathComponents.count)
 
-        let workspaceBreadcrumb = Breadcrumb(
+        let workspaceBreadcrumb = NavigationItem(
             id: UUID(),
             title: CSWorkspacePreferences.workspaceName,
             icon: NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
@@ -508,7 +548,7 @@ class WorkspaceViewController: NSSplitViewController {
 
         var breadcrumbURLs: [UUID: URL] = [workspaceBreadcrumb.id: CSUserPreferences.workspaceURL]
 
-        let pageBreadcrumbs: [Breadcrumb] = relativePathComponents.enumerated().map { index, component in
+        let pageBreadcrumbs: [NavigationItem] = relativePathComponents.enumerated().map { index, component in
             let url = relativePathComponents.dropLast(relativePathComponents.count - index - 1).reduce(CSUserPreferences.workspaceURL, { (result, item) in
                 result.appendingPathComponent(item)
             })
@@ -523,7 +563,7 @@ class WorkspaceViewController: NSSplitViewController {
 
             let title = component.hasSuffix(".md") ? String(component.dropLast(3)) : component
 
-            return Breadcrumb(id: id, title: title, icon: icon)
+            return NavigationItem(id: id, title: title, icon: icon)
         }
 
         let breadcrumbs = [workspaceBreadcrumb] + pageBreadcrumbs
@@ -538,8 +578,6 @@ class WorkspaceViewController: NSSplitViewController {
 
     func update() {
         inspectorView.content = inspectedContent
-
-        codeEditorViewController.document = document
 
         guard let document = document else {
             if let path = fileNavigator.selectedFile, FileManager.default.isDirectory(path: path) {
@@ -669,7 +707,8 @@ class WorkspaceViewController: NSSplitViewController {
                 }
             }
         } else if let document = document as? LogicDocument {
-            inspectorViewVisible = false
+            inspectorViewVisible = true
+            editorViewController.showsHeaderDivider = true
 
             editorViewController.contentView = logicViewController.view
 
@@ -690,6 +729,43 @@ class WorkspaceViewController: NSSplitViewController {
                         self.update()
                     }
                 )
+            }
+            logicViewController.onInspect = { content in
+                self.inspectedContent = content
+                self.inspectorView.content = content
+            }
+            inspectorView.onChangeContent = { newContent, changeType in
+                if UndoManager.shared.isUndoing || UndoManager.shared.isRedoing {
+                    return
+                }
+
+                guard let oldContent = self.inspectedContent else { return }
+
+                switch (oldContent, newContent) {
+                case (.logicFunctionCall(let oldFunction), .logicFunctionCall(let newFunction)):
+
+                    let oldRootNode = document.content
+
+                    UndoManager.shared.run(
+                        name: "Edit Component",
+                        execute: {[unowned self] isRedo in
+                            document.updateChangeCount(isRedo ? .changeRedone : .changeDone)
+                            document.content = oldRootNode.replace(id: oldFunction.uuid, with: newFunction.node)
+                            self.inspectedContent = .logicFunctionCall(newFunction)
+                            self.inspectorView.content = .logicFunctionCall(newFunction)
+                            self.update()
+                        },
+                        undo: {[unowned self] in
+                            document.updateChangeCount(.changeUndone)
+                            document.content = oldRootNode
+                            self.inspectedContent = .logicFunctionCall(oldFunction)
+                            self.inspectorView.content = .logicFunctionCall(oldFunction)
+                            self.update()
+                        }
+                    )
+                default:
+                    break
+                }
             }
         } else if let document = document as? JSONDocument {
             inspectorViewVisible = true
