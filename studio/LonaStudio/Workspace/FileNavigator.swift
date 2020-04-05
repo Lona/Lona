@@ -39,7 +39,7 @@ class FileNavigatorHeaderWithMenu: FileNavigatorHeader {
     }
 }
 
-class FileNavigator: NSBox {
+class FileNavigator: NSView {
 
     // MARK: - Lifecycle
 
@@ -120,17 +120,36 @@ class FileNavigator: NSBox {
         return FileTree(rootPath: rootPath)
     }()
 
+    private let topDividerView = DividerView()
+    private let bottomDividerView = DividerView()
+
+    private var fileOutlineView = BackgroundView()
+
     private var themedSidebarView: ThemedSidebarView = .init()
 
     private func setUpViews() {
-        boxType = .custom
-        borderType = .noBorder
-        contentViewMargins = .zero
-
-        fillColor = Colors.headerBackground
-
+        fileTree.fillColor = Colors.vibrantWell
         fileTree.showRootFile = true
-        fileTree.defaultRowStyle = .rounded
+        fileTree.invalidatesIntrinsicContentSizeOnRowExpand = true
+        fileTree.isAnimationEnabled = false
+        let firstRowStyle = FileTreeRowView.CustomStyle(
+            backgroundColor: Colors.vibrantRaised,
+            bottomBorderColor: Colors.vibrantDivider
+        )
+        let firstAndLastRowStyle = FileTreeRowView.CustomStyle(
+            backgroundColor: Colors.vibrantRaised
+        )
+        fileTree.rowStyleForFile = { path, options in
+            if options.contains(.isFirstRow) {
+                if options.contains(.isLastRow) {
+                    return .custom(firstAndLastRowStyle)
+                } else {
+                    return .custom(firstRowStyle)
+                }
+            } else {
+                return .rounded
+            }
+        }
         fileTree.rowHeightForFile = { [unowned self] path in self.rowHeightForFile(atPath: path) }
         fileTree.rowViewForFile = { [unowned self] path, options in self.rowViewForFile(atPath: path, options: options) }
         fileTree.imageForFile = { [unowned self] path, size in self.imageForFile(atPath: path, size: size) }
@@ -147,7 +166,10 @@ class FileNavigator: NSBox {
         fileTree.onPressDelete = { [unowned self] path in self.deleteAlertForFile(atPath: path) }
 
         addSubview(themedSidebarView)
+        themedSidebarView.addSubview(topDividerView)
         themedSidebarView.addSubview(fileTree)
+        themedSidebarView.addSubview(bottomDividerView)
+        themedSidebarView.addSubview(fileOutlineView)
     }
 
     private func deleteAlertForFile(atPath path: String) {
@@ -293,19 +315,42 @@ class FileNavigator: NSBox {
         translatesAutoresizingMaskIntoConstraints = false
         themedSidebarView.translatesAutoresizingMaskIntoConstraints = false
         fileTree.translatesAutoresizingMaskIntoConstraints = false
+        fileOutlineView.translatesAutoresizingMaskIntoConstraints = false
+        topDividerView.translatesAutoresizingMaskIntoConstraints = false
+        bottomDividerView.translatesAutoresizingMaskIntoConstraints = false
+
+        fileTree.setContentHuggingPriority(.dragThatCannotResizeWindow, for: .vertical)
+        fileTree.setContentCompressionResistancePriority(.dragThatCannotResizeWindow, for: .vertical)
 
         themedSidebarView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         themedSidebarView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
         themedSidebarView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         themedSidebarView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
 
-        fileTree.topAnchor.constraint(
+        topDividerView.topAnchor.constraint(
             equalTo: themedSidebarView.topAnchor,
-            constant: EditorViewController.navigationBarHeight - 1
+            constant: EditorViewController.navigationBarHeight
         ).isActive = true
-        fileTree.bottomAnchor.constraint(equalTo: themedSidebarView.bottomAnchor).isActive = true
+        topDividerView.leadingAnchor.constraint(equalTo: themedSidebarView.leadingAnchor).isActive = true
+        topDividerView.trailingAnchor.constraint(equalTo: themedSidebarView.trailingAnchor).isActive = true
+
+        fileTree.topAnchor.constraint(equalTo: topDividerView.bottomAnchor).isActive = true
+
         fileTree.leadingAnchor.constraint(equalTo: themedSidebarView.leadingAnchor).isActive = true
         fileTree.trailingAnchor.constraint(equalTo: themedSidebarView.trailingAnchor).isActive = true
+
+        fileTree.bottomAnchor.constraint(equalTo: bottomDividerView.topAnchor, constant: 1).isActive = true
+
+        bottomDividerView.leadingAnchor.constraint(equalTo: themedSidebarView.leadingAnchor).isActive = true
+        bottomDividerView.trailingAnchor.constraint(equalTo: themedSidebarView.trailingAnchor).isActive = true
+
+        fileOutlineView.topAnchor.constraint(equalTo: bottomDividerView.bottomAnchor).isActive = true
+
+        fileOutlineView.bottomAnchor.constraint(equalTo: themedSidebarView.bottomAnchor).isActive = true
+        fileOutlineView.leadingAnchor.constraint(equalTo: themedSidebarView.leadingAnchor).isActive = true
+        fileOutlineView.trailingAnchor.constraint(equalTo: themedSidebarView.trailingAnchor).isActive = true
+
+//        fileTree.heightAnchor.constraint(equalTo: fileOutlineView.heightAnchor).isActive = true
     }
 
     private func update() {}
@@ -363,17 +408,19 @@ class FileNavigator: NSBox {
     }
 
     private func rowHeightForFile(atPath path: String) -> CGFloat {
-        return path == rootPath ? EditorViewController.navigationBarHeight : fileTree.defaultRowHeight
+        return path == rootPath ? EditorViewController.navigationBarHeight - 2 : fileTree.defaultRowHeight
     }
 
     private func rowViewForFile(atPath path: String, options: FileTree.RowViewOptions) -> NSView {
         let thumbnailSize = fileTree.defaultThumbnailSize
         let thumbnailMargin = fileTree.defaultThumbnailMargin
         let name = displayNameForFile(atPath: path)
+        let isRootPath = path == rootPath
 
         let view = FileTreeCellView()
 
         let textView = NSTextField(labelWithString: name)
+        textView.backgroundColor = .clear
         let iconView: NSView
 
         if options.contains(.editable) {
@@ -407,15 +454,15 @@ class FileNavigator: NSBox {
 
         iconView.translatesAutoresizingMaskIntoConstraints = false
         iconView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: thumbnailMargin).isActive = true
-        iconView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        iconView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: isRootPath ? -1 : 0).isActive = true
         iconView.widthAnchor.constraint(equalToConstant: thumbnailSize.width).isActive = true
         iconView.heightAnchor.constraint(equalToConstant: thumbnailSize.height).isActive = true
 
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: thumbnailMargin * 2 + thumbnailSize.width).isActive = true
         textView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        textView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        textView.font = path == rootPath
+        textView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: isRootPath ? -1 : 0).isActive = true
+        textView.font = isRootPath
             ? NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .regular))
             : NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))
         textView.maximumNumberOfLines = 1
