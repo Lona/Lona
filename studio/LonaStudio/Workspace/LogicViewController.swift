@@ -204,8 +204,6 @@ class LogicViewController: NSViewController {
         let componentDeclaration = LogicViewController.componentFunctionDeclaration(rootNode)
 
         if let declaration = componentDeclaration {
-//            Swift.print("OK", compiled.programNode.find(id: declaration.uuid))
-
             elementEditor.rootItem = LogicViewController.componentElements(inFunctionDeclaration: declaration)
 
             elementEditor.onRenameItem = { [unowned self] item, name in
