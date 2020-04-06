@@ -9,7 +9,7 @@
 import AppKit
 import Foundation
 
-public class LayerList: NSView {
+public class LayerList: NSBox {
 
     // MARK: Lifecycle
 
@@ -61,6 +61,12 @@ public class LayerList: NSView {
     private var dividerView = NSBox()
 
     private func setUpViews() {
+        boxType = .custom
+        borderType = .noBorder
+        contentViewMargins = .zero
+
+        fillColor = Colors.vibrantWell
+        
         dividerView.boxType = .custom
         dividerView.borderType = .noBorder
         dividerView.contentViewMargins = .zero

@@ -171,6 +171,8 @@ public class ElementEditor: NSBox {
         borderType = .noBorder
         contentViewMargins = .zero
 
+        fillColor = Colors.vibrantWell
+
         dividerView.boxType = .custom
         dividerView.borderType = .noBorder
         dividerView.contentViewMargins = .zero

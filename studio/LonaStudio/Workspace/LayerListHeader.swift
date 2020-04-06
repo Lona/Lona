@@ -49,6 +49,8 @@ public class LayerListHeader: NSBox {
         borderType = .noBorder
         contentViewMargins = .zero
 
+        fillColor = Colors.vibrantRaised
+
         func getPasteboardItem(forLayerType type: CSLayer.LayerType) -> NSPasteboardItem {
             let item = NSPasteboardItem()
             item.setString(type.string, forType: .lonaLayerTemplateType)
