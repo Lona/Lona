@@ -126,16 +126,21 @@ class FileNavigator: NSView {
 
     private var fileOutlineContainerView = BackgroundView()
 
+    private var fileTreeHeightConstraint: NSLayoutConstraint?
+
     public var fileOutlineView: NSView? {
         didSet {
-            if let contentView = fileOutlineView {
-                if contentView != oldValue {
-                    oldValue?.removeFromSuperview()
+            if fileOutlineView != oldValue {
+                oldValue?.removeFromSuperview()
+                fileTreeHeightConstraint?.isActive = false
+
+                if let contentView = fileOutlineView {
                     contentView.removeFromSuperview()
 
                     fileOutlineContainerView.addSubview(contentView)
 
-                    fileTree.heightAnchor.constraint(lessThanOrEqualTo: fileOutlineContainerView.heightAnchor).isActive = true
+                    fileTreeHeightConstraint = fileTree.heightAnchor.constraint(lessThanOrEqualTo: fileOutlineContainerView.heightAnchor)
+                    fileTreeHeightConstraint?.isActive = true
 
                     contentView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -144,8 +149,6 @@ class FileNavigator: NSView {
                     contentView.trailingAnchor.constraint(equalTo: fileOutlineContainerView.trailingAnchor).isActive = true
                     contentView.bottomAnchor.constraint(equalTo: fileOutlineContainerView.bottomAnchor).isActive = true
                 }
-            } else {
-                oldValue?.removeFromSuperview()
             }
 
             update()
