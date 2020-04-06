@@ -91,39 +91,12 @@ class ComponentEditorViewController: NSSplitViewController {
         return NSViewController(view: canvasAreaView)
     }()
 
-    private lazy var layerList = LayerList()
-    private lazy var layerListViewController: NSViewController = {
-        return NSViewController(view: layerList)
-    }()
-
-    private lazy var layerEditorController: NSViewController = {
-        let vc = NSSplitViewController(nibName: nil, bundle: nil)
-
-        vc.splitView.isVertical = true
-        vc.splitView.dividerStyle = .thin
-        vc.splitView.autosaveName = layerEditorViewResorationIdentifier
-        vc.splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: layerEditorViewResorationIdentifier)
-
-        vc.minimumThicknessForInlineSidebars = 120
-
-        let leftItem = NSSplitViewItem(contentListWithViewController: layerListViewController)
-        leftItem.canCollapse = false
-        //        leftItem.minimumThickness = 120
-        vc.addSplitViewItem(leftItem)
-
-        let mainItem = NSSplitViewItem(viewController: canvasAreaViewController)
-        mainItem.minimumThickness = 300
-        vc.addSplitViewItem(mainItem)
-
-        return vc
-    }()
+    public lazy var layerList = LayerList()
 
     private lazy var bottomItem = NSSplitViewItem(viewController: utilitiesViewController)
 
     private func setUpViews() {
         setUpUtilities()
-
-        layerList.fillColor = layerList.isDarkMode ? NSColor.controlBackgroundColor : .white
 
         layerList.onClickLayerTemplateType = { [unowned self] type in
             guard let component = self.component else { return }
@@ -216,7 +189,7 @@ class ComponentEditorViewController: NSSplitViewController {
     private func setUpLayout() {
         minimumThicknessForInlineSidebars = 180
 
-        let mainItem = NSSplitViewItem(viewController: layerEditorController)
+        let mainItem = NSSplitViewItem(viewController: canvasAreaViewController)
         mainItem.minimumThickness = 300
         addSplitViewItem(mainItem)
 
@@ -312,6 +285,16 @@ extension NavigationItemStack.Style {
         var style = NavigationItemStack.Style.segmentedControl
 
         style.dividerPadding = 8
+
+        return style
+    }()
+
+    public static var squareTabs: NavigationItemStack.Style = {
+        var style = NavigationItemStack.Style.segmentedControl
+
+        style.dividerPadding = 8
+        style.itemStyle.backgroundColor = .themed(color: NSColor.textColor.withAlphaComponent(0.03))
+        style.activeItemStyle.backgroundColor = .themed(color: NSColor.textColor.withAlphaComponent(0.08))
 
         return style
     }()

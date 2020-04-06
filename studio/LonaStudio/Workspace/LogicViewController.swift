@@ -57,11 +57,10 @@ class LogicViewController: NSViewController {
     // MARK: Private
 
     private let componentViewController = MainSectionViewController()
-    private let layerViewController = HorizontalSectionViewController()
 
     private let logicEditor = LogicEditor()
     private let canvasAreaView = CanvasAreaView()
-    private let elementEditor = ElementEditor()
+    public let elementEditor = ElementEditor()
     private let parametersTabItem = NavigationItem(id: UUID(), title: "Parameters", icon: nil)
     private let logicTabItem = NavigationItem(id: UUID(), title: "Logic", icon: nil)
     private let examplesTabItem = NavigationItem(id: UUID(), title: "Examples", icon: nil)
@@ -162,8 +161,7 @@ class LogicViewController: NSViewController {
         containerView.addSubview(infoBar)
         containerView.addSubview(divider)
 
-        componentViewController.topView = layerViewController.view
-        layerViewController.leftView = elementEditor
+        componentViewController.topView = canvasAreaView
 
         self.view = containerView
     }
@@ -203,6 +201,38 @@ class LogicViewController: NSViewController {
         infoBar.dropdownIndex = LogicEditorType.allCases.firstIndex(of: Defaults[.logicEditorType]) ?? 0
         infoBar.dropdownValues = LogicEditorType.allCases.map { $0.rawValue }
 
+        let componentDeclaration = LogicViewController.componentFunctionDeclaration(rootNode)
+
+        if let declaration = componentDeclaration {
+//            Swift.print("OK", compiled.programNode.find(id: declaration.uuid))
+
+            elementEditor.rootItem = LogicViewController.componentElements(inFunctionDeclaration: declaration)
+
+            elementEditor.onRenameItem = { [unowned self] item, name in
+                guard case let .expression(expression) = self.rootNode.find(id: item.id) else { return }
+
+                let newExpression = expression.withFunctionCallArgument(
+                    label: "__name",
+                    expression: .literalExpression(id: UUID(), literal: .string(id: UUID(), value: name))
+                )
+
+                self.onChangeRootNode?(self.rootNode.replace(id: item.id, with: newExpression.node))
+            }
+
+            elementEditor.onSelectItem = { [unowned self] item in
+                guard let item = item else {
+                    self.onInspect?(nil)
+                    return
+                }
+
+                guard case let .expression(expression) = self.rootNode.find(id: item.id) else { return }
+
+                self.elementEditor.selectedItem = item
+
+                self.onInspect?(.logicFunctionCall(expression))
+            }
+        }
+
         switch editorType {
         case .componentEditor:
             var canvasAreaParameters = CanvasAreaView.Parameters(
@@ -237,42 +267,9 @@ class LogicViewController: NSViewController {
 
             canvasAreaView.onSelectCanvasHeaderItem = onSelectCanvasHeaderItem
 
-            layerViewController.rightView = canvasAreaView
             componentViewController.dividerView = tabView
 
             tabView.activeItem = activeTab
-
-            let componentDeclaration = LogicViewController.componentFunctionDeclaration(rootNode)
-
-            if let declaration = componentDeclaration {
-//                Swift.print("OK", compiled.programNode.find(id: declaration.uuid))
-
-                elementEditor.rootItem = LogicViewController.componentElements(inFunctionDeclaration: declaration)
-
-                elementEditor.onRenameItem = { [unowned self] item, name in
-                    guard case let .expression(expression) = self.rootNode.find(id: item.id) else { return }
-
-                    let newExpression = expression.withFunctionCallArgument(
-                        label: "__name",
-                        expression: .literalExpression(id: UUID(), literal: .string(id: UUID(), value: name))
-                    )
-
-                    self.onChangeRootNode?(self.rootNode.replace(id: item.id, with: newExpression.node))
-                }
-
-                elementEditor.onSelectItem = { [unowned self] item in
-                    guard let item = item else {
-                        self.onInspect?(nil)
-                        return
-                    }
-
-                    guard case let .expression(expression) = self.rootNode.find(id: item.id) else { return }
-
-                    self.elementEditor.selectedItem = item
-
-                    self.onInspect?(.logicFunctionCall(expression))
-                }
-            }
 
             switch activeTab {
             case parametersTabItem.id:

@@ -121,9 +121,36 @@ class FileNavigator: NSView {
     }()
 
     private let topDividerView = DividerView()
+
     private let bottomDividerView = DividerView()
 
-    private var fileOutlineView = BackgroundView()
+    private var fileOutlineContainerView = BackgroundView()
+
+    public var fileOutlineView: NSView? {
+        didSet {
+            if let contentView = fileOutlineView {
+                if contentView != oldValue {
+                    oldValue?.removeFromSuperview()
+                    contentView.removeFromSuperview()
+
+                    fileOutlineContainerView.addSubview(contentView)
+
+                    fileTree.heightAnchor.constraint(lessThanOrEqualTo: fileOutlineContainerView.heightAnchor).isActive = true
+
+                    contentView.translatesAutoresizingMaskIntoConstraints = false
+
+                    contentView.topAnchor.constraint(equalTo: fileOutlineContainerView.topAnchor).isActive = true
+                    contentView.leadingAnchor.constraint(equalTo: fileOutlineContainerView.leadingAnchor).isActive = true
+                    contentView.trailingAnchor.constraint(equalTo: fileOutlineContainerView.trailingAnchor).isActive = true
+                    contentView.bottomAnchor.constraint(equalTo: fileOutlineContainerView.bottomAnchor).isActive = true
+                }
+            } else {
+                oldValue?.removeFromSuperview()
+            }
+
+            update()
+        }
+    }
 
     private var themedSidebarView: ThemedSidebarView = .init()
 
@@ -169,7 +196,7 @@ class FileNavigator: NSView {
         themedSidebarView.addSubview(topDividerView)
         themedSidebarView.addSubview(fileTree)
         themedSidebarView.addSubview(bottomDividerView)
-        themedSidebarView.addSubview(fileOutlineView)
+        themedSidebarView.addSubview(fileOutlineContainerView)
     }
 
     private func deleteAlertForFile(atPath path: String) {
@@ -315,7 +342,7 @@ class FileNavigator: NSView {
         translatesAutoresizingMaskIntoConstraints = false
         themedSidebarView.translatesAutoresizingMaskIntoConstraints = false
         fileTree.translatesAutoresizingMaskIntoConstraints = false
-        fileOutlineView.translatesAutoresizingMaskIntoConstraints = false
+        fileOutlineContainerView.translatesAutoresizingMaskIntoConstraints = false
         topDividerView.translatesAutoresizingMaskIntoConstraints = false
         bottomDividerView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -344,11 +371,11 @@ class FileNavigator: NSView {
         bottomDividerView.leadingAnchor.constraint(equalTo: themedSidebarView.leadingAnchor).isActive = true
         bottomDividerView.trailingAnchor.constraint(equalTo: themedSidebarView.trailingAnchor).isActive = true
 
-        fileOutlineView.topAnchor.constraint(equalTo: bottomDividerView.bottomAnchor).isActive = true
+        fileOutlineContainerView.topAnchor.constraint(equalTo: bottomDividerView.bottomAnchor).isActive = true
 
-        fileOutlineView.bottomAnchor.constraint(equalTo: themedSidebarView.bottomAnchor).isActive = true
-        fileOutlineView.leadingAnchor.constraint(equalTo: themedSidebarView.leadingAnchor).isActive = true
-        fileOutlineView.trailingAnchor.constraint(equalTo: themedSidebarView.trailingAnchor).isActive = true
+        fileOutlineContainerView.bottomAnchor.constraint(equalTo: themedSidebarView.bottomAnchor).isActive = true
+        fileOutlineContainerView.leadingAnchor.constraint(equalTo: themedSidebarView.leadingAnchor).isActive = true
+        fileOutlineContainerView.trailingAnchor.constraint(equalTo: themedSidebarView.trailingAnchor).isActive = true
 
 //        fileTree.heightAnchor.constraint(equalTo: fileOutlineView.heightAnchor).isActive = true
     }
