@@ -1529,6 +1529,7 @@
 			buildConfigurationList = 6B0AEFC51EBF74D800F35BBF /* Build configuration list for PBXNativeTarget "LonaStudio" */;
 			buildPhases = (
 				0D07092F8B9DD494FF4F76C4 /* [CP] Check Pods Manifest.lock */,
+				03D5A670243B5491004AC5EB /* [Carthage] Check Cartfile.resolved */,
 				0304A70E23F41E39009A1E82 /* Download GraphQL schema */,
 				6BA89858232717D400AA8F78 /* Code sign Autoupdate */,
 				6B0AEFB01EBF74D700F35BBF /* Sources */,
@@ -1722,6 +1723,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Go to the build root and search up the chain to find the Derived Data Path where the source packages are checked out.\nDERIVED_DATA_CANDIDATE=\"${BUILD_ROOT}\"\n\nwhile ! [ -d \"${DERIVED_DATA_CANDIDATE}/SourcePackages\" ]; do\n  if [ \"${DERIVED_DATA_CANDIDATE}\" = / ]; then\n    echo >&2 \"error: Unable to locate SourcePackages directory from BUILD_ROOT: '${BUILD_ROOT}'\"\n    exit 1\n  fi\n\n  DERIVED_DATA_CANDIDATE=\"$(dirname \"${DERIVED_DATA_CANDIDATE}\")\"\ndone\n\n# Grab a reference to the directory where scripts are checked out\nSCRIPT_PATH=\"${DERIVED_DATA_CANDIDATE}/SourcePackages/checkouts/apollo-ios/scripts\"\n\nif [ -z \"${SCRIPT_PATH}\" ]; then\n    echo >&2 \"error: Couldn't find the CLI script in your checked out SPM packages; make sure to add the framework to your project.\"\n    exit 1\nfi\n\ncd \"${SRCROOT}/${TARGET_NAME}\"\n\n# Download the schemas\n\"${SCRIPT_PATH}\"/run-bundled-codegen.sh schema:download --endpoint=$API_BASE_URL/graphql GraphQL/lona-schema.json\nif [ ! -z \"$GITHUB_ACCESS_TOKEN\" ]; then\n  \"${SCRIPT_PATH}\"/run-bundled-codegen.sh schema:download --endpoint=https://api.github.com/graphql GraphQL/github-schema.json --header=\"Authorization: Bearer ${GITHUB_ACCESS_TOKEN}\" --header=\"Accept: application/vnd.github.antiope-preview+json\"\nfi\n\n# Generate GraphQL API code\n\"${SCRIPT_PATH}\"/run-bundled-codegen.sh codegen:generate --target=swift --includes=./**/Lona/**/*.graphql --localSchemaFile=\"GraphQL/lona-schema.json\" GraphQL/LonaAPI.swift\n\"${SCRIPT_PATH}\"/run-bundled-codegen.sh codegen:generate --target=swift --includes=./**/GitHub/**/*.graphql --localSchemaFile=\"GraphQL/github-schema.json\" GraphQL/GitHubAPI.swift\n";
+		};
+		03D5A670243B5491004AC5EB /* [Carthage] Check Cartfile.resolved */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Carthage] Check Cartfile.resolved";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage outdated --xcode-warnings 2>/dev/null\n";
+			showEnvVarsInLog = 0;
 		};
 		0D07092F8B9DD494FF4F76C4 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
