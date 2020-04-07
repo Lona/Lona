@@ -139,7 +139,7 @@ class FileNavigator: NSView {
 
                     fileOutlineContainerView.addSubview(contentView)
 
-                    fileTreeHeightConstraint = fileTree.heightAnchor.constraint(lessThanOrEqualTo: fileOutlineContainerView.heightAnchor)
+                    fileTreeHeightConstraint = fileTree.heightAnchor.constraint(lessThanOrEqualTo: fileOutlineContainerView.heightAnchor, multiplier: 0.5)
                     fileTreeHeightConstraint?.isActive = true
 
                     contentView.translatesAutoresizingMaskIntoConstraints = false

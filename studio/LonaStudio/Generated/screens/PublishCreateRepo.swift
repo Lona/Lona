@@ -26,7 +26,8 @@ public class PublishCreateRepo: NSBox {
     repositoryName: String,
     submitButtonTitle: String,
     repositoryVisibilities: [String],
-    repositoryVisibilityIndex: Int)
+    repositoryVisibilityIndex: Int,
+    isSubmitting: Bool)
   {
     self
       .init(
@@ -38,7 +39,8 @@ public class PublishCreateRepo: NSBox {
           repositoryName: repositoryName,
           submitButtonTitle: submitButtonTitle,
           repositoryVisibilities: repositoryVisibilities,
-          repositoryVisibilityIndex: repositoryVisibilityIndex))
+          repositoryVisibilityIndex: repositoryVisibilityIndex,
+          isSubmitting: isSubmitting))
   }
 
   public convenience init() {
@@ -146,6 +148,15 @@ public class PublishCreateRepo: NSBox {
     set {
       if parameters.repositoryVisibilityIndex != newValue {
         parameters.repositoryVisibilityIndex = newValue
+      }
+    }
+  }
+
+  public var isSubmitting: Bool {
+    get { return parameters.isSubmitting }
+    set {
+      if parameters.isSubmitting != newValue {
+        parameters.isSubmitting = newValue
       }
     }
   }
@@ -702,6 +713,7 @@ public class PublishCreateRepo: NSBox {
     visibilitiesDropdownView.values = repositoryVisibilities
     visibilitiesDropdownView.selectedIndex = repositoryVisibilityIndex
     visibilitiesDropdownView.onChangeIndex = handleOnChangeRepositoryVisibilityIndex
+    submitButtonView.disabled = isSubmitting
     repositoryNameInputView.placeholderString = "Repository name"
   }
 
@@ -734,6 +746,7 @@ extension PublishCreateRepo {
     public var submitButtonTitle: String
     public var repositoryVisibilities: [String]
     public var repositoryVisibilityIndex: Int
+    public var isSubmitting: Bool
     public var onChangeGithubOrganizationsIndex: ((Int) -> Void)?
     public var onChangeRepositoryName: StringHandler
     public var onClickSubmitButton: (() -> Void)?
@@ -748,6 +761,7 @@ extension PublishCreateRepo {
       submitButtonTitle: String,
       repositoryVisibilities: [String],
       repositoryVisibilityIndex: Int,
+      isSubmitting: Bool,
       onChangeGithubOrganizationsIndex: ((Int) -> Void)? = nil,
       onChangeRepositoryName: StringHandler = nil,
       onClickSubmitButton: (() -> Void)? = nil,
@@ -761,6 +775,7 @@ extension PublishCreateRepo {
       self.submitButtonTitle = submitButtonTitle
       self.repositoryVisibilities = repositoryVisibilities
       self.repositoryVisibilityIndex = repositoryVisibilityIndex
+      self.isSubmitting = isSubmitting
       self.onChangeGithubOrganizationsIndex = onChangeGithubOrganizationsIndex
       self.onChangeRepositoryName = onChangeRepositoryName
       self.onClickSubmitButton = onClickSubmitButton
@@ -777,7 +792,8 @@ extension PublishCreateRepo {
           repositoryName: "",
           submitButtonTitle: "",
           repositoryVisibilities: [],
-          repositoryVisibilityIndex: 0)
+          repositoryVisibilityIndex: 0,
+          isSubmitting: false)
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
@@ -788,7 +804,8 @@ extension PublishCreateRepo {
               lhs.repositoryName == rhs.repositoryName &&
                 lhs.submitButtonTitle == rhs.submitButtonTitle &&
                   lhs.repositoryVisibilities == rhs.repositoryVisibilities &&
-                    lhs.repositoryVisibilityIndex == rhs.repositoryVisibilityIndex
+                    lhs.repositoryVisibilityIndex == rhs.repositoryVisibilityIndex &&
+                      lhs.isSubmitting == rhs.isSubmitting
     }
   }
 }
@@ -821,6 +838,7 @@ extension PublishCreateRepo {
       submitButtonTitle: String,
       repositoryVisibilities: [String],
       repositoryVisibilityIndex: Int,
+      isSubmitting: Bool,
       onChangeGithubOrganizationsIndex: ((Int) -> Void)? = nil,
       onChangeRepositoryName: StringHandler = nil,
       onClickSubmitButton: (() -> Void)? = nil,
@@ -837,6 +855,7 @@ extension PublishCreateRepo {
             submitButtonTitle: submitButtonTitle,
             repositoryVisibilities: repositoryVisibilities,
             repositoryVisibilityIndex: repositoryVisibilityIndex,
+            isSubmitting: isSubmitting,
             onChangeGithubOrganizationsIndex: onChangeGithubOrganizationsIndex,
             onChangeRepositoryName: onChangeRepositoryName,
             onClickSubmitButton: onClickSubmitButton,
@@ -853,7 +872,8 @@ extension PublishCreateRepo {
           repositoryName: "",
           submitButtonTitle: "",
           repositoryVisibilities: [],
-          repositoryVisibilityIndex: 0)
+          repositoryVisibilityIndex: 0,
+          isSubmitting: false)
     }
   }
 }

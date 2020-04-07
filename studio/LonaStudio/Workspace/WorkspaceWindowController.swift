@@ -46,10 +46,17 @@ class WorkspaceWindowController: NSWindowController {
             window.titleVisibility = .hidden
             window.titlebarAppearsTransparent = true
             window.toolbar = toolbar
+            window.delegate = windowController
         }
 
         windowController.contentViewController = workspaceViewController
 
         return windowController
+    }
+}
+
+extension WorkspaceWindowController: NSWindowDelegate {
+    func windowWillClose(_ notification: Notification) {
+        (NSApp.delegate as? AppDelegate)?.showWelcomeWindow(self)
     }
 }

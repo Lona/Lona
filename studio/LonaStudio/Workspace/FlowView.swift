@@ -201,9 +201,17 @@ extension FlowView {
     public func withProgress<S, F>(_ promise: Promise<S, F>) {
         self.showsProgressIndicator = true
 
+        if let screenView = screenView as? SubmittableView {
+            screenView.isSubmitting = true
+        }
+
         return promise.finalResult({ _ in
-            DispatchQueue.main.async {
-                self.showsProgressIndicator = false
+            DispatchQueue.main.async { [weak self] in
+                if let screenView = self?.screenView as? SubmittableView {
+                    screenView.isSubmitting = false
+                }
+
+                self?.showsProgressIndicator = false
             }
         })
     }

@@ -137,6 +137,21 @@
             }
           },
           "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "Container",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "transparent",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
         }
       ],
       "condition" : {
