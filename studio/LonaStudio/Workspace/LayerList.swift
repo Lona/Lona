@@ -66,7 +66,7 @@ public class LayerList: NSBox {
         contentViewMargins = .zero
 
         fillColor = Colors.vibrantWell
-        
+
         dividerView.boxType = .custom
         dividerView.borderType = .noBorder
         dividerView.contentViewMargins = .zero
