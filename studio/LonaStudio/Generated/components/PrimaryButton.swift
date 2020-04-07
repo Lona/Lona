@@ -139,6 +139,7 @@ public class PrimaryButton: NSBox {
       titleViewTextStyle = TextStyles.regularMuted.with(alignment: .center)
       titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
       borderColor = Colors.dividerSubtle
+      fillColor = Colors.transparent
     }
   }
 

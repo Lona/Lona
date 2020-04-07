@@ -28,7 +28,7 @@
       "name" : "Version Info"
     },
     {
-      "color" : "black",
+      "color" : "textColor",
       "fontSize" : 15,
       "fontWeight" : "500",
       "id" : "largeSemibold",

@@ -74,6 +74,11 @@ public class PublishLonaApp: NSBox {
   private var viewView = NSBox()
   private var openGithubButtonView = PrimaryButton()
   private var vSpacer4View = NSBox()
+  private var text1View = LNATextField(labelWithString: "")
+  private var vSpacer3View = NSBox()
+  private var view1View = NSBox()
+  private var submitButtonView = PrimaryButton()
+  private var vSpacer1View = NSBox()
   private var instructionsView = LNATextField(labelWithString: "")
   private var vSpacer2View = NSBox()
   private var view2View = NSBox()
@@ -84,18 +89,13 @@ public class PublishLonaApp: NSBox {
   private var view4View = NSBox()
   private var text2View = LNATextField(labelWithString: "")
   private var image1View = LNAImageView()
-  private var vSpacer1View = NSBox()
-  private var text1View = LNATextField(labelWithString: "")
-  private var vSpacer3View = NSBox()
-  private var view1View = NSBox()
-  private var submitButtonView = PrimaryButton()
 
   private var titleViewTextStyle = TextStyles.title
   private var bodyViewTextStyle = TextStyles.body
+  private var text1ViewTextStyle = TextStyles.subtitle
   private var instructionsViewTextStyle = TextStyles.largeSemibold
   private var textViewTextStyle = TextStyles.regular
   private var text2ViewTextStyle = TextStyles.regular
-  private var text1ViewTextStyle = TextStyles.subtitle
 
   private func setUpViews() {
     boxType = .custom
@@ -112,16 +112,6 @@ public class PublishLonaApp: NSBox {
     vSpacer4View.boxType = .custom
     vSpacer4View.borderType = .noBorder
     vSpacer4View.contentViewMargins = .zero
-    instructionsView.lineBreakMode = .byWordWrapping
-    vSpacer2View.boxType = .custom
-    vSpacer2View.borderType = .noBorder
-    vSpacer2View.contentViewMargins = .zero
-    view2View.boxType = .custom
-    view2View.borderType = .noBorder
-    view2View.contentViewMargins = .zero
-    vSpacer1View.boxType = .custom
-    vSpacer1View.borderType = .noBorder
-    vSpacer1View.contentViewMargins = .zero
     text1View.lineBreakMode = .byWordWrapping
     vSpacer3View.boxType = .custom
     vSpacer3View.borderType = .noBorder
@@ -129,6 +119,16 @@ public class PublishLonaApp: NSBox {
     view1View.boxType = .custom
     view1View.borderType = .noBorder
     view1View.contentViewMargins = .zero
+    vSpacer1View.boxType = .custom
+    vSpacer1View.borderType = .noBorder
+    vSpacer1View.contentViewMargins = .zero
+    instructionsView.lineBreakMode = .byWordWrapping
+    vSpacer2View.boxType = .custom
+    vSpacer2View.borderType = .noBorder
+    vSpacer2View.contentViewMargins = .zero
+    view2View.boxType = .custom
+    view2View.borderType = .noBorder
+    view2View.contentViewMargins = .zero
     view3View.boxType = .custom
     view3View.borderType = .noBorder
     view3View.contentViewMargins = .zero
@@ -146,14 +146,15 @@ public class PublishLonaApp: NSBox {
     addSubview(bodyView)
     addSubview(viewView)
     addSubview(vSpacer4View)
-    addSubview(instructionsView)
-    addSubview(vSpacer2View)
-    addSubview(view2View)
-    addSubview(vSpacer1View)
     addSubview(text1View)
     addSubview(vSpacer3View)
     addSubview(view1View)
+    addSubview(vSpacer1View)
+    addSubview(instructionsView)
+    addSubview(vSpacer2View)
+    addSubview(view2View)
     viewView.addSubview(openGithubButtonView)
+    view1View.addSubview(submitButtonView)
     view2View.addSubview(view3View)
     view2View.addSubview(hSpacerView)
     view2View.addSubview(view4View)
@@ -161,7 +162,6 @@ public class PublishLonaApp: NSBox {
     view3View.addSubview(imageView)
     view4View.addSubview(text2View)
     view4View.addSubview(image1View)
-    view1View.addSubview(submitButtonView)
 
     titleView.attributedStringValue = titleViewTextStyle.apply(to: "Install Lona's GitHub plugin")
     titleViewTextStyle = TextStyles.title
@@ -175,7 +175,13 @@ public class PublishLonaApp: NSBox {
     bodyView.attributedStringValue = bodyViewTextStyle.apply(to: bodyView.attributedStringValue)
     openGithubButtonView.titleText = "Open GitHub and install Lona plugin"
     vSpacer4View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    instructionsView.attributedStringValue = instructionsViewTextStyle.apply(to: "Instructions")
+    text1View.attributedStringValue = text1ViewTextStyle.apply(to: "All done?")
+    text1ViewTextStyle = TextStyles.subtitle
+    text1View.attributedStringValue = text1ViewTextStyle.apply(to: text1View.attributedStringValue)
+    vSpacer3View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
+    submitButtonView.titleText = "OK, I installed the Lona GitHub plugin"
+    vSpacer1View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
+    instructionsView.attributedStringValue = instructionsViewTextStyle.apply(to: "Detailed Instructions")
     instructionsViewTextStyle = TextStyles.largeSemibold
     instructionsView.attributedStringValue = instructionsViewTextStyle.apply(to: instructionsView.attributedStringValue)
     vSpacer2View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
@@ -185,12 +191,6 @@ public class PublishLonaApp: NSBox {
     text2View.attributedStringValue =
       text2ViewTextStyle.apply(to: "2. Choose which repositories the Lona plugin has access to.")
     image1View.image = #imageLiteral(resourceName: "lona-app-install-step2")
-    vSpacer1View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    text1View.attributedStringValue = text1ViewTextStyle.apply(to: "All done?")
-    text1ViewTextStyle = TextStyles.subtitle
-    text1View.attributedStringValue = text1ViewTextStyle.apply(to: text1View.attributedStringValue)
-    vSpacer3View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    submitButtonView.titleText = "OK, I installed the Lona GitHub plugin"
   }
 
   private func setUpConstraints() {
@@ -200,14 +200,15 @@ public class PublishLonaApp: NSBox {
     bodyView.translatesAutoresizingMaskIntoConstraints = false
     viewView.translatesAutoresizingMaskIntoConstraints = false
     vSpacer4View.translatesAutoresizingMaskIntoConstraints = false
-    instructionsView.translatesAutoresizingMaskIntoConstraints = false
-    vSpacer2View.translatesAutoresizingMaskIntoConstraints = false
-    view2View.translatesAutoresizingMaskIntoConstraints = false
-    vSpacer1View.translatesAutoresizingMaskIntoConstraints = false
     text1View.translatesAutoresizingMaskIntoConstraints = false
     vSpacer3View.translatesAutoresizingMaskIntoConstraints = false
     view1View.translatesAutoresizingMaskIntoConstraints = false
+    vSpacer1View.translatesAutoresizingMaskIntoConstraints = false
+    instructionsView.translatesAutoresizingMaskIntoConstraints = false
+    vSpacer2View.translatesAutoresizingMaskIntoConstraints = false
+    view2View.translatesAutoresizingMaskIntoConstraints = false
     openGithubButtonView.translatesAutoresizingMaskIntoConstraints = false
+    submitButtonView.translatesAutoresizingMaskIntoConstraints = false
     view3View.translatesAutoresizingMaskIntoConstraints = false
     hSpacerView.translatesAutoresizingMaskIntoConstraints = false
     view4View.translatesAutoresizingMaskIntoConstraints = false
@@ -215,9 +216,8 @@ public class PublishLonaApp: NSBox {
     imageView.translatesAutoresizingMaskIntoConstraints = false
     text2View.translatesAutoresizingMaskIntoConstraints = false
     image1View.translatesAutoresizingMaskIntoConstraints = false
-    submitButtonView.translatesAutoresizingMaskIntoConstraints = false
 
-    let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 820)
+    let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 780)
     let titleViewTopAnchorConstraint = titleView.topAnchor.constraint(equalTo: topAnchor)
     let titleViewLeadingAnchorConstraint = titleView.leadingAnchor.constraint(equalTo: leadingAnchor)
     let titleViewTrailingAnchorConstraint = titleView.trailingAnchor.constraint(equalTo: trailingAnchor)
@@ -230,7 +230,16 @@ public class PublishLonaApp: NSBox {
     let viewViewLeadingAnchorConstraint = viewView.leadingAnchor.constraint(equalTo: leadingAnchor)
     let vSpacer4ViewTopAnchorConstraint = vSpacer4View.topAnchor.constraint(equalTo: viewView.bottomAnchor)
     let vSpacer4ViewLeadingAnchorConstraint = vSpacer4View.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let instructionsViewTopAnchorConstraint = instructionsView.topAnchor.constraint(equalTo: vSpacer4View.bottomAnchor)
+    let text1ViewTopAnchorConstraint = text1View.topAnchor.constraint(equalTo: vSpacer4View.bottomAnchor)
+    let text1ViewLeadingAnchorConstraint = text1View.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let text1ViewTrailingAnchorConstraint = text1View.trailingAnchor.constraint(equalTo: trailingAnchor)
+    let vSpacer3ViewTopAnchorConstraint = vSpacer3View.topAnchor.constraint(equalTo: text1View.bottomAnchor)
+    let vSpacer3ViewLeadingAnchorConstraint = vSpacer3View.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let view1ViewTopAnchorConstraint = view1View.topAnchor.constraint(equalTo: vSpacer3View.bottomAnchor)
+    let view1ViewLeadingAnchorConstraint = view1View.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let vSpacer1ViewTopAnchorConstraint = vSpacer1View.topAnchor.constraint(equalTo: view1View.bottomAnchor)
+    let vSpacer1ViewLeadingAnchorConstraint = vSpacer1View.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let instructionsViewTopAnchorConstraint = instructionsView.topAnchor.constraint(equalTo: vSpacer1View.bottomAnchor)
     let instructionsViewLeadingAnchorConstraint = instructionsView.leadingAnchor.constraint(equalTo: leadingAnchor)
     let instructionsViewTrailingAnchorConstraint = instructionsView.trailingAnchor.constraint(equalTo: trailingAnchor)
     let vSpacer2ViewTopAnchorConstraint = vSpacer2View.topAnchor.constraint(equalTo: instructionsView.bottomAnchor)
@@ -238,15 +247,6 @@ public class PublishLonaApp: NSBox {
     let view2ViewTopAnchorConstraint = view2View.topAnchor.constraint(equalTo: vSpacer2View.bottomAnchor)
     let view2ViewLeadingAnchorConstraint = view2View.leadingAnchor.constraint(equalTo: leadingAnchor)
     let view2ViewTrailingAnchorConstraint = view2View.trailingAnchor.constraint(equalTo: trailingAnchor)
-    let vSpacer1ViewTopAnchorConstraint = vSpacer1View.topAnchor.constraint(equalTo: view2View.bottomAnchor)
-    let vSpacer1ViewLeadingAnchorConstraint = vSpacer1View.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let text1ViewTopAnchorConstraint = text1View.topAnchor.constraint(equalTo: vSpacer1View.bottomAnchor)
-    let text1ViewLeadingAnchorConstraint = text1View.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let text1ViewTrailingAnchorConstraint = text1View.trailingAnchor.constraint(equalTo: trailingAnchor)
-    let vSpacer3ViewTopAnchorConstraint = vSpacer3View.topAnchor.constraint(equalTo: text1View.bottomAnchor)
-    let vSpacer3ViewLeadingAnchorConstraint = vSpacer3View.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let view1ViewTopAnchorConstraint = view1View.topAnchor.constraint(equalTo: vSpacer3View.bottomAnchor)
-    let view1ViewLeadingAnchorConstraint = view1View.leadingAnchor.constraint(equalTo: leadingAnchor)
     let vSpacerViewHeightAnchorConstraint = vSpacerView.heightAnchor.constraint(equalToConstant: 32)
     let vSpacerViewWidthAnchorConstraint = vSpacerView.widthAnchor.constraint(equalToConstant: 0)
     let viewViewWidthAnchorConstraint = viewView.widthAnchor.constraint(equalToConstant: 300)
@@ -262,6 +262,21 @@ public class PublishLonaApp: NSBox {
       .constraint(equalTo: viewView.trailingAnchor)
     let vSpacer4ViewHeightAnchorConstraint = vSpacer4View.heightAnchor.constraint(equalToConstant: 36)
     let vSpacer4ViewWidthAnchorConstraint = vSpacer4View.widthAnchor.constraint(equalToConstant: 0)
+    let vSpacer3ViewHeightAnchorConstraint = vSpacer3View.heightAnchor.constraint(equalToConstant: 20)
+    let vSpacer3ViewWidthAnchorConstraint = vSpacer3View.widthAnchor.constraint(equalToConstant: 0)
+    let view1ViewWidthAnchorConstraint = view1View.widthAnchor.constraint(equalToConstant: 300)
+    let submitButtonViewTopAnchorConstraint = submitButtonView.topAnchor.constraint(equalTo: view1View.topAnchor)
+    let submitButtonViewBottomAnchorConstraint = submitButtonView
+      .bottomAnchor
+      .constraint(equalTo: view1View.bottomAnchor)
+    let submitButtonViewLeadingAnchorConstraint = submitButtonView
+      .leadingAnchor
+      .constraint(equalTo: view1View.leadingAnchor)
+    let submitButtonViewTrailingAnchorConstraint = submitButtonView
+      .trailingAnchor
+      .constraint(equalTo: view1View.trailingAnchor)
+    let vSpacer1ViewHeightAnchorConstraint = vSpacer1View.heightAnchor.constraint(equalToConstant: 36)
+    let vSpacer1ViewWidthAnchorConstraint = vSpacer1View.widthAnchor.constraint(equalToConstant: 0)
     let vSpacer2ViewHeightAnchorConstraint = vSpacer2View.heightAnchor.constraint(equalToConstant: 20)
     let vSpacer2ViewWidthAnchorConstraint = vSpacer2View.widthAnchor.constraint(equalToConstant: 0)
     let view2ViewHeightAnchorConstraint = view2View.heightAnchor.constraint(equalToConstant: 415)
@@ -278,21 +293,6 @@ public class PublishLonaApp: NSBox {
     let view4ViewLeadingAnchorConstraint = view4View.leadingAnchor.constraint(equalTo: hSpacerView.trailingAnchor)
     let view4ViewTopAnchorConstraint = view4View.topAnchor.constraint(equalTo: view2View.topAnchor)
     let view4ViewBottomAnchorConstraint = view4View.bottomAnchor.constraint(equalTo: view2View.bottomAnchor)
-    let vSpacer1ViewHeightAnchorConstraint = vSpacer1View.heightAnchor.constraint(equalToConstant: 72)
-    let vSpacer1ViewWidthAnchorConstraint = vSpacer1View.widthAnchor.constraint(equalToConstant: 0)
-    let vSpacer3ViewHeightAnchorConstraint = vSpacer3View.heightAnchor.constraint(equalToConstant: 20)
-    let vSpacer3ViewWidthAnchorConstraint = vSpacer3View.widthAnchor.constraint(equalToConstant: 0)
-    let view1ViewWidthAnchorConstraint = view1View.widthAnchor.constraint(equalToConstant: 300)
-    let submitButtonViewTopAnchorConstraint = submitButtonView.topAnchor.constraint(equalTo: view1View.topAnchor)
-    let submitButtonViewBottomAnchorConstraint = submitButtonView
-      .bottomAnchor
-      .constraint(equalTo: view1View.bottomAnchor)
-    let submitButtonViewLeadingAnchorConstraint = submitButtonView
-      .leadingAnchor
-      .constraint(equalTo: view1View.leadingAnchor)
-    let submitButtonViewTrailingAnchorConstraint = submitButtonView
-      .trailingAnchor
-      .constraint(equalTo: view1View.trailingAnchor)
     let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: view3View.topAnchor)
     let textViewLeadingAnchorConstraint = textView.leadingAnchor.constraint(equalTo: view3View.leadingAnchor)
     let textViewTrailingAnchorConstraint = textView.trailingAnchor.constraint(equalTo: view3View.trailingAnchor)
@@ -323,6 +323,15 @@ public class PublishLonaApp: NSBox {
       viewViewLeadingAnchorConstraint,
       vSpacer4ViewTopAnchorConstraint,
       vSpacer4ViewLeadingAnchorConstraint,
+      text1ViewTopAnchorConstraint,
+      text1ViewLeadingAnchorConstraint,
+      text1ViewTrailingAnchorConstraint,
+      vSpacer3ViewTopAnchorConstraint,
+      vSpacer3ViewLeadingAnchorConstraint,
+      view1ViewTopAnchorConstraint,
+      view1ViewLeadingAnchorConstraint,
+      vSpacer1ViewTopAnchorConstraint,
+      vSpacer1ViewLeadingAnchorConstraint,
       instructionsViewTopAnchorConstraint,
       instructionsViewLeadingAnchorConstraint,
       instructionsViewTrailingAnchorConstraint,
@@ -331,15 +340,6 @@ public class PublishLonaApp: NSBox {
       view2ViewTopAnchorConstraint,
       view2ViewLeadingAnchorConstraint,
       view2ViewTrailingAnchorConstraint,
-      vSpacer1ViewTopAnchorConstraint,
-      vSpacer1ViewLeadingAnchorConstraint,
-      text1ViewTopAnchorConstraint,
-      text1ViewLeadingAnchorConstraint,
-      text1ViewTrailingAnchorConstraint,
-      vSpacer3ViewTopAnchorConstraint,
-      vSpacer3ViewLeadingAnchorConstraint,
-      view1ViewTopAnchorConstraint,
-      view1ViewLeadingAnchorConstraint,
       vSpacerViewHeightAnchorConstraint,
       vSpacerViewWidthAnchorConstraint,
       viewViewWidthAnchorConstraint,
@@ -349,6 +349,15 @@ public class PublishLonaApp: NSBox {
       openGithubButtonViewTrailingAnchorConstraint,
       vSpacer4ViewHeightAnchorConstraint,
       vSpacer4ViewWidthAnchorConstraint,
+      vSpacer3ViewHeightAnchorConstraint,
+      vSpacer3ViewWidthAnchorConstraint,
+      view1ViewWidthAnchorConstraint,
+      submitButtonViewTopAnchorConstraint,
+      submitButtonViewBottomAnchorConstraint,
+      submitButtonViewLeadingAnchorConstraint,
+      submitButtonViewTrailingAnchorConstraint,
+      vSpacer1ViewHeightAnchorConstraint,
+      vSpacer1ViewWidthAnchorConstraint,
       vSpacer2ViewHeightAnchorConstraint,
       vSpacer2ViewWidthAnchorConstraint,
       view2ViewHeightAnchorConstraint,
@@ -363,15 +372,6 @@ public class PublishLonaApp: NSBox {
       view4ViewLeadingAnchorConstraint,
       view4ViewTopAnchorConstraint,
       view4ViewBottomAnchorConstraint,
-      vSpacer1ViewHeightAnchorConstraint,
-      vSpacer1ViewWidthAnchorConstraint,
-      vSpacer3ViewHeightAnchorConstraint,
-      vSpacer3ViewWidthAnchorConstraint,
-      view1ViewWidthAnchorConstraint,
-      submitButtonViewTopAnchorConstraint,
-      submitButtonViewBottomAnchorConstraint,
-      submitButtonViewLeadingAnchorConstraint,
-      submitButtonViewTrailingAnchorConstraint,
       textViewTopAnchorConstraint,
       textViewLeadingAnchorConstraint,
       textViewTrailingAnchorConstraint,

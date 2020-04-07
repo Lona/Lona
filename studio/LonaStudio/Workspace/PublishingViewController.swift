@@ -10,6 +10,16 @@ import AppKit
 import NavigationComponents
 import Apollo
 
+// MARK: - SubmittableView
+
+protocol SubmittableView: class {
+    var isSubmitting: Bool { get set }
+}
+
+extension PublishCreateRepo: SubmittableView {}
+extension PublishLonaApp: SubmittableView {}
+extension PublishChooseOrg: SubmittableView {}
+
 // MARK: - Types
 
 public struct LonaOrganization: Equatable {
@@ -401,7 +411,8 @@ class PublishingViewController: NSViewController {
                 repositoryName: workspaceName,
                 submitButtonTitle: "",
                 repositoryVisibilities: repositoryVisiblities,
-                repositoryVisibilityIndex: 0
+                repositoryVisibilityIndex: 0,
+                isSubmitting: false
             )
             let updateSubmitButtonTitle: () -> Void = { [unowned screen] in
                 screen.submitButtonTitle = "Create \(githubOrganizations[screen.githubOrganizationIndex].name)/\(screen.repositoryName)"
@@ -418,6 +429,8 @@ class PublishingViewController: NSViewController {
                 screen.repositoryVisibilityIndex = index
             }
             screen.onClickSubmitButton = { [unowned self] in
+                if screen.isSubmitting { return }
+
                 self.createRepoOrRequestPermissions(
                     organizationId: organization.id,
                     githubOrganizationId: githubOrganizations[screen.githubOrganizationIndex].id,
@@ -449,8 +462,6 @@ If your team or company already has a Lona organization, an organization owner c
             screen.onClickSubmit = { [unowned self] in
                 if screen.isSubmitting { return }
 
-                screen.isSubmitting = true
-
                 self.createOrganization(name: screen.organizationName).finalResult({ [weak self] result in
                     guard let self = self else { return }
 
@@ -458,8 +469,6 @@ If your team or company already has a Lona organization, an organization owner c
                     case .success(let organization):
                         self.history.navigateTo(.needsRepo(organization: organization))
                     case .failure(let error):
-                        screen.isSubmitting = false
-
                         Alert.runInformationalAlert(messageText: "Failed to create organization", informativeText: error.description)
                     }
                 })
@@ -473,6 +482,8 @@ If your team or company already has a Lona organization, an organization owner c
         case .installLonaApp(repository: let repository):
             let screen = PublishLonaApp()
             screen.onClickSubmit = { [unowned self] in
+                if screen.isSubmitting { return }
+
                 let promise = PublishingViewController.fetchRepositoriesAndOrganizations()
 
                 self.flowView.withProgress(promise)
@@ -491,7 +502,7 @@ If your team or company already has a Lona organization, an organization owner c
                                     self.history = .init(error.publishingState)
                                 }
                             } else {
-                                Alert.runInformationalAlert(messageText: "Lona plugin not installed", informativeText: "Are you sure you installed the Lona GitHub app on the correct repository?")
+                                Alert.runInformationalAlert(messageText: "Lona plugin not installed", informativeText: "Are you sure you installed the Lona GitHub app on the correct repository?\n\nIf you have a lot of repositories (> 100) it may take a minute for the installation to finish processing.")
                             }
                         }
                     }
@@ -582,21 +593,25 @@ If you'd like, we can automatically configure your git credentials (SSH keys) on
     }
 
     private func createRepoOrRequestPermissions(organizationId: String, githubOrganizationId: GraphQLID, githubRepositoryName: String, isPrivate: Bool) {
-        self.createRepo(
+        let createRepoPromise = self.createRepo(
             organizationId: organizationId,
             githubOrganizationId: githubOrganizationId,
             githubRepositoryName: githubRepositoryName,
             isPrivate: isPrivate
-        ).finalResult({ [weak self] result in
+        )
+
+        self.flowView.withProgress(createRepoPromise)
+
+        createRepoPromise.finalResult({ [weak self] result in
             guard let self = self else { return }
 
             switch result {
             case .success(let url):
-                let promise = PublishingViewController.fetchRepositoriesAndOrganizations()
+                let repositoriesPromise = PublishingViewController.fetchRepositoriesAndOrganizations()
 
-                self.flowView.withProgress(promise)
+                self.flowView.withProgress(repositoriesPromise)
 
-                promise.finalResult({ [weak self] repositoriesAndOrganizations in
+                repositoriesPromise.finalResult({ [weak self] repositoriesAndOrganizations in
                     guard let self = self else { return }
 
                     DispatchQueue.main.async {

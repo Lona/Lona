@@ -5,7 +5,7 @@ class TextStyles {
   public static let titleLight = TextStyle(weight: NSFont.Weight.light, size: 32, color: Colors.textColor)
   public static let subtitle = TextStyle(weight: NSFont.Weight.semibold, size: 24)
   public static let versionInfo = TextStyle(size: 20, color: Colors.mutedTextColor)
-  public static let largeSemibold = TextStyle(weight: NSFont.Weight.medium, size: 15, color: Colors.black)
+  public static let largeSemibold = TextStyle(weight: NSFont.Weight.medium, size: 15, color: Colors.textColor)
   public static let large = TextStyle(size: 15, color: Colors.textColor)
   public static let regular = TextStyle(size: 13, color: Colors.textColor)
   public static let regularBlack = TextStyle(size: 13, color: Colors.black)
