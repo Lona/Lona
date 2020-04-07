@@ -61,10 +61,10 @@ class EditorViewController: NSViewController {
 
     public var contentView: NSView? {
         didSet {
-            if let contentView = contentView {
-                if contentView != oldValue {
-                    oldValue?.removeFromSuperview()
+            if contentView != oldValue {
+                oldValue?.removeFromSuperview()
 
+                if let contentView = contentView {
                     contentView.removeFromSuperview()
 
                     contentContainerView.addSubview(contentView)
@@ -77,8 +77,6 @@ class EditorViewController: NSViewController {
                     contentView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor).isActive = true
                     contentView.bottomAnchor.constraint(equalTo: contentContainerView.bottomAnchor).isActive = true
                 }
-            } else {
-                oldValue?.removeFromSuperview()
             }
 
             update()

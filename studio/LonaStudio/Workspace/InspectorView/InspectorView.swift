@@ -10,6 +10,7 @@ import Cocoa
 import Colors
 import ColorPicker
 import Logic
+import NavigationComponents
 
 final class InspectorView: NSView {
 
@@ -65,12 +66,7 @@ final class InspectorView: NSView {
 
     private let themedSidebarView = ThemedSidebarView()
 
-    private let headerView = EditorHeader(
-        titleText: "Parameters",
-        subtitleText: "",
-        dividerColor: .clear,
-        fileIcon: nil
-    )
+    private let headerView = NavigationItemStack()
 
     private let scrollView = FlippedScrollView()
 
@@ -103,9 +99,6 @@ final class InspectorView: NSView {
     private func setUpViews() {
         addSubview(themedSidebarView)
 
-        headerView.fillColor = NSColor.themed(light: Colors.headerBackground, dark: NSColor.clear)
-        headerView.dividerColor = NSColor.themed(light: Colors.headerBackground, dark: NSColor.clear)
-
         scrollView.hasVerticalScroller = true
         scrollView.autohidesScrollers = true
         scrollView.drawsBackground = false
@@ -126,7 +119,11 @@ final class InspectorView: NSView {
         themedSidebarView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         themedSidebarView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
 
-        headerView.topAnchor.constraint(equalTo: themedSidebarView.topAnchor).isActive = true
+        headerView.topAnchor.constraint(
+            equalTo: themedSidebarView.topAnchor,
+            constant: 0
+        ).isActive = true
+        headerView.heightAnchor.constraint(equalToConstant: EditorViewController.navigationBarHeight).isActive = true
         headerView.leadingAnchor.constraint(equalTo: themedSidebarView.leadingAnchor).isActive = true
         headerView.trailingAnchor.constraint(equalTo: themedSidebarView.trailingAnchor).isActive = true
 
@@ -149,8 +146,6 @@ final class InspectorView: NSView {
 
     func update() {
         guard let content = content else {
-            headerView.titleText = ""
-            headerView.subtitleText = ""
             return
         }
 
@@ -175,9 +170,6 @@ final class InspectorView: NSView {
                 self.onChangeContent?(.logicFunctionCall(newFunctionCall), InspectorView.ChangeType.full)
             }
         case .layer(let content):
-            headerView.titleText = content.name
-            headerView.subtitleText = " — \(content.type.displayName)"
-
             if case CSLayer.LayerType.custom = content.type, let componentLayer = content as? CSComponentLayer {
                 let componentInspectorView = CustomComponentInspectorView()
                 componentInspectorView.layerName = componentLayer.name
@@ -210,9 +202,6 @@ final class InspectorView: NSView {
         case .color(let color):
             innerContentView = colorInspectorView
             let editor = colorInspectorView
-
-            headerView.titleText = color.name
-            headerView.subtitleText = " — Color"
 
             editor.idText = color.id
             editor.nameText = color.name
@@ -261,9 +250,6 @@ final class InspectorView: NSView {
         case .textStyle(let textStyle):
             innerContentView = textStyleInspector
             let editor = textStyleInspector
-
-            headerView.titleText = textStyle.name
-            headerView.subtitleText = " — Text Style"
 
             editor.idText = textStyle.id
             editor.nameText = textStyle.name

@@ -622,6 +622,7 @@ extension \(componentName) {
             }
 
             inspectorViewVisible = false
+            fileNavigator.fileOutlineView = nil
 
             editorViewController.breadcrumbs = [
                 .init(id: UUID(), title: "No document", icon: nil)
@@ -663,6 +664,7 @@ extension \(componentName) {
             editorViewController.showsHeaderDivider = true
             inspectorViewVisible = true
             editorViewController.contentView = componentEditorViewController.view
+            fileNavigator.fileOutlineView = componentEditorViewController.layerList
 
             componentEditorViewController.onChangeUtilitiesViewVisible = { [unowned self] _ in
                 // We don't use the visible param, which complicated the logic.
@@ -711,6 +713,7 @@ extension \(componentName) {
             editorViewController.showsHeaderDivider = true
 
             editorViewController.contentView = logicViewController.view
+            fileNavigator.fileOutlineView = logicViewController.elementEditor
 
             logicViewController.rootNode = document.content
             logicViewController.onChangeRootNode = { rootNode in
@@ -768,6 +771,7 @@ extension \(componentName) {
                 }
             }
         } else if let document = document as? JSONDocument {
+            fileNavigator.fileOutlineView = nil
             inspectorViewVisible = true
             if let content = document.content, case .colors(let colors) = content {
                 editorViewController.contentView = colorEditorViewController.view
@@ -848,6 +852,7 @@ extension \(componentName) {
                 }
             }
         } else if let document = document as? ImageDocument {
+            fileNavigator.fileOutlineView = nil
             inspectorViewVisible = false
             if let content = document.content {
                 editorViewController.contentView = imageViewController.view
@@ -857,6 +862,7 @@ extension \(componentName) {
                 editorViewController.contentView = nil
             }
         } else if let document = document as? MarkdownDocument {
+            fileNavigator.fileOutlineView = nil
             inspectorViewVisible = false
 
             markdownViewController.content = document.content

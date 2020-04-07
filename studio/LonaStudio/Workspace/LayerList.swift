@@ -64,12 +64,13 @@ public class LayerList: NSBox {
         boxType = .custom
         borderType = .noBorder
         contentViewMargins = .zero
-        fillColor = .red
+
+        fillColor = Colors.vibrantWell
 
         dividerView.boxType = .custom
         dividerView.borderType = .noBorder
         dividerView.contentViewMargins = .zero
-        dividerView.fillColor = NSSplitView.defaultDividerColor
+        dividerView.fillColor = Colors.vibrantDivider
 
         addSubview(dividerView)
         addSubview(headerView)
@@ -92,7 +93,7 @@ public class LayerList: NSBox {
         headerView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
 
-        headerView.heightAnchor.constraint(equalToConstant: EditorViewController.navigationBarHeight - 1).isActive = true
+        headerView.heightAnchor.constraint(equalToConstant: EditorViewController.navigationBarHeight - 2).isActive = true
         headerView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         headerView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         headerView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true

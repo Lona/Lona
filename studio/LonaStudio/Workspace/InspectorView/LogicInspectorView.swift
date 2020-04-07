@@ -134,7 +134,7 @@ public class LogicInspectorView: NSBox {
     }
 }
 
-private class DividerView: NSView {
+class DividerView: NSView {
 
     override var intrinsicContentSize: NSSize {
         return .init(width: NSView.noIntrinsicMetric, height: 1)

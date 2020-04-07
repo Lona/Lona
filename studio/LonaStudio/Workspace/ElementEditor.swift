@@ -171,6 +171,8 @@ public class ElementEditor: NSBox {
         borderType = .noBorder
         contentViewMargins = .zero
 
+        fillColor = Colors.vibrantWell
+
         dividerView.boxType = .custom
         dividerView.borderType = .noBorder
         dividerView.contentViewMargins = .zero
@@ -208,7 +210,7 @@ public class ElementEditor: NSBox {
         headerView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
 
-        headerView.heightAnchor.constraint(equalToConstant: EditorViewController.navigationBarHeight - 1).isActive = true
+        headerView.heightAnchor.constraint(equalToConstant: EditorViewController.navigationBarHeight - 2).isActive = true
         headerView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         headerView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         headerView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
