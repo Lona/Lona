@@ -9,7 +9,7 @@
 import AppKit
 import Foundation
 
-class JSONDocument: NSDocument {
+class JSONDocument: BaseDocument {
     struct TextStylesFile {
         var styles: [CSTextStyle]
         var defaultStyleName: String?
@@ -39,16 +39,6 @@ class JSONDocument: NSDocument {
     }
 
     var content: Content?
-
-    override func makeWindowControllers() {
-        // We manage window controllers in `showWindows`
-    }
-
-    override func showWindows() {
-        DocumentController.shared.createOrFindWorkspaceWindowController(for: self)
-
-        super.showWindows()
-    }
 
     override func data(ofType typeName: String) throws -> Data {
         guard let content = content else {

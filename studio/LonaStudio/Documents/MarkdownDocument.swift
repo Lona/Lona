@@ -7,9 +7,10 @@
 //
 
 import AppKit
+import Defaults
 import Logic
 
-class MarkdownDocument: NSDocument {
+class MarkdownDocument: BaseDocument {
 
     public static let INDEX_PAGE_NAME = "README.md"
 
@@ -96,16 +97,6 @@ class MarkdownDocument: NSDocument {
 
     var viewController: WorkspaceViewController? {
         return windowControllers[0].contentViewController as? WorkspaceViewController
-    }
-
-    override func makeWindowControllers() {
-        // We manage window controllers in `showWindows`
-    }
-
-    override func showWindows() {
-        DocumentController.shared.createOrFindWorkspaceWindowController(for: self)
-
-        super.showWindows()
     }
 
     // MARK: Reading & Saving
