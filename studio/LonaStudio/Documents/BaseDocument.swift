@@ -11,6 +11,8 @@ import Defaults
 
 class BaseDocument: NSDocument {
 
+    private static var didRestoreWindowFrame = false
+
     override func makeWindowControllers() {
         // We manage window controllers in `showWindows`
     }
@@ -18,7 +20,8 @@ class BaseDocument: NSDocument {
     override func showWindows() {
         DocumentController.shared.createOrFindWorkspaceWindowController(for: self)
 
-        if let frame = Defaults[.workspaceWindowFrame] {
+        if !BaseDocument.didRestoreWindowFrame, let frame = Defaults[.workspaceWindowFrame] {
+            BaseDocument.didRestoreWindowFrame = true
             WorkspaceWindowController.first?.window?.setFrame(frame, display: true)
         }
 
