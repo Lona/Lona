@@ -11,8 +11,6 @@ import Defaults
 
 class BaseDocument: NSDocument {
 
-    private static var didRestoreWindowFrame = false
-
     override func makeWindowControllers() {
         // We manage window controllers in `showWindows`
     }
@@ -20,8 +18,9 @@ class BaseDocument: NSDocument {
     override func showWindows() {
         DocumentController.shared.createOrFindWorkspaceWindowController(for: self)
 
-        if !BaseDocument.didRestoreWindowFrame, let frame = Defaults[.workspaceWindowFrame] {
-            BaseDocument.didRestoreWindowFrame = true
+        // Restore the window size. We don't want to restore the size if the window is visible,
+        // since it will change when switching files.
+        if WorkspaceWindowController.first?.window?.isVisible == false, let frame = Defaults[.workspaceWindowFrame] {
             WorkspaceWindowController.first?.window?.setFrame(frame, display: true)
         }
 
