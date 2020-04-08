@@ -7,15 +7,41 @@
 //
 
 import AppKit
+import Defaults
 import Foundation
 
 private let viewControllerId = "MainWorkspace"
 private let windowControllerId = "Document Window Controller"
 private let storyboardName = "Main"
 
-private let codeViewVisibleKey = "LonaStudio code view visible"
+extension Defaults.Keys {
+    static let workspaceWindowFrame = OptionalKey<NSRect>("Workspace window frame")
+}
+
+// MARK: WorkspaceWindowController
 
 class WorkspaceWindowController: NSWindowController {
+    var workspaceViewController: WorkspaceViewController {
+        return contentViewController as! WorkspaceViewController
+    }
+}
+
+// MARK: NSWindowDelegate
+
+extension WorkspaceWindowController: NSWindowDelegate {
+    func windowWillClose(_ notification: Notification) {
+        if let frame = window?.frame {
+            Defaults[.workspaceWindowFrame] = frame
+        }
+
+        (NSApp.delegate as? AppDelegate)?.showWelcomeWindow(self)
+    }
+}
+
+// MARK: Static
+
+extension WorkspaceWindowController {
+
     static var first: WorkspaceWindowController? {
         return NSApp.windows
             .map { $0.windowController }
@@ -23,10 +49,6 @@ class WorkspaceWindowController: NSWindowController {
             .map { $0 as? WorkspaceWindowController }
             .compactMap { $0 }
             .first
-    }
-
-    var workspaceViewController: WorkspaceViewController {
-        return contentViewController as! WorkspaceViewController
     }
 
     @discardableResult static func create() -> WorkspaceWindowController {
@@ -52,11 +74,5 @@ class WorkspaceWindowController: NSWindowController {
         windowController.contentViewController = workspaceViewController
 
         return windowController
-    }
-}
-
-extension WorkspaceWindowController: NSWindowDelegate {
-    func windowWillClose(_ notification: Notification) {
-        (NSApp.delegate as? AppDelegate)?.showWelcomeWindow(self)
     }
 }

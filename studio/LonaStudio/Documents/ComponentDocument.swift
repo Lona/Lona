@@ -8,7 +8,7 @@
 
 import Cocoa
 
-class ComponentDocument: NSDocument {
+class ComponentDocument: BaseDocument {
 
     override init() {
         super.init()
@@ -46,16 +46,6 @@ class ComponentDocument: NSDocument {
 
         guard let viewController = self.viewController else { return }
         viewController.document = self
-    }
-
-    override func makeWindowControllers() {
-        // We manage window controllers in `showWindows`
-    }
-
-    override func showWindows() {
-        DocumentController.shared.createOrFindWorkspaceWindowController(for: self)
-
-        super.showWindows()
     }
 
     override func duplicate() throws -> NSDocument {

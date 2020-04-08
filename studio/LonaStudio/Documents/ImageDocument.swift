@@ -9,7 +9,7 @@
 import AppKit
 import Foundation
 
-class ImageDocument: NSDocument {
+class ImageDocument: BaseDocument {
     override init() {
         super.init()
 
@@ -25,16 +25,6 @@ class ImageDocument: NSDocument {
     }
 
     var content: NSImage?
-
-    override func makeWindowControllers() {
-        // We manage window controllers in `showWindows`
-    }
-
-    override func showWindows() {
-        DocumentController.shared.createOrFindWorkspaceWindowController(for: self)
-
-        super.showWindows()
-    }
 
     override func data(ofType typeName: String) throws -> Data {
         guard let content = content else {

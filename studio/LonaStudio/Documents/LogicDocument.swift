@@ -9,7 +9,7 @@
 import AppKit
 import Logic
 
-class LogicDocument: NSDocument {
+class LogicDocument: BaseDocument {
 
     override init() {
         super.init()
@@ -40,16 +40,6 @@ class LogicDocument: NSDocument {
 
     var program: LGCProgram {
         return LGCProgram.make(from: content)!
-    }
-
-    override func makeWindowControllers() {
-        // We manage window controllers in `showWindows`
-    }
-
-    override func showWindows() {
-        DocumentController.shared.createOrFindWorkspaceWindowController(for: self)
-
-        super.showWindows()
     }
 
     public static func encode(_ content: LGCSyntaxNode) throws -> Data {
