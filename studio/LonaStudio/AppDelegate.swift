@@ -32,6 +32,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             forEventClass: AEEventClass(kInternetEventClass),
             andEventID: AEEventID(kAEGetURL)
         )
+
+        MinimapScroller.defaultFillColor = .clear
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
