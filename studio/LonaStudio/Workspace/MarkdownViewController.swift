@@ -103,7 +103,7 @@ class MarkdownViewController: NSViewController {
         containerView.addSubview(contentView)
 
         contentView.fillColor = .clear
-
+        contentView.showsMinimap = true
         contentView.onClickLink = { link in
             guard let url = URL(string: link) else { return true }
             NSWorkspace.shared.open(url)
