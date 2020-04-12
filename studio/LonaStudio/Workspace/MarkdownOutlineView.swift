@@ -196,23 +196,10 @@ extension MarkdownOutlineView: NSOutlineViewDelegate {
 
         let isRootNode = item.sizeLevel == .h1
 
-        let attributedString = [
-            NSAttributedString(
-                string: item.sectionPath.count == 1
-                    ? ""
-                    : " " + item.sectionPath.dropFirst().map({ $0.description }).joined(separator: ".") + "   ",
-                attributes: [
-                    .font: NSFont.monospacedDigitSystemFont(ofSize: NSFont.systemFontSize(for: .small), weight: .bold)
-                ]
-            ),
-            NSAttributedString(string: item.description, attributes: [
-                .font : isRootNode
-                    ? NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .regular))
-                    : NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))
-            ])
-        ].joined()
-
-        let nameView = NSTextField(labelWithAttributedString: attributedString)
+        let nameView = NSTextField(labelWithString: item.description)
+        nameView.font = isRootNode
+           ? NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .regular))
+           : NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))
         nameView.maximumNumberOfLines = 1
         nameView.lineBreakMode = .byTruncatingTail
 
@@ -222,7 +209,34 @@ extension MarkdownOutlineView: NSOutlineViewDelegate {
 
         nameView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         nameView.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -4).isActive = true
-        nameView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8).isActive = true
+        nameView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
+        if isRootNode {
+            let iconView = BookIcon()
+
+            view.addSubview(iconView)
+
+            iconView.translatesAutoresizingMaskIntoConstraints = false
+            iconView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+            iconView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 7).isActive = true
+            iconView.widthAnchor.constraint(equalToConstant: 24).isActive = true
+            iconView.heightAnchor.constraint(equalToConstant: 24).isActive = true
+
+            nameView.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 8).isActive = true
+        } else {
+            let sectionDescription = item.sectionPath.dropFirst().map({ $0.description }).joined(separator: ".")
+            let sectionView = NSTextField(labelWithString: sectionDescription)
+            sectionView.font = NSFont.monospacedDigitSystemFont(ofSize: NSFont.systemFontSize(for: .small), weight: .bold)
+            sectionView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+
+            view.addSubview(sectionView)
+
+            sectionView.translatesAutoresizingMaskIntoConstraints = false
+            sectionView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+            sectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12).isActive = true
+
+            nameView.leadingAnchor.constraint(equalTo: sectionView.trailingAnchor, constant: 10).isActive = true
+        }
 
         return view
     }
@@ -285,10 +299,13 @@ extension Array where Element == EditableBlock {
                 children = []
             }
 
+            let isOnlyTitleBlock = headingLevel == .h1 && headings.count == 1
+            let description = String((heading.text ?? "").prefix(50))
+
             return .init(
                 id: heading.id,
                 sizeLevel: heading.textSizeLevel!,
-                description: String((heading.text ?? "").prefix(50)),
+                description: isOnlyTitleBlock && description.isEmpty ? "Outline" : description,
                 sectionPath: sectionPath,
                 children: children
             )

@@ -1,0 +1,186 @@
+{
+  "devices" : [
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    },
+    {
+      "backgroundColor" : "black",
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "Canvas",
+      "width" : 375
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+        "selected" : false
+      }
+    },
+    {
+      "id" : "name",
+      "name" : "name",
+      "params" : {
+        "selected" : true
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "VectorGraphic",
+        "vector",
+        "outer",
+        "fill"
+      ],
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "iconFill",
+          "type" : "Color"
+        }
+      },
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "VectorGraphic",
+        "vector",
+        "inner",
+        "fill"
+      ],
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "iconFillAccent",
+          "type" : "Color"
+        }
+      },
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "VectorGraphic",
+        "vector",
+        "inner2",
+        "fill"
+      ],
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "iconFillAccent",
+          "type" : "Color"
+        }
+      },
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "VectorGraphic",
+            "vector",
+            "outer",
+            "fill"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "white",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "VectorGraphic",
+            "vector",
+            "inner",
+            "fill"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "systemSelection30",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "VectorGraphic",
+            "vector",
+            "inner2",
+            "fill"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "systemSelection30",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "selected"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "selected",
+      "type" : "Boolean"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "VectorGraphic",
+        "params" : {
+          "height" : 19,
+          "image" : "file:\/\/.\/assets\/icon-book.svg",
+          "resizeMode" : "contain",
+          "width" : 16
+        },
+        "type" : "Lona:VectorGraphic"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignItems" : "center",
+      "alignSelf" : "stretch",
+      "flex" : 1,
+      "flexDirection" : "row",
+      "paddingLeft" : 5
+    },
+    "type" : "Lona:View"
+  }
+}
