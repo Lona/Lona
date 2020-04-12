@@ -95,6 +95,8 @@ class MarkdownViewController: NSViewController {
     private let containerView = NSBox()
     private var contentView = BlockEditor()
 
+    public lazy var outlineView = MarkdownOutlineView()
+
     private func setUpViews() {
         containerView.borderType = .noBorder
         containerView.boxType = .custom
@@ -125,10 +127,66 @@ class MarkdownViewController: NSViewController {
 
     private func update(shouldUpdateTokenBlocks: Bool) {
         contentView.blocks = content
+        outlineView.blocks = content
+
+        outlineView.onSelectItem = { [unowned self] block in
+            guard let block = block else { return }
+
+            self.preventSelectionDuringScrollAnimation { [weak self] in
+                self?.contentView.select(id: block.id)
+                self?.outlineView.selectedID = block.id
+            }
+        }
+
+        // When visible rows change, select the last header before the first visible row in the outline view
+        contentView.onChangeVisibleRows = { [unowned self] rows in
+            if self.isSelectingItem { return }
+
+            let previousRows = (0..<rows.lowerBound + 1).clamped(to: 0..<self.content.count)
+            let previousBlocks = self.content[previousRows]
+
+            let lastHeader = previousBlocks.last(where: { block in
+                switch block.content {
+                case .text(_, let level) where level == .h1 || level == .h2 || level == .h3:
+                    return true
+                default:
+                    return false
+                }
+            })
+
+            // Don't select the first header, since it's visually distracting
+            if lastHeader == self.content.textElements(level: .h1).first {
+                self.outlineView.selectedID = nil
+            } else {
+                self.outlineView.selectedID = lastHeader?.id
+            }
+        }
 
         if shouldUpdateTokenBlocks {
             configure(blocks: content)
         }
+    }
+
+
+    // Reduce jitter during the scrolling animation.
+    // The scrollview scrolls with an animation only when navigating the outline view via arrow keys.
+    // If we can find a wayt to disable the animation completely, we should do that instead.
+    private var isSelectingItem = false
+
+    private var isSelectingItemTask: DispatchWorkItem?
+
+    private func preventSelectionDuringScrollAnimation(_ block: @escaping () -> Void) {
+        isSelectingItemTask?.cancel()
+        isSelectingItem = true
+
+        block()
+
+        let task = DispatchWorkItem(block: { [weak self] in
+            self?.isSelectingItem = false
+        })
+        isSelectingItemTask = task
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: task)
     }
 }
 

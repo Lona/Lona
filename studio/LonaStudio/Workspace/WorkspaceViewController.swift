@@ -862,11 +862,11 @@ extension \(componentName) {
                 editorViewController.contentView = nil
             }
         } else if let document = document as? MarkdownDocument {
-            fileNavigator.fileOutlineView = nil
             inspectorViewVisible = false
 
             markdownViewController.content = document.content
 
+            fileNavigator.fileOutlineView = markdownViewController.outlineView
             editorViewController.contentView = markdownViewController.view
 
             markdownViewController.onNavigateToPage = { [unowned document] page in

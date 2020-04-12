@@ -350,6 +350,8 @@
 		6BE634382436CB5100C972AF /* LogicInspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE634372436CB5100C972AF /* LogicInspectorView.swift */; };
 		6BE6343A2437F97A00C972AF /* ThemedSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE634392437F97A00C972AF /* ThemedSidebarView.swift */; };
 		6BE6343E243D4E9400C972AF /* BaseDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE6343D243D4E9400C972AF /* BaseDocument.swift */; };
+		6BE63440243E6D5200C972AF /* MarkdownOutlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE6343F243E6D5200C972AF /* MarkdownOutlineView.swift */; };
+		6BE634462442849000C972AF /* BookIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE634452442849000C972AF /* BookIcon.swift */; };
 		6BE89BBC21B7452800F35AC3 /* LonaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE89BBB21B7452800F35AC3 /* LonaViewModel.swift */; };
 		6BE99D7423CD1F6800E35E35 /* Emitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE99D7323CD1F6800E35E35 /* Emitter.swift */; };
 		6BE99D7823CD2F4300E35E35 /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE99D7723CD2F4300E35E35 /* Promise.swift */; };
@@ -756,6 +758,8 @@
 		6BE634372436CB5100C972AF /* LogicInspectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicInspectorView.swift; sourceTree = "<group>"; };
 		6BE634392437F97A00C972AF /* ThemedSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemedSidebarView.swift; sourceTree = "<group>"; };
 		6BE6343D243D4E9400C972AF /* BaseDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseDocument.swift; sourceTree = "<group>"; };
+		6BE6343F243E6D5200C972AF /* MarkdownOutlineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownOutlineView.swift; sourceTree = "<group>"; };
+		6BE634452442849000C972AF /* BookIcon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookIcon.swift; sourceTree = "<group>"; };
 		6BE89BBB21B7452800F35AC3 /* LonaViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaViewModel.swift; sourceTree = "<group>"; };
 		6BE99D7323CD1F6800E35E35 /* Emitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emitter.swift; sourceTree = "<group>"; };
 		6BE99D7723CD2F4300E35E35 /* Promise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
@@ -927,6 +931,7 @@
 				307D4421209B75C0004B57F5 /* LonaWebView.swift */,
 				6B4AFBAA242AE6B700AA0907 /* MainSectionViewController.swift */,
 				039952C621E50D31008310DB /* MarkdownEditor.swift */,
+				6BE6343F243E6D5200C972AF /* MarkdownOutlineView.swift */,
 				6B7380A322C7CE7B007534A0 /* MarkdownViewController.swift */,
 				307B7B4E1F9A71C5001A62D9 /* MetadataEditorView.swift */,
 				6BA783122410926A008F3761 /* OpenWorkspaceViewController.swift */,
@@ -1480,6 +1485,7 @@
 		6BD96649217E825C0012F173 /* icons */ = {
 			isa = PBXGroup;
 			children = (
+				6BE634452442849000C972AF /* BookIcon.swift */,
 				6BD9664C217E8FCF0012F173 /* FileIcon.swift */,
 				6BD9664A217E825C0012F173 /* FolderIcon.swift */,
 			);
@@ -1962,6 +1968,7 @@
 				6BF4EF45235A695F00548F61 /* WorkspaceWindow.swift in Sources */,
 				6B64358221FA3BD700CB1CB1 /* AccessibilityOverlay.swift in Sources */,
 				6B8AE8A624328180006E140C /* ElementEditor.swift in Sources */,
+				6BE63440243E6D5200C972AF /* MarkdownOutlineView.swift in Sources */,
 				30EFC9581EF369DC0087711D /* ImageField.swift in Sources */,
 				30CE47811ED73FC800BBF716 /* TextField.swift in Sources */,
 				6BA775CB21C59E330033C03C /* DimensionType.swift in Sources */,
@@ -1994,6 +2001,7 @@
 				0304A71723F424B1009A1E82 /* Network.swift in Sources */,
 				6BC2D45622640BA9003A9F63 /* LogicInput+CSURLType.swift in Sources */,
 				3069E09C1F324C550005E9A8 /* CSWorkspacePreferences.swift in Sources */,
+				6BE634462442849000C972AF /* BookIcon.swift in Sources */,
 				6B4203E721BC495B00D59317 /* NSTableColumn+Init.swift in Sources */,
 				303C3FF020A3A05D008E1541 /* RecentProjectsList.swift in Sources */,
 				036A4E8E21E0EF0100948DBD /* ImageViewController.swift in Sources */,

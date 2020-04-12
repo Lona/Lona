@@ -162,19 +162,12 @@ class FileNavigator: NSView {
         fileTree.showRootFile = true
         fileTree.invalidatesIntrinsicContentSizeOnRowExpand = true
         fileTree.isAnimationEnabled = false
-        let firstRowStyle = FileTreeRowView.CustomStyle(
-            backgroundColor: Colors.vibrantRaised,
-            bottomBorderColor: Colors.vibrantDivider
-        )
-        let firstAndLastRowStyle = FileTreeRowView.CustomStyle(
-            backgroundColor: Colors.vibrantRaised
-        )
         fileTree.rowStyleForFile = { path, options in
             if options.contains(.isFirstRow) {
                 if options.contains(.isLastRow) {
-                    return .custom(firstAndLastRowStyle)
+                    return .custom(.firstAndLastRowStyle)
                 } else {
-                    return .custom(firstRowStyle)
+                    return .custom(.firstRowStyle)
                 }
             } else {
                 return .rounded
@@ -442,10 +435,11 @@ class FileNavigator: NSView {
     }
 
     private func rowViewForFile(atPath path: String, options: FileTree.RowViewOptions) -> NSView {
-        let thumbnailSize = fileTree.defaultThumbnailSize
-        let thumbnailMargin = fileTree.defaultThumbnailMargin
-        let name = displayNameForFile(atPath: path)
         let isRootPath = path == rootPath
+
+        let thumbnailSize = fileTree.defaultThumbnailSize
+        let thumbnailMargin = isRootPath ? 8 : fileTree.defaultThumbnailMargin
+        let name = displayNameForFile(atPath: path)
 
         let view = FileTreeCellView()
 
@@ -553,4 +547,14 @@ class FileNavigator: NSView {
 
         return view
     }
+}
+
+extension FileTreeRowView.CustomStyle {
+    public static let firstRowStyle = FileTreeRowView.CustomStyle(
+        backgroundColor: Colors.vibrantRaised,
+        bottomBorderColor: Colors.vibrantDivider
+    )
+    public static let firstAndLastRowStyle = FileTreeRowView.CustomStyle(
+        backgroundColor: Colors.vibrantRaised
+    )
 }
