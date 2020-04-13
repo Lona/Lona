@@ -73,6 +73,8 @@ public class MarkdownOutlineView: NSBox {
         didSet {
             outlineView.reloadData()
             outlineView.expandItem(nil, expandChildren: true)
+
+            outlineView.sizeToFit()
         }
     }
 
@@ -117,7 +119,7 @@ public class MarkdownOutlineView: NSBox {
 
     // MARK: Private
 
-    private var outlineView = ControlledOutlineView(style: .singleColumn)
+    private var outlineView = MarkdownControlledOutlineView(style: .singleColumn)
     private var scrollView = NSScrollView(frame: .zero)
 
     private func ancestors(for element: Item) -> [Item]? {
@@ -210,6 +212,7 @@ extension MarkdownOutlineView: NSOutlineViewDelegate {
         nameView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         nameView.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -4).isActive = true
         nameView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        nameView.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
         if isRootNode {
             let iconView = BookIcon()
@@ -228,6 +231,7 @@ extension MarkdownOutlineView: NSOutlineViewDelegate {
             let sectionView = NSTextField(labelWithString: sectionDescription)
             sectionView.font = NSFont.monospacedDigitSystemFont(ofSize: NSFont.systemFontSize(for: .small), weight: .bold)
             sectionView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+            sectionView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
 
             view.addSubview(sectionView)
 
@@ -365,4 +369,18 @@ extension NavigationItemView.Style {
 //        style.cornerRadius = 1
         return style
     }()
+}
+
+private class MarkdownControlledOutlineView: ControlledOutlineView {
+    override func collapseItem(_ item: Any?, collapseChildren: Bool) {
+        super.collapseItem(item, collapseChildren: collapseChildren)
+
+        sizeToFit()
+    }
+
+    open override func expandItem(_ item: Any?, expandChildren: Bool) {
+        super.expandItem(item, expandChildren: expandChildren)
+
+        sizeToFit()
+    }
 }
