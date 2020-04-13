@@ -1,0 +1,8 @@
+query getRepo($url: String!) {
+  getRepo(url: $url) {
+    url
+    activated
+    docsURL
+    publicDocs
+  }
+}

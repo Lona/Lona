@@ -29,6 +29,8 @@
 		036A4EA421E21DA500948DBD /* AddTextStyleSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA321E21DA400948DBD /* AddTextStyleSheet.swift */; };
 		036A4EA921E2469D00948DBD /* DirectoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA821E2469D00948DBD /* DirectoryViewController.swift */; };
 		039952C721E50D31008310DB /* MarkdownEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039952C621E50D31008310DB /* MarkdownEditor.swift */; };
+		03B8BFB024444EB70009E084 /* getRepo.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 03B8BFAF24444EB70009E084 /* getRepo.graphql */; };
+		03B8BFB224444F3B0009E084 /* changeRepoDocsVisibility.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 03B8BFB124444F3B0009E084 /* changeRepoDocsVisibility.graphql */; };
 		03D436C124280CF60097A9F2 /* lona-schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 03D436C024280CF50097A9F2 /* lona-schema.json */; };
 		03E1AE8B240FA75C0061E93A /* getDeploymentStatus.graphql in Resources */ = {isa = PBXBuildFile; fileRef = 03E1AE8A240FA75C0061E93A /* getDeploymentStatus.graphql */; };
 		03E1AE8D240FAB180061E93A /* github-schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 03E1AE8C240FAB180061E93A /* github-schema.json */; };
@@ -444,6 +446,8 @@
 		036A4EA321E21DA400948DBD /* AddTextStyleSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddTextStyleSheet.swift; sourceTree = "<group>"; };
 		036A4EA821E2469D00948DBD /* DirectoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectoryViewController.swift; sourceTree = "<group>"; };
 		039952C621E50D31008310DB /* MarkdownEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownEditor.swift; sourceTree = "<group>"; };
+		03B8BFAF24444EB70009E084 /* getRepo.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = getRepo.graphql; sourceTree = "<group>"; };
+		03B8BFB124444F3B0009E084 /* changeRepoDocsVisibility.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = changeRepoDocsVisibility.graphql; sourceTree = "<group>"; };
 		03D436C024280CF50097A9F2 /* lona-schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "lona-schema.json"; sourceTree = "<group>"; };
 		03E1AE8A240FA75C0061E93A /* getDeploymentStatus.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = getDeploymentStatus.graphql; sourceTree = "<group>"; };
 		03E1AE8C240FAB180061E93A /* github-schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "github-schema.json"; sourceTree = "<group>"; };
@@ -845,7 +849,9 @@
 			children = (
 				0304A71A23FA8B18009A1E82 /* addRepo.graphql */,
 				0304A71823F425B4009A1E82 /* createOrganization.graphql */,
+				03B8BFB124444F3B0009E084 /* changeRepoDocsVisibility.graphql */,
 				0304A71223F421F4009A1E82 /* getMe.graphql */,
+				03B8BFAF24444EB70009E084 /* getRepo.graphql */,
 			);
 			path = Lona;
 			sourceTree = "<group>";
@@ -1653,6 +1659,8 @@
 				30F870E920865859007ADA5B /* LonaIcon_16x16@2x.png in Resources */,
 				30F870E620865859007ADA5B /* LonaIcon_128x128.png in Resources */,
 				30F870E020865859007ADA5B /* LonaIcon_512x512@2x.png in Resources */,
+				03B8BFB224444F3B0009E084 /* changeRepoDocsVisibility.graphql in Resources */,
+				03B8BFB024444EB70009E084 /* getRepo.graphql in Resources */,
 				6B8AE8A82432AD6F006E140C /* Element.logic in Resources */,
 				6BC60631223F1947003E616B /* Logic.framework.dSYM in Resources */,
 				307D44182097DDAB004B57F5 /* icon-tab-docs@2x.png in Resources */,
