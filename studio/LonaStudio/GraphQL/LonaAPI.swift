@@ -404,6 +404,7 @@ public final class GetMeQuery: GraphQLQuery {
             __typename
             url
             activated
+            docsURL
           }
         }
       }
@@ -580,6 +581,7 @@ public final class GetMeQuery: GraphQLQuery {
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
             GraphQLField("url", type: .nonNull(.scalar(String.self))),
             GraphQLField("activated", type: .nonNull(.scalar(Bool.self))),
+            GraphQLField("docsURL", type: .scalar(String.self)),
           ]
 
           public private(set) var resultMap: ResultMap
@@ -588,8 +590,8 @@ public final class GetMeQuery: GraphQLQuery {
             self.resultMap = unsafeResultMap
           }
 
-          public init(url: String, activated: Bool) {
-            self.init(unsafeResultMap: ["__typename": "Repo", "url": url, "activated": activated])
+          public init(url: String, activated: Bool, docsUrl: String? = nil) {
+            self.init(unsafeResultMap: ["__typename": "Repo", "url": url, "activated": activated, "docsURL": docsUrl])
           }
 
           public var __typename: String {
@@ -618,6 +620,137 @@ public final class GetMeQuery: GraphQLQuery {
               resultMap.updateValue(newValue, forKey: "activated")
             }
           }
+
+          public var docsUrl: String? {
+            get {
+              return resultMap["docsURL"] as? String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "docsURL")
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class GetRepoQuery: GraphQLQuery {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition =
+    """
+    query getRepo($url: String!) {
+      getRepo(url: $url) {
+        __typename
+        url
+        activated
+        docsURL
+        publicDocs
+      }
+    }
+    """
+
+  public let operationName = "getRepo"
+
+  public var url: String
+
+  public init(url: String) {
+    self.url = url
+  }
+
+  public var variables: GraphQLMap? {
+    return ["url": url]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes = ["Query"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("getRepo", arguments: ["url": GraphQLVariable("url")], type: .object(GetRepo.selections)),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(getRepo: GetRepo? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Query", "getRepo": getRepo.flatMap { (value: GetRepo) -> ResultMap in value.resultMap }])
+    }
+
+    public var getRepo: GetRepo? {
+      get {
+        return (resultMap["getRepo"] as? ResultMap).flatMap { GetRepo(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "getRepo")
+      }
+    }
+
+    public struct GetRepo: GraphQLSelectionSet {
+      public static let possibleTypes = ["Repo"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("url", type: .nonNull(.scalar(String.self))),
+        GraphQLField("activated", type: .nonNull(.scalar(Bool.self))),
+        GraphQLField("docsURL", type: .scalar(String.self)),
+        GraphQLField("publicDocs", type: .scalar(Bool.self)),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(url: String, activated: Bool, docsUrl: String? = nil, publicDocs: Bool? = nil) {
+        self.init(unsafeResultMap: ["__typename": "Repo", "url": url, "activated": activated, "docsURL": docsUrl, "publicDocs": publicDocs])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var url: String {
+        get {
+          return resultMap["url"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "url")
+        }
+      }
+
+      public var activated: Bool {
+        get {
+          return resultMap["activated"]! as! Bool
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "activated")
+        }
+      }
+
+      public var docsUrl: String? {
+        get {
+          return resultMap["docsURL"] as? String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "docsURL")
+        }
+      }
+
+      public var publicDocs: Bool? {
+        get {
+          return resultMap["publicDocs"] as? Bool
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "publicDocs")
         }
       }
     }

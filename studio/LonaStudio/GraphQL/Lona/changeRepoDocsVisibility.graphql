@@ -1,0 +1,12 @@
+mutation changeRepoDocsVisibility($repoURL: String!, public: Boolean!) {
+  changeRepoDocsVisibility(repoURL: $repoURL, public: $public) {
+    success
+    message
+    repo {
+      url
+      activated
+      docsURL
+      publicDocs
+    }
+  }
+}
