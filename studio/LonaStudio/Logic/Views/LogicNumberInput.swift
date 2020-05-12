@@ -72,13 +72,20 @@ public class LogicNumberInput: NSView {
                 }
             }
 
+            switch node {
+            case .expression(.literalExpression(_, literal: .number(_, value: let number))):
+                self.onChangeNumberValue?(number)
+            default:
+                break
+            }
+
             return true
         }
 
         logicEditor.suggestionsForNode = { [unowned self] rootNode, node, query in
             guard case .expression(let expression) = node else { return .init([]) }
 
-            let program: LGCSyntaxNode = .program(LogicNumberInput.makeProgram(from: expression).expandImports(importLoader: LogicLoader.load))
+            let program: LGCSyntaxNode = .program(LogicNumberInput.makeProgram(from: expression))
 
             switch StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: self.logicEditor.formattingOptions) {
             case .success(let builder):

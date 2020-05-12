@@ -69,8 +69,11 @@ It's best to use **camelCase** capitalization when choosing parameter names. Thi
                                 case .expression(let expression):
                                     suggestion.node = .functionParameterDefaultValue(.value(id: UUID(), expression: expression))
                                     return suggestion
+                                case .identifier(let identifier):
+                                    suggestion.node = .functionParameterDefaultValue(.value(id: UUID(), expression: .identifierExpression(id: UUID(), identifier: identifier)))
+                                    return suggestion
                                 default:
-                                    fatalError("Only expressions allowed")
+                                    fatalError("Only expressions and identifiers allowed")
                                 }
                             }
                     )
