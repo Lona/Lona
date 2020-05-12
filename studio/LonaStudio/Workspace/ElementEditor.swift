@@ -330,6 +330,7 @@ extension ElementEditor {
         suggestionWindow.suggestionText = currentName
         suggestionWindow.suggestionItems = []
         suggestionWindow.placeholderText = "Type a new element name and press Enter"
+        suggestionWindow.tokenText = nil
         suggestionWindow.style = .textInput
         suggestionWindow.onRequestHide = { suggestionWindow.orderOut(nil) }
         suggestionWindow.onPressEscapeKey = { suggestionWindow.orderOut(nil) }
