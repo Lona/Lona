@@ -128,7 +128,7 @@ struct ConfiguredLayer {
     func renderableTextAttributes() -> RenderableTextAttributes {
         let text = stringValue(paramName: "text") ?? layer.text ?? ""
         let textStyleId = stringValue(paramName: "textStyle") ?? layer.font ?? "regular"
-        let textStyle = CSTypography.getFontBy(id: textStyleId).font
+        let textStyle = layer.textStyle ?? CSTypography.getFontBy(id: textStyleId).font
         let textAlignment = NSTextAlignment(layer.textAlign ?? "left")
 
         var maximumNumberOfLines = 0

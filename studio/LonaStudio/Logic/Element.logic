@@ -4,6 +4,17 @@ import Color
 
 import TextStyle
 
+enum TextAlign {
+  case left()
+  case center()
+  case right()
+}
+
+enum DimensionSize {
+  case fixed(Number)
+  case flexible()
+}
+
 enum ElementParameter {
   case boolean(String, Boolean)
   case number(String, Number)
@@ -11,6 +22,8 @@ enum ElementParameter {
   case color(String, Color)
   case textStyle(String, TextStyle)
   case elements(String, Array<Element>)
+  case textAlign(String, TextAlign)
+  case dimension(String, DimensionSize)
 }
 
 struct Padding {
@@ -33,20 +46,23 @@ struct Element {
   ]
 }
 
-func View(__name: String, backgroundColor: Color, padding: Padding, children: Array<Element>) -> Element {
+func View(__name: String, backgroundColor: Color, padding: Padding, children: Array<Element>, width: DimensionSize, height: DimensionSize) -> Element {
   return Element(type: "LonaView", parameters: [
     ElementParameter.color("backgroundColor", backgroundColor),
     ElementParameter.number("paddingTop", Padding.top(padding)),
     ElementParameter.number("paddingRight", Padding.right(padding)),
     ElementParameter.number("paddingBottom", Padding.bottom(padding)),
     ElementParameter.number("paddingLeft", Padding.left(padding)),
-    ElementParameter.elements("children", children)
+    ElementParameter.elements("children", children),
+    ElementParameter.dimension("width", width),
+    ElementParameter.dimension("height", height)
   ])
 }
 
-func Text(__name: String, value: String, style: TextStyle) -> Element {
+func Text(__name: String, value: String, style: TextStyle, alignment: TextAlign) -> Element {
   return Element(type: "LonaText", parameters: [
     ElementParameter.string("value", value),
-    ElementParameter.textStyle("style", style)
+    ElementParameter.textStyle("style", style),
+    ElementParameter.textAlign("textAlign", alignment)
   ])
 }

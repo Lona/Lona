@@ -777,11 +777,35 @@ extension LogicValue {
             if case .some(.string(let text)) = parameters["value"]?.memory {
                 layer.text = text
             }
+            if case .some(.enum(let caseName, _)) = parameters["textAlign"]?.memory {
+                layer.textAlign = caseName
+            }
+            if let textStyle = parameters["style"]?.textStyle {
+                layer.textStyle = TextStyle(
+                    family: textStyle.family,
+                    name: textStyle.name,
+                    weight: textStyle.weight,
+                    size: textStyle.size,
+                    lineHeight: textStyle.lineHeight,
+                    kerning: textStyle.kerning,
+                    color: textStyle.color,
+                    alignment: textStyle.alignment
+                )
+            }
         default:
             return nil
         }
 
         layer.backgroundColor = parameters["backgroundColor"]?.colorString
+
+        if case .some(.enum(caseName: "fixed", associatedValues: let values)) = parameters["width"]?.memory,
+            case .number(let fixedWidth) = values[0].memory {
+            layer.width = Double(fixedWidth)
+        }
+        if case .some(.enum(caseName: "fixed", associatedValues: let values)) = parameters["height"]?.memory,
+            case .number(let fixedHeight) = values[0].memory {
+            layer.height = Double(fixedHeight)
+        }
 
         if case .some(.number(let paddingTop)) = parameters["paddingTop"]?.memory {
             layer.paddingTop = Double(paddingTop)
