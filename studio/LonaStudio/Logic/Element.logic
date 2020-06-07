@@ -15,17 +15,6 @@ enum DimensionSize {
   case flexible()
 }
 
-enum ElementParameter {
-  case boolean(String, Boolean)
-  case number(String, Number)
-  case string(String, String)
-  case color(String, Color)
-  case textStyle(String, TextStyle)
-  case elements(String, Array<Element>)
-  case textAlign(String, TextAlign)
-  case dimension(String, DimensionSize)
-}
-
 struct Padding {
   let top: Number = 0
   let right: Number = 0
@@ -39,6 +28,18 @@ extension Padding {
   }
 }
 
+enum ElementParameter {
+  case boolean(String, Boolean)
+  case number(String, Number)
+  case string(String, String)
+  case color(String, Color)
+  case textStyle(String, TextStyle)
+  case elements(String, Array<Element>)
+  case textAlign(String, TextAlign)
+  case dimension(String, DimensionSize)
+  case padding(String, Padding)
+}
+
 struct Element {
   let type: String = ""
   let parameters: Array<ElementParameter> = [
@@ -46,16 +47,13 @@ struct Element {
   ]
 }
 
-func View(__name: String, backgroundColor: Color, padding: Padding, children: Array<Element>, width: DimensionSize, height: DimensionSize) -> Element {
+func View(__name: String, width: DimensionSize, height: DimensionSize, padding: Padding, backgroundColor: Color, children: Array<Element>) -> Element {
   return Element(type: "LonaView", parameters: [
     ElementParameter.color("backgroundColor", backgroundColor),
-    ElementParameter.number("paddingTop", Padding.top(padding)),
-    ElementParameter.number("paddingRight", Padding.right(padding)),
-    ElementParameter.number("paddingBottom", Padding.bottom(padding)),
-    ElementParameter.number("paddingLeft", Padding.left(padding)),
     ElementParameter.elements("children", children),
     ElementParameter.dimension("width", width),
-    ElementParameter.dimension("height", height)
+    ElementParameter.dimension("height", height),
+    ElementParameter.padding("padding", padding)
   ])
 }
 
@@ -64,5 +62,19 @@ func Text(__name: String, value: String, style: TextStyle, alignment: TextAlign)
     ElementParameter.string("value", value),
     ElementParameter.textStyle("style", style),
     ElementParameter.textAlign("textAlign", alignment)
+  ])
+}
+
+func VerticalStack(children: Array<Element>) -> Element {
+  return Element(type: "LonaView", parameters: [
+    ElementParameter.elements("children", children),
+    ElementParameter.string("flexDirection", "column")
+  ])
+}
+
+func HorizontalStack(children: Array<Element>) -> Element {
+  return Element(type: "LonaView", parameters: [
+    ElementParameter.elements("children", children),
+    ElementParameter.string("flexDirection", "row")
   ])
 }
