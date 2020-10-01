@@ -614,6 +614,8 @@ extension LGCExpression {
 
     public func elementItem() -> ElementItem? {
         switch self {
+        case .identifierExpression(id: let id, identifier: let identifier):
+            return ElementItem(id: id, type: "<parameter>", name: identifier.string, visible: true, children: [])
         case .functionCallExpression(id: let id, expression: let expression, arguments: let arguments):
             let customLabel: String? = arguments.firstArgument(labeled: "__name")?.stringValue
             let childrenExpressions: LGCList<LGCExpression> = arguments.firstArgument(labeled: "children")?.arrayValue ?? .empty
@@ -771,11 +773,30 @@ extension LogicValue {
         switch typeName {
         case "LonaView":
             layer.type = .view
+
+            if case .some(.string(let flexDirection)) = parameters["flexDirection"]?.memory {
+                layer.flexDirection = flexDirection
+            }
         case "LonaText":
             layer.type = .text
 
             if case .some(.string(let text)) = parameters["value"]?.memory {
                 layer.text = text
+            }
+            if case .some(.enum(let caseName, _)) = parameters["textAlign"]?.memory {
+                layer.textAlign = caseName
+            }
+            if let textStyle = parameters["style"]?.textStyle {
+                layer.textStyle = TextStyle(
+                    family: textStyle.family,
+                    name: textStyle.name,
+                    weight: textStyle.weight,
+                    size: textStyle.size,
+                    lineHeight: textStyle.lineHeight,
+                    kerning: textStyle.kerning,
+                    color: textStyle.color,
+                    alignment: textStyle.alignment
+                )
             }
         default:
             return nil
@@ -783,17 +804,28 @@ extension LogicValue {
 
         layer.backgroundColor = parameters["backgroundColor"]?.colorString
 
-        if case .some(.number(let paddingTop)) = parameters["paddingTop"]?.memory {
-            layer.paddingTop = Double(paddingTop)
+        if case .some(.enum(caseName: "fixed", associatedValues: let values)) = parameters["width"]?.memory,
+            case .number(let fixedWidth) = values[0].memory {
+            layer.width = Double(fixedWidth)
         }
-        if case .some(.number(let paddingRight)) = parameters["paddingRight"]?.memory {
-            layer.paddingRight = Double(paddingRight)
+        if case .some(.enum(caseName: "fixed", associatedValues: let values)) = parameters["height"]?.memory,
+            case .number(let fixedHeight) = values[0].memory {
+            layer.height = Double(fixedHeight)
         }
-        if case .some(.number(let paddingBottom)) = parameters["paddingBottom"]?.memory {
-            layer.paddingBottom = Double(paddingBottom)
-        }
-        if case .some(.number(let paddingLeft)) = parameters["paddingLeft"]?.memory {
-            layer.paddingLeft = Double(paddingLeft)
+
+        if case .some(.record(let members)) = parameters["padding"]?.memory {
+            if let memberValue = members["top"], case .some(.number(let paddingTop)) = memberValue?.memory {
+                layer.paddingTop = Double(paddingTop)
+            }
+            if let memberValue = members["right"], case .some(.number(let paddingRight)) = memberValue?.memory {
+                layer.paddingRight = Double(paddingRight)
+            }
+            if let memberValue = members["bottom"], case .some(.number(let paddingBottom)) = memberValue?.memory {
+                layer.paddingBottom = Double(paddingBottom)
+            }
+            if let memberValue = members["left"], case .some(.number(let paddingLeft)) = memberValue?.memory {
+                layer.paddingLeft = Double(paddingLeft)
+            }
         }
 
         if case .some(.array(let childrenArrayValue)) = parameters["children"]?.memory {

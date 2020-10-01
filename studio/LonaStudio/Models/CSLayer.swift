@@ -490,6 +490,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         get { return parameters["textStyle"]?.string ?? parameters["font"]?.string }
         set { parameters["font"] = newValue?.toData() }
     }
+    var textStyle: TextStyle?
     var textAlign: String? {
         get { return parameters["textAlign"]?.string }
         set { parameters["textAlign"] = newValue?.toData() }
